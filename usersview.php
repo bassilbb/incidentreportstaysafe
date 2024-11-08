@@ -437,6 +437,7 @@ class cusers_view extends cusers {
 		$this->status->SetVisibility();
 		$this->profile->SetVisibility();
 		$this->staff_id->SetVisibility();
+		$this->flag->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -782,6 +783,7 @@ class cusers_view extends cusers {
 		$this->status->setDbValue($row['status']);
 		$this->profile->setDbValue($row['profile']);
 		$this->staff_id->setDbValue($row['staff_id']);
+		$this->flag->setDbValue($row['flag']);
 	}
 
 	// Return a row with default values
@@ -804,6 +806,7 @@ class cusers_view extends cusers {
 		$row['status'] = NULL;
 		$row['profile'] = NULL;
 		$row['staff_id'] = NULL;
+		$row['flag'] = NULL;
 		return $row;
 	}
 
@@ -829,6 +832,7 @@ class cusers_view extends cusers {
 		$this->status->DbValue = $row['status'];
 		$this->profile->DbValue = $row['profile'];
 		$this->staff_id->DbValue = $row['staff_id'];
+		$this->flag->DbValue = $row['flag'];
 	}
 
 	// Render row values based on field settings
@@ -864,6 +868,7 @@ class cusers_view extends cusers {
 		// status
 		// profile
 		// staff_id
+		// flag
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1042,6 +1047,10 @@ class cusers_view extends cusers {
 		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
 		$this->staff_id->ViewCustomAttributes = "";
 
+		// flag
+		$this->flag->ViewValue = $this->flag->CurrentValue;
+		$this->flag->ViewCustomAttributes = "";
+
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
@@ -1126,6 +1135,11 @@ class cusers_view extends cusers {
 			$this->staff_id->LinkCustomAttributes = "";
 			$this->staff_id->HrefValue = "";
 			$this->staff_id->TooltipValue = "";
+
+			// flag
+			$this->flag->LinkCustomAttributes = "";
+			$this->flag->HrefValue = "";
+			$this->flag->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1692,6 +1706,17 @@ $users_view->ShowMessage();
 <span id="el_users_staff_id">
 <span<?php echo $users->staff_id->ViewAttributes() ?>>
 <?php echo $users->staff_id->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($users->flag->Visible) { // flag ?>
+	<tr id="r_flag">
+		<td class="col-sm-2"><span id="elh_users_flag"><?php echo $users->flag->FldCaption() ?></span></td>
+		<td data-name="flag"<?php echo $users->flag->CellAttributes() ?>>
+<span id="el_users_flag">
+<span<?php echo $users->flag->ViewAttributes() ?>>
+<?php echo $users->flag->ViewValue ?></span>
 </span>
 </td>
 	</tr>

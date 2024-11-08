@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<configuration date="2023/03/05" author="e.World Technology Ltd.">
-  <project id="{DD9080C0-D1CA-431F-831F-CAC8FA61260C}" file="C:\Users\Bassey\Documents\incident_report_app_staysafe.pmp" name="incident_report_app" product="PHPMaker" version="14.0" datetime="2023/03/05 21:05:43" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0">
-    <table id="branch" name="branch" caption="Branch" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+<configuration date="2024/11/04" author="e.World Technology Ltd.">
+  <project id="{DD9080C0-D1CA-431F-831F-CAC8FA61260C}" file="C:\Users\Bassey\Documents\PHPMaker\Projects\incident_report_app_staysafe.pmp" name="incident_report_app" product="PHPMaker" version="14.0" datetime="2024/11/04 17:53:03" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0">
+    <table id="branch" name="branch" caption="Organization" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="category" name="category" caption="Category" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="client" name="client" caption="Client" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="depertment" name="depertment" caption="Depertment" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
@@ -22,12 +22,27 @@
     <table id="audittrail" name="audittrail" caption="Audit Trail" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="departments" name="departments" caption="Departments" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="chart_report_php" name="chart_report.php" caption="Chart" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="incident_sub_location" name="incident_sub_location" caption="incident sub location" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="incident_venue" name="incident_venue" caption="incident venue" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="sub_sub_category" name="sub_sub_category" caption="sub sub category" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="report" name="report" caption="Incident His" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="designation" name="designation" caption="designation" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="selection_sub_category" name="selection_sub_category" caption="selection sub category" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="incident_sub_location" name="incident_sub_location" caption="Incident Sub Location" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="incident_venue" name="incident_venue" caption="Incident Venue" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="sub_sub_category" name="sub_sub_category" caption="Sub Sub category" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="report" name="report" caption="Incident History" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="designation" name="designation" caption="Designation" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="selection_sub_category" name="selection_sub_category" caption="Selection Sub Category" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="reason" name="reason" caption="Reason" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="buildings" name="buildings" caption="Buildings" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="floors" name="floors" caption="Floors" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="items" name="items" caption="Items" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="maintenance" name="maintenance" caption="Maintenance" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="maintained_status" name="maintained_status" caption="Maintained Status" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="servicing_history" name="servicing_history" caption="Maintenance History" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="maintenance_report" name="maintenance_report" caption="Maintenance Report" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="assign_task" name="assign_task" caption="Assigned Task Review" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="inventory" name="inventory" caption="Inventory" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="inventory_store" name="inventory_store" caption="Inventory Store" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="dispenser" name="dispenser" caption="Dispenser Activity" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="dispenser_status" name="dispenser_status" caption="Dispenser Status" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="dispenser_type" name="dispenser_type" caption="Dispenser Type" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="dispenser_report" name="dispenser_report" caption="Dispenser Report" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="action_taken" name="action_taken" caption="action taken" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
   </project>
 </configuration>

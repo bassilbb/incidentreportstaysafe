@@ -528,6 +528,8 @@ class cregister extends cusers {
 		$this->profile->OldValue = $this->profile->CurrentValue;
 		$this->staff_id->CurrentValue = NULL;
 		$this->staff_id->OldValue = $this->staff_id->CurrentValue;
+		$this->flag->CurrentValue = NULL;
+		$this->flag->OldValue = $this->flag->CurrentValue;
 	}
 
 	// Load form values
@@ -651,6 +653,7 @@ class cregister extends cusers {
 		$this->status->setDbValue($row['status']);
 		$this->profile->setDbValue($row['profile']);
 		$this->staff_id->setDbValue($row['staff_id']);
+		$this->flag->setDbValue($row['flag']);
 	}
 
 	// Return a row with default values
@@ -674,6 +677,7 @@ class cregister extends cusers {
 		$row['status'] = $this->status->CurrentValue;
 		$row['profile'] = $this->profile->CurrentValue;
 		$row['staff_id'] = $this->staff_id->CurrentValue;
+		$row['flag'] = $this->flag->CurrentValue;
 		return $row;
 	}
 
@@ -699,6 +703,7 @@ class cregister extends cusers {
 		$this->status->DbValue = $row['status'];
 		$this->profile->DbValue = $row['profile'];
 		$this->staff_id->DbValue = $row['staff_id'];
+		$this->flag->DbValue = $row['flag'];
 	}
 
 	// Render row values based on field settings
@@ -728,6 +733,7 @@ class cregister extends cusers {
 		// status
 		// profile
 		// staff_id
+		// flag
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -901,6 +907,10 @@ class cregister extends cusers {
 		// staff_id
 		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
 		$this->staff_id->ViewCustomAttributes = "";
+
+		// flag
+		$this->flag->ViewValue = $this->flag->CurrentValue;
+		$this->flag->ViewCustomAttributes = "";
 
 			// staffno
 			$this->staffno->LinkCustomAttributes = "";
@@ -1785,7 +1795,7 @@ $register->ShowMessage();
 <?php if ($users->CurrentAction <> "F") { ?>
 <span id="el_users_branch">
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next().click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_branch"><?php echo (strval($users->branch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $users->branch->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_branch"><?php echo (strval($users->branch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $users->branch->ViewValue); ?></span>
 </span>
 <button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($users->branch->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_branch',m:0,n:5});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($users->branch->ReadOnly || $users->branch->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
 <input type="hidden" data-table="users" data-field="x_branch" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $users->branch->DisplayValueSeparatorAttribute() ?>" name="x_branch" id="x_branch" value="<?php echo $users->branch->CurrentValue ?>"<?php echo $users->branch->EditAttributes() ?>>
@@ -1807,7 +1817,7 @@ $register->ShowMessage();
 <?php if ($users->CurrentAction <> "F") { ?>
 <span id="el_users_department">
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next().click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_department"><?php echo (strval($users->department->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $users->department->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_department"><?php echo (strval($users->department->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $users->department->ViewValue); ?></span>
 </span>
 <button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($users->department->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_department',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($users->department->ReadOnly || $users->department->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
 <input type="hidden" data-table="users" data-field="x_department" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $users->department->DisplayValueSeparatorAttribute() ?>" name="x_department" id="x_department" value="<?php echo $users->department->CurrentValue ?>"<?php echo $users->department->EditAttributes() ?>>

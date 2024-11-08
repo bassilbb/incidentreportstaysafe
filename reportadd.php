@@ -261,11 +261,11 @@ class creport_add extends creport {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'add', TRUE);
+			define("EW_PAGE_ID", 'add');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'report', TRUE);
+			define("EW_TABLE_NAME", 'report');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -2992,7 +2992,7 @@ class creport_add extends creport {
 		$rsnew = array();
 
 		// datetime_initiated
-		$this->datetime_initiated->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->datetime_initiated->CurrentValue, 7), ew_CurrentDate(), FALSE);
+		$this->datetime_initiated->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->datetime_initiated->CurrentValue, 7), NULL, FALSE);
 
 		// incident_id
 		$this->incident_id->SetDbValueDef($rsnew, $this->incident_id->CurrentValue, NULL, FALSE);

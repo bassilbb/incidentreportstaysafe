@@ -464,6 +464,8 @@ class creport_form_list extends creport_form {
 		$this->incident_description->SetVisibility();
 		$this->status->SetVisibility();
 		$this->assign_task->SetVisibility();
+		$this->item_name->SetVisibility();
+		$this->quantity_issued->SetVisibility();
 		$this->reason->SetVisibility();
 		$this->last_updated_date->SetVisibility();
 		$this->last_updated_by->SetVisibility();
@@ -864,6 +866,7 @@ class creport_form_list extends creport_form {
 		$sFilterList = ew_Concat($sFilterList, $this->incident_description->AdvancedSearch->ToJson(), ","); // Field incident_description
 		$sFilterList = ew_Concat($sFilterList, $this->_upload->AdvancedSearch->ToJson(), ","); // Field upload
 		$sFilterList = ew_Concat($sFilterList, $this->status->AdvancedSearch->ToJson(), ","); // Field status
+		$sFilterList = ew_Concat($sFilterList, $this->rejection_reasons->AdvancedSearch->ToJson(), ","); // Field rejection_reasons
 		$sFilterList = ew_Concat($sFilterList, $this->initiator_action->AdvancedSearch->ToJson(), ","); // Field initiator_action
 		$sFilterList = ew_Concat($sFilterList, $this->initiator_comment->AdvancedSearch->ToJson(), ","); // Field initiator_comment
 		$sFilterList = ew_Concat($sFilterList, $this->report_by->AdvancedSearch->ToJson(), ","); // Field report_by
@@ -871,6 +874,8 @@ class creport_form_list extends creport_form {
 		$sFilterList = ew_Concat($sFilterList, $this->assign_task->AdvancedSearch->ToJson(), ","); // Field assign_task
 		$sFilterList = ew_Concat($sFilterList, $this->approval_action->AdvancedSearch->ToJson(), ","); // Field approval_action
 		$sFilterList = ew_Concat($sFilterList, $this->approval_comment->AdvancedSearch->ToJson(), ","); // Field approval_comment
+		$sFilterList = ew_Concat($sFilterList, $this->item_name->AdvancedSearch->ToJson(), ","); // Field item_name
+		$sFilterList = ew_Concat($sFilterList, $this->quantity_issued->AdvancedSearch->ToJson(), ","); // Field quantity_issued
 		$sFilterList = ew_Concat($sFilterList, $this->reason->AdvancedSearch->ToJson(), ","); // Field reason
 		$sFilterList = ew_Concat($sFilterList, $this->resolved_action->AdvancedSearch->ToJson(), ","); // Field resolved_action
 		$sFilterList = ew_Concat($sFilterList, $this->resolved_comment->AdvancedSearch->ToJson(), ","); // Field resolved_comment
@@ -884,6 +889,7 @@ class creport_form_list extends creport_form {
 		$sFilterList = ew_Concat($sFilterList, $this->verified_action->AdvancedSearch->ToJson(), ","); // Field verified_action
 		$sFilterList = ew_Concat($sFilterList, $this->verified_comment->AdvancedSearch->ToJson(), ","); // Field verified_comment
 		$sFilterList = ew_Concat($sFilterList, $this->verified_by->AdvancedSearch->ToJson(), ","); // Field verified_by
+		$sFilterList = ew_Concat($sFilterList, $this->remainder->AdvancedSearch->ToJson(), ","); // Field remainder
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -1128,6 +1134,14 @@ class creport_form_list extends creport_form {
 		$this->status->AdvancedSearch->SearchOperator2 = @$filter["w_status"];
 		$this->status->AdvancedSearch->Save();
 
+		// Field rejection_reasons
+		$this->rejection_reasons->AdvancedSearch->SearchValue = @$filter["x_rejection_reasons"];
+		$this->rejection_reasons->AdvancedSearch->SearchOperator = @$filter["z_rejection_reasons"];
+		$this->rejection_reasons->AdvancedSearch->SearchCondition = @$filter["v_rejection_reasons"];
+		$this->rejection_reasons->AdvancedSearch->SearchValue2 = @$filter["y_rejection_reasons"];
+		$this->rejection_reasons->AdvancedSearch->SearchOperator2 = @$filter["w_rejection_reasons"];
+		$this->rejection_reasons->AdvancedSearch->Save();
+
 		// Field initiator_action
 		$this->initiator_action->AdvancedSearch->SearchValue = @$filter["x_initiator_action"];
 		$this->initiator_action->AdvancedSearch->SearchOperator = @$filter["z_initiator_action"];
@@ -1183,6 +1197,22 @@ class creport_form_list extends creport_form {
 		$this->approval_comment->AdvancedSearch->SearchValue2 = @$filter["y_approval_comment"];
 		$this->approval_comment->AdvancedSearch->SearchOperator2 = @$filter["w_approval_comment"];
 		$this->approval_comment->AdvancedSearch->Save();
+
+		// Field item_name
+		$this->item_name->AdvancedSearch->SearchValue = @$filter["x_item_name"];
+		$this->item_name->AdvancedSearch->SearchOperator = @$filter["z_item_name"];
+		$this->item_name->AdvancedSearch->SearchCondition = @$filter["v_item_name"];
+		$this->item_name->AdvancedSearch->SearchValue2 = @$filter["y_item_name"];
+		$this->item_name->AdvancedSearch->SearchOperator2 = @$filter["w_item_name"];
+		$this->item_name->AdvancedSearch->Save();
+
+		// Field quantity_issued
+		$this->quantity_issued->AdvancedSearch->SearchValue = @$filter["x_quantity_issued"];
+		$this->quantity_issued->AdvancedSearch->SearchOperator = @$filter["z_quantity_issued"];
+		$this->quantity_issued->AdvancedSearch->SearchCondition = @$filter["v_quantity_issued"];
+		$this->quantity_issued->AdvancedSearch->SearchValue2 = @$filter["y_quantity_issued"];
+		$this->quantity_issued->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_issued"];
+		$this->quantity_issued->AdvancedSearch->Save();
 
 		// Field reason
 		$this->reason->AdvancedSearch->SearchValue = @$filter["x_reason"];
@@ -1287,6 +1317,14 @@ class creport_form_list extends creport_form {
 		$this->verified_by->AdvancedSearch->SearchValue2 = @$filter["y_verified_by"];
 		$this->verified_by->AdvancedSearch->SearchOperator2 = @$filter["w_verified_by"];
 		$this->verified_by->AdvancedSearch->Save();
+
+		// Field remainder
+		$this->remainder->AdvancedSearch->SearchValue = @$filter["x_remainder"];
+		$this->remainder->AdvancedSearch->SearchOperator = @$filter["z_remainder"];
+		$this->remainder->AdvancedSearch->SearchCondition = @$filter["v_remainder"];
+		$this->remainder->AdvancedSearch->SearchValue2 = @$filter["y_remainder"];
+		$this->remainder->AdvancedSearch->SearchOperator2 = @$filter["w_remainder"];
+		$this->remainder->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
@@ -1321,6 +1359,7 @@ class creport_form_list extends creport_form {
 		$this->BuildSearchSql($sWhere, $this->incident_description, $Default, FALSE); // incident_description
 		$this->BuildSearchSql($sWhere, $this->_upload, $Default, FALSE); // upload
 		$this->BuildSearchSql($sWhere, $this->status, $Default, FALSE); // status
+		$this->BuildSearchSql($sWhere, $this->rejection_reasons, $Default, FALSE); // rejection_reasons
 		$this->BuildSearchSql($sWhere, $this->initiator_action, $Default, FALSE); // initiator_action
 		$this->BuildSearchSql($sWhere, $this->initiator_comment, $Default, FALSE); // initiator_comment
 		$this->BuildSearchSql($sWhere, $this->report_by, $Default, FALSE); // report_by
@@ -1328,6 +1367,8 @@ class creport_form_list extends creport_form {
 		$this->BuildSearchSql($sWhere, $this->assign_task, $Default, FALSE); // assign_task
 		$this->BuildSearchSql($sWhere, $this->approval_action, $Default, FALSE); // approval_action
 		$this->BuildSearchSql($sWhere, $this->approval_comment, $Default, FALSE); // approval_comment
+		$this->BuildSearchSql($sWhere, $this->item_name, $Default, FALSE); // item_name
+		$this->BuildSearchSql($sWhere, $this->quantity_issued, $Default, FALSE); // quantity_issued
 		$this->BuildSearchSql($sWhere, $this->reason, $Default, FALSE); // reason
 		$this->BuildSearchSql($sWhere, $this->resolved_action, $Default, FALSE); // resolved_action
 		$this->BuildSearchSql($sWhere, $this->resolved_comment, $Default, FALSE); // resolved_comment
@@ -1341,6 +1382,7 @@ class creport_form_list extends creport_form {
 		$this->BuildSearchSql($sWhere, $this->verified_action, $Default, FALSE); // verified_action
 		$this->BuildSearchSql($sWhere, $this->verified_comment, $Default, FALSE); // verified_comment
 		$this->BuildSearchSql($sWhere, $this->verified_by, $Default, FALSE); // verified_by
+		$this->BuildSearchSql($sWhere, $this->remainder, $Default, FALSE); // remainder
 
 		// Set up search parm
 		if (!$Default && $sWhere <> "" && in_array($this->Command, array("", "reset", "resetall"))) {
@@ -1372,6 +1414,7 @@ class creport_form_list extends creport_form {
 			$this->incident_description->AdvancedSearch->Save(); // incident_description
 			$this->_upload->AdvancedSearch->Save(); // upload
 			$this->status->AdvancedSearch->Save(); // status
+			$this->rejection_reasons->AdvancedSearch->Save(); // rejection_reasons
 			$this->initiator_action->AdvancedSearch->Save(); // initiator_action
 			$this->initiator_comment->AdvancedSearch->Save(); // initiator_comment
 			$this->report_by->AdvancedSearch->Save(); // report_by
@@ -1379,6 +1422,8 @@ class creport_form_list extends creport_form {
 			$this->assign_task->AdvancedSearch->Save(); // assign_task
 			$this->approval_action->AdvancedSearch->Save(); // approval_action
 			$this->approval_comment->AdvancedSearch->Save(); // approval_comment
+			$this->item_name->AdvancedSearch->Save(); // item_name
+			$this->quantity_issued->AdvancedSearch->Save(); // quantity_issued
 			$this->reason->AdvancedSearch->Save(); // reason
 			$this->resolved_action->AdvancedSearch->Save(); // resolved_action
 			$this->resolved_comment->AdvancedSearch->Save(); // resolved_comment
@@ -1392,6 +1437,7 @@ class creport_form_list extends creport_form {
 			$this->verified_action->AdvancedSearch->Save(); // verified_action
 			$this->verified_comment->AdvancedSearch->Save(); // verified_comment
 			$this->verified_by->AdvancedSearch->Save(); // verified_by
+			$this->remainder->AdvancedSearch->Save(); // remainder
 		}
 		return $sWhere;
 	}
@@ -1448,11 +1494,14 @@ class creport_form_list extends creport_form {
 		$this->BuildBasicSearchSQL($sWhere, $this->selection_sub_category, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->incident_description, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->_upload, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->rejection_reasons, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->initiator_comment, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->approval_comment, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->item_name, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->resolved_comment, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->job_assessment, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->verified_comment, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->remainder, $arKeywords, $type);
 		return $sWhere;
 	}
 
@@ -1610,6 +1659,8 @@ class creport_form_list extends creport_form {
 			return TRUE;
 		if ($this->status->AdvancedSearch->IssetSession())
 			return TRUE;
+		if ($this->rejection_reasons->AdvancedSearch->IssetSession())
+			return TRUE;
 		if ($this->initiator_action->AdvancedSearch->IssetSession())
 			return TRUE;
 		if ($this->initiator_comment->AdvancedSearch->IssetSession())
@@ -1623,6 +1674,10 @@ class creport_form_list extends creport_form {
 		if ($this->approval_action->AdvancedSearch->IssetSession())
 			return TRUE;
 		if ($this->approval_comment->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->item_name->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->quantity_issued->AdvancedSearch->IssetSession())
 			return TRUE;
 		if ($this->reason->AdvancedSearch->IssetSession())
 			return TRUE;
@@ -1649,6 +1704,8 @@ class creport_form_list extends creport_form {
 		if ($this->verified_comment->AdvancedSearch->IssetSession())
 			return TRUE;
 		if ($this->verified_by->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->remainder->AdvancedSearch->IssetSession())
 			return TRUE;
 		return FALSE;
 	}
@@ -1704,6 +1761,7 @@ class creport_form_list extends creport_form {
 		$this->incident_description->AdvancedSearch->UnsetSession();
 		$this->_upload->AdvancedSearch->UnsetSession();
 		$this->status->AdvancedSearch->UnsetSession();
+		$this->rejection_reasons->AdvancedSearch->UnsetSession();
 		$this->initiator_action->AdvancedSearch->UnsetSession();
 		$this->initiator_comment->AdvancedSearch->UnsetSession();
 		$this->report_by->AdvancedSearch->UnsetSession();
@@ -1711,6 +1769,8 @@ class creport_form_list extends creport_form {
 		$this->assign_task->AdvancedSearch->UnsetSession();
 		$this->approval_action->AdvancedSearch->UnsetSession();
 		$this->approval_comment->AdvancedSearch->UnsetSession();
+		$this->item_name->AdvancedSearch->UnsetSession();
+		$this->quantity_issued->AdvancedSearch->UnsetSession();
 		$this->reason->AdvancedSearch->UnsetSession();
 		$this->resolved_action->AdvancedSearch->UnsetSession();
 		$this->resolved_comment->AdvancedSearch->UnsetSession();
@@ -1724,6 +1784,7 @@ class creport_form_list extends creport_form {
 		$this->verified_action->AdvancedSearch->UnsetSession();
 		$this->verified_comment->AdvancedSearch->UnsetSession();
 		$this->verified_by->AdvancedSearch->UnsetSession();
+		$this->remainder->AdvancedSearch->UnsetSession();
 	}
 
 	// Restore all search parameters
@@ -1759,6 +1820,7 @@ class creport_form_list extends creport_form {
 		$this->incident_description->AdvancedSearch->Load();
 		$this->_upload->AdvancedSearch->Load();
 		$this->status->AdvancedSearch->Load();
+		$this->rejection_reasons->AdvancedSearch->Load();
 		$this->initiator_action->AdvancedSearch->Load();
 		$this->initiator_comment->AdvancedSearch->Load();
 		$this->report_by->AdvancedSearch->Load();
@@ -1766,6 +1828,8 @@ class creport_form_list extends creport_form {
 		$this->assign_task->AdvancedSearch->Load();
 		$this->approval_action->AdvancedSearch->Load();
 		$this->approval_comment->AdvancedSearch->Load();
+		$this->item_name->AdvancedSearch->Load();
+		$this->quantity_issued->AdvancedSearch->Load();
 		$this->reason->AdvancedSearch->Load();
 		$this->resolved_action->AdvancedSearch->Load();
 		$this->resolved_comment->AdvancedSearch->Load();
@@ -1779,6 +1843,7 @@ class creport_form_list extends creport_form {
 		$this->verified_action->AdvancedSearch->Load();
 		$this->verified_comment->AdvancedSearch->Load();
 		$this->verified_by->AdvancedSearch->Load();
+		$this->remainder->AdvancedSearch->Load();
 	}
 
 	// Set up sort parameters
@@ -1800,6 +1865,8 @@ class creport_form_list extends creport_form {
 			$this->UpdateSort($this->incident_description); // incident_description
 			$this->UpdateSort($this->status); // status
 			$this->UpdateSort($this->assign_task); // assign_task
+			$this->UpdateSort($this->item_name); // item_name
+			$this->UpdateSort($this->quantity_issued); // quantity_issued
 			$this->UpdateSort($this->reason); // reason
 			$this->UpdateSort($this->last_updated_date); // last_updated_date
 			$this->UpdateSort($this->last_updated_by); // last_updated_by
@@ -1848,6 +1915,8 @@ class creport_form_list extends creport_form {
 				$this->incident_description->setSort("");
 				$this->status->setSort("");
 				$this->assign_task->setSort("");
+				$this->item_name->setSort("");
+				$this->quantity_issued->setSort("");
 				$this->reason->setSort("");
 				$this->last_updated_date->setSort("");
 				$this->last_updated_by->setSort("");
@@ -2370,6 +2439,11 @@ class creport_form_list extends creport_form {
 		if ($this->status->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
 		$this->status->AdvancedSearch->SearchOperator = @$_GET["z_status"];
 
+		// rejection_reasons
+		$this->rejection_reasons->AdvancedSearch->SearchValue = @$_GET["x_rejection_reasons"];
+		if ($this->rejection_reasons->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->rejection_reasons->AdvancedSearch->SearchOperator = @$_GET["z_rejection_reasons"];
+
 		// initiator_action
 		$this->initiator_action->AdvancedSearch->SearchValue = @$_GET["x_initiator_action"];
 		if ($this->initiator_action->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
@@ -2404,6 +2478,16 @@ class creport_form_list extends creport_form {
 		$this->approval_comment->AdvancedSearch->SearchValue = @$_GET["x_approval_comment"];
 		if ($this->approval_comment->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
 		$this->approval_comment->AdvancedSearch->SearchOperator = @$_GET["z_approval_comment"];
+
+		// item_name
+		$this->item_name->AdvancedSearch->SearchValue = @$_GET["x_item_name"];
+		if ($this->item_name->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->item_name->AdvancedSearch->SearchOperator = @$_GET["z_item_name"];
+
+		// quantity_issued
+		$this->quantity_issued->AdvancedSearch->SearchValue = @$_GET["x_quantity_issued"];
+		if ($this->quantity_issued->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->quantity_issued->AdvancedSearch->SearchOperator = @$_GET["z_quantity_issued"];
 
 		// reason
 		$this->reason->AdvancedSearch->SearchValue = @$_GET["x_reason"];
@@ -2469,6 +2553,11 @@ class creport_form_list extends creport_form {
 		$this->verified_by->AdvancedSearch->SearchValue = @$_GET["x_verified_by"];
 		if ($this->verified_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
 		$this->verified_by->AdvancedSearch->SearchOperator = @$_GET["z_verified_by"];
+
+		// remainder
+		$this->remainder->AdvancedSearch->SearchValue = @$_GET["x_remainder"];
+		if ($this->remainder->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->remainder->AdvancedSearch->SearchOperator = @$_GET["z_remainder"];
 	}
 
 	// Load recordset
@@ -2556,6 +2645,7 @@ class creport_form_list extends creport_form {
 		$this->_upload->Upload->DbValue = $row['upload'];
 		$this->_upload->setDbValue($this->_upload->Upload->DbValue);
 		$this->status->setDbValue($row['status']);
+		$this->rejection_reasons->setDbValue($row['rejection_reasons']);
 		$this->initiator_action->setDbValue($row['initiator_action']);
 		$this->initiator_comment->setDbValue($row['initiator_comment']);
 		$this->report_by->setDbValue($row['report_by']);
@@ -2563,6 +2653,8 @@ class creport_form_list extends creport_form {
 		$this->assign_task->setDbValue($row['assign_task']);
 		$this->approval_action->setDbValue($row['approval_action']);
 		$this->approval_comment->setDbValue($row['approval_comment']);
+		$this->item_name->setDbValue($row['item_name']);
+		$this->quantity_issued->setDbValue($row['quantity_issued']);
 		$this->reason->setDbValue($row['reason']);
 		$this->resolved_action->setDbValue($row['resolved_action']);
 		$this->resolved_comment->setDbValue($row['resolved_comment']);
@@ -2576,6 +2668,7 @@ class creport_form_list extends creport_form {
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
+		$this->remainder->setDbValue($row['remainder']);
 	}
 
 	// Return a row with default values
@@ -2606,6 +2699,7 @@ class creport_form_list extends creport_form {
 		$row['incident_description'] = NULL;
 		$row['upload'] = NULL;
 		$row['status'] = NULL;
+		$row['rejection_reasons'] = NULL;
 		$row['initiator_action'] = NULL;
 		$row['initiator_comment'] = NULL;
 		$row['report_by'] = NULL;
@@ -2613,6 +2707,8 @@ class creport_form_list extends creport_form {
 		$row['assign_task'] = NULL;
 		$row['approval_action'] = NULL;
 		$row['approval_comment'] = NULL;
+		$row['item_name'] = NULL;
+		$row['quantity_issued'] = NULL;
 		$row['reason'] = NULL;
 		$row['resolved_action'] = NULL;
 		$row['resolved_comment'] = NULL;
@@ -2626,6 +2722,7 @@ class creport_form_list extends creport_form {
 		$row['verified_action'] = NULL;
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
+		$row['remainder'] = NULL;
 		return $row;
 	}
 
@@ -2659,6 +2756,7 @@ class creport_form_list extends creport_form {
 		$this->incident_description->DbValue = $row['incident_description'];
 		$this->_upload->Upload->DbValue = $row['upload'];
 		$this->status->DbValue = $row['status'];
+		$this->rejection_reasons->DbValue = $row['rejection_reasons'];
 		$this->initiator_action->DbValue = $row['initiator_action'];
 		$this->initiator_comment->DbValue = $row['initiator_comment'];
 		$this->report_by->DbValue = $row['report_by'];
@@ -2666,6 +2764,8 @@ class creport_form_list extends creport_form {
 		$this->assign_task->DbValue = $row['assign_task'];
 		$this->approval_action->DbValue = $row['approval_action'];
 		$this->approval_comment->DbValue = $row['approval_comment'];
+		$this->item_name->DbValue = $row['item_name'];
+		$this->quantity_issued->DbValue = $row['quantity_issued'];
 		$this->reason->DbValue = $row['reason'];
 		$this->resolved_action->DbValue = $row['resolved_action'];
 		$this->resolved_comment->DbValue = $row['resolved_comment'];
@@ -2679,6 +2779,7 @@ class creport_form_list extends creport_form {
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
+		$this->remainder->DbValue = $row['remainder'];
 	}
 
 	// Load old record
@@ -2744,6 +2845,7 @@ class creport_form_list extends creport_form {
 		// incident_description
 		// upload
 		// status
+		// rejection_reasons
 		// initiator_action
 		// initiator_comment
 		// report_by
@@ -2751,6 +2853,8 @@ class creport_form_list extends creport_form {
 		// assign_task
 		// approval_action
 		// approval_comment
+		// item_name
+		// quantity_issued
 		// reason
 		// resolved_action
 		// resolved_comment
@@ -2764,6 +2868,7 @@ class creport_form_list extends creport_form {
 		// verified_action
 		// verified_comment
 		// verified_by
+		// remainder
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -3270,6 +3375,33 @@ class creport_form_list extends creport_form {
 		}
 		$this->approval_action->ViewCustomAttributes = "";
 
+		// item_name
+		if (strval($this->item_name->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->item_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
+		$sWhereWrk = "";
+		$this->item_name->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->item_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->item_name->ViewValue = $this->item_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->item_name->ViewValue = $this->item_name->CurrentValue;
+			}
+		} else {
+			$this->item_name->ViewValue = NULL;
+		}
+		$this->item_name->ViewCustomAttributes = "";
+
+		// quantity_issued
+		$this->quantity_issued->ViewValue = $this->quantity_issued->CurrentValue;
+		$this->quantity_issued->ViewCustomAttributes = "";
+
 		// reason
 		if (strval($this->reason->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->reason->CurrentValue, EW_DATATYPE_NUMBER, "");
@@ -3438,6 +3570,10 @@ class creport_form_list extends creport_form {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
+		// remainder
+		$this->remainder->ViewValue = $this->remainder->CurrentValue;
+		$this->remainder->ViewCustomAttributes = "";
+
 			// datetime_initiated
 			$this->datetime_initiated->LinkCustomAttributes = "";
 			$this->datetime_initiated->HrefValue = "";
@@ -3497,6 +3633,16 @@ class creport_form_list extends creport_form {
 			$this->assign_task->LinkCustomAttributes = "";
 			$this->assign_task->HrefValue = "";
 			$this->assign_task->TooltipValue = "";
+
+			// item_name
+			$this->item_name->LinkCustomAttributes = "";
+			$this->item_name->HrefValue = "";
+			$this->item_name->TooltipValue = "";
+
+			// quantity_issued
+			$this->quantity_issued->LinkCustomAttributes = "";
+			$this->quantity_issued->HrefValue = "";
+			$this->quantity_issued->TooltipValue = "";
 
 			// reason
 			$this->reason->LinkCustomAttributes = "";
@@ -3590,6 +3736,16 @@ class creport_form_list extends creport_form {
 			$this->assign_task->EditAttrs["class"] = "form-control";
 			$this->assign_task->EditCustomAttributes = "";
 
+			// item_name
+			$this->item_name->EditAttrs["class"] = "form-control";
+			$this->item_name->EditCustomAttributes = "";
+
+			// quantity_issued
+			$this->quantity_issued->EditAttrs["class"] = "form-control";
+			$this->quantity_issued->EditCustomAttributes = "";
+			$this->quantity_issued->EditValue = ew_HtmlEncode($this->quantity_issued->AdvancedSearch->SearchValue);
+			$this->quantity_issued->PlaceHolder = ew_RemoveHtml($this->quantity_issued->FldCaption());
+
 			// reason
 			$this->reason->EditAttrs["class"] = "form-control";
 			$this->reason->EditCustomAttributes = "";
@@ -3668,6 +3824,7 @@ class creport_form_list extends creport_form {
 		$this->incident_description->AdvancedSearch->Load();
 		$this->_upload->AdvancedSearch->Load();
 		$this->status->AdvancedSearch->Load();
+		$this->rejection_reasons->AdvancedSearch->Load();
 		$this->initiator_action->AdvancedSearch->Load();
 		$this->initiator_comment->AdvancedSearch->Load();
 		$this->report_by->AdvancedSearch->Load();
@@ -3675,6 +3832,8 @@ class creport_form_list extends creport_form {
 		$this->assign_task->AdvancedSearch->Load();
 		$this->approval_action->AdvancedSearch->Load();
 		$this->approval_comment->AdvancedSearch->Load();
+		$this->item_name->AdvancedSearch->Load();
+		$this->quantity_issued->AdvancedSearch->Load();
 		$this->reason->AdvancedSearch->Load();
 		$this->resolved_action->AdvancedSearch->Load();
 		$this->resolved_comment->AdvancedSearch->Load();
@@ -3688,6 +3847,7 @@ class creport_form_list extends creport_form {
 		$this->verified_action->AdvancedSearch->Load();
 		$this->verified_comment->AdvancedSearch->Load();
 		$this->verified_by->AdvancedSearch->Load();
+		$this->remainder->AdvancedSearch->Load();
 	}
 
 	// Set up export options
@@ -4074,6 +4234,8 @@ freport_formlist.Lists["x_status"] = {"LinkField":"x_code","Ajax":true,"AutoFill
 freport_formlist.Lists["x_status"].Data = "<?php echo $report_form_list->status->LookupFilterQuery(FALSE, "list") ?>";
 freport_formlist.Lists["x_assign_task"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 freport_formlist.Lists["x_assign_task"].Data = "<?php echo $report_form_list->assign_task->LookupFilterQuery(FALSE, "list") ?>";
+freport_formlist.Lists["x_item_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
+freport_formlist.Lists["x_item_name"].Data = "<?php echo $report_form_list->item_name->LookupFilterQuery(FALSE, "list") ?>";
 freport_formlist.Lists["x_reason"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"reason"};
 freport_formlist.Lists["x_reason"].Data = "<?php echo $report_form_list->reason->LookupFilterQuery(FALSE, "list") ?>";
 freport_formlist.Lists["x_last_updated_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
@@ -4428,6 +4590,24 @@ $report_form_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
+<?php if ($report_form->item_name->Visible) { // item_name ?>
+	<?php if ($report_form->SortUrl($report_form->item_name) == "") { ?>
+		<th data-name="item_name" class="<?php echo $report_form->item_name->HeaderCellClass() ?>"><div id="elh_report_form_item_name" class="report_form_item_name"><div class="ewTableHeaderCaption"><?php echo $report_form->item_name->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="item_name" class="<?php echo $report_form->item_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $report_form->SortUrl($report_form->item_name) ?>',1);"><div id="elh_report_form_item_name" class="report_form_item_name">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $report_form->item_name->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($report_form->item_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($report_form->item_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($report_form->quantity_issued->Visible) { // quantity_issued ?>
+	<?php if ($report_form->SortUrl($report_form->quantity_issued) == "") { ?>
+		<th data-name="quantity_issued" class="<?php echo $report_form->quantity_issued->HeaderCellClass() ?>"><div id="elh_report_form_quantity_issued" class="report_form_quantity_issued"><div class="ewTableHeaderCaption"><?php echo $report_form->quantity_issued->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="quantity_issued" class="<?php echo $report_form->quantity_issued->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $report_form->SortUrl($report_form->quantity_issued) ?>',1);"><div id="elh_report_form_quantity_issued" class="report_form_quantity_issued">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $report_form->quantity_issued->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($report_form->quantity_issued->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($report_form->quantity_issued->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
 <?php if ($report_form->reason->Visible) { // reason ?>
 	<?php if ($report_form->SortUrl($report_form->reason) == "") { ?>
 		<th data-name="reason" class="<?php echo $report_form->reason->HeaderCellClass() ?>"><div id="elh_report_form_reason" class="report_form_reason"><div class="ewTableHeaderCaption"><?php echo $report_form->reason->FldCaption() ?></div></div></th>
@@ -4622,6 +4802,22 @@ $report_form_list->ListOptions->Render("body", "left", $report_form_list->RowCnt
 <span id="el<?php echo $report_form_list->RowCnt ?>_report_form_assign_task" class="report_form_assign_task">
 <span<?php echo $report_form->assign_task->ViewAttributes() ?>>
 <?php echo $report_form->assign_task->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($report_form->item_name->Visible) { // item_name ?>
+		<td data-name="item_name"<?php echo $report_form->item_name->CellAttributes() ?>>
+<span id="el<?php echo $report_form_list->RowCnt ?>_report_form_item_name" class="report_form_item_name">
+<span<?php echo $report_form->item_name->ViewAttributes() ?>>
+<?php echo $report_form->item_name->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($report_form->quantity_issued->Visible) { // quantity_issued ?>
+		<td data-name="quantity_issued"<?php echo $report_form->quantity_issued->CellAttributes() ?>>
+<span id="el<?php echo $report_form_list->RowCnt ?>_report_form_quantity_issued" class="report_form_quantity_issued">
+<span<?php echo $report_form->quantity_issued->ViewAttributes() ?>>
+<?php echo $report_form->quantity_issued->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

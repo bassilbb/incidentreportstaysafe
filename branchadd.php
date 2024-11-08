@@ -932,7 +932,7 @@ $branch_add->ShowMessage();
 		<label id="elh_branch_branch_name" for="x_branch_name" class="<?php echo $branch_add->LeftColumnClass ?>"><?php echo $branch->branch_name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $branch_add->RightColumnClass ?>"><div<?php echo $branch->branch_name->CellAttributes() ?>>
 <span id="el_branch_branch_name">
-<input type="text" data-table="branch" data-field="x_branch_name" name="x_branch_name" id="x_branch_name" size="30" maxlength="20" placeholder="<?php echo ew_HtmlEncode($branch->branch_name->getPlaceHolder()) ?>" value="<?php echo $branch->branch_name->EditValue ?>"<?php echo $branch->branch_name->EditAttributes() ?>>
+<input type="text" data-table="branch" data-field="x_branch_name" name="x_branch_name" id="x_branch_name" size="30" placeholder="<?php echo ew_HtmlEncode($branch->branch_name->getPlaceHolder()) ?>" value="<?php echo $branch->branch_name->EditValue ?>"<?php echo $branch->branch_name->EditAttributes() ?>>
 </span>
 <?php echo $branch->branch_name->CustomMsg ?></div></div>
 	</div>

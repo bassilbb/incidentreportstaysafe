@@ -352,6 +352,7 @@ class creport_form_add extends creport_form {
 		$this->incident_description->SetVisibility();
 		$this->_upload->SetVisibility();
 		$this->status->SetVisibility();
+		$this->rejection_reasons->SetVisibility();
 		$this->initiator_action->SetVisibility();
 		$this->initiator_comment->SetVisibility();
 		$this->report_by->SetVisibility();
@@ -359,6 +360,8 @@ class creport_form_add extends creport_form {
 		$this->assign_task->SetVisibility();
 		$this->approval_action->SetVisibility();
 		$this->approval_comment->SetVisibility();
+		$this->item_name->SetVisibility();
+		$this->quantity_issued->SetVisibility();
 		$this->reason->SetVisibility();
 		$this->resolved_action->SetVisibility();
 		$this->resolved_comment->SetVisibility();
@@ -372,6 +375,7 @@ class creport_form_add extends creport_form {
 		$this->verified_action->SetVisibility();
 		$this->verified_comment->SetVisibility();
 		$this->verified_by->SetVisibility();
+		$this->remainder->SetVisibility();
 
 		// Set up multi page object
 		$this->SetupMultiPages();
@@ -634,6 +638,8 @@ class creport_form_add extends creport_form {
 		$this->_upload->OldValue = $this->_upload->Upload->DbValue;
 		$this->_upload->CurrentValue = NULL; // Clear file related field
 		$this->status->CurrentValue = 0;
+		$this->rejection_reasons->CurrentValue = NULL;
+		$this->rejection_reasons->OldValue = $this->rejection_reasons->CurrentValue;
 		$this->initiator_action->CurrentValue = NULL;
 		$this->initiator_action->OldValue = $this->initiator_action->CurrentValue;
 		$this->initiator_comment->CurrentValue = NULL;
@@ -648,6 +654,10 @@ class creport_form_add extends creport_form {
 		$this->approval_action->OldValue = $this->approval_action->CurrentValue;
 		$this->approval_comment->CurrentValue = NULL;
 		$this->approval_comment->OldValue = $this->approval_comment->CurrentValue;
+		$this->item_name->CurrentValue = NULL;
+		$this->item_name->OldValue = $this->item_name->CurrentValue;
+		$this->quantity_issued->CurrentValue = NULL;
+		$this->quantity_issued->OldValue = $this->quantity_issued->CurrentValue;
 		$this->reason->CurrentValue = NULL;
 		$this->reason->OldValue = $this->reason->CurrentValue;
 		$this->resolved_action->CurrentValue = NULL;
@@ -674,6 +684,8 @@ class creport_form_add extends creport_form {
 		$this->verified_comment->OldValue = $this->verified_comment->CurrentValue;
 		$this->verified_by->CurrentValue = NULL;
 		$this->verified_by->OldValue = $this->verified_by->CurrentValue;
+		$this->remainder->CurrentValue = NULL;
+		$this->remainder->OldValue = $this->remainder->CurrentValue;
 	}
 
 	// Load form values
@@ -754,6 +766,9 @@ class creport_form_add extends creport_form {
 		if (!$this->status->FldIsDetailKey) {
 			$this->status->setFormValue($objForm->GetValue("x_status"));
 		}
+		if (!$this->rejection_reasons->FldIsDetailKey) {
+			$this->rejection_reasons->setFormValue($objForm->GetValue("x_rejection_reasons"));
+		}
 		if (!$this->initiator_action->FldIsDetailKey) {
 			$this->initiator_action->setFormValue($objForm->GetValue("x_initiator_action"));
 		}
@@ -775,6 +790,12 @@ class creport_form_add extends creport_form {
 		}
 		if (!$this->approval_comment->FldIsDetailKey) {
 			$this->approval_comment->setFormValue($objForm->GetValue("x_approval_comment"));
+		}
+		if (!$this->item_name->FldIsDetailKey) {
+			$this->item_name->setFormValue($objForm->GetValue("x_item_name"));
+		}
+		if (!$this->quantity_issued->FldIsDetailKey) {
+			$this->quantity_issued->setFormValue($objForm->GetValue("x_quantity_issued"));
 		}
 		if (!$this->reason->FldIsDetailKey) {
 			$this->reason->setFormValue($objForm->GetValue("x_reason"));
@@ -818,6 +839,9 @@ class creport_form_add extends creport_form {
 		if (!$this->verified_by->FldIsDetailKey) {
 			$this->verified_by->setFormValue($objForm->GetValue("x_verified_by"));
 		}
+		if (!$this->remainder->FldIsDetailKey) {
+			$this->remainder->setFormValue($objForm->GetValue("x_remainder"));
+		}
 	}
 
 	// Restore form values
@@ -849,6 +873,7 @@ class creport_form_add extends creport_form {
 		$this->incident_venue->CurrentValue = $this->incident_venue->FormValue;
 		$this->incident_description->CurrentValue = $this->incident_description->FormValue;
 		$this->status->CurrentValue = $this->status->FormValue;
+		$this->rejection_reasons->CurrentValue = $this->rejection_reasons->FormValue;
 		$this->initiator_action->CurrentValue = $this->initiator_action->FormValue;
 		$this->initiator_comment->CurrentValue = $this->initiator_comment->FormValue;
 		$this->report_by->CurrentValue = $this->report_by->FormValue;
@@ -857,6 +882,8 @@ class creport_form_add extends creport_form {
 		$this->assign_task->CurrentValue = $this->assign_task->FormValue;
 		$this->approval_action->CurrentValue = $this->approval_action->FormValue;
 		$this->approval_comment->CurrentValue = $this->approval_comment->FormValue;
+		$this->item_name->CurrentValue = $this->item_name->FormValue;
+		$this->quantity_issued->CurrentValue = $this->quantity_issued->FormValue;
 		$this->reason->CurrentValue = $this->reason->FormValue;
 		$this->resolved_action->CurrentValue = $this->resolved_action->FormValue;
 		$this->resolved_comment->CurrentValue = $this->resolved_comment->FormValue;
@@ -873,6 +900,7 @@ class creport_form_add extends creport_form {
 		$this->verified_action->CurrentValue = $this->verified_action->FormValue;
 		$this->verified_comment->CurrentValue = $this->verified_comment->FormValue;
 		$this->verified_by->CurrentValue = $this->verified_by->FormValue;
+		$this->remainder->CurrentValue = $this->remainder->FormValue;
 	}
 
 	// Load row based on key values
@@ -934,6 +962,7 @@ class creport_form_add extends creport_form {
 		$this->_upload->Upload->DbValue = $row['upload'];
 		$this->_upload->setDbValue($this->_upload->Upload->DbValue);
 		$this->status->setDbValue($row['status']);
+		$this->rejection_reasons->setDbValue($row['rejection_reasons']);
 		$this->initiator_action->setDbValue($row['initiator_action']);
 		$this->initiator_comment->setDbValue($row['initiator_comment']);
 		$this->report_by->setDbValue($row['report_by']);
@@ -941,6 +970,8 @@ class creport_form_add extends creport_form {
 		$this->assign_task->setDbValue($row['assign_task']);
 		$this->approval_action->setDbValue($row['approval_action']);
 		$this->approval_comment->setDbValue($row['approval_comment']);
+		$this->item_name->setDbValue($row['item_name']);
+		$this->quantity_issued->setDbValue($row['quantity_issued']);
 		$this->reason->setDbValue($row['reason']);
 		$this->resolved_action->setDbValue($row['resolved_action']);
 		$this->resolved_comment->setDbValue($row['resolved_comment']);
@@ -954,6 +985,7 @@ class creport_form_add extends creport_form {
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
+		$this->remainder->setDbValue($row['remainder']);
 	}
 
 	// Return a row with default values
@@ -985,6 +1017,7 @@ class creport_form_add extends creport_form {
 		$row['incident_description'] = $this->incident_description->CurrentValue;
 		$row['upload'] = $this->_upload->Upload->DbValue;
 		$row['status'] = $this->status->CurrentValue;
+		$row['rejection_reasons'] = $this->rejection_reasons->CurrentValue;
 		$row['initiator_action'] = $this->initiator_action->CurrentValue;
 		$row['initiator_comment'] = $this->initiator_comment->CurrentValue;
 		$row['report_by'] = $this->report_by->CurrentValue;
@@ -992,6 +1025,8 @@ class creport_form_add extends creport_form {
 		$row['assign_task'] = $this->assign_task->CurrentValue;
 		$row['approval_action'] = $this->approval_action->CurrentValue;
 		$row['approval_comment'] = $this->approval_comment->CurrentValue;
+		$row['item_name'] = $this->item_name->CurrentValue;
+		$row['quantity_issued'] = $this->quantity_issued->CurrentValue;
 		$row['reason'] = $this->reason->CurrentValue;
 		$row['resolved_action'] = $this->resolved_action->CurrentValue;
 		$row['resolved_comment'] = $this->resolved_comment->CurrentValue;
@@ -1005,6 +1040,7 @@ class creport_form_add extends creport_form {
 		$row['verified_action'] = $this->verified_action->CurrentValue;
 		$row['verified_comment'] = $this->verified_comment->CurrentValue;
 		$row['verified_by'] = $this->verified_by->CurrentValue;
+		$row['remainder'] = $this->remainder->CurrentValue;
 		return $row;
 	}
 
@@ -1038,6 +1074,7 @@ class creport_form_add extends creport_form {
 		$this->incident_description->DbValue = $row['incident_description'];
 		$this->_upload->Upload->DbValue = $row['upload'];
 		$this->status->DbValue = $row['status'];
+		$this->rejection_reasons->DbValue = $row['rejection_reasons'];
 		$this->initiator_action->DbValue = $row['initiator_action'];
 		$this->initiator_comment->DbValue = $row['initiator_comment'];
 		$this->report_by->DbValue = $row['report_by'];
@@ -1045,6 +1082,8 @@ class creport_form_add extends creport_form {
 		$this->assign_task->DbValue = $row['assign_task'];
 		$this->approval_action->DbValue = $row['approval_action'];
 		$this->approval_comment->DbValue = $row['approval_comment'];
+		$this->item_name->DbValue = $row['item_name'];
+		$this->quantity_issued->DbValue = $row['quantity_issued'];
 		$this->reason->DbValue = $row['reason'];
 		$this->resolved_action->DbValue = $row['resolved_action'];
 		$this->resolved_comment->DbValue = $row['resolved_comment'];
@@ -1058,6 +1097,7 @@ class creport_form_add extends creport_form {
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
+		$this->remainder->DbValue = $row['remainder'];
 	}
 
 	// Load old record
@@ -1121,6 +1161,7 @@ class creport_form_add extends creport_form {
 		// incident_description
 		// upload
 		// status
+		// rejection_reasons
 		// initiator_action
 		// initiator_comment
 		// report_by
@@ -1128,6 +1169,8 @@ class creport_form_add extends creport_form {
 		// assign_task
 		// approval_action
 		// approval_comment
+		// item_name
+		// quantity_issued
 		// reason
 		// resolved_action
 		// resolved_comment
@@ -1141,6 +1184,7 @@ class creport_form_add extends creport_form {
 		// verified_action
 		// verified_comment
 		// verified_by
+		// remainder
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1576,6 +1620,10 @@ class creport_form_add extends creport_form {
 		}
 		$this->status->ViewCustomAttributes = "";
 
+		// rejection_reasons
+		$this->rejection_reasons->ViewValue = $this->rejection_reasons->CurrentValue;
+		$this->rejection_reasons->ViewCustomAttributes = "";
+
 		// initiator_action
 		if (strval($this->initiator_action->CurrentValue) <> "") {
 			$this->initiator_action->ViewValue = $this->initiator_action->OptionCaption($this->initiator_action->CurrentValue);
@@ -1654,6 +1702,33 @@ class creport_form_add extends creport_form {
 		// approval_comment
 		$this->approval_comment->ViewValue = $this->approval_comment->CurrentValue;
 		$this->approval_comment->ViewCustomAttributes = "";
+
+		// item_name
+		if (strval($this->item_name->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->item_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
+		$sWhereWrk = "";
+		$this->item_name->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->item_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->item_name->ViewValue = $this->item_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->item_name->ViewValue = $this->item_name->CurrentValue;
+			}
+		} else {
+			$this->item_name->ViewValue = NULL;
+		}
+		$this->item_name->ViewCustomAttributes = "";
+
+		// quantity_issued
+		$this->quantity_issued->ViewValue = $this->quantity_issued->CurrentValue;
+		$this->quantity_issued->ViewCustomAttributes = "";
 
 		// reason
 		if (strval($this->reason->CurrentValue) <> "") {
@@ -1827,6 +1902,10 @@ class creport_form_add extends creport_form {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
+		// remainder
+		$this->remainder->ViewValue = $this->remainder->CurrentValue;
+		$this->remainder->ViewCustomAttributes = "";
+
 			// datetime_initiated
 			$this->datetime_initiated->LinkCustomAttributes = "";
 			$this->datetime_initiated->HrefValue = "";
@@ -1961,6 +2040,11 @@ class creport_form_add extends creport_form {
 			$this->status->HrefValue = "";
 			$this->status->TooltipValue = "";
 
+			// rejection_reasons
+			$this->rejection_reasons->LinkCustomAttributes = "";
+			$this->rejection_reasons->HrefValue = "";
+			$this->rejection_reasons->TooltipValue = "";
+
 			// initiator_action
 			$this->initiator_action->LinkCustomAttributes = "";
 			$this->initiator_action->HrefValue = "";
@@ -1995,6 +2079,16 @@ class creport_form_add extends creport_form {
 			$this->approval_comment->LinkCustomAttributes = "";
 			$this->approval_comment->HrefValue = "";
 			$this->approval_comment->TooltipValue = "";
+
+			// item_name
+			$this->item_name->LinkCustomAttributes = "";
+			$this->item_name->HrefValue = "";
+			$this->item_name->TooltipValue = "";
+
+			// quantity_issued
+			$this->quantity_issued->LinkCustomAttributes = "";
+			$this->quantity_issued->HrefValue = "";
+			$this->quantity_issued->TooltipValue = "";
 
 			// reason
 			$this->reason->LinkCustomAttributes = "";
@@ -2060,6 +2154,11 @@ class creport_form_add extends creport_form {
 			$this->verified_by->LinkCustomAttributes = "";
 			$this->verified_by->HrefValue = "";
 			$this->verified_by->TooltipValue = "";
+
+			// remainder
+			$this->remainder->LinkCustomAttributes = "";
+			$this->remainder->HrefValue = "";
+			$this->remainder->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_ADD) { // Add row
 
 			// datetime_initiated
@@ -2509,6 +2608,12 @@ class creport_form_add extends creport_form {
 			if ($rswrk) $rswrk->Close();
 			$this->status->EditValue = $arwrk;
 
+			// rejection_reasons
+			$this->rejection_reasons->EditAttrs["class"] = "form-control";
+			$this->rejection_reasons->EditCustomAttributes = "";
+			$this->rejection_reasons->EditValue = ew_HtmlEncode($this->rejection_reasons->CurrentValue);
+			$this->rejection_reasons->PlaceHolder = ew_RemoveHtml($this->rejection_reasons->FldCaption());
+
 			// initiator_action
 			$this->initiator_action->EditCustomAttributes = "";
 			$this->initiator_action->EditValue = $this->initiator_action->Options(FALSE);
@@ -2580,6 +2685,31 @@ class creport_form_add extends creport_form {
 			$this->approval_comment->EditCustomAttributes = "";
 			$this->approval_comment->EditValue = ew_HtmlEncode($this->approval_comment->CurrentValue);
 			$this->approval_comment->PlaceHolder = ew_RemoveHtml($this->approval_comment->FldCaption());
+
+			// item_name
+			$this->item_name->EditAttrs["class"] = "form-control";
+			$this->item_name->EditCustomAttributes = "";
+			if (trim(strval($this->item_name->CurrentValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->item_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+			}
+			$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `inventory`";
+			$sWhereWrk = "";
+			$this->item_name->LookupFilters = array();
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->item_name, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->item_name->EditValue = $arwrk;
+
+			// quantity_issued
+			$this->quantity_issued->EditAttrs["class"] = "form-control";
+			$this->quantity_issued->EditCustomAttributes = "";
+			$this->quantity_issued->EditValue = ew_HtmlEncode($this->quantity_issued->CurrentValue);
+			$this->quantity_issued->PlaceHolder = ew_RemoveHtml($this->quantity_issued->FldCaption());
 
 			// reason
 			$this->reason->EditAttrs["class"] = "form-control";
@@ -2752,6 +2882,12 @@ class creport_form_add extends creport_form {
 			}
 			$this->verified_by->PlaceHolder = ew_RemoveHtml($this->verified_by->FldCaption());
 
+			// remainder
+			$this->remainder->EditAttrs["class"] = "form-control";
+			$this->remainder->EditCustomAttributes = "";
+			$this->remainder->EditValue = ew_HtmlEncode($this->remainder->CurrentValue);
+			$this->remainder->PlaceHolder = ew_RemoveHtml($this->remainder->FldCaption());
+
 			// Add refer script
 			// datetime_initiated
 
@@ -2858,6 +2994,10 @@ class creport_form_add extends creport_form {
 			$this->status->LinkCustomAttributes = "";
 			$this->status->HrefValue = "";
 
+			// rejection_reasons
+			$this->rejection_reasons->LinkCustomAttributes = "";
+			$this->rejection_reasons->HrefValue = "";
+
 			// initiator_action
 			$this->initiator_action->LinkCustomAttributes = "";
 			$this->initiator_action->HrefValue = "";
@@ -2885,6 +3025,14 @@ class creport_form_add extends creport_form {
 			// approval_comment
 			$this->approval_comment->LinkCustomAttributes = "";
 			$this->approval_comment->HrefValue = "";
+
+			// item_name
+			$this->item_name->LinkCustomAttributes = "";
+			$this->item_name->HrefValue = "";
+
+			// quantity_issued
+			$this->quantity_issued->LinkCustomAttributes = "";
+			$this->quantity_issued->HrefValue = "";
 
 			// reason
 			$this->reason->LinkCustomAttributes = "";
@@ -2937,6 +3085,10 @@ class creport_form_add extends creport_form {
 			// verified_by
 			$this->verified_by->LinkCustomAttributes = "";
 			$this->verified_by->HrefValue = "";
+
+			// remainder
+			$this->remainder->LinkCustomAttributes = "";
+			$this->remainder->HrefValue = "";
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD || $this->RowType == EW_ROWTYPE_EDIT || $this->RowType == EW_ROWTYPE_SEARCH) // Add/Edit/Search row
 			$this->SetupFieldTitles();
@@ -3007,6 +3159,12 @@ class creport_form_add extends creport_form {
 		if (!$this->incident_category->FldIsDetailKey && !is_null($this->incident_category->FormValue) && $this->incident_category->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->incident_category->FldCaption(), $this->incident_category->ReqErrMsg));
 		}
+		if (!$this->incident_location->FldIsDetailKey && !is_null($this->incident_location->FormValue) && $this->incident_location->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->incident_location->FldCaption(), $this->incident_location->ReqErrMsg));
+		}
+		if (!$this->incident_sub_location->FldIsDetailKey && !is_null($this->incident_sub_location->FormValue) && $this->incident_sub_location->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->incident_sub_location->FldCaption(), $this->incident_sub_location->ReqErrMsg));
+		}
 		if (!$this->incident_description->FldIsDetailKey && !is_null($this->incident_description->FormValue) && $this->incident_description->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->incident_description->FldCaption(), $this->incident_description->ReqErrMsg));
 		}
@@ -3034,14 +3192,14 @@ class creport_form_add extends creport_form {
 		if (!$this->assign_task->FldIsDetailKey && !is_null($this->assign_task->FormValue) && $this->assign_task->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->assign_task->FldCaption(), $this->assign_task->ReqErrMsg));
 		}
+		if (!ew_CheckInteger($this->quantity_issued->FormValue)) {
+			ew_AddMessage($gsFormError, $this->quantity_issued->FldErrMsg());
+		}
 		if (!$this->reason->FldIsDetailKey && !is_null($this->reason->FormValue) && $this->reason->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->reason->FldCaption(), $this->reason->ReqErrMsg));
 		}
 		if ($this->resolved_action->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->resolved_action->FldCaption(), $this->resolved_action->ReqErrMsg));
-		}
-		if (!$this->resolved_comment->FldIsDetailKey && !is_null($this->resolved_comment->FormValue) && $this->resolved_comment->FormValue == "") {
-			ew_AddMessage($gsFormError, str_replace("%s", $this->resolved_comment->FldCaption(), $this->resolved_comment->ReqErrMsg));
 		}
 		if (!$this->resolved_by->FldIsDetailKey && !is_null($this->resolved_by->FormValue) && $this->resolved_by->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->resolved_by->FldCaption(), $this->resolved_by->ReqErrMsg));
@@ -3192,6 +3350,9 @@ class creport_form_add extends creport_form {
 		// status
 		$this->status->SetDbValueDef($rsnew, $this->status->CurrentValue, NULL, FALSE);
 
+		// rejection_reasons
+		$this->rejection_reasons->SetDbValueDef($rsnew, $this->rejection_reasons->CurrentValue, NULL, FALSE);
+
 		// initiator_action
 		$this->initiator_action->SetDbValueDef($rsnew, $this->initiator_action->CurrentValue, NULL, FALSE);
 
@@ -3212,6 +3373,12 @@ class creport_form_add extends creport_form {
 
 		// approval_comment
 		$this->approval_comment->SetDbValueDef($rsnew, $this->approval_comment->CurrentValue, NULL, FALSE);
+
+		// item_name
+		$this->item_name->SetDbValueDef($rsnew, $this->item_name->CurrentValue, NULL, FALSE);
+
+		// quantity_issued
+		$this->quantity_issued->SetDbValueDef($rsnew, $this->quantity_issued->CurrentValue, NULL, FALSE);
 
 		// reason
 		$this->reason->SetDbValueDef($rsnew, $this->reason->CurrentValue, NULL, FALSE);
@@ -3251,6 +3418,9 @@ class creport_form_add extends creport_form {
 
 		// verified_by
 		$this->verified_by->SetDbValueDef($rsnew, $this->verified_by->CurrentValue, NULL, FALSE);
+
+		// remainder
+		$this->remainder->SetDbValueDef($rsnew, $this->remainder->CurrentValue, NULL, FALSE);
 		if ($this->_upload->Visible && !$this->_upload->Upload->KeepFile) {
 			$this->_upload->UploadPath = "picture/";
 			$OldFiles = ew_Empty($this->_upload->Upload->DbValue) ? array() : explode(EW_MULTIPLE_UPLOAD_SEPARATOR, strval($this->_upload->Upload->DbValue));
@@ -3591,6 +3761,18 @@ class creport_form_add extends creport_form {
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
 			break;
+		case "x_item_name":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
+			$sWhereWrk = "";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->item_name, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
 		case "x_reason":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `reason`";
@@ -3750,6 +3932,8 @@ class creport_form_add extends creport_form {
 	function Page_Load() {
 
 		//echo "Page Load";
+			//	ew_SetClientVar("Report_formDetailsSearchModel", ew_Encrypt("SELECT `material_name`,`quantity` FROM `inventory` WHERE `id`= {query_value}"));
+
 	}
 
 	// Page Unload event
@@ -3788,6 +3972,9 @@ class creport_form_add extends creport_form {
 	function Page_Render() {
 
 		//echo "Page Render";
+		//$this->quantity_issued->CustomMsg .= "<div class='small' id='lnmessage' style='padding-top:3px; color:blue;'></div>";
+		//$this->item_name->CustomMsg .= "<div class='small' id='itemName' style='padding-top:3px; color:blue;'></div>";
+
 	}
 
 	// Page Data Rendering event
@@ -3905,6 +4092,12 @@ freport_formadd.Validate = function() {
 			elm = this.GetElements("x" + infix + "_incident_category");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $report_form->incident_category->FldCaption(), $report_form->incident_category->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_incident_location");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $report_form->incident_location->FldCaption(), $report_form->incident_location->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_incident_sub_location");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $report_form->incident_sub_location->FldCaption(), $report_form->incident_sub_location->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_incident_description");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $report_form->incident_description->FldCaption(), $report_form->incident_description->ReqErrMsg)) ?>");
@@ -3932,15 +4125,15 @@ freport_formadd.Validate = function() {
 			elm = this.GetElements("x" + infix + "_assign_task");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $report_form->assign_task->FldCaption(), $report_form->assign_task->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_quantity_issued");
+			if (elm && !ew_CheckInteger(elm.value))
+				return this.OnError(elm, "<?php echo ew_JsEncode2($report_form->quantity_issued->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_reason");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $report_form->reason->FldCaption(), $report_form->reason->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_resolved_action");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $report_form->resolved_action->FldCaption(), $report_form->resolved_action->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_resolved_comment");
-			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
-				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $report_form->resolved_comment->FldCaption(), $report_form->resolved_comment->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_resolved_by");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $report_form->resolved_by->FldCaption(), $report_form->resolved_by->ReqErrMsg)) ?>");
@@ -4056,6 +4249,8 @@ freport_formadd.Lists["x_assign_task"] = {"LinkField":"x_id","Ajax":true,"AutoFi
 freport_formadd.Lists["x_assign_task"].Data = "<?php echo $report_form_add->assign_task->LookupFilterQuery(FALSE, "add") ?>";
 freport_formadd.Lists["x_approval_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 freport_formadd.Lists["x_approval_action"].Options = <?php echo json_encode($report_form_add->approval_action->Options()) ?>;
+freport_formadd.Lists["x_item_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
+freport_formadd.Lists["x_item_name"].Data = "<?php echo $report_form_add->item_name->LookupFilterQuery(FALSE, "add") ?>";
 freport_formadd.Lists["x_reason"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"reason"};
 freport_formadd.Lists["x_reason"].Data = "<?php echo $report_form_add->reason->LookupFilterQuery(FALSE, "add") ?>";
 freport_formadd.Lists["x_resolved_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
@@ -4082,6 +4277,8 @@ freport_formadd.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("da
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
+//$('#lnmessage').html('Your message goes here');
+
 $(document).ready(function(){
 	$('#x_start_date').blur(function() {
 		$("#x_end_date").val('');
@@ -4256,6 +4453,22 @@ if (this.value == "") {
 		$("#r_sub_category").show();
 		$("#r_incident_category").show();
 		$("#r_incident_description").show();
+	  }
+	  if (this.value == 12) {
+		$("#r_category").show();			   
+		$("#r_sub_category").show();
+		$("#r_incident_category").show();
+		$("#r_incident_description").show();
+	  }
+	  if (this.value == 13) {
+		$("#r_category").show();			   
+		$("#r_sub_category").show();
+		$("#r_incident_category").show();
+		$("#r_incident_description").show();
+		$("#r_incident_location").show();
+		$("#r_incident_venue").show();
+		$("#r_incident_sub_location").show();
+		$("#r_selection_sub_category").show();
 	  }
 	}
   });
@@ -4806,7 +5019,7 @@ ew_CreateDateTimePicker("freport_formadd", "x_end_date", {"ignoreReadonly":true,
 <?php } ?>
 <?php if ($report_form->incident_location->Visible) { // incident_location ?>
 	<div id="r_incident_location" class="form-group">
-		<label id="elh_report_form_incident_location" for="x_incident_location" class="<?php echo $report_form_add->LeftColumnClass ?>"><?php echo $report_form->incident_location->FldCaption() ?></label>
+		<label id="elh_report_form_incident_location" for="x_incident_location" class="<?php echo $report_form_add->LeftColumnClass ?>"><?php echo $report_form->incident_location->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $report_form_add->RightColumnClass ?>"><div<?php echo $report_form->incident_location->CellAttributes() ?>>
 <?php if ($report_form->CurrentAction <> "F") { ?>
 <span id="el_report_form_incident_location">
@@ -4839,7 +5052,7 @@ ew_CreateDateTimePicker("freport_formadd", "x_end_date", {"ignoreReadonly":true,
 <?php } ?>
 <?php if ($report_form->incident_sub_location->Visible) { // incident_sub_location ?>
 	<div id="r_incident_sub_location" class="form-group">
-		<label id="elh_report_form_incident_sub_location" for="x_incident_sub_location" class="<?php echo $report_form_add->LeftColumnClass ?>"><?php echo $report_form->incident_sub_location->FldCaption() ?></label>
+		<label id="elh_report_form_incident_sub_location" for="x_incident_sub_location" class="<?php echo $report_form_add->LeftColumnClass ?>"><?php echo $report_form->incident_sub_location->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $report_form_add->RightColumnClass ?>"><div<?php echo $report_form->incident_sub_location->CellAttributes() ?>>
 <?php if ($report_form->CurrentAction <> "F") { ?>
 <span id="el_report_form_incident_sub_location">
@@ -4942,6 +5155,24 @@ ew_CreateDateTimePicker("freport_formadd", "x_end_date", {"ignoreReadonly":true,
 <?php echo $report_form->status->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
+<?php if ($report_form->rejection_reasons->Visible) { // rejection_reasons ?>
+	<div id="r_rejection_reasons" class="form-group">
+		<label id="elh_report_form_rejection_reasons" for="x_rejection_reasons" class="<?php echo $report_form_add->LeftColumnClass ?>"><?php echo $report_form->rejection_reasons->FldCaption() ?></label>
+		<div class="<?php echo $report_form_add->RightColumnClass ?>"><div<?php echo $report_form->rejection_reasons->CellAttributes() ?>>
+<?php if ($report_form->CurrentAction <> "F") { ?>
+<span id="el_report_form_rejection_reasons">
+<textarea data-table="report_form" data-field="x_rejection_reasons" data-page="2" name="x_rejection_reasons" id="x_rejection_reasons" cols="35" rows="4" placeholder="<?php echo ew_HtmlEncode($report_form->rejection_reasons->getPlaceHolder()) ?>"<?php echo $report_form->rejection_reasons->EditAttributes() ?>><?php echo $report_form->rejection_reasons->EditValue ?></textarea>
+</span>
+<?php } else { ?>
+<span id="el_report_form_rejection_reasons">
+<span<?php echo $report_form->rejection_reasons->ViewAttributes() ?>>
+<p class="form-control-static"><?php echo $report_form->rejection_reasons->ViewValue ?></p></span>
+</span>
+<input type="hidden" data-table="report_form" data-field="x_rejection_reasons" data-page="2" name="x_rejection_reasons" id="x_rejection_reasons" value="<?php echo ew_HtmlEncode($report_form->rejection_reasons->FormValue) ?>">
+<?php } ?>
+<?php echo $report_form->rejection_reasons->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
 <?php if ($report_form->initiator_action->Visible) { // initiator_action ?>
 	<div id="r_initiator_action" class="form-group">
 		<label id="elh_report_form_initiator_action" class="<?php echo $report_form_add->LeftColumnClass ?>"><?php echo $report_form->initiator_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
@@ -4992,7 +5223,7 @@ $wrkonchange = trim(" " . @$report_form->report_by->EditAttrs["onchange"]);
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $report_form->report_by->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_report_by" style="white-space: nowrap; z-index: 8720">
+<span id="as_x_report_by" style="white-space: nowrap; z-index: 8710">
 	<input type="text" name="sv_x_report_by" id="sv_x_report_by" value="<?php echo $report_form->report_by->EditValue ?>" size="15" placeholder="<?php echo ew_HtmlEncode($report_form->report_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($report_form->report_by->getPlaceHolder()) ?>"<?php echo $report_form->report_by->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="report_form" data-field="x_report_by" data-page="2" data-value-separator="<?php echo $report_form->report_by->DisplayValueSeparatorAttribute() ?>" name="x_report_by" id="x_report_by" value="<?php echo ew_HtmlEncode($report_form->report_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
@@ -5087,6 +5318,44 @@ freport_formadd.CreateAutoSuggest({"id":"x_report_by","forceSelect":false});
 <?php echo $report_form->approval_comment->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
+<?php if ($report_form->item_name->Visible) { // item_name ?>
+	<div id="r_item_name" class="form-group">
+		<label id="elh_report_form_item_name" for="x_item_name" class="<?php echo $report_form_add->LeftColumnClass ?>"><?php echo $report_form->item_name->FldCaption() ?></label>
+		<div class="<?php echo $report_form_add->RightColumnClass ?>"><div<?php echo $report_form->item_name->CellAttributes() ?>>
+<?php if ($report_form->CurrentAction <> "F") { ?>
+<span id="el_report_form_item_name">
+<select data-table="report_form" data-field="x_item_name" data-page="2" data-value-separator="<?php echo $report_form->item_name->DisplayValueSeparatorAttribute() ?>" id="x_item_name" name="x_item_name"<?php echo $report_form->item_name->EditAttributes() ?>>
+<?php echo $report_form->item_name->SelectOptionListHtml("x_item_name") ?>
+</select>
+</span>
+<?php } else { ?>
+<span id="el_report_form_item_name">
+<span<?php echo $report_form->item_name->ViewAttributes() ?>>
+<p class="form-control-static"><?php echo $report_form->item_name->ViewValue ?></p></span>
+</span>
+<input type="hidden" data-table="report_form" data-field="x_item_name" data-page="2" name="x_item_name" id="x_item_name" value="<?php echo ew_HtmlEncode($report_form->item_name->FormValue) ?>">
+<?php } ?>
+<?php echo $report_form->item_name->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($report_form->quantity_issued->Visible) { // quantity_issued ?>
+	<div id="r_quantity_issued" class="form-group">
+		<label id="elh_report_form_quantity_issued" for="x_quantity_issued" class="<?php echo $report_form_add->LeftColumnClass ?>"><?php echo $report_form->quantity_issued->FldCaption() ?></label>
+		<div class="<?php echo $report_form_add->RightColumnClass ?>"><div<?php echo $report_form->quantity_issued->CellAttributes() ?>>
+<?php if ($report_form->CurrentAction <> "F") { ?>
+<span id="el_report_form_quantity_issued">
+<input type="text" data-table="report_form" data-field="x_quantity_issued" data-page="2" name="x_quantity_issued" id="x_quantity_issued" size="30" placeholder="<?php echo ew_HtmlEncode($report_form->quantity_issued->getPlaceHolder()) ?>" value="<?php echo $report_form->quantity_issued->EditValue ?>"<?php echo $report_form->quantity_issued->EditAttributes() ?>>
+</span>
+<?php } else { ?>
+<span id="el_report_form_quantity_issued">
+<span<?php echo $report_form->quantity_issued->ViewAttributes() ?>>
+<p class="form-control-static"><?php echo $report_form->quantity_issued->ViewValue ?></p></span>
+</span>
+<input type="hidden" data-table="report_form" data-field="x_quantity_issued" data-page="2" name="x_quantity_issued" id="x_quantity_issued" value="<?php echo ew_HtmlEncode($report_form->quantity_issued->FormValue) ?>">
+<?php } ?>
+<?php echo $report_form->quantity_issued->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
 <?php if ($report_form->reason->Visible) { // reason ?>
 	<div id="r_reason" class="form-group">
 		<label id="elh_report_form_reason" for="x_reason" class="<?php echo $report_form_add->LeftColumnClass ?>"><?php echo $report_form->reason->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
@@ -5133,7 +5402,7 @@ freport_formadd.CreateAutoSuggest({"id":"x_report_by","forceSelect":false});
 <?php } ?>
 <?php if ($report_form->resolved_comment->Visible) { // resolved_comment ?>
 	<div id="r_resolved_comment" class="form-group">
-		<label id="elh_report_form_resolved_comment" for="x_resolved_comment" class="<?php echo $report_form_add->LeftColumnClass ?>"><?php echo $report_form->resolved_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
+		<label id="elh_report_form_resolved_comment" for="x_resolved_comment" class="<?php echo $report_form_add->LeftColumnClass ?>"><?php echo $report_form->resolved_comment->FldCaption() ?></label>
 		<div class="<?php echo $report_form_add->RightColumnClass ?>"><div<?php echo $report_form->resolved_comment->CellAttributes() ?>>
 <?php if ($report_form->CurrentAction <> "F") { ?>
 <span id="el_report_form_resolved_comment">
@@ -5160,7 +5429,7 @@ $wrkonchange = trim(" " . @$report_form->resolved_by->EditAttrs["onchange"]);
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $report_form->resolved_by->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_resolved_by" style="white-space: nowrap; z-index: 8640">
+<span id="as_x_resolved_by" style="white-space: nowrap; z-index: 8610">
 	<input type="text" name="sv_x_resolved_by" id="sv_x_resolved_by" value="<?php echo $report_form->resolved_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($report_form->resolved_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($report_form->resolved_by->getPlaceHolder()) ?>"<?php echo $report_form->resolved_by->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="report_form" data-field="x_resolved_by" data-page="2" data-value-separator="<?php echo $report_form->resolved_by->DisplayValueSeparatorAttribute() ?>" name="x_resolved_by" id="x_resolved_by" value="<?php echo ew_HtmlEncode($report_form->resolved_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
@@ -5207,7 +5476,7 @@ $wrkonchange = trim(" " . @$report_form->approved_by->EditAttrs["onchange"]);
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $report_form->approved_by->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_approved_by" style="white-space: nowrap; z-index: 8620">
+<span id="as_x_approved_by" style="white-space: nowrap; z-index: 8590">
 	<input type="text" name="sv_x_approved_by" id="sv_x_approved_by" value="<?php echo $report_form->approved_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($report_form->approved_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($report_form->approved_by->getPlaceHolder()) ?>"<?php echo $report_form->approved_by->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="report_form" data-field="x_approved_by" data-page="2" data-value-separator="<?php echo $report_form->approved_by->DisplayValueSeparatorAttribute() ?>" name="x_approved_by" id="x_approved_by" value="<?php echo ew_HtmlEncode($report_form->approved_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
@@ -5254,7 +5523,7 @@ $wrkonchange = trim(" " . @$report_form->last_updated_by->EditAttrs["onchange"])
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $report_form->last_updated_by->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_last_updated_by" style="white-space: nowrap; z-index: 8600">
+<span id="as_x_last_updated_by" style="white-space: nowrap; z-index: 8570">
 	<input type="text" name="sv_x_last_updated_by" id="sv_x_last_updated_by" value="<?php echo $report_form->last_updated_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($report_form->last_updated_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($report_form->last_updated_by->getPlaceHolder()) ?>"<?php echo $report_form->last_updated_by->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="report_form" data-field="x_last_updated_by" data-page="2" data-value-separator="<?php echo $report_form->last_updated_by->DisplayValueSeparatorAttribute() ?>" name="x_last_updated_by" id="x_last_updated_by" value="<?php echo ew_HtmlEncode($report_form->last_updated_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
@@ -5361,7 +5630,7 @@ $wrkonchange = trim(" " . @$report_form->verified_by->EditAttrs["onchange"]);
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $report_form->verified_by->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_verified_by" style="white-space: nowrap; z-index: 8550">
+<span id="as_x_verified_by" style="white-space: nowrap; z-index: 8520">
 	<input type="text" name="sv_x_verified_by" id="sv_x_verified_by" value="<?php echo $report_form->verified_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($report_form->verified_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($report_form->verified_by->getPlaceHolder()) ?>"<?php echo $report_form->verified_by->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="report_form" data-field="x_verified_by" data-page="2" data-value-separator="<?php echo $report_form->verified_by->DisplayValueSeparatorAttribute() ?>" name="x_verified_by" id="x_verified_by" value="<?php echo ew_HtmlEncode($report_form->verified_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
@@ -5377,6 +5646,24 @@ freport_formadd.CreateAutoSuggest({"id":"x_verified_by","forceSelect":false});
 <input type="hidden" data-table="report_form" data-field="x_verified_by" data-page="2" name="x_verified_by" id="x_verified_by" value="<?php echo ew_HtmlEncode($report_form->verified_by->FormValue) ?>">
 <?php } ?>
 <?php echo $report_form->verified_by->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($report_form->remainder->Visible) { // remainder ?>
+	<div id="r_remainder" class="form-group">
+		<label id="elh_report_form_remainder" for="x_remainder" class="<?php echo $report_form_add->LeftColumnClass ?>"><?php echo $report_form->remainder->FldCaption() ?></label>
+		<div class="<?php echo $report_form_add->RightColumnClass ?>"><div<?php echo $report_form->remainder->CellAttributes() ?>>
+<?php if ($report_form->CurrentAction <> "F") { ?>
+<span id="el_report_form_remainder">
+<input type="text" data-table="report_form" data-field="x_remainder" data-page="2" name="x_remainder" id="x_remainder" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($report_form->remainder->getPlaceHolder()) ?>" value="<?php echo $report_form->remainder->EditValue ?>"<?php echo $report_form->remainder->EditAttributes() ?>>
+</span>
+<?php } else { ?>
+<span id="el_report_form_remainder">
+<span<?php echo $report_form->remainder->ViewAttributes() ?>>
+<p class="form-control-static"><?php echo $report_form->remainder->ViewValue ?></p></span>
+</span>
+<input type="hidden" data-table="report_form" data-field="x_remainder" data-page="2" name="x_remainder" id="x_remainder" value="<?php echo ew_HtmlEncode($report_form->remainder->FormValue) ?>">
+<?php } ?>
+<?php echo $report_form->remainder->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 </div><!-- /page* -->
@@ -5412,6 +5699,7 @@ if (EW_DEBUG_ENABLED)
 // document.write("page loaded");
 
 $('#x_status').attr('readonly',true);
+$('#r_rejection_reasons').hide();
 </script>
 <?php include_once "footer.php" ?>
 <?php

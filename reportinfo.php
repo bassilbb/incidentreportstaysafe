@@ -92,7 +92,7 @@ class creport extends cTable {
 		$this->fields['id'] = &$this->id;
 
 		// datetime_initiated
-		$this->datetime_initiated = new cField('report', 'report', 'x_datetime_initiated', 'datetime_initiated', '`datetime_initiated`', ew_CastDateFieldForLike('`datetime_initiated`', 7, "DB"), 135, 7, FALSE, '`datetime_initiated`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->datetime_initiated = new cField('report', 'report', 'x_datetime_initiated', 'datetime_initiated', '`datetime_initiated`', ew_CastDateFieldForLike('`datetime_initiated`', 7, "DB"), 133, 7, FALSE, '`datetime_initiated`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->datetime_initiated->Sortable = TRUE; // Allow sort
 		$this->datetime_initiated->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectDateDMY"));
 		$this->fields['datetime_initiated'] = &$this->datetime_initiated;

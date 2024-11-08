@@ -4319,7 +4319,7 @@ class cAdvancedSecurity {
 			$this->setSessionParentUserID($parentUserID);
 		if (!is_null($userLevel)) {
 			$this->setSessionUserLevelID(intval($userLevel));
-			SetupUserLevel();
+			$this->SetupUserLevel();
 		}
 	}
 
@@ -5102,10 +5102,13 @@ class cAdvancedSecurity {
 		$_SESSION['Branch'] = $rs['branch'];
 
 	//	$_SESSION['StfID'] = "";
-		$_SESSION['Inc_ID'] = "";
+		$_SESSION['REF_ID'] = "";
+		$_SESSION['INV_ID'] = "";
+		$_SESSION['REFN_ID'] = "";
 
 		//$_SESSION['STAffNO'] = "";
 		$_SESSION['MyReportCount'] = 0;
+		$_SESSION['MyMaintenanceCount'] = 0;
 
 		//$_SESSION['$MyReporthistoryCount'] = 0;
 		//FetchMenuBadges("ALL");

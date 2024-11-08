@@ -359,6 +359,34 @@ class cdefault {
 			$this->Page_Terminate("selection_sub_categorylist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'reason'))
 			$this->Page_Terminate("reasonlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'buildings'))
+			$this->Page_Terminate("buildingslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'floors'))
+			$this->Page_Terminate("floorslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'items'))
+			$this->Page_Terminate("itemslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'maintenance'))
+			$this->Page_Terminate("maintenancelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'maintained_status'))
+			$this->Page_Terminate("maintained_statuslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'maintenance_report'))
+			$this->Page_Terminate("maintenance_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'assign_task'))
+			$this->Page_Terminate("assign_tasklist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'inventory'))
+			$this->Page_Terminate("inventorylist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'inventory_store'))
+			$this->Page_Terminate("inventory_storelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'dispenser'))
+			$this->Page_Terminate("dispenserlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'dispenser_status'))
+			$this->Page_Terminate("dispenser_statuslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'dispenser_type'))
+			$this->Page_Terminate("dispenser_typelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'dispenser_report'))
+			$this->Page_Terminate("dispenser_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'action_taken'))
+			$this->Page_Terminate("action_takenlist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {
