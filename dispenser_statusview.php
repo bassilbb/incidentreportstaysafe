@@ -305,11 +305,11 @@ class cdispenser_status_view extends cdispenser_status {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'view');
+			define("EW_PAGE_ID", 'view', TRUE);
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'dispenser_status');
+			define("EW_TABLE_NAME", 'dispenser_status', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))

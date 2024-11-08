@@ -261,11 +261,11 @@ class caction_taken_add extends caction_taken {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'add');
+			define("EW_PAGE_ID", 'add', TRUE);
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'action_taken');
+			define("EW_TABLE_NAME", 'action_taken', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))

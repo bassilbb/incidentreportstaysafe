@@ -261,11 +261,11 @@ class cdispenser_type_edit extends cdispenser_type {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'edit');
+			define("EW_PAGE_ID", 'edit', TRUE);
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'dispenser_type');
+			define("EW_TABLE_NAME", 'dispenser_type', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
