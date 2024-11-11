@@ -335,6 +335,8 @@ class creport_form_delete extends creport_form {
 		$this->incident_description->SetVisibility();
 		$this->status->SetVisibility();
 		$this->assign_task->SetVisibility();
+		$this->item_name->SetVisibility();
+		$this->quantity_issued->SetVisibility();
 		$this->reason->SetVisibility();
 		$this->last_updated_date->SetVisibility();
 		$this->last_updated_by->SetVisibility();
@@ -544,6 +546,7 @@ class creport_form_delete extends creport_form {
 		$this->_upload->Upload->DbValue = $row['upload'];
 		$this->_upload->setDbValue($this->_upload->Upload->DbValue);
 		$this->status->setDbValue($row['status']);
+		$this->rejection_reasons->setDbValue($row['rejection_reasons']);
 		$this->initiator_action->setDbValue($row['initiator_action']);
 		$this->initiator_comment->setDbValue($row['initiator_comment']);
 		$this->report_by->setDbValue($row['report_by']);
@@ -551,6 +554,8 @@ class creport_form_delete extends creport_form {
 		$this->assign_task->setDbValue($row['assign_task']);
 		$this->approval_action->setDbValue($row['approval_action']);
 		$this->approval_comment->setDbValue($row['approval_comment']);
+		$this->item_name->setDbValue($row['item_name']);
+		$this->quantity_issued->setDbValue($row['quantity_issued']);
 		$this->reason->setDbValue($row['reason']);
 		$this->resolved_action->setDbValue($row['resolved_action']);
 		$this->resolved_comment->setDbValue($row['resolved_comment']);
@@ -564,6 +569,7 @@ class creport_form_delete extends creport_form {
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
+		$this->remainder->setDbValue($row['remainder']);
 	}
 
 	// Return a row with default values
@@ -594,6 +600,7 @@ class creport_form_delete extends creport_form {
 		$row['incident_description'] = NULL;
 		$row['upload'] = NULL;
 		$row['status'] = NULL;
+		$row['rejection_reasons'] = NULL;
 		$row['initiator_action'] = NULL;
 		$row['initiator_comment'] = NULL;
 		$row['report_by'] = NULL;
@@ -601,6 +608,8 @@ class creport_form_delete extends creport_form {
 		$row['assign_task'] = NULL;
 		$row['approval_action'] = NULL;
 		$row['approval_comment'] = NULL;
+		$row['item_name'] = NULL;
+		$row['quantity_issued'] = NULL;
 		$row['reason'] = NULL;
 		$row['resolved_action'] = NULL;
 		$row['resolved_comment'] = NULL;
@@ -614,6 +623,7 @@ class creport_form_delete extends creport_form {
 		$row['verified_action'] = NULL;
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
+		$row['remainder'] = NULL;
 		return $row;
 	}
 
@@ -647,6 +657,7 @@ class creport_form_delete extends creport_form {
 		$this->incident_description->DbValue = $row['incident_description'];
 		$this->_upload->Upload->DbValue = $row['upload'];
 		$this->status->DbValue = $row['status'];
+		$this->rejection_reasons->DbValue = $row['rejection_reasons'];
 		$this->initiator_action->DbValue = $row['initiator_action'];
 		$this->initiator_comment->DbValue = $row['initiator_comment'];
 		$this->report_by->DbValue = $row['report_by'];
@@ -654,6 +665,8 @@ class creport_form_delete extends creport_form {
 		$this->assign_task->DbValue = $row['assign_task'];
 		$this->approval_action->DbValue = $row['approval_action'];
 		$this->approval_comment->DbValue = $row['approval_comment'];
+		$this->item_name->DbValue = $row['item_name'];
+		$this->quantity_issued->DbValue = $row['quantity_issued'];
 		$this->reason->DbValue = $row['reason'];
 		$this->resolved_action->DbValue = $row['resolved_action'];
 		$this->resolved_comment->DbValue = $row['resolved_comment'];
@@ -667,6 +680,7 @@ class creport_form_delete extends creport_form {
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
+		$this->remainder->DbValue = $row['remainder'];
 	}
 
 	// Render row values based on field settings
@@ -704,6 +718,7 @@ class creport_form_delete extends creport_form {
 		// incident_description
 		// upload
 		// status
+		// rejection_reasons
 		// initiator_action
 		// initiator_comment
 		// report_by
@@ -711,6 +726,8 @@ class creport_form_delete extends creport_form {
 		// assign_task
 		// approval_action
 		// approval_comment
+		// item_name
+		// quantity_issued
 		// reason
 		// resolved_action
 		// resolved_comment
@@ -724,6 +741,7 @@ class creport_form_delete extends creport_form {
 		// verified_action
 		// verified_comment
 		// verified_by
+		// remainder
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1230,6 +1248,33 @@ class creport_form_delete extends creport_form {
 		}
 		$this->approval_action->ViewCustomAttributes = "";
 
+		// item_name
+		if (strval($this->item_name->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->item_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
+		$sWhereWrk = "";
+		$this->item_name->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->item_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->item_name->ViewValue = $this->item_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->item_name->ViewValue = $this->item_name->CurrentValue;
+			}
+		} else {
+			$this->item_name->ViewValue = NULL;
+		}
+		$this->item_name->ViewCustomAttributes = "";
+
+		// quantity_issued
+		$this->quantity_issued->ViewValue = $this->quantity_issued->CurrentValue;
+		$this->quantity_issued->ViewCustomAttributes = "";
+
 		// reason
 		if (strval($this->reason->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->reason->CurrentValue, EW_DATATYPE_NUMBER, "");
@@ -1398,6 +1443,10 @@ class creport_form_delete extends creport_form {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
+		// remainder
+		$this->remainder->ViewValue = $this->remainder->CurrentValue;
+		$this->remainder->ViewCustomAttributes = "";
+
 			// datetime_initiated
 			$this->datetime_initiated->LinkCustomAttributes = "";
 			$this->datetime_initiated->HrefValue = "";
@@ -1457,6 +1506,16 @@ class creport_form_delete extends creport_form {
 			$this->assign_task->LinkCustomAttributes = "";
 			$this->assign_task->HrefValue = "";
 			$this->assign_task->TooltipValue = "";
+
+			// item_name
+			$this->item_name->LinkCustomAttributes = "";
+			$this->item_name->HrefValue = "";
+			$this->item_name->TooltipValue = "";
+
+			// quantity_issued
+			$this->quantity_issued->LinkCustomAttributes = "";
+			$this->quantity_issued->HrefValue = "";
+			$this->quantity_issued->TooltipValue = "";
 
 			// reason
 			$this->reason->LinkCustomAttributes = "";
@@ -1721,6 +1780,8 @@ freport_formdelete.Lists["x_status"] = {"LinkField":"x_code","Ajax":true,"AutoFi
 freport_formdelete.Lists["x_status"].Data = "<?php echo $report_form_delete->status->LookupFilterQuery(FALSE, "delete") ?>";
 freport_formdelete.Lists["x_assign_task"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 freport_formdelete.Lists["x_assign_task"].Data = "<?php echo $report_form_delete->assign_task->LookupFilterQuery(FALSE, "delete") ?>";
+freport_formdelete.Lists["x_item_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
+freport_formdelete.Lists["x_item_name"].Data = "<?php echo $report_form_delete->item_name->LookupFilterQuery(FALSE, "delete") ?>";
 freport_formdelete.Lists["x_reason"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"reason"};
 freport_formdelete.Lists["x_reason"].Data = "<?php echo $report_form_delete->reason->LookupFilterQuery(FALSE, "delete") ?>";
 freport_formdelete.Lists["x_last_updated_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
@@ -1789,6 +1850,12 @@ $report_form_delete->ShowMessage();
 <?php } ?>
 <?php if ($report_form->assign_task->Visible) { // assign_task ?>
 		<th class="<?php echo $report_form->assign_task->HeaderCellClass() ?>"><span id="elh_report_form_assign_task" class="report_form_assign_task"><?php echo $report_form->assign_task->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($report_form->item_name->Visible) { // item_name ?>
+		<th class="<?php echo $report_form->item_name->HeaderCellClass() ?>"><span id="elh_report_form_item_name" class="report_form_item_name"><?php echo $report_form->item_name->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($report_form->quantity_issued->Visible) { // quantity_issued ?>
+		<th class="<?php echo $report_form->quantity_issued->HeaderCellClass() ?>"><span id="elh_report_form_quantity_issued" class="report_form_quantity_issued"><?php echo $report_form->quantity_issued->FldCaption() ?></span></th>
 <?php } ?>
 <?php if ($report_form->reason->Visible) { // reason ?>
 		<th class="<?php echo $report_form->reason->HeaderCellClass() ?>"><span id="elh_report_form_reason" class="report_form_reason"><?php echo $report_form->reason->FldCaption() ?></span></th>
@@ -1916,6 +1983,22 @@ while (!$report_form_delete->Recordset->EOF) {
 <span id="el<?php echo $report_form_delete->RowCnt ?>_report_form_assign_task" class="report_form_assign_task">
 <span<?php echo $report_form->assign_task->ViewAttributes() ?>>
 <?php echo $report_form->assign_task->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($report_form->item_name->Visible) { // item_name ?>
+		<td<?php echo $report_form->item_name->CellAttributes() ?>>
+<span id="el<?php echo $report_form_delete->RowCnt ?>_report_form_item_name" class="report_form_item_name">
+<span<?php echo $report_form->item_name->ViewAttributes() ?>>
+<?php echo $report_form->item_name->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($report_form->quantity_issued->Visible) { // quantity_issued ?>
+		<td<?php echo $report_form->quantity_issued->CellAttributes() ?>>
+<span id="el<?php echo $report_form_delete->RowCnt ?>_report_form_quantity_issued" class="report_form_quantity_issued">
+<span<?php echo $report_form->quantity_issued->ViewAttributes() ?>>
+<?php echo $report_form->quantity_issued->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

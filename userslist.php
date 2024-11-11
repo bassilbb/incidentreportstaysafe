@@ -456,6 +456,7 @@ class cusers_list extends cusers {
 		$this->password->SetVisibility();
 		$this->accesslevel->SetVisibility();
 		$this->status->SetVisibility();
+		$this->flag->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -832,6 +833,7 @@ class cusers_list extends cusers {
 		$sFilterList = ew_Concat($sFilterList, $this->status->AdvancedSearch->ToJson(), ","); // Field status
 		$sFilterList = ew_Concat($sFilterList, $this->profile->AdvancedSearch->ToJson(), ","); // Field profile
 		$sFilterList = ew_Concat($sFilterList, $this->staff_id->AdvancedSearch->ToJson(), ","); // Field staff_id
+		$sFilterList = ew_Concat($sFilterList, $this->flag->AdvancedSearch->ToJson(), ","); // Field flag
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -1011,6 +1013,14 @@ class cusers_list extends cusers {
 		$this->staff_id->AdvancedSearch->SearchValue2 = @$filter["y_staff_id"];
 		$this->staff_id->AdvancedSearch->SearchOperator2 = @$filter["w_staff_id"];
 		$this->staff_id->AdvancedSearch->Save();
+
+		// Field flag
+		$this->flag->AdvancedSearch->SearchValue = @$filter["x_flag"];
+		$this->flag->AdvancedSearch->SearchOperator = @$filter["z_flag"];
+		$this->flag->AdvancedSearch->SearchCondition = @$filter["v_flag"];
+		$this->flag->AdvancedSearch->SearchValue2 = @$filter["y_flag"];
+		$this->flag->AdvancedSearch->SearchOperator2 = @$filter["w_flag"];
+		$this->flag->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
@@ -1186,6 +1196,7 @@ class cusers_list extends cusers {
 			$this->UpdateSort($this->password); // password
 			$this->UpdateSort($this->accesslevel); // accesslevel
 			$this->UpdateSort($this->status); // status
+			$this->UpdateSort($this->flag); // flag
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1232,6 +1243,7 @@ class cusers_list extends cusers {
 				$this->password->setSort("");
 				$this->accesslevel->setSort("");
 				$this->status->setSort("");
+				$this->flag->setSort("");
 			}
 
 			// Reset start position
@@ -1728,6 +1740,7 @@ class cusers_list extends cusers {
 		$this->status->setDbValue($row['status']);
 		$this->profile->setDbValue($row['profile']);
 		$this->staff_id->setDbValue($row['staff_id']);
+		$this->flag->setDbValue($row['flag']);
 	}
 
 	// Return a row with default values
@@ -1750,6 +1763,7 @@ class cusers_list extends cusers {
 		$row['status'] = NULL;
 		$row['profile'] = NULL;
 		$row['staff_id'] = NULL;
+		$row['flag'] = NULL;
 		return $row;
 	}
 
@@ -1775,6 +1789,7 @@ class cusers_list extends cusers {
 		$this->status->DbValue = $row['status'];
 		$this->profile->DbValue = $row['profile'];
 		$this->staff_id->DbValue = $row['staff_id'];
+		$this->flag->DbValue = $row['flag'];
 	}
 
 	// Load old record
@@ -1832,6 +1847,7 @@ class cusers_list extends cusers {
 		// status
 		// profile
 		// staff_id
+		// flag
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -2006,6 +2022,10 @@ class cusers_list extends cusers {
 		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
 		$this->staff_id->ViewCustomAttributes = "";
 
+		// flag
+		$this->flag->ViewValue = $this->flag->CurrentValue;
+		$this->flag->ViewCustomAttributes = "";
+
 			// staffno
 			$this->staffno->LinkCustomAttributes = "";
 			$this->staffno->HrefValue = "";
@@ -2075,6 +2095,11 @@ class cusers_list extends cusers {
 			$this->status->LinkCustomAttributes = "";
 			$this->status->HrefValue = "";
 			$this->status->TooltipValue = "";
+
+			// flag
+			$this->flag->LinkCustomAttributes = "";
+			$this->flag->HrefValue = "";
+			$this->flag->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2739,6 +2764,15 @@ $users_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
+<?php if ($users->flag->Visible) { // flag ?>
+	<?php if ($users->SortUrl($users->flag) == "") { ?>
+		<th data-name="flag" class="<?php echo $users->flag->HeaderCellClass() ?>"><div id="elh_users_flag" class="users_flag"><div class="ewTableHeaderCaption"><?php echo $users->flag->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="flag" class="<?php echo $users->flag->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $users->SortUrl($users->flag) ?>',1);"><div id="elh_users_flag" class="users_flag">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $users->flag->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($users->flag->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($users->flag->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
 <?php
 
 // Render list options (header, right)
@@ -2913,6 +2947,14 @@ $users_list->ListOptions->Render("body", "left", $users_list->RowCnt);
 <span id="el<?php echo $users_list->RowCnt ?>_users_status" class="users_status">
 <span<?php echo $users->status->ViewAttributes() ?>>
 <?php echo $users->status->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($users->flag->Visible) { // flag ?>
+		<td data-name="flag"<?php echo $users->flag->CellAttributes() ?>>
+<span id="el<?php echo $users_list->RowCnt ?>_users_flag" class="users_flag">
+<span<?php echo $users->flag->ViewAttributes() ?>>
+<?php echo $users->flag->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

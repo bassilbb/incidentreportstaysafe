@@ -24,6 +24,7 @@ class cusers extends cTable {
 	var $status;
 	var $profile;
 	var $staff_id;
+	var $flag;
 
 	//
 	// Table class constructor
@@ -159,6 +160,12 @@ class cusers extends cTable {
 		$this->staff_id->Sortable = TRUE; // Allow sort
 		$this->staff_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['staff_id'] = &$this->staff_id;
+
+		// flag
+		$this->flag = new cField('users', 'users', 'x_flag', 'flag', '`flag`', '`flag`', 3, -1, FALSE, '`flag`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->flag->Sortable = TRUE; // Allow sort
+		$this->flag->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->fields['flag'] = &$this->flag;
 	}
 
 	// Field Visibility
@@ -710,6 +717,7 @@ class cusers extends cTable {
 		$this->status->setDbValue($rs->fields('status'));
 		$this->profile->setDbValue($rs->fields('profile'));
 		$this->staff_id->setDbValue($rs->fields('staff_id'));
+		$this->flag->setDbValue($rs->fields('flag'));
 	}
 
 	// Render list row values
@@ -737,6 +745,7 @@ class cusers extends cTable {
 		// status
 		// profile
 		// staff_id
+		// flag
 		// id
 
 		$this->id->ViewValue = $this->id->CurrentValue;
@@ -913,6 +922,10 @@ class cusers extends cTable {
 		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
 		$this->staff_id->ViewCustomAttributes = "";
 
+		// flag
+		$this->flag->ViewValue = $this->flag->CurrentValue;
+		$this->flag->ViewCustomAttributes = "";
+
 		// id
 		$this->id->LinkCustomAttributes = "";
 		$this->id->HrefValue = "";
@@ -997,6 +1010,11 @@ class cusers extends cTable {
 		$this->staff_id->LinkCustomAttributes = "";
 		$this->staff_id->HrefValue = "";
 		$this->staff_id->TooltipValue = "";
+
+		// flag
+		$this->flag->LinkCustomAttributes = "";
+		$this->flag->HrefValue = "";
+		$this->flag->TooltipValue = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -1105,6 +1123,12 @@ class cusers extends cTable {
 		$this->staff_id->EditValue = $this->staff_id->CurrentValue;
 		$this->staff_id->PlaceHolder = ew_RemoveHtml($this->staff_id->FldCaption());
 
+		// flag
+		$this->flag->EditAttrs["class"] = "form-control";
+		$this->flag->EditCustomAttributes = "";
+		$this->flag->EditValue = $this->flag->CurrentValue;
+		$this->flag->PlaceHolder = ew_RemoveHtml($this->flag->FldCaption());
+
 		// Call Row Rendered event
 		$this->Row_Rendered();
 	}
@@ -1149,6 +1173,7 @@ class cusers extends cTable {
 					if ($this->status->Exportable) $Doc->ExportCaption($this->status);
 					if ($this->profile->Exportable) $Doc->ExportCaption($this->profile);
 					if ($this->staff_id->Exportable) $Doc->ExportCaption($this->staff_id);
+					if ($this->flag->Exportable) $Doc->ExportCaption($this->flag);
 				} else {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->staffno->Exportable) $Doc->ExportCaption($this->staffno);
@@ -1166,6 +1191,7 @@ class cusers extends cTable {
 					if ($this->accesslevel->Exportable) $Doc->ExportCaption($this->accesslevel);
 					if ($this->status->Exportable) $Doc->ExportCaption($this->status);
 					if ($this->staff_id->Exportable) $Doc->ExportCaption($this->staff_id);
+					if ($this->flag->Exportable) $Doc->ExportCaption($this->flag);
 				}
 				$Doc->EndExportRow();
 			}
@@ -1214,6 +1240,7 @@ class cusers extends cTable {
 						if ($this->status->Exportable) $Doc->ExportField($this->status);
 						if ($this->profile->Exportable) $Doc->ExportField($this->profile);
 						if ($this->staff_id->Exportable) $Doc->ExportField($this->staff_id);
+						if ($this->flag->Exportable) $Doc->ExportField($this->flag);
 					} else {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->staffno->Exportable) $Doc->ExportField($this->staffno);
@@ -1231,6 +1258,7 @@ class cusers extends cTable {
 						if ($this->accesslevel->Exportable) $Doc->ExportField($this->accesslevel);
 						if ($this->status->Exportable) $Doc->ExportField($this->status);
 						if ($this->staff_id->Exportable) $Doc->ExportField($this->staff_id);
+						if ($this->flag->Exportable) $Doc->ExportField($this->flag);
 					}
 					$Doc->EndExportRow($RowCnt);
 				}

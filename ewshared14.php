@@ -889,10 +889,36 @@ if (IsLoggedIn()) {
 			/*if (CurrentUserLevel() == 4) {
 				$_SESSION['MyReportCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (5)");
 			}*/
-		if ($Item->Text == "Report Rorm") {
+		if ($Item->Text == "Initiate Incident") {
 			$MyReportCount = $_SESSION['MyReportCount'];
 			if ($MyReportCount > 0) {
 				$Item->Text.= "&nbsp;<span class='badge'>$MyReportCount </span>";
+			}
+		}
+	}
+
+   //----------maintenance-----------------------------------
+	if (IsLoggedIn()) {
+		$MyMaintenanceCount = 0;
+			if (CurrentUserLevel() == IsAdmin()) {
+			$_SESSION['MyMaintenanceCount'] = NULL;
+		 	}
+			if (CurrentUserLevel() == 1) {
+				$_SESSION['MyMaintenanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
+			}
+			if (CurrentUserLevel() == 2) {
+				$_SESSION['MyMaintenanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
+			}
+			if (CurrentUserLevel() == 3) {
+				$_SESSION['MyMaintenanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2)OR (`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."')");
+			}
+			/*if (CurrentUserLevel() == 3) {
+				$_SESSION['MyMaintenanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3,6)");
+			}*/
+		if ($Item->Text == "Initiate Maintenance") {
+			$MyMaintenanceCount = $_SESSION['MyMaintenanceCount'];
+			if ($MyMaintenanceCount > 0) {
+				$Item->Text.= "&nbsp;<span class='badge'>$MyMaintenanceCount </span>";
 			}
 		}
 	}

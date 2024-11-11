@@ -327,6 +327,7 @@ class cusers_delete extends cusers {
 		$this->password->SetVisibility();
 		$this->accesslevel->SetVisibility();
 		$this->status->SetVisibility();
+		$this->flag->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -523,6 +524,7 @@ class cusers_delete extends cusers {
 		$this->status->setDbValue($row['status']);
 		$this->profile->setDbValue($row['profile']);
 		$this->staff_id->setDbValue($row['staff_id']);
+		$this->flag->setDbValue($row['flag']);
 	}
 
 	// Return a row with default values
@@ -545,6 +547,7 @@ class cusers_delete extends cusers {
 		$row['status'] = NULL;
 		$row['profile'] = NULL;
 		$row['staff_id'] = NULL;
+		$row['flag'] = NULL;
 		return $row;
 	}
 
@@ -570,6 +573,7 @@ class cusers_delete extends cusers {
 		$this->status->DbValue = $row['status'];
 		$this->profile->DbValue = $row['profile'];
 		$this->staff_id->DbValue = $row['staff_id'];
+		$this->flag->DbValue = $row['flag'];
 	}
 
 	// Render row values based on field settings
@@ -599,6 +603,7 @@ class cusers_delete extends cusers {
 		// status
 		// profile
 		// staff_id
+		// flag
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -773,6 +778,10 @@ class cusers_delete extends cusers {
 		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
 		$this->staff_id->ViewCustomAttributes = "";
 
+		// flag
+		$this->flag->ViewValue = $this->flag->CurrentValue;
+		$this->flag->ViewCustomAttributes = "";
+
 			// staffno
 			$this->staffno->LinkCustomAttributes = "";
 			$this->staffno->HrefValue = "";
@@ -842,6 +851,11 @@ class cusers_delete extends cusers {
 			$this->status->LinkCustomAttributes = "";
 			$this->status->HrefValue = "";
 			$this->status->TooltipValue = "";
+
+			// flag
+			$this->flag->LinkCustomAttributes = "";
+			$this->flag->HrefValue = "";
+			$this->flag->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1136,6 +1150,9 @@ $users_delete->ShowMessage();
 <?php if ($users->status->Visible) { // status ?>
 		<th class="<?php echo $users->status->HeaderCellClass() ?>"><span id="elh_users_status" class="users_status"><?php echo $users->status->FldCaption() ?></span></th>
 <?php } ?>
+<?php if ($users->flag->Visible) { // flag ?>
+		<th class="<?php echo $users->flag->HeaderCellClass() ?>"><span id="elh_users_flag" class="users_flag"><?php echo $users->flag->FldCaption() ?></span></th>
+<?php } ?>
 	</tr>
 	</thead>
 	<tbody>
@@ -1266,6 +1283,14 @@ while (!$users_delete->Recordset->EOF) {
 <span id="el<?php echo $users_delete->RowCnt ?>_users_status" class="users_status">
 <span<?php echo $users->status->ViewAttributes() ?>>
 <?php echo $users->status->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($users->flag->Visible) { // flag ?>
+		<td<?php echo $users->flag->CellAttributes() ?>>
+<span id="el<?php echo $users_delete->RowCnt ?>_users_flag" class="users_flag">
+<span<?php echo $users->flag->ViewAttributes() ?>>
+<?php echo $users->flag->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

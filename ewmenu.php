@@ -27,12 +27,30 @@ $RootMenu->AddMenuItem(50, "mi_chart_report_php", $Language->MenuPhrase("50", "M
 $RootMenu->AddMenuItem(55, "mi_designation", $Language->MenuPhrase("55", "MenuText"), "designationlist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}designation'), FALSE, FALSE, "fad fa-university");
 $RootMenu->AddMenuItem(56, "mi_selection_sub_category", $Language->MenuPhrase("56", "MenuText"), "selection_sub_categorylist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}selection_sub_category'), FALSE, FALSE, "fas fa-braille");
 $RootMenu->AddMenuItem(57, "mi_reason", $Language->MenuPhrase("57", "MenuText"), "reasonlist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}reason'), FALSE, FALSE, "fa-regular fa-comment");
+$RootMenu->AddMenuItem(95, "mi_maintained_status", $Language->MenuPhrase("95", "MenuText"), "maintained_statuslist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}maintained_status'), FALSE, FALSE, "fas fa-hourglass-start");
+$RootMenu->AddMenuItem(195, "mi_action_taken", $Language->MenuPhrase("195", "MenuText"), "action_takenlist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}action_taken'), FALSE, FALSE, "");
+$RootMenu->AddMenuItem(148, "mi_dispenser_type", $Language->MenuPhrase("148", "MenuText"), "dispenser_typelist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}dispenser_type'), FALSE, FALSE, "");
+$RootMenu->AddMenuItem(147, "mi_dispenser_status", $Language->MenuPhrase("147", "MenuText"), "dispenser_statuslist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}dispenser_status'), FALSE, FALSE, "");
 $RootMenu->AddMenuItem(34, "mci_Incidents", $Language->MenuPhrase("34", "MenuText"), "", -1, "", IsLoggedIn(), FALSE, TRUE, "fas fa-indent");
 $RootMenu->AddMenuItem(8, "mi_report_form", $Language->MenuPhrase("8", "MenuText"), "report_formlist.php", 34, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}report_form'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(54, "mi_report", $Language->MenuPhrase("54", "MenuText"), "reportlist.php", 34, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}report'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(31, "mci_Settings", $Language->MenuPhrase("31", "MenuText"), "", -1, "", IsLoggedIn(), FALSE, TRUE, "fas fa-cogs");
 $RootMenu->AddMenuItem(44, "mi_userlevelpermissions", $Language->MenuPhrase("44", "MenuText"), "userlevelpermissionslist.php", 31, "", IsAdmin(), FALSE, FALSE, "fa fa-wrench");
 $RootMenu->AddMenuItem(45, "mi_userlevels", $Language->MenuPhrase("45", "MenuText"), "userlevelslist.php", 31, "", IsAdmin(), FALSE, FALSE, "fa fa-cog");
+$RootMenu->AddMenuItem(93, "mci_Servicing_Module", $Language->MenuPhrase("93", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fa fa-wrench");
+$RootMenu->AddMenuItem(58, "mi_buildings", $Language->MenuPhrase("58", "MenuText"), "buildingslist.php", 93, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}buildings'), FALSE, FALSE, "far fa-home");
+$RootMenu->AddMenuItem(59, "mi_floors", $Language->MenuPhrase("59", "MenuText"), "floorslist.php", 93, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}floors'), FALSE, FALSE, "fa-light fa-bars");
+$RootMenu->AddMenuItem(60, "mi_items", $Language->MenuPhrase("60", "MenuText"), "itemslist.php", 93, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}items'), FALSE, FALSE, "fa-light fa-bars");
+$RootMenu->AddMenuItem(94, "mci_maintenances", $Language->MenuPhrase("94", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fas fa-cogs");
+$RootMenu->AddMenuItem(61, "mi_maintenance", $Language->MenuPhrase("61", "MenuText"), "maintenancelist.php", 94, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}maintenance'), FALSE, FALSE, "fa fa-wrench");
+$RootMenu->AddMenuItem(99, "mi_maintenance_report", $Language->MenuPhrase("99", "MenuText"), "maintenance_reportlist.php", 94, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}maintenance_report'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(100, "mi_assign_task", $Language->MenuPhrase("100", "MenuText"), "assign_tasklist.php", -1, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}assign_task'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(145, "mci_Inventory_Module", $Language->MenuPhrase("145", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fa fa-cube");
+$RootMenu->AddMenuItem(101, "mi_inventory", $Language->MenuPhrase("101", "MenuText"), "inventorylist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}inventory'), FALSE, FALSE, "fa fa-cubes");
+$RootMenu->AddMenuItem(102, "mi_inventory_store", $Language->MenuPhrase("102", "MenuText"), "inventory_storelist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}inventory_store'), FALSE, FALSE, "fa fa-cubes");
+$RootMenu->AddMenuItem(193, "mci_Dispenser_Module", $Language->MenuPhrase("193", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fa fa-futbol-o");
+$RootMenu->AddMenuItem(146, "mi_dispenser", $Language->MenuPhrase("146", "MenuText"), "dispenserlist.php", 193, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}dispenser'), FALSE, FALSE, "fa fa-glass");
+$RootMenu->AddMenuItem(194, "mi_dispenser_report", $Language->MenuPhrase("194", "MenuText"), "dispenser_reportlist.php", 193, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}dispenser_report'), FALSE, FALSE, "fas fa-indent");
 echo $RootMenu->ToScript();
 ?>
 <div class="ewVertical" id="ewMenu"></div>

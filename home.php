@@ -213,11 +213,11 @@ class chome_php {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'custom', TRUE);
+			define("EW_PAGE_ID", 'custom');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'home.php', TRUE);
+			define("EW_TABLE_NAME", 'home.php');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -344,7 +344,7 @@ Page_Rendering();
 <div class="panel panel-danger">
 	 <div class="panel-heading">
 	 <marquee width="70%" direction="left" height="20px">
-		<strong><span style="color:#8d1c2d !important">WELCOME TO STAYSAFE LIMITED INCIDENT-REPORTING-PLATFORM:    All Issue Reported Here Are Being Treated Realtime:  Ensure To Login At Interval To Check Task Assigned To You:    Signed Management!  <?php echo $_SESSION['Staff_Name']?> </span></strong> 
+		<strong><span style="color:#8d1c2d !important">WELCOME TO STAYSAFE LIMITED INCIDENT-REPORTING-PLATFORM:    All Issue Reported Here Are Being Treated Realtime:  Ensure To Login At Interval To Check Task Assigned To You:    Signed Management!  <?php //echo $_SESSION['Staff_Name']?> </span></strong> 
 		<!--<i style="color:#fff01"> | Staff ID: <?php echo $_SESSION['Staff_ID']?> | Role: <?php echo $_SESSION['Department']?> | Company: <?php echo $_SESSION['Company']?> </i>-->
 		</marquee>
 	 </div>
@@ -371,6 +371,7 @@ Page_Rendering();
 		?></h3>
 	 </div>-->
 	 
+<a href="report_formlist.php" class="small-box-footer"> 
 <div class="col-md-3 col-sm-6 col-xs-12">
 			<div class="info-box bg-aqua-gradient">
 				<span class="info-box-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
@@ -381,6 +382,7 @@ Page_Rendering();
 				</div><!-- /.info-box-content -->
 			</div><!-- /.info-box -->
 		</div>
+		</a>
 
 		<!-- <div class="col-lg-2 col-xs-6"> -->
 		  <!-- small box -->
@@ -397,6 +399,7 @@ Page_Rendering();
 		  </div>
 		</div> -->
 
+		<a href="report_formlist.php" class="small-box-footer">
 		<div class="col-md-3 col-sm-6 col-xs-12">
 			<div class="info-box bg-red-gradient">
 				<span class="info-box-icon"><i class="fa fa-ban" aria-hidden="true"></i></span>
@@ -407,6 +410,7 @@ Page_Rendering();
 				</div><!-- /.info-box-content -->
 			</div><!-- /.info-box -->
 		</div>
+		</a>
 
 
 
@@ -426,6 +430,7 @@ Page_Rendering();
 		  </div>
 		</div> -->
 
+		<a href="report_formlist.php" class="small-box-footer">
 		<div class="col-md-3 col-sm-6 col-xs-12">
 			<div class="info-box bg-yellow-gradient">
 				<span class="info-box-icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span>
@@ -437,6 +442,7 @@ Page_Rendering();
 			</div><!-- /.info-box -->
 		</div>
 		<i class="fa-solid fa-pen-to-square"></i>
+		</a>
 
 		<!-- ./col -->
 		<!-- <div class="col-lg-2 col-xs-6"> -->
@@ -456,8 +462,10 @@ Page_Rendering();
 
 
 
+		 <a href="reportlist.php" class="small-box-footer">
 		<div class="col-md-3 col-sm-6 col-xs-12">
 			<div class="info-box bg-green-gradient">
+			
 				<span class="info-box-icon"><i class="fa fa-thumbs-up" aria-hidden="true"></i></span>
 				<div class="info-box-content">
 					<span class="info-box-text">Closed Issued</span>
@@ -466,7 +474,9 @@ Page_Rendering();
 				</div><!-- /.info-box-content -->
 			</div><!-- /.info-box -->
 		</div>
+		</a>
 
+	<a href="assign_tasklist.php" class="small-box-footer">
 		<div class="col-md-3 col-sm-6 col-xs-12">
 			<div class="info-box bg-blue-gradient">
 				<span class="info-box-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
@@ -477,7 +487,9 @@ Page_Rendering();
 				</div><!-- /.info-box-content -->
 			</div><!-- /.info-box -->
 		</div>
+		</a>
 		
+		<a href="report_formlist.php" class="small-box-footer">
 		<div class="col-md-3 col-sm-6 col-xs-12">
 			<div class="info-box bg-teal-gradient">
 				<span class="info-box-icon"><i class="fa fa-thumbs-up" aria-hidden="true"></i></span>
@@ -488,6 +500,47 @@ Page_Rendering();
 				</div><!-- /.info-box-content -->
 			</div><!-- /.info-box -->
 		</div>
+		</a>
+
+		<a href="maintenancelist.php" class="small-box-footer">
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box bg-purple-gradient">
+				<span class="info-box-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">Maintenance Ticket Initiated</span>
+					<span class="info-box-number"><?php echo $_SESSION['MyMaintenancetickketCount'] ?></span>
+
+				</div><!-- /.info-box-content -->
+			</div><!-- /.info-box -->
+		</div>
+		</a>
+
+			<a href="maintenance_reportlist.php" class="small-box-footer">
+			<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box bg-green-gradient">
+				<span class="info-box-icon"><i class="fa fa-thumbs-up" aria-hidden="true"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">Ticket Reviewed & closed</span>
+					<span class="info-box-number"><?php echo $_SESSION['MyTicketreviewedCount'] ?></span>
+
+				</div><!-- /.info-box-content -->
+			</div><!-- /.info-box -->
+		</div>
+		</a>
+
+
+		<a href="dispenser_reportlist.php" class="small-box-footer">
+			<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box bg-teal-gradient">
+				<span class="info-box-icon"><i class="fa fa-glass" aria-hidden="true"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">Dispenser Activity</span>
+					<span class="info-box-number"><?php echo $_SESSION['MyDispenserCount'] ?></span>
+
+				</div><!-- /.info-box-content -->
+			</div><!-- /.info-box -->
+		</div>
+		</a>
 
 	
 

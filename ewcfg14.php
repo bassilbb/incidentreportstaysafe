@@ -2,6 +2,7 @@
 /**
  * PHPMaker 2018 configuration file
  */
+require __DIR__ . '/vendor/autoload.php';
 
 // Relative path
 if (!isset($EW_RELATIVE_PATH)) $EW_RELATIVE_PATH = "";
@@ -25,7 +26,7 @@ define("EW_CONFIG_FILE_FOLDER", EW_PROJECT_NAME, TRUE); // Config file name
 define("EW_PROJECT_ID", "{DD9080C0-D1CA-431F-831F-CAC8FA61260C}", TRUE); // Project ID (GUID)
 $EW_RELATED_PROJECT_ID = "";
 $EW_RELATED_LANGUAGE_FOLDER = "";
-define("EW_RANDOM_KEY", 't5M05TQmQpnxUPJh', TRUE); // Random key for encryption
+define("EW_RANDOM_KEY", 'I56M2QBho2m2uPZ8', TRUE); // Random key for encryption
 define("EW_PROJECT_STYLESHEET_FILENAME", "phpcss/incident_report_app.css", TRUE); // Project stylesheet file name
 define("EW_CHARSET", "utf-8", TRUE); // Project charset
 define("EW_EMAIL_CHARSET", EW_CHARSET, TRUE); // Email charset
@@ -69,6 +70,10 @@ $EW_AUTH_CONFIG = array(
 );
 
 // Database connection info
+
+$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv->load();
+
 if (!defined("EW_USE_ADODB"))
 	define("EW_USE_ADODB", FALSE, TRUE); // Use ADOdb
 if (!defined("EW_ADODB_TZ_OFFSET"))
@@ -77,7 +82,17 @@ if (!defined("EW_USE_MYSQLI"))
 	define('EW_USE_MYSQLI', extension_loaded("mysqli"), TRUE); // Use MySQLi
 if (!defined("EW_USE_MSSQL_NATIVE"))
 	define("EW_USE_MSSQL_NATIVE", FALSE, TRUE); // Use ADOdb "mssqlnative" driver for MSSQL
-$EW_CONN["DB"] = array("conn" => NULL, "id" => "DB", "type" => "MYSQL", "host" => "localhost", "port" => 3306, "user" => "root", "pass" => "", "db" => "staysafedb", "qs" => "`", "qe" => "`");
+//$EW_CONN["DB"] = array("conn" => NULL, "id" => "DB", "type" => "MYSQL", "host" => "localhost", "port" => 3306, "user" => "root", "pass" => "", "db" => "staysafedb", "qs" => "`", "qe" => "`");
+$EW_CONN["DB"] = array(
+    "conn" => NULL,
+    "id" => "DB",
+    "type" => "MYSQL",
+    "host" => getEnv('DB_HOST'),
+    "port" => getEnv('DB_PORT'),
+    "user" => getEnv('DB_USERNAME'),
+    "pass" => getenv('DB_PASSWORD'),
+    "db" => getenv('DB_NAME'),
+    "qs" => "", "qe" => "");
 $EW_CONN[0] = &$EW_CONN["DB"];
 
 // Set up database error function

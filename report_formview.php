@@ -452,6 +452,7 @@ class creport_form_view extends creport_form {
 		$this->incident_description->SetVisibility();
 		$this->_upload->SetVisibility();
 		$this->status->SetVisibility();
+		$this->rejection_reasons->SetVisibility();
 		$this->initiator_action->SetVisibility();
 		$this->initiator_comment->SetVisibility();
 		$this->report_by->SetVisibility();
@@ -459,6 +460,8 @@ class creport_form_view extends creport_form {
 		$this->assign_task->SetVisibility();
 		$this->approval_action->SetVisibility();
 		$this->approval_comment->SetVisibility();
+		$this->item_name->SetVisibility();
+		$this->quantity_issued->SetVisibility();
 		$this->reason->SetVisibility();
 		$this->resolved_action->SetVisibility();
 		$this->resolved_comment->SetVisibility();
@@ -472,6 +475,7 @@ class creport_form_view extends creport_form {
 		$this->verified_action->SetVisibility();
 		$this->verified_comment->SetVisibility();
 		$this->verified_by->SetVisibility();
+		$this->remainder->SetVisibility();
 
 		// Set up multi page object
 		$this->SetupMultiPages();
@@ -822,6 +826,7 @@ class creport_form_view extends creport_form {
 		$this->_upload->Upload->DbValue = $row['upload'];
 		$this->_upload->setDbValue($this->_upload->Upload->DbValue);
 		$this->status->setDbValue($row['status']);
+		$this->rejection_reasons->setDbValue($row['rejection_reasons']);
 		$this->initiator_action->setDbValue($row['initiator_action']);
 		$this->initiator_comment->setDbValue($row['initiator_comment']);
 		$this->report_by->setDbValue($row['report_by']);
@@ -829,6 +834,8 @@ class creport_form_view extends creport_form {
 		$this->assign_task->setDbValue($row['assign_task']);
 		$this->approval_action->setDbValue($row['approval_action']);
 		$this->approval_comment->setDbValue($row['approval_comment']);
+		$this->item_name->setDbValue($row['item_name']);
+		$this->quantity_issued->setDbValue($row['quantity_issued']);
 		$this->reason->setDbValue($row['reason']);
 		$this->resolved_action->setDbValue($row['resolved_action']);
 		$this->resolved_comment->setDbValue($row['resolved_comment']);
@@ -842,6 +849,7 @@ class creport_form_view extends creport_form {
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
+		$this->remainder->setDbValue($row['remainder']);
 	}
 
 	// Return a row with default values
@@ -872,6 +880,7 @@ class creport_form_view extends creport_form {
 		$row['incident_description'] = NULL;
 		$row['upload'] = NULL;
 		$row['status'] = NULL;
+		$row['rejection_reasons'] = NULL;
 		$row['initiator_action'] = NULL;
 		$row['initiator_comment'] = NULL;
 		$row['report_by'] = NULL;
@@ -879,6 +888,8 @@ class creport_form_view extends creport_form {
 		$row['assign_task'] = NULL;
 		$row['approval_action'] = NULL;
 		$row['approval_comment'] = NULL;
+		$row['item_name'] = NULL;
+		$row['quantity_issued'] = NULL;
 		$row['reason'] = NULL;
 		$row['resolved_action'] = NULL;
 		$row['resolved_comment'] = NULL;
@@ -892,6 +903,7 @@ class creport_form_view extends creport_form {
 		$row['verified_action'] = NULL;
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
+		$row['remainder'] = NULL;
 		return $row;
 	}
 
@@ -925,6 +937,7 @@ class creport_form_view extends creport_form {
 		$this->incident_description->DbValue = $row['incident_description'];
 		$this->_upload->Upload->DbValue = $row['upload'];
 		$this->status->DbValue = $row['status'];
+		$this->rejection_reasons->DbValue = $row['rejection_reasons'];
 		$this->initiator_action->DbValue = $row['initiator_action'];
 		$this->initiator_comment->DbValue = $row['initiator_comment'];
 		$this->report_by->DbValue = $row['report_by'];
@@ -932,6 +945,8 @@ class creport_form_view extends creport_form {
 		$this->assign_task->DbValue = $row['assign_task'];
 		$this->approval_action->DbValue = $row['approval_action'];
 		$this->approval_comment->DbValue = $row['approval_comment'];
+		$this->item_name->DbValue = $row['item_name'];
+		$this->quantity_issued->DbValue = $row['quantity_issued'];
 		$this->reason->DbValue = $row['reason'];
 		$this->resolved_action->DbValue = $row['resolved_action'];
 		$this->resolved_comment->DbValue = $row['resolved_comment'];
@@ -945,6 +960,7 @@ class creport_form_view extends creport_form {
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
+		$this->remainder->DbValue = $row['remainder'];
 	}
 
 	// Render row values based on field settings
@@ -992,6 +1008,7 @@ class creport_form_view extends creport_form {
 		// incident_description
 		// upload
 		// status
+		// rejection_reasons
 		// initiator_action
 		// initiator_comment
 		// report_by
@@ -999,6 +1016,8 @@ class creport_form_view extends creport_form {
 		// assign_task
 		// approval_action
 		// approval_comment
+		// item_name
+		// quantity_issued
 		// reason
 		// resolved_action
 		// resolved_comment
@@ -1012,6 +1031,7 @@ class creport_form_view extends creport_form {
 		// verified_action
 		// verified_comment
 		// verified_by
+		// remainder
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1447,6 +1467,10 @@ class creport_form_view extends creport_form {
 		}
 		$this->status->ViewCustomAttributes = "";
 
+		// rejection_reasons
+		$this->rejection_reasons->ViewValue = $this->rejection_reasons->CurrentValue;
+		$this->rejection_reasons->ViewCustomAttributes = "";
+
 		// initiator_action
 		if (strval($this->initiator_action->CurrentValue) <> "") {
 			$this->initiator_action->ViewValue = $this->initiator_action->OptionCaption($this->initiator_action->CurrentValue);
@@ -1525,6 +1549,33 @@ class creport_form_view extends creport_form {
 		// approval_comment
 		$this->approval_comment->ViewValue = $this->approval_comment->CurrentValue;
 		$this->approval_comment->ViewCustomAttributes = "";
+
+		// item_name
+		if (strval($this->item_name->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->item_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
+		$sWhereWrk = "";
+		$this->item_name->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->item_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->item_name->ViewValue = $this->item_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->item_name->ViewValue = $this->item_name->CurrentValue;
+			}
+		} else {
+			$this->item_name->ViewValue = NULL;
+		}
+		$this->item_name->ViewCustomAttributes = "";
+
+		// quantity_issued
+		$this->quantity_issued->ViewValue = $this->quantity_issued->CurrentValue;
+		$this->quantity_issued->ViewCustomAttributes = "";
 
 		// reason
 		if (strval($this->reason->CurrentValue) <> "") {
@@ -1698,6 +1749,10 @@ class creport_form_view extends creport_form {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
+		// remainder
+		$this->remainder->ViewValue = $this->remainder->CurrentValue;
+		$this->remainder->ViewCustomAttributes = "";
+
 			// datetime_initiated
 			$this->datetime_initiated->LinkCustomAttributes = "";
 			$this->datetime_initiated->HrefValue = "";
@@ -1832,6 +1887,11 @@ class creport_form_view extends creport_form {
 			$this->status->HrefValue = "";
 			$this->status->TooltipValue = "";
 
+			// rejection_reasons
+			$this->rejection_reasons->LinkCustomAttributes = "";
+			$this->rejection_reasons->HrefValue = "";
+			$this->rejection_reasons->TooltipValue = "";
+
 			// initiator_action
 			$this->initiator_action->LinkCustomAttributes = "";
 			$this->initiator_action->HrefValue = "";
@@ -1866,6 +1926,16 @@ class creport_form_view extends creport_form {
 			$this->approval_comment->LinkCustomAttributes = "";
 			$this->approval_comment->HrefValue = "";
 			$this->approval_comment->TooltipValue = "";
+
+			// item_name
+			$this->item_name->LinkCustomAttributes = "";
+			$this->item_name->HrefValue = "";
+			$this->item_name->TooltipValue = "";
+
+			// quantity_issued
+			$this->quantity_issued->LinkCustomAttributes = "";
+			$this->quantity_issued->HrefValue = "";
+			$this->quantity_issued->TooltipValue = "";
 
 			// reason
 			$this->reason->LinkCustomAttributes = "";
@@ -1931,6 +2001,11 @@ class creport_form_view extends creport_form {
 			$this->verified_by->LinkCustomAttributes = "";
 			$this->verified_by->HrefValue = "";
 			$this->verified_by->TooltipValue = "";
+
+			// remainder
+			$this->remainder->LinkCustomAttributes = "";
+			$this->remainder->HrefValue = "";
+			$this->remainder->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2280,6 +2355,8 @@ freport_formview.Lists["x_assign_task"] = {"LinkField":"x_id","Ajax":true,"AutoF
 freport_formview.Lists["x_assign_task"].Data = "<?php echo $report_form_view->assign_task->LookupFilterQuery(FALSE, "view") ?>";
 freport_formview.Lists["x_approval_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 freport_formview.Lists["x_approval_action"].Options = <?php echo json_encode($report_form_view->approval_action->Options()) ?>;
+freport_formview.Lists["x_item_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
+freport_formview.Lists["x_item_name"].Data = "<?php echo $report_form_view->item_name->LookupFilterQuery(FALSE, "view") ?>";
 freport_formview.Lists["x_reason"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"reason"};
 freport_formview.Lists["x_reason"].Data = "<?php echo $report_form_view->reason->LookupFilterQuery(FALSE, "view") ?>";
 freport_formview.Lists["x_resolved_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
@@ -2661,6 +2738,17 @@ $report_form_view->ShowMessage();
 </td>
 	</tr>
 <?php } ?>
+<?php if ($report_form->rejection_reasons->Visible) { // rejection_reasons ?>
+	<tr id="r_rejection_reasons">
+		<td class="col-sm-2"><span id="elh_report_form_rejection_reasons"><?php echo $report_form->rejection_reasons->FldCaption() ?></span></td>
+		<td data-name="rejection_reasons"<?php echo $report_form->rejection_reasons->CellAttributes() ?>>
+<span id="el_report_form_rejection_reasons" data-page="2">
+<span<?php echo $report_form->rejection_reasons->ViewAttributes() ?>>
+<?php echo $report_form->rejection_reasons->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
 <?php if ($report_form->initiator_action->Visible) { // initiator_action ?>
 	<tr id="r_initiator_action">
 		<td class="col-sm-2"><span id="elh_report_form_initiator_action"><?php echo $report_form->initiator_action->FldCaption() ?></span></td>
@@ -2734,6 +2822,28 @@ $report_form_view->ShowMessage();
 <span id="el_report_form_approval_comment" data-page="2">
 <span<?php echo $report_form->approval_comment->ViewAttributes() ?>>
 <?php echo $report_form->approval_comment->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($report_form->item_name->Visible) { // item_name ?>
+	<tr id="r_item_name">
+		<td class="col-sm-2"><span id="elh_report_form_item_name"><?php echo $report_form->item_name->FldCaption() ?></span></td>
+		<td data-name="item_name"<?php echo $report_form->item_name->CellAttributes() ?>>
+<span id="el_report_form_item_name" data-page="2">
+<span<?php echo $report_form->item_name->ViewAttributes() ?>>
+<?php echo $report_form->item_name->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($report_form->quantity_issued->Visible) { // quantity_issued ?>
+	<tr id="r_quantity_issued">
+		<td class="col-sm-2"><span id="elh_report_form_quantity_issued"><?php echo $report_form->quantity_issued->FldCaption() ?></span></td>
+		<td data-name="quantity_issued"<?php echo $report_form->quantity_issued->CellAttributes() ?>>
+<span id="el_report_form_quantity_issued" data-page="2">
+<span<?php echo $report_form->quantity_issued->ViewAttributes() ?>>
+<?php echo $report_form->quantity_issued->ViewValue ?></span>
 </span>
 </td>
 	</tr>
@@ -2877,6 +2987,17 @@ $report_form_view->ShowMessage();
 <span id="el_report_form_verified_by" data-page="2">
 <span<?php echo $report_form->verified_by->ViewAttributes() ?>>
 <?php echo $report_form->verified_by->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($report_form->remainder->Visible) { // remainder ?>
+	<tr id="r_remainder">
+		<td class="col-sm-2"><span id="elh_report_form_remainder"><?php echo $report_form->remainder->FldCaption() ?></span></td>
+		<td data-name="remainder"<?php echo $report_form->remainder->CellAttributes() ?>>
+<span id="el_report_form_remainder" data-page="2">
+<span<?php echo $report_form->remainder->ViewAttributes() ?>>
+<?php echo $report_form->remainder->ViewValue ?></span>
 </span>
 </td>
 	</tr>

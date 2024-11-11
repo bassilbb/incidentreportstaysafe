@@ -28,12 +28,20 @@ if (!function_exists('DbHelper')) {
 class cstaysafedb_db extends cDbHelper {
 
 	// Database connection info
-	var $Host = 'localhost';
-	var $Port = 3306;
-	var $Username = 'root';
-	var $Password = '';
-	var $DbName = 'staysafedb';
+
+	var $Host = getEnv('DB_HOST');
+	var $Port = getEnv('DB_PORT');
+	var $Username = getEnv('DB_USERNAME');
+	var $Password = getEnv('DB_PASSWORD');
+	var $DbName = getEnv('DB_NAME');
 	var $CharSet = "utf-8";
+
+	// var $Host = 'localhost';
+	// var $Port = 3306;
+	// var $Username = 'root';
+	// var $Password = '';
+	// var $DbName = 'staysafedb';
+	// var $CharSet = "utf-8";
 
 	// ADODB (Access/SQL Server)
 	var $CodePage = 65001; // Code page

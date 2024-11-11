@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2023/3/5" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2024/11/4" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -631,13 +631,13 @@
       <phrase id="menutext" value="Administrator" />
     </menu>
     <menu id="1">
-      <phrase id="menutext" value="Branch" />
+      <phrase id="menutext" value="Organization" />
     </menu>
     <menu id="3">
       <phrase id="menutext" value="Client" />
     </menu>
     <menu id="4">
-      <phrase id="menutext" value="Depertment" />
+      <phrase id="menutext" value="Department" />
     </menu>
     <menu id="2">
       <phrase id="menutext" value="Category" />
@@ -649,7 +649,7 @@
       <phrase id="menutext" value="Sub Category" />
     </menu>
     <menu id="53">
-      <phrase id="menutext" value="sub sub category" />
+      <phrase id="menutext" value="Sub Sub category" />
     </menu>
     <menu id="7">
       <phrase id="menutext" value="Incident Priority" />
@@ -667,10 +667,10 @@
       <phrase id="menutext" value="Incident Location" />
     </menu>
     <menu id="51">
-      <phrase id="menutext" value="incident sub location" />
+      <phrase id="menutext" value="Incident Sub Location" />
     </menu>
     <menu id="52">
-      <phrase id="menutext" value="incident venue" />
+      <phrase id="menutext" value="Incident Venue" />
     </menu>
     <menu id="38">
       <phrase id="menutext" value="No of People Involved" />
@@ -685,13 +685,25 @@
       <phrase id="menutext" value="Chart" />
     </menu>
     <menu id="55">
-      <phrase id="menutext" value="designation" />
+      <phrase id="menutext" value="Designation" />
     </menu>
     <menu id="56">
-      <phrase id="menutext" value="selection sub category" />
+      <phrase id="menutext" value="Selection Sub Category" />
     </menu>
     <menu id="57">
       <phrase id="menutext" value="Reason" />
+    </menu>
+    <menu id="95">
+      <phrase id="menutext" value="Maintained Status" />
+    </menu>
+    <menu id="195">
+      <phrase id="menutext" value="action taken" />
+    </menu>
+    <menu id="148">
+      <phrase id="menutext" value="Dispenser Type" />
+    </menu>
+    <menu id="147">
+      <phrase id="menutext" value="Dispenser Status" />
     </menu>
     <menu id="34">
       <phrase id="menutext" value="Incidents" />
@@ -711,13 +723,58 @@
     <menu id="45">
       <phrase id="menutext" value="Userlevels" />
     </menu>
+    <menu id="93">
+      <phrase id="menutext" value="Servicing Module" />
+    </menu>
+    <menu id="58">
+      <phrase id="menutext" value="Buildings" />
+    </menu>
+    <menu id="59">
+      <phrase id="menutext" value="Floors" />
+    </menu>
+    <menu id="60">
+      <phrase id="menutext" value="Items" />
+    </menu>
+    <menu id="94">
+      <phrase id="menutext" value="maintenances" />
+    </menu>
+    <menu id="61">
+      <phrase id="menutext" value="Initiate Maintenance" />
+    </menu>
+    <menu id="98">
+      <phrase id="menutext" value="Maintenance History" />
+    </menu>
+    <menu id="99">
+      <phrase id="menutext" value="Maintenance Report" />
+    </menu>
+    <menu id="100">
+      <phrase id="menutext" value="Assign Task Review" />
+    </menu>
+    <menu id="145">
+      <phrase id="menutext" value="Inventory Module" />
+    </menu>
+    <menu id="101">
+      <phrase id="menutext" value="Inventory" />
+    </menu>
+    <menu id="102">
+      <phrase id="menutext" value="Inventory Store" />
+    </menu>
+    <menu id="193">
+      <phrase id="menutext" value="Dispenser Module" />
+    </menu>
+    <menu id="146">
+      <phrase id="menutext" value="Dispenser Activity" />
+    </menu>
+    <menu id="194">
+      <phrase id="menutext" value="Dispenser Report" />
+    </menu>
     <table id="branch">
-      <phrase id="tblcaption" value="Branch" />
+      <phrase id="tblcaption" value="Organization" />
       <field id="branch_id">
-        <phrase id="fldcaption" value="branch id" />
+        <phrase id="fldcaption" value="Oaganization ID" />
       </field>
       <field id="branch_name">
-        <phrase id="fldcaption" value="branch name" />
+        <phrase id="fldcaption" value="Oaganization name" />
       </field>
     </table>
     <table id="category">
@@ -794,7 +851,7 @@
         <phrase id="fldcaption" value="Staff  Department" />
       </field>
       <field id="branch">
-        <phrase id="fldcaption" value="Branch" />
+        <phrase id="fldcaption" value="Organization" />
       </field>
       <field id="departments">
         <phrase id="fldcaption" value="Responsible  Departments" />
@@ -850,6 +907,9 @@
       <field id="status">
         <phrase id="fldcaption" value="Status" />
       </field>
+      <field id="rejection_reasons">
+        <phrase id="fldcaption" value="rejection reasons" />
+      </field>
       <field id="initiator_action">
         <phrase id="fldcaption" value="Initiator Action" />
         <phrase id="fldtagvalue1" value="0" />
@@ -880,6 +940,12 @@
       </field>
       <field id="approval_comment">
         <phrase id="fldcaption" value="Assign Task Comment" />
+      </field>
+      <field id="item_name">
+        <phrase id="fldcaption" value="Item Name" />
+      </field>
+      <field id="quantity_issued">
+        <phrase id="fldcaption" value="Quantity Issued" />
       </field>
       <field id="reason">
         <phrase id="fldcaption" value="Reason For Task Not Compeleted" />
@@ -942,6 +1008,9 @@
       <field id="verified_by">
         <phrase id="fldcaption" value="Verified By" />
       </field>
+      <field id="remainder">
+        <phrase id="fldcaption" value="remainder" />
+      </field>
     </table>
     <table id="sub_category">
       <phrase id="tblcaption" value="Sub Category" />
@@ -979,7 +1048,7 @@
         <phrase id="fldcaption" value="Designation" />
       </field>
       <field id="branch">
-        <phrase id="fldcaption" value="Branch" />
+        <phrase id="fldcaption" value="Organization" />
       </field>
       <field id="department">
         <phrase id="fldcaption" value="Department" />
@@ -1012,6 +1081,9 @@
       <field id="staff_id">
         <phrase id="fldcaption" value="Staff id" />
       </field>
+      <field id="flag">
+        <phrase id="fldcaption" value="flag" />
+      </field>
     </table>
     <table id="home_php">
       <phrase id="tblcaption" value="Home Page" />
@@ -1041,6 +1113,9 @@
       </field>
       <field id="description">
         <phrase id="fldcaption" value="description" />
+      </field>
+      <field id="timer">
+        <phrase id="fldcaption" value="timer" />
       </field>
     </table>
     <table id="type_of_incident">
@@ -1140,7 +1215,7 @@
       <phrase id="tblcaption" value="Chart" />
     </table>
     <table id="incident_sub_location">
-      <phrase id="tblcaption" value="incident sub location" />
+      <phrase id="tblcaption" value="Incident Sub Location" />
       <field id="description">
         <phrase id="fldcaption" value="description" />
       </field>
@@ -1152,7 +1227,7 @@
       </field>
     </table>
     <table id="incident_venue">
-      <phrase id="tblcaption" value="incident venue" />
+      <phrase id="tblcaption" value="Incident Venue" />
       <field id="code">
         <phrase id="fldcaption" value="code" />
       </field>
@@ -1164,7 +1239,7 @@
       </field>
     </table>
     <table id="sub_sub_category">
-      <phrase id="tblcaption" value="sub sub category" />
+      <phrase id="tblcaption" value="Sub Sub category" />
       <field id="code">
         <phrase id="fldcaption" value="code" />
       </field>
@@ -1176,7 +1251,7 @@
       </field>
     </table>
     <table id="report">
-      <phrase id="tblcaption" value="Incident His" />
+      <phrase id="tblcaption" value="Incident History" />
       <field id="id">
         <phrase id="fldcaption" value="ID" />
       </field>
@@ -1336,7 +1411,7 @@
       </field>
     </table>
     <table id="designation">
-      <phrase id="tblcaption" value="designation" />
+      <phrase id="tblcaption" value="Designation" />
       <field id="code">
         <phrase id="fldcaption" value="code" />
       </field>
@@ -1345,7 +1420,7 @@
       </field>
     </table>
     <table id="selection_sub_category">
-      <phrase id="tblcaption" value="selection sub category" />
+      <phrase id="tblcaption" value="Selection Sub Category" />
       <field id="id">
         <phrase id="fldcaption" value="id" />
       </field>
@@ -1358,6 +1433,664 @@
     </table>
     <table id="reason">
       <phrase id="tblcaption" value="Reason" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="description" />
+      </field>
+    </table>
+    <table id="buildings">
+      <phrase id="tblcaption" value="Buildings" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="description" />
+      </field>
+    </table>
+    <table id="floors">
+      <phrase id="tblcaption" value="Floors" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="Description" />
+      </field>
+      <field id="buildings_id">
+        <phrase id="fldcaption" value="Buildings " />
+      </field>
+    </table>
+    <table id="items">
+      <phrase id="tblcaption" value="Items" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="Description" />
+      </field>
+      <field id="floor_id">
+        <phrase id="fldcaption" value="FloorS" />
+      </field>
+      <field id="quantity">
+        <phrase id="fldcaption" value="Quantity" />
+      </field>
+    </table>
+    <table id="maintenance">
+      <phrase id="tblcaption" value="Maintenance" />
+      <phrase id="tblpagecaption1" value="Maintainance Info" />
+      <phrase id="tblpagecaption2" value="Action" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="date_initiated">
+        <phrase id="fldcaption" value="Date initiated" />
+      </field>
+      <field id="reference_id">
+        <phrase id="fldcaption" value="Reference ID" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="Staff ID" />
+      </field>
+      <field id="staff_name">
+        <phrase id="fldcaption" value="Staff Name" />
+      </field>
+      <field id="department">
+        <phrase id="fldcaption" value="Department" />
+      </field>
+      <field id="branch">
+        <phrase id="fldcaption" value="Branch" />
+      </field>
+      <field id="buildings">
+        <phrase id="fldcaption" value="Buildings" />
+      </field>
+      <field id="floors">
+        <phrase id="fldcaption" value="Floors" />
+      </field>
+      <field id="items">
+        <phrase id="fldcaption" value="Items" />
+      </field>
+      <field id="priority">
+        <phrase id="fldcaption" value="Maintenance Priority" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="Descrption" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="Status" />
+      </field>
+      <field id="date_maintained">
+        <phrase id="fldcaption" value="Date Maintained" />
+      </field>
+      <field id="maintenance_action">
+        <phrase id="fldcaption" value="Maintance Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Save and Forward" />
+      </field>
+      <field id="maintenance_comment">
+        <phrase id="fldcaption" value="Maintance Comment" />
+      </field>
+      <field id="maintained_by">
+        <phrase id="fldcaption" value="Maintaned By" />
+      </field>
+      <field id="reviewed_date">
+        <phrase id="fldcaption" value="Reviewed Date" />
+      </field>
+      <field id="reviewed_action">
+        <phrase id="fldcaption" value="Reviewed Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Return for Rework" />
+        <phrase id="fldtagvalue3" value="2" />
+        <phrase id="fldtagcaption3" value="Reviewed and Closed" />
+      </field>
+      <field id="reviewed_comment">
+        <phrase id="fldcaption" value="Reviewed Comment" />
+      </field>
+      <field id="reviewed_by">
+        <phrase id="fldcaption" value="Reviewed By" />
+      </field>
+    </table>
+    <table id="maintained_status">
+      <phrase id="tblcaption" value="Maintained Status" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="description" />
+      </field>
+    </table>
+    <table id="servicing_history">
+      <phrase id="tblcaption" value="Maintenance History" />
+      <phrase id="tblpagecaption1" value="Maintenance Info" />
+      <phrase id="tblpagecaption2" value="Action" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="date_initiated">
+        <phrase id="fldcaption" value="Date initiated" />
+      </field>
+      <field id="reference_id">
+        <phrase id="fldcaption" value="Reference ID" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="Staff ID" />
+      </field>
+      <field id="staff_name">
+        <phrase id="fldcaption" value="Staff Name" />
+      </field>
+      <field id="department">
+        <phrase id="fldcaption" value="Department" />
+      </field>
+      <field id="branch">
+        <phrase id="fldcaption" value="Branch" />
+      </field>
+      <field id="buildings">
+        <phrase id="fldcaption" value="Buildings" />
+      </field>
+      <field id="floors">
+        <phrase id="fldcaption" value="Floors" />
+      </field>
+      <field id="items">
+        <phrase id="fldcaption" value="Items" />
+      </field>
+      <field id="priority">
+        <phrase id="fldcaption" value="Maintenance Priority" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="Descrption" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="Status" />
+      </field>
+      <field id="date_maintained">
+        <phrase id="fldcaption" value="Date Maintained" />
+      </field>
+      <field id="maintenance_action">
+        <phrase id="fldcaption" value="Maintance Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Save and Forward" />
+      </field>
+      <field id="maintenance_comment">
+        <phrase id="fldcaption" value="Maintance Comment" />
+      </field>
+      <field id="maintained_by">
+        <phrase id="fldcaption" value="Maintaned By" />
+      </field>
+      <field id="reviewed_date">
+        <phrase id="fldcaption" value="Reviewed Date" />
+      </field>
+      <field id="reviewed_action">
+        <phrase id="fldcaption" value="Reviewed Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Return for Rework" />
+        <phrase id="fldtagvalue3" value="2" />
+        <phrase id="fldtagcaption3" value="Reviewed and Closed" />
+      </field>
+      <field id="reviewed_comment">
+        <phrase id="fldcaption" value="Reviewed Comment" />
+      </field>
+      <field id="reviewed_by">
+        <phrase id="fldcaption" value="Reviewed By" />
+      </field>
+    </table>
+    <table id="maintenance_report">
+      <phrase id="tblcaption" value="Maintenance Report" />
+      <phrase id="tblpagecaption1" value="Maintenance Info" />
+      <phrase id="tblpagecaption2" value="Action" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="date_initiated">
+        <phrase id="fldcaption" value="Date initiated" />
+      </field>
+      <field id="reference_id">
+        <phrase id="fldcaption" value="Reference ID" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="Staff ID" />
+      </field>
+      <field id="staff_name">
+        <phrase id="fldcaption" value="Staff Name" />
+      </field>
+      <field id="department">
+        <phrase id="fldcaption" value="Department" />
+      </field>
+      <field id="branch">
+        <phrase id="fldcaption" value="Branch" />
+      </field>
+      <field id="buildings">
+        <phrase id="fldcaption" value="Buildings" />
+      </field>
+      <field id="floors">
+        <phrase id="fldcaption" value="Floors" />
+      </field>
+      <field id="items">
+        <phrase id="fldcaption" value="Items" />
+      </field>
+      <field id="priority">
+        <phrase id="fldcaption" value="Maintenance Priority" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="Descrption" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="Status" />
+      </field>
+      <field id="date_maintained">
+        <phrase id="fldcaption" value="Date Maintained" />
+      </field>
+      <field id="maintenance_action">
+        <phrase id="fldcaption" value="Maintance Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Save and Forward" />
+      </field>
+      <field id="maintenance_comment">
+        <phrase id="fldcaption" value="Maintance Comment" />
+      </field>
+      <field id="maintained_by">
+        <phrase id="fldcaption" value="Maintaned By" />
+      </field>
+      <field id="reviewed_date">
+        <phrase id="fldcaption" value="Reviewed Date" />
+      </field>
+      <field id="reviewed_action">
+        <phrase id="fldcaption" value="Reviewed Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Return for Rework" />
+        <phrase id="fldtagvalue3" value="2" />
+        <phrase id="fldtagcaption3" value="Reviewed and Closed" />
+      </field>
+      <field id="reviewed_comment">
+        <phrase id="fldcaption" value="Reviewed Comment" />
+      </field>
+      <field id="reviewed_by">
+        <phrase id="fldcaption" value="Reviewed By" />
+      </field>
+    </table>
+    <table id="assign_task">
+      <phrase id="tblcaption" value="Assigned Task Review" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="datetime_initiated">
+        <phrase id="fldcaption" value="Date Initiated" />
+      </field>
+      <field id="incident_id">
+        <phrase id="fldcaption" value="Incident ID" />
+      </field>
+      <field id="staffid">
+        <phrase id="fldcaption" value="Staff ID" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="Staff  Names" />
+      </field>
+      <field id="department">
+        <phrase id="fldcaption" value="Staff  Department" />
+      </field>
+      <field id="branch">
+        <phrase id="fldcaption" value="Branch" />
+      </field>
+      <field id="departments">
+        <phrase id="fldcaption" value="Responsible  Departments" />
+      </field>
+      <field id="category">
+        <phrase id="fldcaption" value="Category" />
+      </field>
+      <field id="sub_category">
+        <phrase id="fldcaption" value="Sub Category" />
+      </field>
+      <field id="sub_sub_category">
+        <phrase id="fldcaption" value="Sub Sub Category" />
+      </field>
+      <field id="selection_sub_category">
+        <phrase id="fldcaption" value="Selection Sub Category" />
+      </field>
+      <field id="start_date">
+        <phrase id="fldcaption" value="Start Date" />
+      </field>
+      <field id="end_date">
+        <phrase id="fldcaption" value="End Date" />
+      </field>
+      <field id="duration">
+        <phrase id="fldcaption" value="Duration" />
+      </field>
+      <field id="amount_paid">
+        <phrase id="fldcaption" value="Amount Paid" />
+      </field>
+      <field id="no_of_people_involved">
+        <phrase id="fldcaption" value="No of People" />
+      </field>
+      <field id="incident_type">
+        <phrase id="fldcaption" value="Incident Type" />
+      </field>
+      <field id="incident_category">
+        <phrase id="fldcaption" value="Incident Prioroty" />
+      </field>
+      <field id="incident_location">
+        <phrase id="fldcaption" value="Incident Location" />
+      </field>
+      <field id="incident_sub_location">
+        <phrase id="fldcaption" value="Incident Sub Location" />
+      </field>
+      <field id="incident_venue">
+        <phrase id="fldcaption" value="Incident Venue" />
+      </field>
+      <field id="incident_description">
+        <phrase id="fldcaption" value="Incident Description" />
+      </field>
+      <field id="_upload">
+        <phrase id="fldcaption" value="Document Upload" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="Status" />
+      </field>
+      <field id="initiator_action">
+        <phrase id="fldcaption" value="Initiator Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Save and Forward" />
+      </field>
+      <field id="initiator_comment">
+        <phrase id="fldcaption" value="Initiator Comment" />
+      </field>
+      <field id="report_by">
+        <phrase id="fldcaption" value="Report By" />
+      </field>
+      <field id="datetime_resolved">
+        <phrase id="fldcaption" value="Last Updated Date" />
+      </field>
+      <field id="assign_task">
+        <phrase id="fldcaption" value="Assign Task" />
+      </field>
+      <field id="approval_action">
+        <phrase id="fldcaption" value="Assign Task Action" />
+        <phrase id="fldtagvalue1" value="1" />
+        <phrase id="fldtagcaption1" value="Return For Rework" />
+        <phrase id="fldtagvalue2" value="2" />
+        <phrase id="fldtagcaption2" value="Assign Task" />
+        <phrase id="fldtagvalue3" value="3" />
+        <phrase id="fldtagcaption3" value="Ticket Closed" />
+      </field>
+      <field id="approval_comment">
+        <phrase id="fldcaption" value="Assign Task Comment" />
+      </field>
+      <field id="reason">
+        <phrase id="fldcaption" value="Reason For Task Not Compeleted" />
+      </field>
+      <field id="resolved_action">
+        <phrase id="fldcaption" value="Resloved Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="2" />
+        <phrase id="fldtagcaption2" value="Issue Not Resolved" />
+        <phrase id="fldtagvalue3" value="1" />
+        <phrase id="fldtagcaption3" value="Issue Resovled" />
+      </field>
+      <field id="resolved_comment">
+        <phrase id="fldcaption" value="Resolved Comment" />
+      </field>
+      <field id="resolved_by">
+        <phrase id="fldcaption" value="Resovled By" />
+      </field>
+      <field id="datetime_approved">
+        <phrase id="fldcaption" value="Date Rectified" />
+      </field>
+      <field id="approved_by">
+        <phrase id="fldcaption" value="Assigned By" />
+      </field>
+      <field id="last_updated_date">
+        <phrase id="fldcaption" value="Last Updated Date" />
+      </field>
+      <field id="last_updated_by">
+        <phrase id="fldcaption" value="Last Updated By" />
+      </field>
+      <field id="job_assessment">
+        <phrase id="fldcaption" value="Job Completion Assessment Rating" />
+        <phrase id="fldtagvalue1" value="Poor" />
+        <phrase id="fldtagcaption1" value="Poor" />
+        <phrase id="fldtagvalue2" value="Good" />
+        <phrase id="fldtagcaption2" value="Good" />
+        <phrase id="fldtagvalue3" value="Very Good" />
+        <phrase id="fldtagcaption3" value="Very Good" />
+        <phrase id="fldtagvalue4" value="Excellent" />
+        <phrase id="fldtagcaption4" value="Excellent" />
+        <phrase id="fldtagvalue5" value="Satisfactory" />
+        <phrase id="fldtagcaption5" value="Satisfactory" />
+      </field>
+      <field id="verified_datetime">
+        <phrase id="fldcaption" value="Verification Datetime" />
+      </field>
+      <field id="verified_action">
+        <phrase id="fldcaption" value="Verification  Action" />
+        <phrase id="fldtagvalue1" value="7" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Re-Assign Task" />
+        <phrase id="fldtagvalue3" value="8" />
+        <phrase id="fldtagcaption3" value="Ticket Verfied and Closed" />
+      </field>
+      <field id="verified_comment">
+        <phrase id="fldcaption" value="Verification Comment" />
+      </field>
+      <field id="verified_by">
+        <phrase id="fldcaption" value="Verified By" />
+      </field>
+    </table>
+    <table id="inventory">
+      <phrase id="tblcaption" value="Inventory" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="date_recieved">
+        <phrase id="fldcaption" value="Date Recieved" />
+      </field>
+      <field id="reference_id">
+        <phrase id="fldcaption" value="Reference ID" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="Staff ID" />
+      </field>
+      <field id="material_name">
+        <phrase id="fldcaption" value="Material Name" />
+      </field>
+      <field id="quantity">
+        <phrase id="fldcaption" value="Quantity" />
+      </field>
+      <field id="type">
+        <phrase id="fldcaption" value="Type" />
+      </field>
+      <field id="capacity">
+        <phrase id="fldcaption" value="Capacity" />
+      </field>
+      <field id="recieved_by">
+        <phrase id="fldcaption" value="Recieved By" />
+      </field>
+    </table>
+    <table id="inventory_store">
+      <phrase id="tblcaption" value="Inventory Store" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="date">
+        <phrase id="fldcaption" value="Date" />
+      </field>
+      <field id="reference_id">
+        <phrase id="fldcaption" value="reference id" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="staff id" />
+      </field>
+      <field id="material_name">
+        <phrase id="fldcaption" value="Material Name" />
+      </field>
+      <field id="quantity_in">
+        <phrase id="fldcaption" value="Quantity In" />
+      </field>
+      <field id="quantity_type">
+        <phrase id="fldcaption" value="Quantity Type" />
+      </field>
+      <field id="quantity_out">
+        <phrase id="fldcaption" value="Quantity Out" />
+      </field>
+      <field id="total_quantity">
+        <phrase id="fldcaption" value="Total Quantity" />
+      </field>
+      <field id="treated_by">
+        <phrase id="fldcaption" value="Treated By" />
+      </field>
+    </table>
+    <table id="dispenser">
+      <phrase id="tblcaption" value="Dispenser Activity" />
+      <phrase id="tblpagecaption1" value="Dispenser Info" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="date_initiated">
+        <phrase id="fldcaption" value="Date Initiated" />
+      </field>
+      <field id="referrence_id">
+        <phrase id="fldcaption" value="Referrence ID" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="Staff ID" />
+      </field>
+      <field id="fullname">
+        <phrase id="fldcaption" value="Fullname" />
+      </field>
+      <field id="department">
+        <phrase id="fldcaption" value="Department" />
+      </field>
+      <field id="location">
+        <phrase id="fldcaption" value="Location" />
+      </field>
+      <field id="sub_location">
+        <phrase id="fldcaption" value="Sub Location" />
+      </field>
+      <field id="venue">
+        <phrase id="fldcaption" value="Venue" />
+      </field>
+      <field id="type">
+        <phrase id="fldcaption" value="Dispenser Type" />
+      </field>
+      <field id="action_taken">
+        <phrase id="fldcaption" value="Action Taken" />
+      </field>
+      <field id="initiator_action">
+        <phrase id="fldcaption" value="Initiator Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Not Cleaned" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Cleaned" />
+        <phrase id="fldtagvalue3" value="2" />
+        <phrase id="fldtagcaption3" value="Under Maintenence" />
+        <phrase id="fldtagvalue4" value="3" />
+        <phrase id="fldtagcaption4" value="Maintenance Completed" />
+      </field>
+      <field id="initiator_comment">
+        <phrase id="fldcaption" value="Initiator Comment" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="Status" />
+      </field>
+      <field id="initiated_by">
+        <phrase id="fldcaption" value="Initiated By" />
+      </field>
+    </table>
+    <table id="dispenser_status">
+      <phrase id="tblcaption" value="Dispenser Status" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="description" />
+      </field>
+    </table>
+    <table id="dispenser_type">
+      <phrase id="tblcaption" value="Dispenser Type" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="description" />
+      </field>
+      <field id="make">
+        <phrase id="fldcaption" value="make" />
+      </field>
+      <field id="serial_no">
+        <phrase id="fldcaption" value="serial no" />
+      </field>
+    </table>
+    <table id="dispenser_report">
+      <phrase id="tblcaption" value="Dispenser Report" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="date_initiated">
+        <phrase id="fldcaption" value="Date Initiated" />
+      </field>
+      <field id="referrence_id">
+        <phrase id="fldcaption" value="Referrence ID" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="Staff ID" />
+      </field>
+      <field id="fullname">
+        <phrase id="fldcaption" value="Fullname" />
+      </field>
+      <field id="department">
+        <phrase id="fldcaption" value="Department" />
+      </field>
+      <field id="location">
+        <phrase id="fldcaption" value="Location" />
+      </field>
+      <field id="sub_location">
+        <phrase id="fldcaption" value="Sub Location" />
+      </field>
+      <field id="venue">
+        <phrase id="fldcaption" value="Venue" />
+      </field>
+      <field id="type">
+        <phrase id="fldcaption" value="Dispenser Type" />
+      </field>
+      <field id="action_taken">
+        <phrase id="fldcaption" value="action taken" />
+      </field>
+      <field id="initiator_action">
+        <phrase id="fldcaption" value="Initiator Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Not Cleaned" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Cleaned" />
+        <phrase id="fldtagvalue3" value="2" />
+        <phrase id="fldtagcaption3" value="Under Maintenence" />
+        <phrase id="fldtagvalue4" value="3" />
+        <phrase id="fldtagcaption4" value="Maintenance Completed" />
+      </field>
+      <field id="initiator_comment">
+        <phrase id="fldcaption" value="Initiator Comment" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="Status" />
+      </field>
+      <field id="initiated_by">
+        <phrase id="fldcaption" value="Initiated By" />
+      </field>
+    </table>
+    <table id="action_taken">
+      <phrase id="tblcaption" value="action taken" />
       <field id="id">
         <phrase id="fldcaption" value="id" />
       </field>
