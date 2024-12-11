@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2024/11/4" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2024/12/11" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -1921,6 +1921,7 @@
     </table>
     <table id="inventory_store">
       <phrase id="tblcaption" value="Inventory Store" />
+      <phrase id="tblpagecaption1" value="Inventory Store Info" />
       <field id="id">
         <phrase id="fldcaption" value="ID" />
       </field>
@@ -1928,28 +1929,28 @@
         <phrase id="fldcaption" value="Date" />
       </field>
       <field id="reference_id">
-        <phrase id="fldcaption" value="reference id" />
+        <phrase id="fldcaption" value="Reference ID" />
       </field>
       <field id="staff_id">
-        <phrase id="fldcaption" value="staff id" />
+        <phrase id="fldcaption" value="Staff ID" />
       </field>
       <field id="material_name">
         <phrase id="fldcaption" value="Material Name" />
       </field>
       <field id="quantity_in">
-        <phrase id="fldcaption" value="Quantity In" />
+        <phrase id="fldcaption" value="Qty In-Store" />
       </field>
       <field id="quantity_type">
-        <phrase id="fldcaption" value="Quantity Type" />
+        <phrase id="fldcaption" value="Material Type" />
       </field>
       <field id="quantity_out">
-        <phrase id="fldcaption" value="Quantity Out" />
+        <phrase id="fldcaption" value="Qty Out" />
       </field>
       <field id="total_quantity">
-        <phrase id="fldcaption" value="Total Quantity" />
+        <phrase id="fldcaption" value="Total  Balance" />
       </field>
       <field id="treated_by">
-        <phrase id="fldcaption" value="Treated By" />
+        <phrase id="fldcaption" value="Issued By" />
       </field>
     </table>
     <table id="dispenser">

@@ -111,6 +111,11 @@ $randStrs =	mt_rand(0000001,9999999);
 return "INV".$randStrs;
 }
 
+function generateINSKey(){
+$randStrs =	mt_rand(0000001,9999999);
+return "INS".$randStrs;
+}
+
 //
 //$conn = mysqli_connect("localhost", "root","","incident_report");
 

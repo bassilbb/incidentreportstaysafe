@@ -65,6 +65,12 @@ class cinventory_store_edit extends cinventory_store {
 		if ($this->UseTokenInUrl) $PageUrl .= "t=" . $this->TableVar . "&"; // Add page token
 		return $PageUrl;
 	}
+	var $AuditTrailOnAdd = TRUE;
+	var $AuditTrailOnEdit = TRUE;
+	var $AuditTrailOnDelete = TRUE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -861,7 +867,7 @@ class cinventory_store_edit extends cinventory_store {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
 		$sWhereWrk = "";
-		$this->material_name->LookupFilters = array();
+		$this->material_name->LookupFilters = array("dx1" => '`material_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1016,7 +1022,6 @@ class cinventory_store_edit extends cinventory_store {
 			$this->staff_id->PlaceHolder = ew_RemoveHtml($this->staff_id->FldCaption());
 
 			// material_name
-			$this->material_name->EditAttrs["class"] = "form-control";
 			$this->material_name->EditCustomAttributes = "";
 			if (trim(strval($this->material_name->CurrentValue)) == "") {
 				$sFilterWrk = "0=1";
@@ -1025,11 +1030,18 @@ class cinventory_store_edit extends cinventory_store {
 			}
 			$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `inventory`";
 			$sWhereWrk = "";
-			$this->material_name->LookupFilters = array();
+			$this->material_name->LookupFilters = array("dx1" => '`material_name`');
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
 			$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+				$this->material_name->ViewValue = $this->material_name->DisplayValue($arwrk);
+			} else {
+				$this->material_name->ViewValue = $Language->Phrase("PleaseSelect");
+			}
 			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
 			if ($rswrk) $rswrk->Close();
 			$this->material_name->EditValue = $arwrk;
@@ -1297,8 +1309,8 @@ class cinventory_store_edit extends cinventory_store {
 		case "x_material_name":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
-			$sWhereWrk = "";
-			$fld->LookupFilters = array();
+			$sWhereWrk = "{filter}";
+			$fld->LookupFilters = array("dx1" => '`material_name`');
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
@@ -1622,7 +1634,7 @@ $inventory_store_edit->ShowMessage();
 		<div class="<?php echo $inventory_store_edit->RightColumnClass ?>"><div<?php echo $inventory_store->date->CellAttributes() ?>>
 <?php if ($inventory_store->CurrentAction <> "F") { ?>
 <span id="el_inventory_store_date">
-<input type="text" data-table="inventory_store" data-field="x_date" data-page="1" name="x_date" id="x_date" placeholder="<?php echo ew_HtmlEncode($inventory_store->date->getPlaceHolder()) ?>" value="<?php echo $inventory_store->date->EditValue ?>"<?php echo $inventory_store->date->EditAttributes() ?>>
+<input type="text" data-table="inventory_store" data-field="x_date" data-page="1" name="x_date" id="x_date" maxlength="50" placeholder="<?php echo ew_HtmlEncode($inventory_store->date->getPlaceHolder()) ?>" value="<?php echo $inventory_store->date->EditValue ?>"<?php echo $inventory_store->date->EditAttributes() ?>>
 </span>
 <?php } else { ?>
 <span id="el_inventory_store_date">
@@ -1687,9 +1699,11 @@ finventory_storeedit.CreateAutoSuggest({"id":"x_staff_id","forceSelect":false});
 		<div class="<?php echo $inventory_store_edit->RightColumnClass ?>"><div<?php echo $inventory_store->material_name->CellAttributes() ?>>
 <?php if ($inventory_store->CurrentAction <> "F") { ?>
 <span id="el_inventory_store_material_name">
-<select data-table="inventory_store" data-field="x_material_name" data-page="1" data-value-separator="<?php echo $inventory_store->material_name->DisplayValueSeparatorAttribute() ?>" id="x_material_name" name="x_material_name"<?php echo $inventory_store->material_name->EditAttributes() ?>>
-<?php echo $inventory_store->material_name->SelectOptionListHtml("x_material_name") ?>
-</select>
+<span class="ewLookupList">
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_material_name"><?php echo (strval($inventory_store->material_name->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $inventory_store->material_name->ViewValue); ?></span>
+</span>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($inventory_store->material_name->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_material_name',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($inventory_store->material_name->ReadOnly || $inventory_store->material_name->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="inventory_store" data-field="x_material_name" data-page="1" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $inventory_store->material_name->DisplayValueSeparatorAttribute() ?>" name="x_material_name" id="x_material_name" value="<?php echo $inventory_store->material_name->CurrentValue ?>"<?php echo $inventory_store->material_name->EditAttributes() ?>>
 </span>
 <?php } else { ?>
 <span id="el_inventory_store_material_name">

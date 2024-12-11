@@ -105,6 +105,12 @@ class cinventory_store_list extends cinventory_store {
 	var $GridEditUrl;
 	var $MultiDeleteUrl;
 	var $MultiUpdateUrl;
+	var $AuditTrailOnAdd = TRUE;
+	var $AuditTrailOnEdit = TRUE;
+	var $AuditTrailOnDelete = TRUE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -1188,6 +1194,12 @@ class cinventory_store_list extends cinventory_store {
 		$item->Visible = $Security->CanEdit();
 		$item->OnLeft = TRUE;
 
+		// "copy"
+		$item = &$this->ListOptions->Add("copy");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = $Security->CanAdd();
+		$item->OnLeft = TRUE;
+
 		// "delete"
 		$item = &$this->ListOptions->Add("delete");
 		$item->CssClass = "text-nowrap";
@@ -1249,6 +1261,15 @@ class cinventory_store_list extends cinventory_store {
 		$editcaption = ew_HtmlTitle($Language->Phrase("EditLink"));
 		if ($Security->CanEdit()) {
 			$oListOpt->Body = "<a class=\"ewRowLink ewEdit\" title=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" href=\"" . ew_HtmlEncode($this->EditUrl) . "\">" . $Language->Phrase("EditLink") . "</a>";
+		} else {
+			$oListOpt->Body = "";
+		}
+
+		// "copy"
+		$oListOpt = &$this->ListOptions->Items["copy"];
+		$copycaption = ew_HtmlTitle($Language->Phrase("CopyLink"));
+		if ($Security->CanAdd()) {
+			$oListOpt->Body = "<a class=\"ewRowLink ewCopy\" title=\"" . $copycaption . "\" data-caption=\"" . $copycaption . "\" href=\"" . ew_HtmlEncode($this->CopyUrl) . "\">" . $Language->Phrase("CopyLink") . "</a>";
 		} else {
 			$oListOpt->Body = "";
 		}
@@ -1735,7 +1756,7 @@ class cinventory_store_list extends cinventory_store {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
 		$sWhereWrk = "";
-		$this->material_name->LookupFilters = array();
+		$this->material_name->LookupFilters = array("dx1" => '`material_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -2022,6 +2043,9 @@ class cinventory_store_list extends cinventory_store {
 	function Page_Load() {
 
 		//echo "Page Load";
+		if (CurrentPageID() == "list"){
+			 $_SESSION['INS_ID'] = generateINSKey();
+		 }
 	}
 
 	// Page Unload event
@@ -2242,6 +2266,13 @@ var CurrentSearchForm = finventory_storelistsrch = new ew_Form("finventory_store
 			$inventory_store_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
 		else
 			$inventory_store_list->setWarningMessage($Language->Phrase("NoRecord"));
+	}
+
+	// Audit trail on search
+	if ($inventory_store_list->AuditTrailOnSearch && $inventory_store_list->Command == "search" && !$inventory_store_list->RestoreSearch) {
+		$searchparm = ew_ServerVar("QUERY_STRING");
+		$searchsql = $inventory_store_list->getSessionWhere();
+		$inventory_store_list->WriteAuditTrailOnSearch($searchparm, $searchsql);
 	}
 $inventory_store_list->RenderOtherOptions();
 ?>
