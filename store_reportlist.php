@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg14.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
 <?php include_once "phpfn14.php" ?>
-<?php include_once "inventoryinfo.php" ?>
+<?php include_once "store_reportinfo.php" ?>
 <?php include_once "usersinfo.php" ?>
 <?php include_once "userfn14.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$inventory_list = NULL; // Initialize page object first
+$store_report_list = NULL; // Initialize page object first
 
-class cinventory_list extends cinventory {
+class cstore_report_list extends cstore_report {
 
 	// Page ID
 	var $PageID = 'list';
@@ -25,13 +25,13 @@ class cinventory_list extends cinventory {
 	var $ProjectID = '{DD9080C0-D1CA-431F-831F-CAC8FA61260C}';
 
 	// Table name
-	var $TableName = 'inventory';
+	var $TableName = 'store_report';
 
 	// Page object name
-	var $PageObjName = 'inventory_list';
+	var $PageObjName = 'store_report_list';
 
 	// Grid form hidden field names
-	var $FormName = 'finventorylist';
+	var $FormName = 'fstore_reportlist';
 	var $FormActionName = 'k_action';
 	var $FormKeyName = 'k_key';
 	var $FormOldKeyName = 'k_oldkey';
@@ -290,10 +290,10 @@ class cinventory_list extends cinventory {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (inventory)
-		if (!isset($GLOBALS["inventory"]) || get_class($GLOBALS["inventory"]) == "cinventory") {
-			$GLOBALS["inventory"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["inventory"];
+		// Table object (store_report)
+		if (!isset($GLOBALS["store_report"]) || get_class($GLOBALS["store_report"]) == "cstore_report") {
+			$GLOBALS["store_report"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["store_report"];
 		}
 
 		// Initialize URLs
@@ -304,12 +304,12 @@ class cinventory_list extends cinventory {
 		$this->ExportXmlUrl = $this->PageUrl() . "export=xml";
 		$this->ExportCsvUrl = $this->PageUrl() . "export=csv";
 		$this->ExportPdfUrl = $this->PageUrl() . "export=pdf";
-		$this->AddUrl = "inventoryadd.php";
+		$this->AddUrl = "store_reportadd.php";
 		$this->InlineAddUrl = $this->PageUrl() . "a=add";
 		$this->GridAddUrl = $this->PageUrl() . "a=gridadd";
 		$this->GridEditUrl = $this->PageUrl() . "a=gridedit";
-		$this->MultiDeleteUrl = "inventorydelete.php";
-		$this->MultiUpdateUrl = "inventoryupdate.php";
+		$this->MultiDeleteUrl = "store_reportdelete.php";
+		$this->MultiUpdateUrl = "store_reportupdate.php";
 
 		// Table object (users)
 		if (!isset($GLOBALS['users'])) $GLOBALS['users'] = new cusers();
@@ -320,7 +320,7 @@ class cinventory_list extends cinventory {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'inventory', TRUE);
+			define("EW_TABLE_NAME", 'store_report', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -362,7 +362,7 @@ class cinventory_list extends cinventory {
 		// Filter options
 		$this->FilterOptions = new cListOptions();
 		$this->FilterOptions->Tag = "div";
-		$this->FilterOptions->TagClassName = "ewFilterOption finventorylistsrch";
+		$this->FilterOptions->TagClassName = "ewFilterOption fstore_reportlistsrch";
 
 		// List actions
 		$this->ListActions = new cListActions();
@@ -446,14 +446,22 @@ class cinventory_list extends cinventory {
 
 		// Setup export options
 		$this->SetupExportOptions();
-		$this->date_recieved->SetVisibility();
+		$this->id->SetVisibility();
+		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
+			$this->id->Visible = FALSE;
+		$this->date->SetVisibility();
 		$this->reference_id->SetVisibility();
+		$this->staff_id->SetVisibility();
 		$this->material_name->SetVisibility();
-		$this->quantity->SetVisibility();
-		$this->type->SetVisibility();
-		$this->capacity->SetVisibility();
-		$this->recieved_by->SetVisibility();
-		$this->statuss->SetVisibility();
+		$this->quantity_in->SetVisibility();
+		$this->quantity_type->SetVisibility();
+		$this->quantity_out->SetVisibility();
+		$this->total_quantity->SetVisibility();
+		$this->status->SetVisibility();
+		$this->issued_comment->SetVisibility();
+		$this->issued_by->SetVisibility();
+		$this->approved_by->SetVisibility();
+		$this->verified_by->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -514,13 +522,13 @@ class cinventory_list extends cinventory {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $inventory;
+		global $EW_EXPORT, $store_report;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($inventory);
+				$doc = new $class($store_report);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -809,22 +817,24 @@ class cinventory_list extends cinventory {
 
 		// Load server side filters
 		if (EW_SEARCH_FILTER_OPTION == "Server" && isset($UserProfile))
-			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "finventorylistsrch");
+			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "fstore_reportlistsrch");
 		$sFilterList = ew_Concat($sFilterList, $this->id->AdvancedSearch->ToJson(), ","); // Field id
-		$sFilterList = ew_Concat($sFilterList, $this->date_recieved->AdvancedSearch->ToJson(), ","); // Field date_recieved
+		$sFilterList = ew_Concat($sFilterList, $this->date->AdvancedSearch->ToJson(), ","); // Field date
 		$sFilterList = ew_Concat($sFilterList, $this->reference_id->AdvancedSearch->ToJson(), ","); // Field reference_id
 		$sFilterList = ew_Concat($sFilterList, $this->staff_id->AdvancedSearch->ToJson(), ","); // Field staff_id
 		$sFilterList = ew_Concat($sFilterList, $this->material_name->AdvancedSearch->ToJson(), ","); // Field material_name
-		$sFilterList = ew_Concat($sFilterList, $this->quantity->AdvancedSearch->ToJson(), ","); // Field quantity
-		$sFilterList = ew_Concat($sFilterList, $this->type->AdvancedSearch->ToJson(), ","); // Field type
-		$sFilterList = ew_Concat($sFilterList, $this->capacity->AdvancedSearch->ToJson(), ","); // Field capacity
-		$sFilterList = ew_Concat($sFilterList, $this->recieved_by->AdvancedSearch->ToJson(), ","); // Field recieved_by
-		$sFilterList = ew_Concat($sFilterList, $this->statuss->AdvancedSearch->ToJson(), ","); // Field statuss
-		$sFilterList = ew_Concat($sFilterList, $this->recieved_action->AdvancedSearch->ToJson(), ","); // Field recieved_action
-		$sFilterList = ew_Concat($sFilterList, $this->recieved_comment->AdvancedSearch->ToJson(), ","); // Field recieved_comment
-		$sFilterList = ew_Concat($sFilterList, $this->date_approved->AdvancedSearch->ToJson(), ","); // Field date_approved
+		$sFilterList = ew_Concat($sFilterList, $this->quantity_in->AdvancedSearch->ToJson(), ","); // Field quantity_in
+		$sFilterList = ew_Concat($sFilterList, $this->quantity_type->AdvancedSearch->ToJson(), ","); // Field quantity_type
+		$sFilterList = ew_Concat($sFilterList, $this->quantity_out->AdvancedSearch->ToJson(), ","); // Field quantity_out
+		$sFilterList = ew_Concat($sFilterList, $this->total_quantity->AdvancedSearch->ToJson(), ","); // Field total_quantity
+		$sFilterList = ew_Concat($sFilterList, $this->treated_by->AdvancedSearch->ToJson(), ","); // Field treated_by
+		$sFilterList = ew_Concat($sFilterList, $this->status->AdvancedSearch->ToJson(), ","); // Field status
+		$sFilterList = ew_Concat($sFilterList, $this->issued_action->AdvancedSearch->ToJson(), ","); // Field issued_action
+		$sFilterList = ew_Concat($sFilterList, $this->issued_comment->AdvancedSearch->ToJson(), ","); // Field issued_comment
+		$sFilterList = ew_Concat($sFilterList, $this->issued_by->AdvancedSearch->ToJson(), ","); // Field issued_by
+		$sFilterList = ew_Concat($sFilterList, $this->approver_date->AdvancedSearch->ToJson(), ","); // Field approver_date
 		$sFilterList = ew_Concat($sFilterList, $this->approver_action->AdvancedSearch->ToJson(), ","); // Field approver_action
-		$sFilterList = ew_Concat($sFilterList, $this->approver_comment->AdvancedSearch->ToJson(), ","); // Field approver_comment
+		$sFilterList = ew_Concat($sFilterList, $this->approved_comment->AdvancedSearch->ToJson(), ","); // Field approved_comment
 		$sFilterList = ew_Concat($sFilterList, $this->approved_by->AdvancedSearch->ToJson(), ","); // Field approved_by
 		$sFilterList = ew_Concat($sFilterList, $this->verified_date->AdvancedSearch->ToJson(), ","); // Field verified_date
 		$sFilterList = ew_Concat($sFilterList, $this->verified_action->AdvancedSearch->ToJson(), ","); // Field verified_action
@@ -852,7 +862,7 @@ class cinventory_list extends cinventory {
 		global $UserProfile;
 		if (@$_POST["ajax"] == "savefilters") { // Save filter request (Ajax)
 			$filters = @$_POST["filters"];
-			$UserProfile->SetSearchFilters(CurrentUserName(), "finventorylistsrch", $filters);
+			$UserProfile->SetSearchFilters(CurrentUserName(), "fstore_reportlistsrch", $filters);
 
 			// Clean output buffer
 			if (!EW_DEBUG_ENABLED && ob_get_length())
@@ -882,13 +892,13 @@ class cinventory_list extends cinventory {
 		$this->id->AdvancedSearch->SearchOperator2 = @$filter["w_id"];
 		$this->id->AdvancedSearch->Save();
 
-		// Field date_recieved
-		$this->date_recieved->AdvancedSearch->SearchValue = @$filter["x_date_recieved"];
-		$this->date_recieved->AdvancedSearch->SearchOperator = @$filter["z_date_recieved"];
-		$this->date_recieved->AdvancedSearch->SearchCondition = @$filter["v_date_recieved"];
-		$this->date_recieved->AdvancedSearch->SearchValue2 = @$filter["y_date_recieved"];
-		$this->date_recieved->AdvancedSearch->SearchOperator2 = @$filter["w_date_recieved"];
-		$this->date_recieved->AdvancedSearch->Save();
+		// Field date
+		$this->date->AdvancedSearch->SearchValue = @$filter["x_date"];
+		$this->date->AdvancedSearch->SearchOperator = @$filter["z_date"];
+		$this->date->AdvancedSearch->SearchCondition = @$filter["v_date"];
+		$this->date->AdvancedSearch->SearchValue2 = @$filter["y_date"];
+		$this->date->AdvancedSearch->SearchOperator2 = @$filter["w_date"];
+		$this->date->AdvancedSearch->Save();
 
 		// Field reference_id
 		$this->reference_id->AdvancedSearch->SearchValue = @$filter["x_reference_id"];
@@ -914,69 +924,85 @@ class cinventory_list extends cinventory {
 		$this->material_name->AdvancedSearch->SearchOperator2 = @$filter["w_material_name"];
 		$this->material_name->AdvancedSearch->Save();
 
-		// Field quantity
-		$this->quantity->AdvancedSearch->SearchValue = @$filter["x_quantity"];
-		$this->quantity->AdvancedSearch->SearchOperator = @$filter["z_quantity"];
-		$this->quantity->AdvancedSearch->SearchCondition = @$filter["v_quantity"];
-		$this->quantity->AdvancedSearch->SearchValue2 = @$filter["y_quantity"];
-		$this->quantity->AdvancedSearch->SearchOperator2 = @$filter["w_quantity"];
-		$this->quantity->AdvancedSearch->Save();
+		// Field quantity_in
+		$this->quantity_in->AdvancedSearch->SearchValue = @$filter["x_quantity_in"];
+		$this->quantity_in->AdvancedSearch->SearchOperator = @$filter["z_quantity_in"];
+		$this->quantity_in->AdvancedSearch->SearchCondition = @$filter["v_quantity_in"];
+		$this->quantity_in->AdvancedSearch->SearchValue2 = @$filter["y_quantity_in"];
+		$this->quantity_in->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_in"];
+		$this->quantity_in->AdvancedSearch->Save();
 
-		// Field type
-		$this->type->AdvancedSearch->SearchValue = @$filter["x_type"];
-		$this->type->AdvancedSearch->SearchOperator = @$filter["z_type"];
-		$this->type->AdvancedSearch->SearchCondition = @$filter["v_type"];
-		$this->type->AdvancedSearch->SearchValue2 = @$filter["y_type"];
-		$this->type->AdvancedSearch->SearchOperator2 = @$filter["w_type"];
-		$this->type->AdvancedSearch->Save();
+		// Field quantity_type
+		$this->quantity_type->AdvancedSearch->SearchValue = @$filter["x_quantity_type"];
+		$this->quantity_type->AdvancedSearch->SearchOperator = @$filter["z_quantity_type"];
+		$this->quantity_type->AdvancedSearch->SearchCondition = @$filter["v_quantity_type"];
+		$this->quantity_type->AdvancedSearch->SearchValue2 = @$filter["y_quantity_type"];
+		$this->quantity_type->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_type"];
+		$this->quantity_type->AdvancedSearch->Save();
 
-		// Field capacity
-		$this->capacity->AdvancedSearch->SearchValue = @$filter["x_capacity"];
-		$this->capacity->AdvancedSearch->SearchOperator = @$filter["z_capacity"];
-		$this->capacity->AdvancedSearch->SearchCondition = @$filter["v_capacity"];
-		$this->capacity->AdvancedSearch->SearchValue2 = @$filter["y_capacity"];
-		$this->capacity->AdvancedSearch->SearchOperator2 = @$filter["w_capacity"];
-		$this->capacity->AdvancedSearch->Save();
+		// Field quantity_out
+		$this->quantity_out->AdvancedSearch->SearchValue = @$filter["x_quantity_out"];
+		$this->quantity_out->AdvancedSearch->SearchOperator = @$filter["z_quantity_out"];
+		$this->quantity_out->AdvancedSearch->SearchCondition = @$filter["v_quantity_out"];
+		$this->quantity_out->AdvancedSearch->SearchValue2 = @$filter["y_quantity_out"];
+		$this->quantity_out->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_out"];
+		$this->quantity_out->AdvancedSearch->Save();
 
-		// Field recieved_by
-		$this->recieved_by->AdvancedSearch->SearchValue = @$filter["x_recieved_by"];
-		$this->recieved_by->AdvancedSearch->SearchOperator = @$filter["z_recieved_by"];
-		$this->recieved_by->AdvancedSearch->SearchCondition = @$filter["v_recieved_by"];
-		$this->recieved_by->AdvancedSearch->SearchValue2 = @$filter["y_recieved_by"];
-		$this->recieved_by->AdvancedSearch->SearchOperator2 = @$filter["w_recieved_by"];
-		$this->recieved_by->AdvancedSearch->Save();
+		// Field total_quantity
+		$this->total_quantity->AdvancedSearch->SearchValue = @$filter["x_total_quantity"];
+		$this->total_quantity->AdvancedSearch->SearchOperator = @$filter["z_total_quantity"];
+		$this->total_quantity->AdvancedSearch->SearchCondition = @$filter["v_total_quantity"];
+		$this->total_quantity->AdvancedSearch->SearchValue2 = @$filter["y_total_quantity"];
+		$this->total_quantity->AdvancedSearch->SearchOperator2 = @$filter["w_total_quantity"];
+		$this->total_quantity->AdvancedSearch->Save();
 
-		// Field statuss
-		$this->statuss->AdvancedSearch->SearchValue = @$filter["x_statuss"];
-		$this->statuss->AdvancedSearch->SearchOperator = @$filter["z_statuss"];
-		$this->statuss->AdvancedSearch->SearchCondition = @$filter["v_statuss"];
-		$this->statuss->AdvancedSearch->SearchValue2 = @$filter["y_statuss"];
-		$this->statuss->AdvancedSearch->SearchOperator2 = @$filter["w_statuss"];
-		$this->statuss->AdvancedSearch->Save();
+		// Field treated_by
+		$this->treated_by->AdvancedSearch->SearchValue = @$filter["x_treated_by"];
+		$this->treated_by->AdvancedSearch->SearchOperator = @$filter["z_treated_by"];
+		$this->treated_by->AdvancedSearch->SearchCondition = @$filter["v_treated_by"];
+		$this->treated_by->AdvancedSearch->SearchValue2 = @$filter["y_treated_by"];
+		$this->treated_by->AdvancedSearch->SearchOperator2 = @$filter["w_treated_by"];
+		$this->treated_by->AdvancedSearch->Save();
 
-		// Field recieved_action
-		$this->recieved_action->AdvancedSearch->SearchValue = @$filter["x_recieved_action"];
-		$this->recieved_action->AdvancedSearch->SearchOperator = @$filter["z_recieved_action"];
-		$this->recieved_action->AdvancedSearch->SearchCondition = @$filter["v_recieved_action"];
-		$this->recieved_action->AdvancedSearch->SearchValue2 = @$filter["y_recieved_action"];
-		$this->recieved_action->AdvancedSearch->SearchOperator2 = @$filter["w_recieved_action"];
-		$this->recieved_action->AdvancedSearch->Save();
+		// Field status
+		$this->status->AdvancedSearch->SearchValue = @$filter["x_status"];
+		$this->status->AdvancedSearch->SearchOperator = @$filter["z_status"];
+		$this->status->AdvancedSearch->SearchCondition = @$filter["v_status"];
+		$this->status->AdvancedSearch->SearchValue2 = @$filter["y_status"];
+		$this->status->AdvancedSearch->SearchOperator2 = @$filter["w_status"];
+		$this->status->AdvancedSearch->Save();
 
-		// Field recieved_comment
-		$this->recieved_comment->AdvancedSearch->SearchValue = @$filter["x_recieved_comment"];
-		$this->recieved_comment->AdvancedSearch->SearchOperator = @$filter["z_recieved_comment"];
-		$this->recieved_comment->AdvancedSearch->SearchCondition = @$filter["v_recieved_comment"];
-		$this->recieved_comment->AdvancedSearch->SearchValue2 = @$filter["y_recieved_comment"];
-		$this->recieved_comment->AdvancedSearch->SearchOperator2 = @$filter["w_recieved_comment"];
-		$this->recieved_comment->AdvancedSearch->Save();
+		// Field issued_action
+		$this->issued_action->AdvancedSearch->SearchValue = @$filter["x_issued_action"];
+		$this->issued_action->AdvancedSearch->SearchOperator = @$filter["z_issued_action"];
+		$this->issued_action->AdvancedSearch->SearchCondition = @$filter["v_issued_action"];
+		$this->issued_action->AdvancedSearch->SearchValue2 = @$filter["y_issued_action"];
+		$this->issued_action->AdvancedSearch->SearchOperator2 = @$filter["w_issued_action"];
+		$this->issued_action->AdvancedSearch->Save();
 
-		// Field date_approved
-		$this->date_approved->AdvancedSearch->SearchValue = @$filter["x_date_approved"];
-		$this->date_approved->AdvancedSearch->SearchOperator = @$filter["z_date_approved"];
-		$this->date_approved->AdvancedSearch->SearchCondition = @$filter["v_date_approved"];
-		$this->date_approved->AdvancedSearch->SearchValue2 = @$filter["y_date_approved"];
-		$this->date_approved->AdvancedSearch->SearchOperator2 = @$filter["w_date_approved"];
-		$this->date_approved->AdvancedSearch->Save();
+		// Field issued_comment
+		$this->issued_comment->AdvancedSearch->SearchValue = @$filter["x_issued_comment"];
+		$this->issued_comment->AdvancedSearch->SearchOperator = @$filter["z_issued_comment"];
+		$this->issued_comment->AdvancedSearch->SearchCondition = @$filter["v_issued_comment"];
+		$this->issued_comment->AdvancedSearch->SearchValue2 = @$filter["y_issued_comment"];
+		$this->issued_comment->AdvancedSearch->SearchOperator2 = @$filter["w_issued_comment"];
+		$this->issued_comment->AdvancedSearch->Save();
+
+		// Field issued_by
+		$this->issued_by->AdvancedSearch->SearchValue = @$filter["x_issued_by"];
+		$this->issued_by->AdvancedSearch->SearchOperator = @$filter["z_issued_by"];
+		$this->issued_by->AdvancedSearch->SearchCondition = @$filter["v_issued_by"];
+		$this->issued_by->AdvancedSearch->SearchValue2 = @$filter["y_issued_by"];
+		$this->issued_by->AdvancedSearch->SearchOperator2 = @$filter["w_issued_by"];
+		$this->issued_by->AdvancedSearch->Save();
+
+		// Field approver_date
+		$this->approver_date->AdvancedSearch->SearchValue = @$filter["x_approver_date"];
+		$this->approver_date->AdvancedSearch->SearchOperator = @$filter["z_approver_date"];
+		$this->approver_date->AdvancedSearch->SearchCondition = @$filter["v_approver_date"];
+		$this->approver_date->AdvancedSearch->SearchValue2 = @$filter["y_approver_date"];
+		$this->approver_date->AdvancedSearch->SearchOperator2 = @$filter["w_approver_date"];
+		$this->approver_date->AdvancedSearch->Save();
 
 		// Field approver_action
 		$this->approver_action->AdvancedSearch->SearchValue = @$filter["x_approver_action"];
@@ -986,13 +1012,13 @@ class cinventory_list extends cinventory {
 		$this->approver_action->AdvancedSearch->SearchOperator2 = @$filter["w_approver_action"];
 		$this->approver_action->AdvancedSearch->Save();
 
-		// Field approver_comment
-		$this->approver_comment->AdvancedSearch->SearchValue = @$filter["x_approver_comment"];
-		$this->approver_comment->AdvancedSearch->SearchOperator = @$filter["z_approver_comment"];
-		$this->approver_comment->AdvancedSearch->SearchCondition = @$filter["v_approver_comment"];
-		$this->approver_comment->AdvancedSearch->SearchValue2 = @$filter["y_approver_comment"];
-		$this->approver_comment->AdvancedSearch->SearchOperator2 = @$filter["w_approver_comment"];
-		$this->approver_comment->AdvancedSearch->Save();
+		// Field approved_comment
+		$this->approved_comment->AdvancedSearch->SearchValue = @$filter["x_approved_comment"];
+		$this->approved_comment->AdvancedSearch->SearchOperator = @$filter["z_approved_comment"];
+		$this->approved_comment->AdvancedSearch->SearchCondition = @$filter["v_approved_comment"];
+		$this->approved_comment->AdvancedSearch->SearchValue2 = @$filter["y_approved_comment"];
+		$this->approved_comment->AdvancedSearch->SearchOperator2 = @$filter["w_approved_comment"];
+		$this->approved_comment->AdvancedSearch->Save();
 
 		// Field approved_by
 		$this->approved_by->AdvancedSearch->SearchValue = @$filter["x_approved_by"];
@@ -1042,11 +1068,12 @@ class cinventory_list extends cinventory {
 		$sWhere = "";
 		$this->BuildBasicSearchSQL($sWhere, $this->reference_id, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->material_name, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->quantity, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->type, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->capacity, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->recieved_comment, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->approver_comment, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->quantity_in, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->quantity_type, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->quantity_out, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->total_quantity, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->issued_comment, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->approved_comment, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->verified_comment, $arKeywords, $type);
 		return $sWhere;
 	}
@@ -1194,14 +1221,20 @@ class cinventory_list extends cinventory {
 		if (@$_GET["order"] <> "") {
 			$this->CurrentOrder = @$_GET["order"];
 			$this->CurrentOrderType = @$_GET["ordertype"];
-			$this->UpdateSort($this->date_recieved); // date_recieved
+			$this->UpdateSort($this->id); // id
+			$this->UpdateSort($this->date); // date
 			$this->UpdateSort($this->reference_id); // reference_id
+			$this->UpdateSort($this->staff_id); // staff_id
 			$this->UpdateSort($this->material_name); // material_name
-			$this->UpdateSort($this->quantity); // quantity
-			$this->UpdateSort($this->type); // type
-			$this->UpdateSort($this->capacity); // capacity
-			$this->UpdateSort($this->recieved_by); // recieved_by
-			$this->UpdateSort($this->statuss); // statuss
+			$this->UpdateSort($this->quantity_in); // quantity_in
+			$this->UpdateSort($this->quantity_type); // quantity_type
+			$this->UpdateSort($this->quantity_out); // quantity_out
+			$this->UpdateSort($this->total_quantity); // total_quantity
+			$this->UpdateSort($this->status); // status
+			$this->UpdateSort($this->issued_comment); // issued_comment
+			$this->UpdateSort($this->issued_by); // issued_by
+			$this->UpdateSort($this->approved_by); // approved_by
+			$this->UpdateSort($this->verified_by); // verified_by
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1234,14 +1267,20 @@ class cinventory_list extends cinventory {
 			if ($this->Command == "resetsort") {
 				$sOrderBy = "";
 				$this->setSessionOrderBy($sOrderBy);
-				$this->date_recieved->setSort("");
+				$this->id->setSort("");
+				$this->date->setSort("");
 				$this->reference_id->setSort("");
+				$this->staff_id->setSort("");
 				$this->material_name->setSort("");
-				$this->quantity->setSort("");
-				$this->type->setSort("");
-				$this->capacity->setSort("");
-				$this->recieved_by->setSort("");
-				$this->statuss->setSort("");
+				$this->quantity_in->setSort("");
+				$this->quantity_type->setSort("");
+				$this->quantity_out->setSort("");
+				$this->total_quantity->setSort("");
+				$this->status->setSort("");
+				$this->issued_comment->setSort("");
+				$this->issued_by->setSort("");
+				$this->approved_by->setSort("");
+				$this->verified_by->setSort("");
 			}
 
 			// Reset start position
@@ -1259,30 +1298,6 @@ class cinventory_list extends cinventory {
 		$item->Body = "";
 		$item->OnLeft = TRUE;
 		$item->Visible = FALSE;
-
-		// "view"
-		$item = &$this->ListOptions->Add("view");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanView();
-		$item->OnLeft = TRUE;
-
-		// "edit"
-		$item = &$this->ListOptions->Add("edit");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanEdit();
-		$item->OnLeft = TRUE;
-
-		// "copy"
-		$item = &$this->ListOptions->Add("copy");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanAdd();
-		$item->OnLeft = TRUE;
-
-		// "delete"
-		$item = &$this->ListOptions->Add("delete");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanDelete();
-		$item->OnLeft = TRUE;
 
 		// List actions
 		$item = &$this->ListOptions->Add("listactions");
@@ -1324,40 +1339,6 @@ class cinventory_list extends cinventory {
 
 		// Call ListOptions_Rendering event
 		$this->ListOptions_Rendering();
-
-		// "view"
-		$oListOpt = &$this->ListOptions->Items["view"];
-		$viewcaption = ew_HtmlTitle($Language->Phrase("ViewLink"));
-		if ($Security->CanView()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-caption=\"" . $viewcaption . "\" href=\"" . ew_HtmlEncode($this->ViewUrl) . "\">" . $Language->Phrase("ViewLink") . "</a>";
-		} else {
-			$oListOpt->Body = "";
-		}
-
-		// "edit"
-		$oListOpt = &$this->ListOptions->Items["edit"];
-		$editcaption = ew_HtmlTitle($Language->Phrase("EditLink"));
-		if ($Security->CanEdit()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewEdit\" title=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" href=\"" . ew_HtmlEncode($this->EditUrl) . "\">" . $Language->Phrase("EditLink") . "</a>";
-		} else {
-			$oListOpt->Body = "";
-		}
-
-		// "copy"
-		$oListOpt = &$this->ListOptions->Items["copy"];
-		$copycaption = ew_HtmlTitle($Language->Phrase("CopyLink"));
-		if ($Security->CanAdd()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewCopy\" title=\"" . $copycaption . "\" data-caption=\"" . $copycaption . "\" href=\"" . ew_HtmlEncode($this->CopyUrl) . "\">" . $Language->Phrase("CopyLink") . "</a>";
-		} else {
-			$oListOpt->Body = "";
-		}
-
-		// "delete"
-		$oListOpt = &$this->ListOptions->Items["delete"];
-		if ($Security->CanDelete())
-			$oListOpt->Body = "<a class=\"ewRowLink ewDelete\"" . "" . " title=\"" . ew_HtmlTitle($Language->Phrase("DeleteLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("DeleteLink")) . "\" href=\"" . ew_HtmlEncode($this->DeleteUrl) . "\">" . $Language->Phrase("DeleteLink") . "</a>";
-		else
-			$oListOpt->Body = "";
 
 		// Set up list action buttons
 		$oListOpt = &$this->ListOptions->GetItem("listactions");
@@ -1401,13 +1382,6 @@ class cinventory_list extends cinventory {
 	function SetupOtherOptions() {
 		global $Language, $Security;
 		$options = &$this->OtherOptions;
-		$option = $options["addedit"];
-
-		// Add
-		$item = &$option->Add("add");
-		$addcaption = ew_HtmlTitle($Language->Phrase("AddLink"));
-		$item->Body = "<a class=\"ewAddEdit ewAdd\" title=\"" . $addcaption . "\" data-caption=\"" . $addcaption . "\" href=\"" . ew_HtmlEncode($this->AddUrl) . "\">" . $Language->Phrase("AddLink") . "</a>";
-		$item->Visible = ($this->AddUrl <> "" && $Security->CanAdd());
 		$option = $options["action"];
 
 		// Set up options default
@@ -1426,10 +1400,10 @@ class cinventory_list extends cinventory {
 
 		// Filter button
 		$item = &$this->FilterOptions->Add("savecurrentfilter");
-		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"finventorylistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
+		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"fstore_reportlistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
 		$item->Visible = TRUE;
 		$item = &$this->FilterOptions->Add("deletefilter");
-		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"finventorylistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
+		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"fstore_reportlistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
 		$item->Visible = TRUE;
 		$this->FilterOptions->UseDropDownButton = TRUE;
 		$this->FilterOptions->UseButtonGroup = !$this->FilterOptions->UseDropDownButton;
@@ -1453,7 +1427,7 @@ class cinventory_list extends cinventory {
 					$item = &$option->Add("custom_" . $listaction->Action);
 					$caption = $listaction->Caption;
 					$icon = ($listaction->Icon <> "") ? "<span class=\"" . ew_HtmlEncode($listaction->Icon) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\"></span> " : $caption;
-					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.finventorylist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
+					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.fstore_reportlist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
 					$item->Visible = $listaction->Allow;
 				}
 			}
@@ -1557,7 +1531,7 @@ class cinventory_list extends cinventory {
 		// Search button
 		$item = &$this->SearchOptions->Add("searchtoggle");
 		$SearchToggleClass = ($this->SearchWhere <> "") ? " active" : " active";
-		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"finventorylistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"fstore_reportlistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
 		$item->Visible = TRUE;
 
 		// Show all button
@@ -1697,20 +1671,22 @@ class cinventory_list extends cinventory {
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
-		$this->date_recieved->setDbValue($row['date_recieved']);
+		$this->date->setDbValue($row['date']);
 		$this->reference_id->setDbValue($row['reference_id']);
 		$this->staff_id->setDbValue($row['staff_id']);
 		$this->material_name->setDbValue($row['material_name']);
-		$this->quantity->setDbValue($row['quantity']);
-		$this->type->setDbValue($row['type']);
-		$this->capacity->setDbValue($row['capacity']);
-		$this->recieved_by->setDbValue($row['recieved_by']);
-		$this->statuss->setDbValue($row['statuss']);
-		$this->recieved_action->setDbValue($row['recieved_action']);
-		$this->recieved_comment->setDbValue($row['recieved_comment']);
-		$this->date_approved->setDbValue($row['date_approved']);
+		$this->quantity_in->setDbValue($row['quantity_in']);
+		$this->quantity_type->setDbValue($row['quantity_type']);
+		$this->quantity_out->setDbValue($row['quantity_out']);
+		$this->total_quantity->setDbValue($row['total_quantity']);
+		$this->treated_by->setDbValue($row['treated_by']);
+		$this->status->setDbValue($row['status']);
+		$this->issued_action->setDbValue($row['issued_action']);
+		$this->issued_comment->setDbValue($row['issued_comment']);
+		$this->issued_by->setDbValue($row['issued_by']);
+		$this->approver_date->setDbValue($row['approver_date']);
 		$this->approver_action->setDbValue($row['approver_action']);
-		$this->approver_comment->setDbValue($row['approver_comment']);
+		$this->approved_comment->setDbValue($row['approved_comment']);
 		$this->approved_by->setDbValue($row['approved_by']);
 		$this->verified_date->setDbValue($row['verified_date']);
 		$this->verified_action->setDbValue($row['verified_action']);
@@ -1722,20 +1698,22 @@ class cinventory_list extends cinventory {
 	function NewRow() {
 		$row = array();
 		$row['id'] = NULL;
-		$row['date_recieved'] = NULL;
+		$row['date'] = NULL;
 		$row['reference_id'] = NULL;
 		$row['staff_id'] = NULL;
 		$row['material_name'] = NULL;
-		$row['quantity'] = NULL;
-		$row['type'] = NULL;
-		$row['capacity'] = NULL;
-		$row['recieved_by'] = NULL;
-		$row['statuss'] = NULL;
-		$row['recieved_action'] = NULL;
-		$row['recieved_comment'] = NULL;
-		$row['date_approved'] = NULL;
+		$row['quantity_in'] = NULL;
+		$row['quantity_type'] = NULL;
+		$row['quantity_out'] = NULL;
+		$row['total_quantity'] = NULL;
+		$row['treated_by'] = NULL;
+		$row['status'] = NULL;
+		$row['issued_action'] = NULL;
+		$row['issued_comment'] = NULL;
+		$row['issued_by'] = NULL;
+		$row['approver_date'] = NULL;
 		$row['approver_action'] = NULL;
-		$row['approver_comment'] = NULL;
+		$row['approved_comment'] = NULL;
 		$row['approved_by'] = NULL;
 		$row['verified_date'] = NULL;
 		$row['verified_action'] = NULL;
@@ -1750,20 +1728,22 @@ class cinventory_list extends cinventory {
 			return;
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
-		$this->date_recieved->DbValue = $row['date_recieved'];
+		$this->date->DbValue = $row['date'];
 		$this->reference_id->DbValue = $row['reference_id'];
 		$this->staff_id->DbValue = $row['staff_id'];
 		$this->material_name->DbValue = $row['material_name'];
-		$this->quantity->DbValue = $row['quantity'];
-		$this->type->DbValue = $row['type'];
-		$this->capacity->DbValue = $row['capacity'];
-		$this->recieved_by->DbValue = $row['recieved_by'];
-		$this->statuss->DbValue = $row['statuss'];
-		$this->recieved_action->DbValue = $row['recieved_action'];
-		$this->recieved_comment->DbValue = $row['recieved_comment'];
-		$this->date_approved->DbValue = $row['date_approved'];
+		$this->quantity_in->DbValue = $row['quantity_in'];
+		$this->quantity_type->DbValue = $row['quantity_type'];
+		$this->quantity_out->DbValue = $row['quantity_out'];
+		$this->total_quantity->DbValue = $row['total_quantity'];
+		$this->treated_by->DbValue = $row['treated_by'];
+		$this->status->DbValue = $row['status'];
+		$this->issued_action->DbValue = $row['issued_action'];
+		$this->issued_comment->DbValue = $row['issued_comment'];
+		$this->issued_by->DbValue = $row['issued_by'];
+		$this->approver_date->DbValue = $row['approver_date'];
 		$this->approver_action->DbValue = $row['approver_action'];
-		$this->approver_comment->DbValue = $row['approver_comment'];
+		$this->approved_comment->DbValue = $row['approved_comment'];
 		$this->approved_by->DbValue = $row['approved_by'];
 		$this->verified_date->DbValue = $row['verified_date'];
 		$this->verified_action->DbValue = $row['verified_action'];
@@ -1810,20 +1790,22 @@ class cinventory_list extends cinventory {
 
 		// Common render codes for all row types
 		// id
-		// date_recieved
+		// date
 		// reference_id
 		// staff_id
 		// material_name
-		// quantity
-		// type
-		// capacity
-		// recieved_by
-		// statuss
-		// recieved_action
-		// recieved_comment
-		// date_approved
+		// quantity_in
+		// quantity_type
+		// quantity_out
+		// total_quantity
+		// treated_by
+		// status
+		// issued_action
+		// issued_comment
+		// issued_by
+		// approver_date
 		// approver_action
-		// approver_comment
+		// approved_comment
 		// approved_by
 		// verified_date
 		// verified_action
@@ -1836,10 +1818,10 @@ class cinventory_list extends cinventory {
 		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// date_recieved
-		$this->date_recieved->ViewValue = $this->date_recieved->CurrentValue;
-		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 0);
-		$this->date_recieved->ViewCustomAttributes = "";
+		// date
+		$this->date->ViewValue = $this->date->CurrentValue;
+		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 0);
+		$this->date->ViewCustomAttributes = "";
 
 		// reference_id
 		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
@@ -1870,30 +1852,53 @@ class cinventory_list extends cinventory {
 		$this->staff_id->ViewCustomAttributes = "";
 
 		// material_name
-		$this->material_name->ViewValue = $this->material_name->CurrentValue;
+		if (strval($this->material_name->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
+		$sWhereWrk = "";
+		$this->material_name->LookupFilters = array("dx1" => '`material_name`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->material_name->ViewValue = $this->material_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->material_name->ViewValue = $this->material_name->CurrentValue;
+			}
+		} else {
+			$this->material_name->ViewValue = NULL;
+		}
 		$this->material_name->ViewCustomAttributes = "";
 
-		// quantity
-		$this->quantity->ViewValue = $this->quantity->CurrentValue;
-		$this->quantity->ViewCustomAttributes = "";
+		// quantity_in
+		$this->quantity_in->ViewValue = $this->quantity_in->CurrentValue;
+		$this->quantity_in->ViewCustomAttributes = "";
 
-		// type
-		$this->type->ViewValue = $this->type->CurrentValue;
-		$this->type->ViewCustomAttributes = "";
+		// quantity_type
+		$this->quantity_type->ViewValue = $this->quantity_type->CurrentValue;
+		$this->quantity_type->ViewCustomAttributes = "";
 
-		// capacity
-		$this->capacity->ViewValue = $this->capacity->CurrentValue;
-		$this->capacity->ViewCustomAttributes = "";
+		// quantity_out
+		$this->quantity_out->ViewValue = $this->quantity_out->CurrentValue;
+		$this->quantity_out->ViewCustomAttributes = "";
 
-		// recieved_by
-		$this->recieved_by->ViewValue = $this->recieved_by->CurrentValue;
-		if (strval($this->recieved_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->recieved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		// total_quantity
+		$this->total_quantity->ViewValue = $this->total_quantity->CurrentValue;
+		$this->total_quantity->ViewCustomAttributes = "";
+
+		// treated_by
+		$this->treated_by->ViewValue = $this->treated_by->CurrentValue;
+		if (strval($this->treated_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->treated_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->recieved_by->LookupFilters = array();
+		$this->treated_by->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->recieved_by, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->treated_by, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
@@ -1901,55 +1906,82 @@ class cinventory_list extends cinventory {
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
 				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->recieved_by->ViewValue = $this->recieved_by->DisplayValue($arwrk);
+				$this->treated_by->ViewValue = $this->treated_by->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->recieved_by->ViewValue = $this->recieved_by->CurrentValue;
+				$this->treated_by->ViewValue = $this->treated_by->CurrentValue;
 			}
 		} else {
-			$this->recieved_by->ViewValue = NULL;
+			$this->treated_by->ViewValue = NULL;
 		}
-		$this->recieved_by->ViewCustomAttributes = "";
+		$this->treated_by->ViewCustomAttributes = "";
 
-		// statuss
-		if (strval($this->statuss->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
+		// status
+		$this->status->ViewValue = $this->status->CurrentValue;
+		if (strval($this->status->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
 		$sWhereWrk = "";
-		$this->statuss->LookupFilters = array();
+		$this->status->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
+				$this->status->ViewValue = $this->status->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->statuss->ViewValue = $this->statuss->CurrentValue;
+				$this->status->ViewValue = $this->status->CurrentValue;
 			}
 		} else {
-			$this->statuss->ViewValue = NULL;
+			$this->status->ViewValue = NULL;
 		}
-		$this->statuss->ViewCustomAttributes = "";
+		$this->status->ViewCustomAttributes = "";
 
-		// recieved_action
-		if (strval($this->recieved_action->CurrentValue) <> "") {
-			$this->recieved_action->ViewValue = $this->recieved_action->OptionCaption($this->recieved_action->CurrentValue);
+		// issued_action
+		if (strval($this->issued_action->CurrentValue) <> "") {
+			$this->issued_action->ViewValue = $this->issued_action->OptionCaption($this->issued_action->CurrentValue);
 		} else {
-			$this->recieved_action->ViewValue = NULL;
+			$this->issued_action->ViewValue = NULL;
 		}
-		$this->recieved_action->ViewCustomAttributes = "";
+		$this->issued_action->ViewCustomAttributes = "";
 
-		// recieved_comment
-		$this->recieved_comment->ViewValue = $this->recieved_comment->CurrentValue;
-		$this->recieved_comment->ViewCustomAttributes = "";
+		// issued_comment
+		$this->issued_comment->ViewValue = $this->issued_comment->CurrentValue;
+		$this->issued_comment->ViewCustomAttributes = "";
 
-		// date_approved
-		$this->date_approved->ViewValue = $this->date_approved->CurrentValue;
-		$this->date_approved->ViewValue = ew_FormatDateTime($this->date_approved->ViewValue, 17);
-		$this->date_approved->ViewCustomAttributes = "";
+		// issued_by
+		$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
+		if (strval($this->issued_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->issued_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->issued_by->ViewValue = $this->issued_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
+			}
+		} else {
+			$this->issued_by->ViewValue = NULL;
+		}
+		$this->issued_by->ViewCustomAttributes = "";
+
+		// approver_date
+		$this->approver_date->ViewValue = $this->approver_date->CurrentValue;
+		$this->approver_date->ViewValue = ew_FormatDateTime($this->approver_date->ViewValue, 0);
+		$this->approver_date->ViewCustomAttributes = "";
 
 		// approver_action
 		if (strval($this->approver_action->CurrentValue) <> "") {
@@ -1959,9 +1991,9 @@ class cinventory_list extends cinventory {
 		}
 		$this->approver_action->ViewCustomAttributes = "";
 
-		// approver_comment
-		$this->approver_comment->ViewValue = $this->approver_comment->CurrentValue;
-		$this->approver_comment->ViewCustomAttributes = "";
+		// approved_comment
+		$this->approved_comment->ViewValue = $this->approved_comment->CurrentValue;
+		$this->approved_comment->ViewCustomAttributes = "";
 
 		// approved_by
 		$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
@@ -1991,7 +2023,7 @@ class cinventory_list extends cinventory {
 
 		// verified_date
 		$this->verified_date->ViewValue = $this->verified_date->CurrentValue;
-		$this->verified_date->ViewValue = ew_FormatDateTime($this->verified_date->ViewValue, 17);
+		$this->verified_date->ViewValue = ew_FormatDateTime($this->verified_date->ViewValue, 0);
 		$this->verified_date->ViewCustomAttributes = "";
 
 		// verified_action
@@ -2016,7 +2048,6 @@ class cinventory_list extends cinventory {
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->verified_by, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-		$sSqlWrk .= " ORDER BY `id`";
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
@@ -2033,45 +2064,75 @@ class cinventory_list extends cinventory {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
-			// date_recieved
-			$this->date_recieved->LinkCustomAttributes = "";
-			$this->date_recieved->HrefValue = "";
-			$this->date_recieved->TooltipValue = "";
+			// id
+			$this->id->LinkCustomAttributes = "";
+			$this->id->HrefValue = "";
+			$this->id->TooltipValue = "";
+
+			// date
+			$this->date->LinkCustomAttributes = "";
+			$this->date->HrefValue = "";
+			$this->date->TooltipValue = "";
 
 			// reference_id
 			$this->reference_id->LinkCustomAttributes = "";
 			$this->reference_id->HrefValue = "";
 			$this->reference_id->TooltipValue = "";
 
+			// staff_id
+			$this->staff_id->LinkCustomAttributes = "";
+			$this->staff_id->HrefValue = "";
+			$this->staff_id->TooltipValue = "";
+
 			// material_name
 			$this->material_name->LinkCustomAttributes = "";
 			$this->material_name->HrefValue = "";
 			$this->material_name->TooltipValue = "";
 
-			// quantity
-			$this->quantity->LinkCustomAttributes = "";
-			$this->quantity->HrefValue = "";
-			$this->quantity->TooltipValue = "";
+			// quantity_in
+			$this->quantity_in->LinkCustomAttributes = "";
+			$this->quantity_in->HrefValue = "";
+			$this->quantity_in->TooltipValue = "";
 
-			// type
-			$this->type->LinkCustomAttributes = "";
-			$this->type->HrefValue = "";
-			$this->type->TooltipValue = "";
+			// quantity_type
+			$this->quantity_type->LinkCustomAttributes = "";
+			$this->quantity_type->HrefValue = "";
+			$this->quantity_type->TooltipValue = "";
 
-			// capacity
-			$this->capacity->LinkCustomAttributes = "";
-			$this->capacity->HrefValue = "";
-			$this->capacity->TooltipValue = "";
+			// quantity_out
+			$this->quantity_out->LinkCustomAttributes = "";
+			$this->quantity_out->HrefValue = "";
+			$this->quantity_out->TooltipValue = "";
 
-			// recieved_by
-			$this->recieved_by->LinkCustomAttributes = "";
-			$this->recieved_by->HrefValue = "";
-			$this->recieved_by->TooltipValue = "";
+			// total_quantity
+			$this->total_quantity->LinkCustomAttributes = "";
+			$this->total_quantity->HrefValue = "";
+			$this->total_quantity->TooltipValue = "";
 
-			// statuss
-			$this->statuss->LinkCustomAttributes = "";
-			$this->statuss->HrefValue = "";
-			$this->statuss->TooltipValue = "";
+			// status
+			$this->status->LinkCustomAttributes = "";
+			$this->status->HrefValue = "";
+			$this->status->TooltipValue = "";
+
+			// issued_comment
+			$this->issued_comment->LinkCustomAttributes = "";
+			$this->issued_comment->HrefValue = "";
+			$this->issued_comment->TooltipValue = "";
+
+			// issued_by
+			$this->issued_by->LinkCustomAttributes = "";
+			$this->issued_by->HrefValue = "";
+			$this->issued_by->TooltipValue = "";
+
+			// approved_by
+			$this->approved_by->LinkCustomAttributes = "";
+			$this->approved_by->HrefValue = "";
+			$this->approved_by->TooltipValue = "";
+
+			// verified_by
+			$this->verified_by->LinkCustomAttributes = "";
+			$this->verified_by->HrefValue = "";
+			$this->verified_by->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2121,7 +2182,7 @@ class cinventory_list extends cinventory {
 		// Export to Email
 		$item = &$this->ExportOptions->Add("email");
 		$url = "";
-		$item->Body = "<button id=\"emf_inventory\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_inventory',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.finventorylist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
+		$item->Body = "<button id=\"emf_store_report\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_store_report',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fstore_reportlist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
 		$item->Visible = FALSE;
 
 		// Drop down button for export
@@ -2251,9 +2312,6 @@ class cinventory_list extends cinventory {
 	function Page_Load() {
 
 		//echo "Page Load";
-			if (CurrentPageID() == "list"){
-			 $_SESSION['INV_ID'] = generateINVKey();
-		 }
 	}
 
 	// Page Unload event
@@ -2383,31 +2441,31 @@ class cinventory_list extends cinventory {
 <?php
 
 // Create page object
-if (!isset($inventory_list)) $inventory_list = new cinventory_list();
+if (!isset($store_report_list)) $store_report_list = new cstore_report_list();
 
 // Page init
-$inventory_list->Page_Init();
+$store_report_list->Page_Init();
 
 // Page main
-$inventory_list->Page_Main();
+$store_report_list->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$inventory_list->Page_Render();
+$store_report_list->Page_Render();
 ?>
 <?php include_once "header.php" ?>
-<?php if ($inventory->Export == "") { ?>
+<?php if ($store_report->Export == "") { ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "list";
-var CurrentForm = finventorylist = new ew_Form("finventorylist", "list");
-finventorylist.FormKeyCountName = '<?php echo $inventory_list->FormKeyCountName ?>';
+var CurrentForm = fstore_reportlist = new ew_Form("fstore_reportlist", "list");
+fstore_reportlist.FormKeyCountName = '<?php echo $store_report_list->FormKeyCountName ?>';
 
 // Form_CustomValidate event
-finventorylist.Form_CustomValidate = 
+fstore_reportlist.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid.
@@ -2415,84 +2473,96 @@ finventorylist.Form_CustomValidate =
  }
 
 // Use JavaScript validation or not
-finventorylist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+fstore_reportlist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-finventorylist.Lists["x_recieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-finventorylist.Lists["x_recieved_by"].Data = "<?php echo $inventory_list->recieved_by->LookupFilterQuery(FALSE, "list") ?>";
-finventorylist.AutoSuggests["x_recieved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_list->recieved_by->LookupFilterQuery(TRUE, "list"))) ?>;
-finventorylist.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
-finventorylist.Lists["x_statuss"].Data = "<?php echo $inventory_list->statuss->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportlist.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_staffno","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportlist.Lists["x_staff_id"].Data = "<?php echo $store_report_list->staff_id->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportlist.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_report_list->staff_id->LookupFilterQuery(TRUE, "list"))) ?>;
+fstore_reportlist.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
+fstore_reportlist.Lists["x_material_name"].Data = "<?php echo $store_report_list->material_name->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportlist.Lists["x_status"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
+fstore_reportlist.Lists["x_status"].Data = "<?php echo $store_report_list->status->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportlist.AutoSuggests["x_status"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_report_list->status->LookupFilterQuery(TRUE, "list"))) ?>;
+fstore_reportlist.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportlist.Lists["x_issued_by"].Data = "<?php echo $store_report_list->issued_by->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportlist.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_report_list->issued_by->LookupFilterQuery(TRUE, "list"))) ?>;
+fstore_reportlist.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportlist.Lists["x_approved_by"].Data = "<?php echo $store_report_list->approved_by->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportlist.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_report_list->approved_by->LookupFilterQuery(TRUE, "list"))) ?>;
+fstore_reportlist.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportlist.Lists["x_verified_by"].Data = "<?php echo $store_report_list->verified_by->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportlist.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_report_list->verified_by->LookupFilterQuery(TRUE, "list"))) ?>;
 
 // Form object for search
-var CurrentSearchForm = finventorylistsrch = new ew_Form("finventorylistsrch");
+var CurrentSearchForm = fstore_reportlistsrch = new ew_Form("fstore_reportlistsrch");
 </script>
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
 </script>
 <?php } ?>
-<?php if ($inventory->Export == "") { ?>
+<?php if ($store_report->Export == "") { ?>
 <div class="ewToolbar">
-<?php if ($inventory_list->TotalRecs > 0 && $inventory_list->ExportOptions->Visible()) { ?>
-<?php $inventory_list->ExportOptions->Render("body") ?>
+<?php if ($store_report_list->TotalRecs > 0 && $store_report_list->ExportOptions->Visible()) { ?>
+<?php $store_report_list->ExportOptions->Render("body") ?>
 <?php } ?>
-<?php if ($inventory_list->SearchOptions->Visible()) { ?>
-<?php $inventory_list->SearchOptions->Render("body") ?>
+<?php if ($store_report_list->SearchOptions->Visible()) { ?>
+<?php $store_report_list->SearchOptions->Render("body") ?>
 <?php } ?>
-<?php if ($inventory_list->FilterOptions->Visible()) { ?>
-<?php $inventory_list->FilterOptions->Render("body") ?>
+<?php if ($store_report_list->FilterOptions->Visible()) { ?>
+<?php $store_report_list->FilterOptions->Render("body") ?>
 <?php } ?>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
 <?php
-	$bSelectLimit = $inventory_list->UseSelectLimit;
+	$bSelectLimit = $store_report_list->UseSelectLimit;
 	if ($bSelectLimit) {
-		if ($inventory_list->TotalRecs <= 0)
-			$inventory_list->TotalRecs = $inventory->ListRecordCount();
+		if ($store_report_list->TotalRecs <= 0)
+			$store_report_list->TotalRecs = $store_report->ListRecordCount();
 	} else {
-		if (!$inventory_list->Recordset && ($inventory_list->Recordset = $inventory_list->LoadRecordset()))
-			$inventory_list->TotalRecs = $inventory_list->Recordset->RecordCount();
+		if (!$store_report_list->Recordset && ($store_report_list->Recordset = $store_report_list->LoadRecordset()))
+			$store_report_list->TotalRecs = $store_report_list->Recordset->RecordCount();
 	}
-	$inventory_list->StartRec = 1;
-	if ($inventory_list->DisplayRecs <= 0 || ($inventory->Export <> "" && $inventory->ExportAll)) // Display all records
-		$inventory_list->DisplayRecs = $inventory_list->TotalRecs;
-	if (!($inventory->Export <> "" && $inventory->ExportAll))
-		$inventory_list->SetupStartRec(); // Set up start record position
+	$store_report_list->StartRec = 1;
+	if ($store_report_list->DisplayRecs <= 0 || ($store_report->Export <> "" && $store_report->ExportAll)) // Display all records
+		$store_report_list->DisplayRecs = $store_report_list->TotalRecs;
+	if (!($store_report->Export <> "" && $store_report->ExportAll))
+		$store_report_list->SetupStartRec(); // Set up start record position
 	if ($bSelectLimit)
-		$inventory_list->Recordset = $inventory_list->LoadRecordset($inventory_list->StartRec-1, $inventory_list->DisplayRecs);
+		$store_report_list->Recordset = $store_report_list->LoadRecordset($store_report_list->StartRec-1, $store_report_list->DisplayRecs);
 
 	// Set no record found message
-	if ($inventory->CurrentAction == "" && $inventory_list->TotalRecs == 0) {
+	if ($store_report->CurrentAction == "" && $store_report_list->TotalRecs == 0) {
 		if (!$Security->CanList())
-			$inventory_list->setWarningMessage(ew_DeniedMsg());
-		if ($inventory_list->SearchWhere == "0=101")
-			$inventory_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
+			$store_report_list->setWarningMessage(ew_DeniedMsg());
+		if ($store_report_list->SearchWhere == "0=101")
+			$store_report_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
 		else
-			$inventory_list->setWarningMessage($Language->Phrase("NoRecord"));
+			$store_report_list->setWarningMessage($Language->Phrase("NoRecord"));
 	}
-$inventory_list->RenderOtherOptions();
+$store_report_list->RenderOtherOptions();
 ?>
 <?php if ($Security->CanSearch()) { ?>
-<?php if ($inventory->Export == "" && $inventory->CurrentAction == "") { ?>
-<form name="finventorylistsrch" id="finventorylistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
-<?php $SearchPanelClass = ($inventory_list->SearchWhere <> "") ? " in" : " in"; ?>
-<div id="finventorylistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
+<?php if ($store_report->Export == "" && $store_report->CurrentAction == "") { ?>
+<form name="fstore_reportlistsrch" id="fstore_reportlistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
+<?php $SearchPanelClass = ($store_report_list->SearchWhere <> "") ? " in" : " in"; ?>
+<div id="fstore_reportlistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
 <input type="hidden" name="cmd" value="search">
-<input type="hidden" name="t" value="inventory">
+<input type="hidden" name="t" value="store_report">
 	<div class="ewBasicSearch">
 <div id="xsr_1" class="ewRow">
 	<div class="ewQuickSearch input-group">
-	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($inventory_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
-	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($inventory_list->BasicSearch->getType()) ?>">
+	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($store_report_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
+	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($store_report_list->BasicSearch->getType()) ?>">
 	<div class="input-group-btn">
-		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $inventory_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
+		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $store_report_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
 		<ul class="dropdown-menu pull-right" role="menu">
-			<li<?php if ($inventory_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
-			<li<?php if ($inventory_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
-			<li<?php if ($inventory_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
-			<li<?php if ($inventory_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
+			<li<?php if ($store_report_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
+			<li<?php if ($store_report_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
+			<li<?php if ($store_report_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
+			<li<?php if ($store_report_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
 		</ul>
 	<button class="btn btn-primary ewButton" name="btnsubmit" id="btnsubmit" type="submit"><?php echo $Language->Phrase("SearchBtn") ?></button>
 	</div>
@@ -2503,71 +2573,71 @@ $inventory_list->RenderOtherOptions();
 </form>
 <?php } ?>
 <?php } ?>
-<?php $inventory_list->ShowPageHeader(); ?>
+<?php $store_report_list->ShowPageHeader(); ?>
 <?php
-$inventory_list->ShowMessage();
+$store_report_list->ShowMessage();
 ?>
-<?php if ($inventory_list->TotalRecs > 0 || $inventory->CurrentAction <> "") { ?>
-<div class="box ewBox ewGrid<?php if ($inventory_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> inventory">
-<?php if ($inventory->Export == "") { ?>
+<?php if ($store_report_list->TotalRecs > 0 || $store_report->CurrentAction <> "") { ?>
+<div class="box ewBox ewGrid<?php if ($store_report_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> store_report">
+<?php if ($store_report->Export == "") { ?>
 <div class="box-header ewGridUpperPanel">
-<?php if ($inventory->CurrentAction <> "gridadd" && $inventory->CurrentAction <> "gridedit") { ?>
+<?php if ($store_report->CurrentAction <> "gridadd" && $store_report->CurrentAction <> "gridedit") { ?>
 <form name="ewPagerForm" class="form-inline ewForm ewPagerForm" action="<?php echo ew_CurrentPage() ?>">
-<?php if (!isset($inventory_list->Pager)) $inventory_list->Pager = new cPrevNextPager($inventory_list->StartRec, $inventory_list->DisplayRecs, $inventory_list->TotalRecs, $inventory_list->AutoHidePager) ?>
-<?php if ($inventory_list->Pager->RecordCount > 0 && $inventory_list->Pager->Visible) { ?>
+<?php if (!isset($store_report_list->Pager)) $store_report_list->Pager = new cPrevNextPager($store_report_list->StartRec, $store_report_list->DisplayRecs, $store_report_list->TotalRecs, $store_report_list->AutoHidePager) ?>
+<?php if ($store_report_list->Pager->RecordCount > 0 && $store_report_list->Pager->Visible) { ?>
 <div class="ewPager">
 <span><?php echo $Language->Phrase("Page") ?>&nbsp;</span>
 <div class="ewPrevNext"><div class="input-group">
 <div class="input-group-btn">
 <!--first page button-->
-	<?php if ($inventory_list->Pager->FirstButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $inventory_list->PageUrl() ?>start=<?php echo $inventory_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
+	<?php if ($store_report_list->Pager->FirstButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $store_report_list->PageUrl() ?>start=<?php echo $store_report_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerFirst") ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } ?>
 <!--previous page button-->
-	<?php if ($inventory_list->Pager->PrevButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $inventory_list->PageUrl() ?>start=<?php echo $inventory_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php if ($store_report_list->Pager->PrevButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $store_report_list->PageUrl() ?>start=<?php echo $store_report_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerPrevious") ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } ?>
 </div>
 <!--current page number-->
-	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $inventory_list->Pager->CurrentPage ?>">
+	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $store_report_list->Pager->CurrentPage ?>">
 <div class="input-group-btn">
 <!--next page button-->
-	<?php if ($inventory_list->Pager->NextButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $inventory_list->PageUrl() ?>start=<?php echo $inventory_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
+	<?php if ($store_report_list->Pager->NextButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $store_report_list->PageUrl() ?>start=<?php echo $store_report_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerNext") ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } ?>
 <!--last page button-->
-	<?php if ($inventory_list->Pager->LastButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $inventory_list->PageUrl() ?>start=<?php echo $inventory_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
+	<?php if ($store_report_list->Pager->LastButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $store_report_list->PageUrl() ?>start=<?php echo $store_report_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerLast") ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } ?>
 </div>
 </div>
 </div>
-<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $inventory_list->Pager->PageCount ?></span>
+<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $store_report_list->Pager->PageCount ?></span>
 </div>
 <?php } ?>
-<?php if ($inventory_list->Pager->RecordCount > 0) { ?>
+<?php if ($store_report_list->Pager->RecordCount > 0) { ?>
 <div class="ewPager ewRec">
-	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $inventory_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $inventory_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $inventory_list->Pager->RecordCount ?></span>
+	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $store_report_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $store_report_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $store_report_list->Pager->RecordCount ?></span>
 </div>
 <?php } ?>
-<?php if ($inventory_list->TotalRecs > 0 && (!$inventory_list->AutoHidePageSizeSelector || $inventory_list->Pager->Visible)) { ?>
+<?php if ($store_report_list->TotalRecs > 0 && (!$store_report_list->AutoHidePageSizeSelector || $store_report_list->Pager->Visible)) { ?>
 <div class="ewPager">
-<input type="hidden" name="t" value="inventory">
+<input type="hidden" name="t" value="store_report">
 <select name="<?php echo EW_TABLE_REC_PER_PAGE ?>" class="form-control input-sm ewTooltip" title="<?php echo $Language->Phrase("RecordsPerPage") ?>" onchange="this.form.submit();">
-<option value="5"<?php if ($inventory_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
-<option value="10"<?php if ($inventory_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
-<option value="15"<?php if ($inventory_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
-<option value="20"<?php if ($inventory_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
-<option value="50"<?php if ($inventory_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
-<option value="ALL"<?php if ($inventory->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
+<option value="5"<?php if ($store_report_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
+<option value="10"<?php if ($store_report_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
+<option value="15"<?php if ($store_report_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
+<option value="20"<?php if ($store_report_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
+<option value="50"<?php if ($store_report_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
+<option value="ALL"<?php if ($store_report->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
 </select>
 </div>
 <?php } ?>
@@ -2575,251 +2645,353 @@ $inventory_list->ShowMessage();
 <?php } ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($inventory_list->OtherOptions as &$option)
+	foreach ($store_report_list->OtherOptions as &$option)
 		$option->Render("body");
 ?>
 </div>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
-<form name="finventorylist" id="finventorylist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($inventory_list->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $inventory_list->Token ?>">
+<form name="fstore_reportlist" id="fstore_reportlist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($store_report_list->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $store_report_list->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="inventory">
-<div id="gmp_inventory" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
-<?php if ($inventory_list->TotalRecs > 0 || $inventory->CurrentAction == "gridedit") { ?>
-<table id="tbl_inventorylist" class="table ewTable">
+<input type="hidden" name="t" value="store_report">
+<div id="gmp_store_report" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
+<?php if ($store_report_list->TotalRecs > 0 || $store_report->CurrentAction == "gridedit") { ?>
+<table id="tbl_store_reportlist" class="table ewTable">
 <thead>
 	<tr class="ewTableHeader">
 <?php
 
 // Header row
-$inventory_list->RowType = EW_ROWTYPE_HEADER;
+$store_report_list->RowType = EW_ROWTYPE_HEADER;
 
 // Render list options
-$inventory_list->RenderListOptions();
+$store_report_list->RenderListOptions();
 
 // Render list options (header, left)
-$inventory_list->ListOptions->Render("header", "left");
+$store_report_list->ListOptions->Render("header", "left");
 ?>
-<?php if ($inventory->date_recieved->Visible) { // date_recieved ?>
-	<?php if ($inventory->SortUrl($inventory->date_recieved) == "") { ?>
-		<th data-name="date_recieved" class="<?php echo $inventory->date_recieved->HeaderCellClass() ?>"><div id="elh_inventory_date_recieved" class="inventory_date_recieved"><div class="ewTableHeaderCaption"><?php echo $inventory->date_recieved->FldCaption() ?></div></div></th>
+<?php if ($store_report->id->Visible) { // id ?>
+	<?php if ($store_report->SortUrl($store_report->id) == "") { ?>
+		<th data-name="id" class="<?php echo $store_report->id->HeaderCellClass() ?>"><div id="elh_store_report_id" class="store_report_id"><div class="ewTableHeaderCaption"><?php echo $store_report->id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="date_recieved" class="<?php echo $inventory->date_recieved->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->date_recieved) ?>',1);"><div id="elh_inventory_date_recieved" class="inventory_date_recieved">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->date_recieved->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory->date_recieved->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->date_recieved->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="id" class="<?php echo $store_report->id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->id) ?>',1);"><div id="elh_store_report_id" class="store_report_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_report->id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory->reference_id->Visible) { // reference_id ?>
-	<?php if ($inventory->SortUrl($inventory->reference_id) == "") { ?>
-		<th data-name="reference_id" class="<?php echo $inventory->reference_id->HeaderCellClass() ?>"><div id="elh_inventory_reference_id" class="inventory_reference_id"><div class="ewTableHeaderCaption"><?php echo $inventory->reference_id->FldCaption() ?></div></div></th>
+<?php if ($store_report->date->Visible) { // date ?>
+	<?php if ($store_report->SortUrl($store_report->date) == "") { ?>
+		<th data-name="date" class="<?php echo $store_report->date->HeaderCellClass() ?>"><div id="elh_store_report_date" class="store_report_date"><div class="ewTableHeaderCaption"><?php echo $store_report->date->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="reference_id" class="<?php echo $inventory->reference_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->reference_id) ?>',1);"><div id="elh_inventory_reference_id" class="inventory_reference_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->reference_id->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory->reference_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->reference_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="date" class="<?php echo $store_report->date->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->date) ?>',1);"><div id="elh_store_report_date" class="store_report_date">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->date->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_report->date->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->date->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory->material_name->Visible) { // material_name ?>
-	<?php if ($inventory->SortUrl($inventory->material_name) == "") { ?>
-		<th data-name="material_name" class="<?php echo $inventory->material_name->HeaderCellClass() ?>"><div id="elh_inventory_material_name" class="inventory_material_name"><div class="ewTableHeaderCaption"><?php echo $inventory->material_name->FldCaption() ?></div></div></th>
+<?php if ($store_report->reference_id->Visible) { // reference_id ?>
+	<?php if ($store_report->SortUrl($store_report->reference_id) == "") { ?>
+		<th data-name="reference_id" class="<?php echo $store_report->reference_id->HeaderCellClass() ?>"><div id="elh_store_report_reference_id" class="store_report_reference_id"><div class="ewTableHeaderCaption"><?php echo $store_report->reference_id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="material_name" class="<?php echo $inventory->material_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->material_name) ?>',1);"><div id="elh_inventory_material_name" class="inventory_material_name">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->material_name->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory->material_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->material_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="reference_id" class="<?php echo $store_report->reference_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->reference_id) ?>',1);"><div id="elh_store_report_reference_id" class="store_report_reference_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->reference_id->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($store_report->reference_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->reference_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory->quantity->Visible) { // quantity ?>
-	<?php if ($inventory->SortUrl($inventory->quantity) == "") { ?>
-		<th data-name="quantity" class="<?php echo $inventory->quantity->HeaderCellClass() ?>"><div id="elh_inventory_quantity" class="inventory_quantity"><div class="ewTableHeaderCaption"><?php echo $inventory->quantity->FldCaption() ?></div></div></th>
+<?php if ($store_report->staff_id->Visible) { // staff_id ?>
+	<?php if ($store_report->SortUrl($store_report->staff_id) == "") { ?>
+		<th data-name="staff_id" class="<?php echo $store_report->staff_id->HeaderCellClass() ?>"><div id="elh_store_report_staff_id" class="store_report_staff_id"><div class="ewTableHeaderCaption"><?php echo $store_report->staff_id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="quantity" class="<?php echo $inventory->quantity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->quantity) ?>',1);"><div id="elh_inventory_quantity" class="inventory_quantity">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->quantity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory->quantity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->quantity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="staff_id" class="<?php echo $store_report->staff_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->staff_id) ?>',1);"><div id="elh_store_report_staff_id" class="store_report_staff_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->staff_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_report->staff_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->staff_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory->type->Visible) { // type ?>
-	<?php if ($inventory->SortUrl($inventory->type) == "") { ?>
-		<th data-name="type" class="<?php echo $inventory->type->HeaderCellClass() ?>"><div id="elh_inventory_type" class="inventory_type"><div class="ewTableHeaderCaption"><?php echo $inventory->type->FldCaption() ?></div></div></th>
+<?php if ($store_report->material_name->Visible) { // material_name ?>
+	<?php if ($store_report->SortUrl($store_report->material_name) == "") { ?>
+		<th data-name="material_name" class="<?php echo $store_report->material_name->HeaderCellClass() ?>"><div id="elh_store_report_material_name" class="store_report_material_name"><div class="ewTableHeaderCaption"><?php echo $store_report->material_name->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="type" class="<?php echo $inventory->type->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->type) ?>',1);"><div id="elh_inventory_type" class="inventory_type">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->type->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory->type->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->type->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="material_name" class="<?php echo $store_report->material_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->material_name) ?>',1);"><div id="elh_store_report_material_name" class="store_report_material_name">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->material_name->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_report->material_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->material_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory->capacity->Visible) { // capacity ?>
-	<?php if ($inventory->SortUrl($inventory->capacity) == "") { ?>
-		<th data-name="capacity" class="<?php echo $inventory->capacity->HeaderCellClass() ?>"><div id="elh_inventory_capacity" class="inventory_capacity"><div class="ewTableHeaderCaption"><?php echo $inventory->capacity->FldCaption() ?></div></div></th>
+<?php if ($store_report->quantity_in->Visible) { // quantity_in ?>
+	<?php if ($store_report->SortUrl($store_report->quantity_in) == "") { ?>
+		<th data-name="quantity_in" class="<?php echo $store_report->quantity_in->HeaderCellClass() ?>"><div id="elh_store_report_quantity_in" class="store_report_quantity_in"><div class="ewTableHeaderCaption"><?php echo $store_report->quantity_in->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="capacity" class="<?php echo $inventory->capacity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->capacity) ?>',1);"><div id="elh_inventory_capacity" class="inventory_capacity">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->capacity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory->capacity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->capacity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="quantity_in" class="<?php echo $store_report->quantity_in->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->quantity_in) ?>',1);"><div id="elh_store_report_quantity_in" class="store_report_quantity_in">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->quantity_in->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($store_report->quantity_in->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->quantity_in->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory->recieved_by->Visible) { // recieved_by ?>
-	<?php if ($inventory->SortUrl($inventory->recieved_by) == "") { ?>
-		<th data-name="recieved_by" class="<?php echo $inventory->recieved_by->HeaderCellClass() ?>"><div id="elh_inventory_recieved_by" class="inventory_recieved_by"><div class="ewTableHeaderCaption"><?php echo $inventory->recieved_by->FldCaption() ?></div></div></th>
+<?php if ($store_report->quantity_type->Visible) { // quantity_type ?>
+	<?php if ($store_report->SortUrl($store_report->quantity_type) == "") { ?>
+		<th data-name="quantity_type" class="<?php echo $store_report->quantity_type->HeaderCellClass() ?>"><div id="elh_store_report_quantity_type" class="store_report_quantity_type"><div class="ewTableHeaderCaption"><?php echo $store_report->quantity_type->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="recieved_by" class="<?php echo $inventory->recieved_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->recieved_by) ?>',1);"><div id="elh_inventory_recieved_by" class="inventory_recieved_by">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->recieved_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory->recieved_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->recieved_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="quantity_type" class="<?php echo $store_report->quantity_type->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->quantity_type) ?>',1);"><div id="elh_store_report_quantity_type" class="store_report_quantity_type">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->quantity_type->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($store_report->quantity_type->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->quantity_type->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory->statuss->Visible) { // statuss ?>
-	<?php if ($inventory->SortUrl($inventory->statuss) == "") { ?>
-		<th data-name="statuss" class="<?php echo $inventory->statuss->HeaderCellClass() ?>"><div id="elh_inventory_statuss" class="inventory_statuss"><div class="ewTableHeaderCaption"><?php echo $inventory->statuss->FldCaption() ?></div></div></th>
+<?php if ($store_report->quantity_out->Visible) { // quantity_out ?>
+	<?php if ($store_report->SortUrl($store_report->quantity_out) == "") { ?>
+		<th data-name="quantity_out" class="<?php echo $store_report->quantity_out->HeaderCellClass() ?>"><div id="elh_store_report_quantity_out" class="store_report_quantity_out"><div class="ewTableHeaderCaption"><?php echo $store_report->quantity_out->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="statuss" class="<?php echo $inventory->statuss->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->statuss) ?>',1);"><div id="elh_inventory_statuss" class="inventory_statuss">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->statuss->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory->statuss->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->statuss->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="quantity_out" class="<?php echo $store_report->quantity_out->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->quantity_out) ?>',1);"><div id="elh_store_report_quantity_out" class="store_report_quantity_out">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->quantity_out->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($store_report->quantity_out->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->quantity_out->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($store_report->total_quantity->Visible) { // total_quantity ?>
+	<?php if ($store_report->SortUrl($store_report->total_quantity) == "") { ?>
+		<th data-name="total_quantity" class="<?php echo $store_report->total_quantity->HeaderCellClass() ?>"><div id="elh_store_report_total_quantity" class="store_report_total_quantity"><div class="ewTableHeaderCaption"><?php echo $store_report->total_quantity->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="total_quantity" class="<?php echo $store_report->total_quantity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->total_quantity) ?>',1);"><div id="elh_store_report_total_quantity" class="store_report_total_quantity">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->total_quantity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($store_report->total_quantity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->total_quantity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($store_report->status->Visible) { // status ?>
+	<?php if ($store_report->SortUrl($store_report->status) == "") { ?>
+		<th data-name="status" class="<?php echo $store_report->status->HeaderCellClass() ?>"><div id="elh_store_report_status" class="store_report_status"><div class="ewTableHeaderCaption"><?php echo $store_report->status->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="status" class="<?php echo $store_report->status->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->status) ?>',1);"><div id="elh_store_report_status" class="store_report_status">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->status->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_report->status->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->status->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($store_report->issued_comment->Visible) { // issued_comment ?>
+	<?php if ($store_report->SortUrl($store_report->issued_comment) == "") { ?>
+		<th data-name="issued_comment" class="<?php echo $store_report->issued_comment->HeaderCellClass() ?>"><div id="elh_store_report_issued_comment" class="store_report_issued_comment"><div class="ewTableHeaderCaption"><?php echo $store_report->issued_comment->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="issued_comment" class="<?php echo $store_report->issued_comment->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->issued_comment) ?>',1);"><div id="elh_store_report_issued_comment" class="store_report_issued_comment">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->issued_comment->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($store_report->issued_comment->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->issued_comment->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($store_report->issued_by->Visible) { // issued_by ?>
+	<?php if ($store_report->SortUrl($store_report->issued_by) == "") { ?>
+		<th data-name="issued_by" class="<?php echo $store_report->issued_by->HeaderCellClass() ?>"><div id="elh_store_report_issued_by" class="store_report_issued_by"><div class="ewTableHeaderCaption"><?php echo $store_report->issued_by->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="issued_by" class="<?php echo $store_report->issued_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->issued_by) ?>',1);"><div id="elh_store_report_issued_by" class="store_report_issued_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->issued_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_report->issued_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->issued_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($store_report->approved_by->Visible) { // approved_by ?>
+	<?php if ($store_report->SortUrl($store_report->approved_by) == "") { ?>
+		<th data-name="approved_by" class="<?php echo $store_report->approved_by->HeaderCellClass() ?>"><div id="elh_store_report_approved_by" class="store_report_approved_by"><div class="ewTableHeaderCaption"><?php echo $store_report->approved_by->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="approved_by" class="<?php echo $store_report->approved_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->approved_by) ?>',1);"><div id="elh_store_report_approved_by" class="store_report_approved_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->approved_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_report->approved_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->approved_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($store_report->verified_by->Visible) { // verified_by ?>
+	<?php if ($store_report->SortUrl($store_report->verified_by) == "") { ?>
+		<th data-name="verified_by" class="<?php echo $store_report->verified_by->HeaderCellClass() ?>"><div id="elh_store_report_verified_by" class="store_report_verified_by"><div class="ewTableHeaderCaption"><?php echo $store_report->verified_by->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="verified_by" class="<?php echo $store_report->verified_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_report->SortUrl($store_report->verified_by) ?>',1);"><div id="elh_store_report_verified_by" class="store_report_verified_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_report->verified_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_report->verified_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_report->verified_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
 <?php
 
 // Render list options (header, right)
-$inventory_list->ListOptions->Render("header", "right");
+$store_report_list->ListOptions->Render("header", "right");
 ?>
 	</tr>
 </thead>
 <tbody>
 <?php
-if ($inventory->ExportAll && $inventory->Export <> "") {
-	$inventory_list->StopRec = $inventory_list->TotalRecs;
+if ($store_report->ExportAll && $store_report->Export <> "") {
+	$store_report_list->StopRec = $store_report_list->TotalRecs;
 } else {
 
 	// Set the last record to display
-	if ($inventory_list->TotalRecs > $inventory_list->StartRec + $inventory_list->DisplayRecs - 1)
-		$inventory_list->StopRec = $inventory_list->StartRec + $inventory_list->DisplayRecs - 1;
+	if ($store_report_list->TotalRecs > $store_report_list->StartRec + $store_report_list->DisplayRecs - 1)
+		$store_report_list->StopRec = $store_report_list->StartRec + $store_report_list->DisplayRecs - 1;
 	else
-		$inventory_list->StopRec = $inventory_list->TotalRecs;
+		$store_report_list->StopRec = $store_report_list->TotalRecs;
 }
-$inventory_list->RecCnt = $inventory_list->StartRec - 1;
-if ($inventory_list->Recordset && !$inventory_list->Recordset->EOF) {
-	$inventory_list->Recordset->MoveFirst();
-	$bSelectLimit = $inventory_list->UseSelectLimit;
-	if (!$bSelectLimit && $inventory_list->StartRec > 1)
-		$inventory_list->Recordset->Move($inventory_list->StartRec - 1);
-} elseif (!$inventory->AllowAddDeleteRow && $inventory_list->StopRec == 0) {
-	$inventory_list->StopRec = $inventory->GridAddRowCount;
+$store_report_list->RecCnt = $store_report_list->StartRec - 1;
+if ($store_report_list->Recordset && !$store_report_list->Recordset->EOF) {
+	$store_report_list->Recordset->MoveFirst();
+	$bSelectLimit = $store_report_list->UseSelectLimit;
+	if (!$bSelectLimit && $store_report_list->StartRec > 1)
+		$store_report_list->Recordset->Move($store_report_list->StartRec - 1);
+} elseif (!$store_report->AllowAddDeleteRow && $store_report_list->StopRec == 0) {
+	$store_report_list->StopRec = $store_report->GridAddRowCount;
 }
 
 // Initialize aggregate
-$inventory->RowType = EW_ROWTYPE_AGGREGATEINIT;
-$inventory->ResetAttrs();
-$inventory_list->RenderRow();
-while ($inventory_list->RecCnt < $inventory_list->StopRec) {
-	$inventory_list->RecCnt++;
-	if (intval($inventory_list->RecCnt) >= intval($inventory_list->StartRec)) {
-		$inventory_list->RowCnt++;
+$store_report->RowType = EW_ROWTYPE_AGGREGATEINIT;
+$store_report->ResetAttrs();
+$store_report_list->RenderRow();
+while ($store_report_list->RecCnt < $store_report_list->StopRec) {
+	$store_report_list->RecCnt++;
+	if (intval($store_report_list->RecCnt) >= intval($store_report_list->StartRec)) {
+		$store_report_list->RowCnt++;
 
 		// Set up key count
-		$inventory_list->KeyCount = $inventory_list->RowIndex;
+		$store_report_list->KeyCount = $store_report_list->RowIndex;
 
 		// Init row class and style
-		$inventory->ResetAttrs();
-		$inventory->CssClass = "";
-		if ($inventory->CurrentAction == "gridadd") {
+		$store_report->ResetAttrs();
+		$store_report->CssClass = "";
+		if ($store_report->CurrentAction == "gridadd") {
 		} else {
-			$inventory_list->LoadRowValues($inventory_list->Recordset); // Load row values
+			$store_report_list->LoadRowValues($store_report_list->Recordset); // Load row values
 		}
-		$inventory->RowType = EW_ROWTYPE_VIEW; // Render view
+		$store_report->RowType = EW_ROWTYPE_VIEW; // Render view
 
 		// Set up row id / data-rowindex
-		$inventory->RowAttrs = array_merge($inventory->RowAttrs, array('data-rowindex'=>$inventory_list->RowCnt, 'id'=>'r' . $inventory_list->RowCnt . '_inventory', 'data-rowtype'=>$inventory->RowType));
+		$store_report->RowAttrs = array_merge($store_report->RowAttrs, array('data-rowindex'=>$store_report_list->RowCnt, 'id'=>'r' . $store_report_list->RowCnt . '_store_report', 'data-rowtype'=>$store_report->RowType));
 
 		// Render row
-		$inventory_list->RenderRow();
+		$store_report_list->RenderRow();
 
 		// Render list options
-		$inventory_list->RenderListOptions();
+		$store_report_list->RenderListOptions();
 ?>
-	<tr<?php echo $inventory->RowAttributes() ?>>
+	<tr<?php echo $store_report->RowAttributes() ?>>
 <?php
 
 // Render list options (body, left)
-$inventory_list->ListOptions->Render("body", "left", $inventory_list->RowCnt);
+$store_report_list->ListOptions->Render("body", "left", $store_report_list->RowCnt);
 ?>
-	<?php if ($inventory->date_recieved->Visible) { // date_recieved ?>
-		<td data-name="date_recieved"<?php echo $inventory->date_recieved->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_date_recieved" class="inventory_date_recieved">
-<span<?php echo $inventory->date_recieved->ViewAttributes() ?>>
-<?php echo $inventory->date_recieved->ListViewValue() ?></span>
+	<?php if ($store_report->id->Visible) { // id ?>
+		<td data-name="id"<?php echo $store_report->id->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_id" class="store_report_id">
+<span<?php echo $store_report->id->ViewAttributes() ?>>
+<?php echo $store_report->id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory->reference_id->Visible) { // reference_id ?>
-		<td data-name="reference_id"<?php echo $inventory->reference_id->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_reference_id" class="inventory_reference_id">
-<span<?php echo $inventory->reference_id->ViewAttributes() ?>>
-<?php echo $inventory->reference_id->ListViewValue() ?></span>
+	<?php if ($store_report->date->Visible) { // date ?>
+		<td data-name="date"<?php echo $store_report->date->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_date" class="store_report_date">
+<span<?php echo $store_report->date->ViewAttributes() ?>>
+<?php echo $store_report->date->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory->material_name->Visible) { // material_name ?>
-		<td data-name="material_name"<?php echo $inventory->material_name->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_material_name" class="inventory_material_name">
-<span<?php echo $inventory->material_name->ViewAttributes() ?>>
-<?php echo $inventory->material_name->ListViewValue() ?></span>
+	<?php if ($store_report->reference_id->Visible) { // reference_id ?>
+		<td data-name="reference_id"<?php echo $store_report->reference_id->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_reference_id" class="store_report_reference_id">
+<span<?php echo $store_report->reference_id->ViewAttributes() ?>>
+<?php echo $store_report->reference_id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory->quantity->Visible) { // quantity ?>
-		<td data-name="quantity"<?php echo $inventory->quantity->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_quantity" class="inventory_quantity">
-<span<?php echo $inventory->quantity->ViewAttributes() ?>>
-<?php echo $inventory->quantity->ListViewValue() ?></span>
+	<?php if ($store_report->staff_id->Visible) { // staff_id ?>
+		<td data-name="staff_id"<?php echo $store_report->staff_id->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_staff_id" class="store_report_staff_id">
+<span<?php echo $store_report->staff_id->ViewAttributes() ?>>
+<?php echo $store_report->staff_id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory->type->Visible) { // type ?>
-		<td data-name="type"<?php echo $inventory->type->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_type" class="inventory_type">
-<span<?php echo $inventory->type->ViewAttributes() ?>>
-<?php echo $inventory->type->ListViewValue() ?></span>
+	<?php if ($store_report->material_name->Visible) { // material_name ?>
+		<td data-name="material_name"<?php echo $store_report->material_name->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_material_name" class="store_report_material_name">
+<span<?php echo $store_report->material_name->ViewAttributes() ?>>
+<?php echo $store_report->material_name->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory->capacity->Visible) { // capacity ?>
-		<td data-name="capacity"<?php echo $inventory->capacity->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_capacity" class="inventory_capacity">
-<span<?php echo $inventory->capacity->ViewAttributes() ?>>
-<?php echo $inventory->capacity->ListViewValue() ?></span>
+	<?php if ($store_report->quantity_in->Visible) { // quantity_in ?>
+		<td data-name="quantity_in"<?php echo $store_report->quantity_in->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_quantity_in" class="store_report_quantity_in">
+<span<?php echo $store_report->quantity_in->ViewAttributes() ?>>
+<?php echo $store_report->quantity_in->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory->recieved_by->Visible) { // recieved_by ?>
-		<td data-name="recieved_by"<?php echo $inventory->recieved_by->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_recieved_by" class="inventory_recieved_by">
-<span<?php echo $inventory->recieved_by->ViewAttributes() ?>>
-<?php echo $inventory->recieved_by->ListViewValue() ?></span>
+	<?php if ($store_report->quantity_type->Visible) { // quantity_type ?>
+		<td data-name="quantity_type"<?php echo $store_report->quantity_type->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_quantity_type" class="store_report_quantity_type">
+<span<?php echo $store_report->quantity_type->ViewAttributes() ?>>
+<?php echo $store_report->quantity_type->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory->statuss->Visible) { // statuss ?>
-		<td data-name="statuss"<?php echo $inventory->statuss->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_statuss" class="inventory_statuss">
-<span<?php echo $inventory->statuss->ViewAttributes() ?>>
-<?php echo $inventory->statuss->ListViewValue() ?></span>
+	<?php if ($store_report->quantity_out->Visible) { // quantity_out ?>
+		<td data-name="quantity_out"<?php echo $store_report->quantity_out->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_quantity_out" class="store_report_quantity_out">
+<span<?php echo $store_report->quantity_out->ViewAttributes() ?>>
+<?php echo $store_report->quantity_out->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($store_report->total_quantity->Visible) { // total_quantity ?>
+		<td data-name="total_quantity"<?php echo $store_report->total_quantity->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_total_quantity" class="store_report_total_quantity">
+<span<?php echo $store_report->total_quantity->ViewAttributes() ?>>
+<?php echo $store_report->total_quantity->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($store_report->status->Visible) { // status ?>
+		<td data-name="status"<?php echo $store_report->status->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_status" class="store_report_status">
+<span<?php echo $store_report->status->ViewAttributes() ?>>
+<?php echo $store_report->status->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($store_report->issued_comment->Visible) { // issued_comment ?>
+		<td data-name="issued_comment"<?php echo $store_report->issued_comment->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_issued_comment" class="store_report_issued_comment">
+<span<?php echo $store_report->issued_comment->ViewAttributes() ?>>
+<?php echo $store_report->issued_comment->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($store_report->issued_by->Visible) { // issued_by ?>
+		<td data-name="issued_by"<?php echo $store_report->issued_by->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_issued_by" class="store_report_issued_by">
+<span<?php echo $store_report->issued_by->ViewAttributes() ?>>
+<?php echo $store_report->issued_by->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($store_report->approved_by->Visible) { // approved_by ?>
+		<td data-name="approved_by"<?php echo $store_report->approved_by->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_approved_by" class="store_report_approved_by">
+<span<?php echo $store_report->approved_by->ViewAttributes() ?>>
+<?php echo $store_report->approved_by->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($store_report->verified_by->Visible) { // verified_by ?>
+		<td data-name="verified_by"<?php echo $store_report->verified_by->CellAttributes() ?>>
+<span id="el<?php echo $store_report_list->RowCnt ?>_store_report_verified_by" class="store_report_verified_by">
+<span<?php echo $store_report->verified_by->ViewAttributes() ?>>
+<?php echo $store_report->verified_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
 <?php
 
 // Render list options (body, right)
-$inventory_list->ListOptions->Render("body", "right", $inventory_list->RowCnt);
+$store_report_list->ListOptions->Render("body", "right", $store_report_list->RowCnt);
 ?>
 	</tr>
 <?php
 	}
-	if ($inventory->CurrentAction <> "gridadd")
-		$inventory_list->Recordset->MoveNext();
+	if ($store_report->CurrentAction <> "gridadd")
+		$store_report_list->Recordset->MoveNext();
 }
 ?>
 </tbody>
 </table>
 <?php } ?>
-<?php if ($inventory->CurrentAction == "") { ?>
+<?php if ($store_report->CurrentAction == "") { ?>
 <input type="hidden" name="a_list" id="a_list" value="">
 <?php } ?>
 </div>
@@ -2827,15 +2999,15 @@ $inventory_list->ListOptions->Render("body", "right", $inventory_list->RowCnt);
 <?php
 
 // Close recordset
-if ($inventory_list->Recordset)
-	$inventory_list->Recordset->Close();
+if ($store_report_list->Recordset)
+	$store_report_list->Recordset->Close();
 ?>
 </div>
 <?php } ?>
-<?php if ($inventory_list->TotalRecs == 0 && $inventory->CurrentAction == "") { // Show other options ?>
+<?php if ($store_report_list->TotalRecs == 0 && $store_report->CurrentAction == "") { // Show other options ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($inventory_list->OtherOptions as &$option) {
+	foreach ($store_report_list->OtherOptions as &$option) {
 		$option->ButtonClass = "";
 		$option->Render("body", "");
 	}
@@ -2843,19 +3015,19 @@ if ($inventory_list->Recordset)
 </div>
 <div class="clearfix"></div>
 <?php } ?>
-<?php if ($inventory->Export == "") { ?>
+<?php if ($store_report->Export == "") { ?>
 <script type="text/javascript">
-finventorylistsrch.FilterList = <?php echo $inventory_list->GetFilterList() ?>;
-finventorylistsrch.Init();
-finventorylist.Init();
+fstore_reportlistsrch.FilterList = <?php echo $store_report_list->GetFilterList() ?>;
+fstore_reportlistsrch.Init();
+fstore_reportlist.Init();
 </script>
 <?php } ?>
 <?php
-$inventory_list->ShowPageFooter();
+$store_report_list->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
-<?php if ($inventory->Export == "") { ?>
+<?php if ($store_report->Export == "") { ?>
 <script type="text/javascript">
 
 // Write your table-specific startup script here
@@ -2865,5 +3037,5 @@ if (EW_DEBUG_ENABLED)
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php
-$inventory_list->Page_Terminate();
+$store_report_list->Page_Terminate();
 ?>

@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg14.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
 <?php include_once "phpfn14.php" ?>
-<?php include_once "inventoryinfo.php" ?>
+<?php include_once "statussinfo.php" ?>
 <?php include_once "usersinfo.php" ?>
 <?php include_once "userfn14.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$inventory_list = NULL; // Initialize page object first
+$statuss_list = NULL; // Initialize page object first
 
-class cinventory_list extends cinventory {
+class cstatuss_list extends cstatuss {
 
 	// Page ID
 	var $PageID = 'list';
@@ -25,13 +25,13 @@ class cinventory_list extends cinventory {
 	var $ProjectID = '{DD9080C0-D1CA-431F-831F-CAC8FA61260C}';
 
 	// Table name
-	var $TableName = 'inventory';
+	var $TableName = 'statuss';
 
 	// Page object name
-	var $PageObjName = 'inventory_list';
+	var $PageObjName = 'statuss_list';
 
 	// Grid form hidden field names
-	var $FormName = 'finventorylist';
+	var $FormName = 'fstatusslist';
 	var $FormActionName = 'k_action';
 	var $FormKeyName = 'k_key';
 	var $FormOldKeyName = 'k_oldkey';
@@ -290,10 +290,10 @@ class cinventory_list extends cinventory {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (inventory)
-		if (!isset($GLOBALS["inventory"]) || get_class($GLOBALS["inventory"]) == "cinventory") {
-			$GLOBALS["inventory"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["inventory"];
+		// Table object (statuss)
+		if (!isset($GLOBALS["statuss"]) || get_class($GLOBALS["statuss"]) == "cstatuss") {
+			$GLOBALS["statuss"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["statuss"];
 		}
 
 		// Initialize URLs
@@ -304,12 +304,12 @@ class cinventory_list extends cinventory {
 		$this->ExportXmlUrl = $this->PageUrl() . "export=xml";
 		$this->ExportCsvUrl = $this->PageUrl() . "export=csv";
 		$this->ExportPdfUrl = $this->PageUrl() . "export=pdf";
-		$this->AddUrl = "inventoryadd.php";
+		$this->AddUrl = "statussadd.php";
 		$this->InlineAddUrl = $this->PageUrl() . "a=add";
 		$this->GridAddUrl = $this->PageUrl() . "a=gridadd";
 		$this->GridEditUrl = $this->PageUrl() . "a=gridedit";
-		$this->MultiDeleteUrl = "inventorydelete.php";
-		$this->MultiUpdateUrl = "inventoryupdate.php";
+		$this->MultiDeleteUrl = "statussdelete.php";
+		$this->MultiUpdateUrl = "statussupdate.php";
 
 		// Table object (users)
 		if (!isset($GLOBALS['users'])) $GLOBALS['users'] = new cusers();
@@ -320,7 +320,7 @@ class cinventory_list extends cinventory {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'inventory', TRUE);
+			define("EW_TABLE_NAME", 'statuss', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -362,7 +362,7 @@ class cinventory_list extends cinventory {
 		// Filter options
 		$this->FilterOptions = new cListOptions();
 		$this->FilterOptions->Tag = "div";
-		$this->FilterOptions->TagClassName = "ewFilterOption finventorylistsrch";
+		$this->FilterOptions->TagClassName = "ewFilterOption fstatusslistsrch";
 
 		// List actions
 		$this->ListActions = new cListActions();
@@ -446,14 +446,8 @@ class cinventory_list extends cinventory {
 
 		// Setup export options
 		$this->SetupExportOptions();
-		$this->date_recieved->SetVisibility();
-		$this->reference_id->SetVisibility();
-		$this->material_name->SetVisibility();
-		$this->quantity->SetVisibility();
-		$this->type->SetVisibility();
-		$this->capacity->SetVisibility();
-		$this->recieved_by->SetVisibility();
-		$this->statuss->SetVisibility();
+		$this->id->SetVisibility();
+		$this->description->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -514,13 +508,13 @@ class cinventory_list extends cinventory {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $inventory;
+		global $EW_EXPORT, $statuss;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($inventory);
+				$doc = new $class($statuss);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -791,10 +785,7 @@ class cinventory_list extends cinventory {
 	// Set up key values
 	function SetupKeyValues($key) {
 		$arrKeyFlds = explode($GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"], $key);
-		if (count($arrKeyFlds) >= 1) {
-			$this->id->setFormValue($arrKeyFlds[0]);
-			if (!is_numeric($this->id->FormValue))
-				return FALSE;
+		if (count($arrKeyFlds) >= 0) {
 		}
 		return TRUE;
 	}
@@ -809,27 +800,9 @@ class cinventory_list extends cinventory {
 
 		// Load server side filters
 		if (EW_SEARCH_FILTER_OPTION == "Server" && isset($UserProfile))
-			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "finventorylistsrch");
+			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "fstatusslistsrch");
 		$sFilterList = ew_Concat($sFilterList, $this->id->AdvancedSearch->ToJson(), ","); // Field id
-		$sFilterList = ew_Concat($sFilterList, $this->date_recieved->AdvancedSearch->ToJson(), ","); // Field date_recieved
-		$sFilterList = ew_Concat($sFilterList, $this->reference_id->AdvancedSearch->ToJson(), ","); // Field reference_id
-		$sFilterList = ew_Concat($sFilterList, $this->staff_id->AdvancedSearch->ToJson(), ","); // Field staff_id
-		$sFilterList = ew_Concat($sFilterList, $this->material_name->AdvancedSearch->ToJson(), ","); // Field material_name
-		$sFilterList = ew_Concat($sFilterList, $this->quantity->AdvancedSearch->ToJson(), ","); // Field quantity
-		$sFilterList = ew_Concat($sFilterList, $this->type->AdvancedSearch->ToJson(), ","); // Field type
-		$sFilterList = ew_Concat($sFilterList, $this->capacity->AdvancedSearch->ToJson(), ","); // Field capacity
-		$sFilterList = ew_Concat($sFilterList, $this->recieved_by->AdvancedSearch->ToJson(), ","); // Field recieved_by
-		$sFilterList = ew_Concat($sFilterList, $this->statuss->AdvancedSearch->ToJson(), ","); // Field statuss
-		$sFilterList = ew_Concat($sFilterList, $this->recieved_action->AdvancedSearch->ToJson(), ","); // Field recieved_action
-		$sFilterList = ew_Concat($sFilterList, $this->recieved_comment->AdvancedSearch->ToJson(), ","); // Field recieved_comment
-		$sFilterList = ew_Concat($sFilterList, $this->date_approved->AdvancedSearch->ToJson(), ","); // Field date_approved
-		$sFilterList = ew_Concat($sFilterList, $this->approver_action->AdvancedSearch->ToJson(), ","); // Field approver_action
-		$sFilterList = ew_Concat($sFilterList, $this->approver_comment->AdvancedSearch->ToJson(), ","); // Field approver_comment
-		$sFilterList = ew_Concat($sFilterList, $this->approved_by->AdvancedSearch->ToJson(), ","); // Field approved_by
-		$sFilterList = ew_Concat($sFilterList, $this->verified_date->AdvancedSearch->ToJson(), ","); // Field verified_date
-		$sFilterList = ew_Concat($sFilterList, $this->verified_action->AdvancedSearch->ToJson(), ","); // Field verified_action
-		$sFilterList = ew_Concat($sFilterList, $this->verified_comment->AdvancedSearch->ToJson(), ","); // Field verified_comment
-		$sFilterList = ew_Concat($sFilterList, $this->verified_by->AdvancedSearch->ToJson(), ","); // Field verified_by
+		$sFilterList = ew_Concat($sFilterList, $this->description->AdvancedSearch->ToJson(), ","); // Field description
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -852,7 +825,7 @@ class cinventory_list extends cinventory {
 		global $UserProfile;
 		if (@$_POST["ajax"] == "savefilters") { // Save filter request (Ajax)
 			$filters = @$_POST["filters"];
-			$UserProfile->SetSearchFilters(CurrentUserName(), "finventorylistsrch", $filters);
+			$UserProfile->SetSearchFilters(CurrentUserName(), "fstatusslistsrch", $filters);
 
 			// Clean output buffer
 			if (!EW_DEBUG_ENABLED && ob_get_length())
@@ -882,157 +855,13 @@ class cinventory_list extends cinventory {
 		$this->id->AdvancedSearch->SearchOperator2 = @$filter["w_id"];
 		$this->id->AdvancedSearch->Save();
 
-		// Field date_recieved
-		$this->date_recieved->AdvancedSearch->SearchValue = @$filter["x_date_recieved"];
-		$this->date_recieved->AdvancedSearch->SearchOperator = @$filter["z_date_recieved"];
-		$this->date_recieved->AdvancedSearch->SearchCondition = @$filter["v_date_recieved"];
-		$this->date_recieved->AdvancedSearch->SearchValue2 = @$filter["y_date_recieved"];
-		$this->date_recieved->AdvancedSearch->SearchOperator2 = @$filter["w_date_recieved"];
-		$this->date_recieved->AdvancedSearch->Save();
-
-		// Field reference_id
-		$this->reference_id->AdvancedSearch->SearchValue = @$filter["x_reference_id"];
-		$this->reference_id->AdvancedSearch->SearchOperator = @$filter["z_reference_id"];
-		$this->reference_id->AdvancedSearch->SearchCondition = @$filter["v_reference_id"];
-		$this->reference_id->AdvancedSearch->SearchValue2 = @$filter["y_reference_id"];
-		$this->reference_id->AdvancedSearch->SearchOperator2 = @$filter["w_reference_id"];
-		$this->reference_id->AdvancedSearch->Save();
-
-		// Field staff_id
-		$this->staff_id->AdvancedSearch->SearchValue = @$filter["x_staff_id"];
-		$this->staff_id->AdvancedSearch->SearchOperator = @$filter["z_staff_id"];
-		$this->staff_id->AdvancedSearch->SearchCondition = @$filter["v_staff_id"];
-		$this->staff_id->AdvancedSearch->SearchValue2 = @$filter["y_staff_id"];
-		$this->staff_id->AdvancedSearch->SearchOperator2 = @$filter["w_staff_id"];
-		$this->staff_id->AdvancedSearch->Save();
-
-		// Field material_name
-		$this->material_name->AdvancedSearch->SearchValue = @$filter["x_material_name"];
-		$this->material_name->AdvancedSearch->SearchOperator = @$filter["z_material_name"];
-		$this->material_name->AdvancedSearch->SearchCondition = @$filter["v_material_name"];
-		$this->material_name->AdvancedSearch->SearchValue2 = @$filter["y_material_name"];
-		$this->material_name->AdvancedSearch->SearchOperator2 = @$filter["w_material_name"];
-		$this->material_name->AdvancedSearch->Save();
-
-		// Field quantity
-		$this->quantity->AdvancedSearch->SearchValue = @$filter["x_quantity"];
-		$this->quantity->AdvancedSearch->SearchOperator = @$filter["z_quantity"];
-		$this->quantity->AdvancedSearch->SearchCondition = @$filter["v_quantity"];
-		$this->quantity->AdvancedSearch->SearchValue2 = @$filter["y_quantity"];
-		$this->quantity->AdvancedSearch->SearchOperator2 = @$filter["w_quantity"];
-		$this->quantity->AdvancedSearch->Save();
-
-		// Field type
-		$this->type->AdvancedSearch->SearchValue = @$filter["x_type"];
-		$this->type->AdvancedSearch->SearchOperator = @$filter["z_type"];
-		$this->type->AdvancedSearch->SearchCondition = @$filter["v_type"];
-		$this->type->AdvancedSearch->SearchValue2 = @$filter["y_type"];
-		$this->type->AdvancedSearch->SearchOperator2 = @$filter["w_type"];
-		$this->type->AdvancedSearch->Save();
-
-		// Field capacity
-		$this->capacity->AdvancedSearch->SearchValue = @$filter["x_capacity"];
-		$this->capacity->AdvancedSearch->SearchOperator = @$filter["z_capacity"];
-		$this->capacity->AdvancedSearch->SearchCondition = @$filter["v_capacity"];
-		$this->capacity->AdvancedSearch->SearchValue2 = @$filter["y_capacity"];
-		$this->capacity->AdvancedSearch->SearchOperator2 = @$filter["w_capacity"];
-		$this->capacity->AdvancedSearch->Save();
-
-		// Field recieved_by
-		$this->recieved_by->AdvancedSearch->SearchValue = @$filter["x_recieved_by"];
-		$this->recieved_by->AdvancedSearch->SearchOperator = @$filter["z_recieved_by"];
-		$this->recieved_by->AdvancedSearch->SearchCondition = @$filter["v_recieved_by"];
-		$this->recieved_by->AdvancedSearch->SearchValue2 = @$filter["y_recieved_by"];
-		$this->recieved_by->AdvancedSearch->SearchOperator2 = @$filter["w_recieved_by"];
-		$this->recieved_by->AdvancedSearch->Save();
-
-		// Field statuss
-		$this->statuss->AdvancedSearch->SearchValue = @$filter["x_statuss"];
-		$this->statuss->AdvancedSearch->SearchOperator = @$filter["z_statuss"];
-		$this->statuss->AdvancedSearch->SearchCondition = @$filter["v_statuss"];
-		$this->statuss->AdvancedSearch->SearchValue2 = @$filter["y_statuss"];
-		$this->statuss->AdvancedSearch->SearchOperator2 = @$filter["w_statuss"];
-		$this->statuss->AdvancedSearch->Save();
-
-		// Field recieved_action
-		$this->recieved_action->AdvancedSearch->SearchValue = @$filter["x_recieved_action"];
-		$this->recieved_action->AdvancedSearch->SearchOperator = @$filter["z_recieved_action"];
-		$this->recieved_action->AdvancedSearch->SearchCondition = @$filter["v_recieved_action"];
-		$this->recieved_action->AdvancedSearch->SearchValue2 = @$filter["y_recieved_action"];
-		$this->recieved_action->AdvancedSearch->SearchOperator2 = @$filter["w_recieved_action"];
-		$this->recieved_action->AdvancedSearch->Save();
-
-		// Field recieved_comment
-		$this->recieved_comment->AdvancedSearch->SearchValue = @$filter["x_recieved_comment"];
-		$this->recieved_comment->AdvancedSearch->SearchOperator = @$filter["z_recieved_comment"];
-		$this->recieved_comment->AdvancedSearch->SearchCondition = @$filter["v_recieved_comment"];
-		$this->recieved_comment->AdvancedSearch->SearchValue2 = @$filter["y_recieved_comment"];
-		$this->recieved_comment->AdvancedSearch->SearchOperator2 = @$filter["w_recieved_comment"];
-		$this->recieved_comment->AdvancedSearch->Save();
-
-		// Field date_approved
-		$this->date_approved->AdvancedSearch->SearchValue = @$filter["x_date_approved"];
-		$this->date_approved->AdvancedSearch->SearchOperator = @$filter["z_date_approved"];
-		$this->date_approved->AdvancedSearch->SearchCondition = @$filter["v_date_approved"];
-		$this->date_approved->AdvancedSearch->SearchValue2 = @$filter["y_date_approved"];
-		$this->date_approved->AdvancedSearch->SearchOperator2 = @$filter["w_date_approved"];
-		$this->date_approved->AdvancedSearch->Save();
-
-		// Field approver_action
-		$this->approver_action->AdvancedSearch->SearchValue = @$filter["x_approver_action"];
-		$this->approver_action->AdvancedSearch->SearchOperator = @$filter["z_approver_action"];
-		$this->approver_action->AdvancedSearch->SearchCondition = @$filter["v_approver_action"];
-		$this->approver_action->AdvancedSearch->SearchValue2 = @$filter["y_approver_action"];
-		$this->approver_action->AdvancedSearch->SearchOperator2 = @$filter["w_approver_action"];
-		$this->approver_action->AdvancedSearch->Save();
-
-		// Field approver_comment
-		$this->approver_comment->AdvancedSearch->SearchValue = @$filter["x_approver_comment"];
-		$this->approver_comment->AdvancedSearch->SearchOperator = @$filter["z_approver_comment"];
-		$this->approver_comment->AdvancedSearch->SearchCondition = @$filter["v_approver_comment"];
-		$this->approver_comment->AdvancedSearch->SearchValue2 = @$filter["y_approver_comment"];
-		$this->approver_comment->AdvancedSearch->SearchOperator2 = @$filter["w_approver_comment"];
-		$this->approver_comment->AdvancedSearch->Save();
-
-		// Field approved_by
-		$this->approved_by->AdvancedSearch->SearchValue = @$filter["x_approved_by"];
-		$this->approved_by->AdvancedSearch->SearchOperator = @$filter["z_approved_by"];
-		$this->approved_by->AdvancedSearch->SearchCondition = @$filter["v_approved_by"];
-		$this->approved_by->AdvancedSearch->SearchValue2 = @$filter["y_approved_by"];
-		$this->approved_by->AdvancedSearch->SearchOperator2 = @$filter["w_approved_by"];
-		$this->approved_by->AdvancedSearch->Save();
-
-		// Field verified_date
-		$this->verified_date->AdvancedSearch->SearchValue = @$filter["x_verified_date"];
-		$this->verified_date->AdvancedSearch->SearchOperator = @$filter["z_verified_date"];
-		$this->verified_date->AdvancedSearch->SearchCondition = @$filter["v_verified_date"];
-		$this->verified_date->AdvancedSearch->SearchValue2 = @$filter["y_verified_date"];
-		$this->verified_date->AdvancedSearch->SearchOperator2 = @$filter["w_verified_date"];
-		$this->verified_date->AdvancedSearch->Save();
-
-		// Field verified_action
-		$this->verified_action->AdvancedSearch->SearchValue = @$filter["x_verified_action"];
-		$this->verified_action->AdvancedSearch->SearchOperator = @$filter["z_verified_action"];
-		$this->verified_action->AdvancedSearch->SearchCondition = @$filter["v_verified_action"];
-		$this->verified_action->AdvancedSearch->SearchValue2 = @$filter["y_verified_action"];
-		$this->verified_action->AdvancedSearch->SearchOperator2 = @$filter["w_verified_action"];
-		$this->verified_action->AdvancedSearch->Save();
-
-		// Field verified_comment
-		$this->verified_comment->AdvancedSearch->SearchValue = @$filter["x_verified_comment"];
-		$this->verified_comment->AdvancedSearch->SearchOperator = @$filter["z_verified_comment"];
-		$this->verified_comment->AdvancedSearch->SearchCondition = @$filter["v_verified_comment"];
-		$this->verified_comment->AdvancedSearch->SearchValue2 = @$filter["y_verified_comment"];
-		$this->verified_comment->AdvancedSearch->SearchOperator2 = @$filter["w_verified_comment"];
-		$this->verified_comment->AdvancedSearch->Save();
-
-		// Field verified_by
-		$this->verified_by->AdvancedSearch->SearchValue = @$filter["x_verified_by"];
-		$this->verified_by->AdvancedSearch->SearchOperator = @$filter["z_verified_by"];
-		$this->verified_by->AdvancedSearch->SearchCondition = @$filter["v_verified_by"];
-		$this->verified_by->AdvancedSearch->SearchValue2 = @$filter["y_verified_by"];
-		$this->verified_by->AdvancedSearch->SearchOperator2 = @$filter["w_verified_by"];
-		$this->verified_by->AdvancedSearch->Save();
+		// Field description
+		$this->description->AdvancedSearch->SearchValue = @$filter["x_description"];
+		$this->description->AdvancedSearch->SearchOperator = @$filter["z_description"];
+		$this->description->AdvancedSearch->SearchCondition = @$filter["v_description"];
+		$this->description->AdvancedSearch->SearchValue2 = @$filter["y_description"];
+		$this->description->AdvancedSearch->SearchOperator2 = @$filter["w_description"];
+		$this->description->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
@@ -1040,14 +869,7 @@ class cinventory_list extends cinventory {
 	// Return basic search SQL
 	function BasicSearchSQL($arKeywords, $type) {
 		$sWhere = "";
-		$this->BuildBasicSearchSQL($sWhere, $this->reference_id, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->material_name, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->quantity, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->type, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->capacity, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->recieved_comment, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->approver_comment, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->verified_comment, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->description, $arKeywords, $type);
 		return $sWhere;
 	}
 
@@ -1194,14 +1016,8 @@ class cinventory_list extends cinventory {
 		if (@$_GET["order"] <> "") {
 			$this->CurrentOrder = @$_GET["order"];
 			$this->CurrentOrderType = @$_GET["ordertype"];
-			$this->UpdateSort($this->date_recieved); // date_recieved
-			$this->UpdateSort($this->reference_id); // reference_id
-			$this->UpdateSort($this->material_name); // material_name
-			$this->UpdateSort($this->quantity); // quantity
-			$this->UpdateSort($this->type); // type
-			$this->UpdateSort($this->capacity); // capacity
-			$this->UpdateSort($this->recieved_by); // recieved_by
-			$this->UpdateSort($this->statuss); // statuss
+			$this->UpdateSort($this->id); // id
+			$this->UpdateSort($this->description); // description
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1234,14 +1050,8 @@ class cinventory_list extends cinventory {
 			if ($this->Command == "resetsort") {
 				$sOrderBy = "";
 				$this->setSessionOrderBy($sOrderBy);
-				$this->date_recieved->setSort("");
-				$this->reference_id->setSort("");
-				$this->material_name->setSort("");
-				$this->quantity->setSort("");
-				$this->type->setSort("");
-				$this->capacity->setSort("");
-				$this->recieved_by->setSort("");
-				$this->statuss->setSort("");
+				$this->id->setSort("");
+				$this->description->setSort("");
 			}
 
 			// Reset start position
@@ -1259,30 +1069,6 @@ class cinventory_list extends cinventory {
 		$item->Body = "";
 		$item->OnLeft = TRUE;
 		$item->Visible = FALSE;
-
-		// "view"
-		$item = &$this->ListOptions->Add("view");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanView();
-		$item->OnLeft = TRUE;
-
-		// "edit"
-		$item = &$this->ListOptions->Add("edit");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanEdit();
-		$item->OnLeft = TRUE;
-
-		// "copy"
-		$item = &$this->ListOptions->Add("copy");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanAdd();
-		$item->OnLeft = TRUE;
-
-		// "delete"
-		$item = &$this->ListOptions->Add("delete");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanDelete();
-		$item->OnLeft = TRUE;
 
 		// List actions
 		$item = &$this->ListOptions->Add("listactions");
@@ -1325,40 +1111,6 @@ class cinventory_list extends cinventory {
 		// Call ListOptions_Rendering event
 		$this->ListOptions_Rendering();
 
-		// "view"
-		$oListOpt = &$this->ListOptions->Items["view"];
-		$viewcaption = ew_HtmlTitle($Language->Phrase("ViewLink"));
-		if ($Security->CanView()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-caption=\"" . $viewcaption . "\" href=\"" . ew_HtmlEncode($this->ViewUrl) . "\">" . $Language->Phrase("ViewLink") . "</a>";
-		} else {
-			$oListOpt->Body = "";
-		}
-
-		// "edit"
-		$oListOpt = &$this->ListOptions->Items["edit"];
-		$editcaption = ew_HtmlTitle($Language->Phrase("EditLink"));
-		if ($Security->CanEdit()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewEdit\" title=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" href=\"" . ew_HtmlEncode($this->EditUrl) . "\">" . $Language->Phrase("EditLink") . "</a>";
-		} else {
-			$oListOpt->Body = "";
-		}
-
-		// "copy"
-		$oListOpt = &$this->ListOptions->Items["copy"];
-		$copycaption = ew_HtmlTitle($Language->Phrase("CopyLink"));
-		if ($Security->CanAdd()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewCopy\" title=\"" . $copycaption . "\" data-caption=\"" . $copycaption . "\" href=\"" . ew_HtmlEncode($this->CopyUrl) . "\">" . $Language->Phrase("CopyLink") . "</a>";
-		} else {
-			$oListOpt->Body = "";
-		}
-
-		// "delete"
-		$oListOpt = &$this->ListOptions->Items["delete"];
-		if ($Security->CanDelete())
-			$oListOpt->Body = "<a class=\"ewRowLink ewDelete\"" . "" . " title=\"" . ew_HtmlTitle($Language->Phrase("DeleteLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("DeleteLink")) . "\" href=\"" . ew_HtmlEncode($this->DeleteUrl) . "\">" . $Language->Phrase("DeleteLink") . "</a>";
-		else
-			$oListOpt->Body = "";
-
 		// Set up list action buttons
 		$oListOpt = &$this->ListOptions->GetItem("listactions");
 		if ($oListOpt && $this->Export == "" && $this->CurrentAction == "") {
@@ -1390,7 +1142,6 @@ class cinventory_list extends cinventory {
 
 		// "checkbox"
 		$oListOpt = &$this->ListOptions->Items["checkbox"];
-		$oListOpt->Body = "<input type=\"checkbox\" name=\"key_m[]\" class=\"ewMultiSelect\" value=\"" . ew_HtmlEncode($this->id->CurrentValue) . "\" onclick=\"ew_ClickMultiCheckbox(event);\">";
 		$this->RenderListOptionsExt();
 
 		// Call ListOptions_Rendered event
@@ -1426,10 +1177,10 @@ class cinventory_list extends cinventory {
 
 		// Filter button
 		$item = &$this->FilterOptions->Add("savecurrentfilter");
-		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"finventorylistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
+		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"fstatusslistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
 		$item->Visible = TRUE;
 		$item = &$this->FilterOptions->Add("deletefilter");
-		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"finventorylistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
+		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"fstatusslistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
 		$item->Visible = TRUE;
 		$this->FilterOptions->UseDropDownButton = TRUE;
 		$this->FilterOptions->UseButtonGroup = !$this->FilterOptions->UseDropDownButton;
@@ -1453,7 +1204,7 @@ class cinventory_list extends cinventory {
 					$item = &$option->Add("custom_" . $listaction->Action);
 					$caption = $listaction->Caption;
 					$icon = ($listaction->Icon <> "") ? "<span class=\"" . ew_HtmlEncode($listaction->Icon) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\"></span> " : $caption;
-					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.finventorylist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
+					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.fstatusslist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
 					$item->Visible = $listaction->Allow;
 				}
 			}
@@ -1557,7 +1308,7 @@ class cinventory_list extends cinventory {
 		// Search button
 		$item = &$this->SearchOptions->Add("searchtoggle");
 		$SearchToggleClass = ($this->SearchWhere <> "") ? " active" : " active";
-		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"finventorylistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"fstatusslistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
 		$item->Visible = TRUE;
 
 		// Show all button
@@ -1697,50 +1448,14 @@ class cinventory_list extends cinventory {
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
-		$this->date_recieved->setDbValue($row['date_recieved']);
-		$this->reference_id->setDbValue($row['reference_id']);
-		$this->staff_id->setDbValue($row['staff_id']);
-		$this->material_name->setDbValue($row['material_name']);
-		$this->quantity->setDbValue($row['quantity']);
-		$this->type->setDbValue($row['type']);
-		$this->capacity->setDbValue($row['capacity']);
-		$this->recieved_by->setDbValue($row['recieved_by']);
-		$this->statuss->setDbValue($row['statuss']);
-		$this->recieved_action->setDbValue($row['recieved_action']);
-		$this->recieved_comment->setDbValue($row['recieved_comment']);
-		$this->date_approved->setDbValue($row['date_approved']);
-		$this->approver_action->setDbValue($row['approver_action']);
-		$this->approver_comment->setDbValue($row['approver_comment']);
-		$this->approved_by->setDbValue($row['approved_by']);
-		$this->verified_date->setDbValue($row['verified_date']);
-		$this->verified_action->setDbValue($row['verified_action']);
-		$this->verified_comment->setDbValue($row['verified_comment']);
-		$this->verified_by->setDbValue($row['verified_by']);
+		$this->description->setDbValue($row['description']);
 	}
 
 	// Return a row with default values
 	function NewRow() {
 		$row = array();
 		$row['id'] = NULL;
-		$row['date_recieved'] = NULL;
-		$row['reference_id'] = NULL;
-		$row['staff_id'] = NULL;
-		$row['material_name'] = NULL;
-		$row['quantity'] = NULL;
-		$row['type'] = NULL;
-		$row['capacity'] = NULL;
-		$row['recieved_by'] = NULL;
-		$row['statuss'] = NULL;
-		$row['recieved_action'] = NULL;
-		$row['recieved_comment'] = NULL;
-		$row['date_approved'] = NULL;
-		$row['approver_action'] = NULL;
-		$row['approver_comment'] = NULL;
-		$row['approved_by'] = NULL;
-		$row['verified_date'] = NULL;
-		$row['verified_action'] = NULL;
-		$row['verified_comment'] = NULL;
-		$row['verified_by'] = NULL;
+		$row['description'] = NULL;
 		return $row;
 	}
 
@@ -1750,47 +1465,12 @@ class cinventory_list extends cinventory {
 			return;
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
-		$this->date_recieved->DbValue = $row['date_recieved'];
-		$this->reference_id->DbValue = $row['reference_id'];
-		$this->staff_id->DbValue = $row['staff_id'];
-		$this->material_name->DbValue = $row['material_name'];
-		$this->quantity->DbValue = $row['quantity'];
-		$this->type->DbValue = $row['type'];
-		$this->capacity->DbValue = $row['capacity'];
-		$this->recieved_by->DbValue = $row['recieved_by'];
-		$this->statuss->DbValue = $row['statuss'];
-		$this->recieved_action->DbValue = $row['recieved_action'];
-		$this->recieved_comment->DbValue = $row['recieved_comment'];
-		$this->date_approved->DbValue = $row['date_approved'];
-		$this->approver_action->DbValue = $row['approver_action'];
-		$this->approver_comment->DbValue = $row['approver_comment'];
-		$this->approved_by->DbValue = $row['approved_by'];
-		$this->verified_date->DbValue = $row['verified_date'];
-		$this->verified_action->DbValue = $row['verified_action'];
-		$this->verified_comment->DbValue = $row['verified_comment'];
-		$this->verified_by->DbValue = $row['verified_by'];
+		$this->description->DbValue = $row['description'];
 	}
 
 	// Load old record
 	function LoadOldRecord() {
-
-		// Load key values from Session
-		$bValidKey = TRUE;
-		if (strval($this->getKey("id")) <> "")
-			$this->id->CurrentValue = $this->getKey("id"); // id
-		else
-			$bValidKey = FALSE;
-
-		// Load old record
-		$this->OldRecordset = NULL;
-		if ($bValidKey) {
-			$this->CurrentFilter = $this->KeyFilter();
-			$sSql = $this->SQL();
-			$conn = &$this->Connection();
-			$this->OldRecordset = ew_LoadRecordset($sSql, $conn);
-		}
-		$this->LoadRowValues($this->OldRecordset); // Load row values
-		return $bValidKey;
+		return FALSE;
 	}
 
 	// Render row values based on field settings
@@ -1810,25 +1490,7 @@ class cinventory_list extends cinventory {
 
 		// Common render codes for all row types
 		// id
-		// date_recieved
-		// reference_id
-		// staff_id
-		// material_name
-		// quantity
-		// type
-		// capacity
-		// recieved_by
-		// statuss
-		// recieved_action
-		// recieved_comment
-		// date_approved
-		// approver_action
-		// approver_comment
-		// approved_by
-		// verified_date
-		// verified_action
-		// verified_comment
-		// verified_by
+		// description
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1836,242 +1498,19 @@ class cinventory_list extends cinventory {
 		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// date_recieved
-		$this->date_recieved->ViewValue = $this->date_recieved->CurrentValue;
-		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 0);
-		$this->date_recieved->ViewCustomAttributes = "";
+		// description
+		$this->description->ViewValue = $this->description->CurrentValue;
+		$this->description->ViewCustomAttributes = "";
 
-		// reference_id
-		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
-		$this->reference_id->ViewCustomAttributes = "";
+			// id
+			$this->id->LinkCustomAttributes = "";
+			$this->id->HrefValue = "";
+			$this->id->TooltipValue = "";
 
-		// staff_id
-		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
-		if (strval($this->staff_id->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `staffno` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->staff_id->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->staff_id->ViewValue = $this->staff_id->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
-			}
-		} else {
-			$this->staff_id->ViewValue = NULL;
-		}
-		$this->staff_id->ViewCustomAttributes = "";
-
-		// material_name
-		$this->material_name->ViewValue = $this->material_name->CurrentValue;
-		$this->material_name->ViewCustomAttributes = "";
-
-		// quantity
-		$this->quantity->ViewValue = $this->quantity->CurrentValue;
-		$this->quantity->ViewCustomAttributes = "";
-
-		// type
-		$this->type->ViewValue = $this->type->CurrentValue;
-		$this->type->ViewCustomAttributes = "";
-
-		// capacity
-		$this->capacity->ViewValue = $this->capacity->CurrentValue;
-		$this->capacity->ViewCustomAttributes = "";
-
-		// recieved_by
-		$this->recieved_by->ViewValue = $this->recieved_by->CurrentValue;
-		if (strval($this->recieved_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->recieved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->recieved_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->recieved_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->recieved_by->ViewValue = $this->recieved_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->recieved_by->ViewValue = $this->recieved_by->CurrentValue;
-			}
-		} else {
-			$this->recieved_by->ViewValue = NULL;
-		}
-		$this->recieved_by->ViewCustomAttributes = "";
-
-		// statuss
-		if (strval($this->statuss->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
-		$sWhereWrk = "";
-		$this->statuss->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->statuss->ViewValue = $this->statuss->CurrentValue;
-			}
-		} else {
-			$this->statuss->ViewValue = NULL;
-		}
-		$this->statuss->ViewCustomAttributes = "";
-
-		// recieved_action
-		if (strval($this->recieved_action->CurrentValue) <> "") {
-			$this->recieved_action->ViewValue = $this->recieved_action->OptionCaption($this->recieved_action->CurrentValue);
-		} else {
-			$this->recieved_action->ViewValue = NULL;
-		}
-		$this->recieved_action->ViewCustomAttributes = "";
-
-		// recieved_comment
-		$this->recieved_comment->ViewValue = $this->recieved_comment->CurrentValue;
-		$this->recieved_comment->ViewCustomAttributes = "";
-
-		// date_approved
-		$this->date_approved->ViewValue = $this->date_approved->CurrentValue;
-		$this->date_approved->ViewValue = ew_FormatDateTime($this->date_approved->ViewValue, 17);
-		$this->date_approved->ViewCustomAttributes = "";
-
-		// approver_action
-		if (strval($this->approver_action->CurrentValue) <> "") {
-			$this->approver_action->ViewValue = $this->approver_action->OptionCaption($this->approver_action->CurrentValue);
-		} else {
-			$this->approver_action->ViewValue = NULL;
-		}
-		$this->approver_action->ViewCustomAttributes = "";
-
-		// approver_comment
-		$this->approver_comment->ViewValue = $this->approver_comment->CurrentValue;
-		$this->approver_comment->ViewCustomAttributes = "";
-
-		// approved_by
-		$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
-		if (strval($this->approved_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->approved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->approved_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->approved_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->approved_by->ViewValue = $this->approved_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
-			}
-		} else {
-			$this->approved_by->ViewValue = NULL;
-		}
-		$this->approved_by->ViewCustomAttributes = "";
-
-		// verified_date
-		$this->verified_date->ViewValue = $this->verified_date->CurrentValue;
-		$this->verified_date->ViewValue = ew_FormatDateTime($this->verified_date->ViewValue, 17);
-		$this->verified_date->ViewCustomAttributes = "";
-
-		// verified_action
-		if (strval($this->verified_action->CurrentValue) <> "") {
-			$this->verified_action->ViewValue = $this->verified_action->OptionCaption($this->verified_action->CurrentValue);
-		} else {
-			$this->verified_action->ViewValue = NULL;
-		}
-		$this->verified_action->ViewCustomAttributes = "";
-
-		// verified_comment
-		$this->verified_comment->ViewValue = $this->verified_comment->CurrentValue;
-		$this->verified_comment->ViewCustomAttributes = "";
-
-		// verified_by
-		$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
-		if (strval($this->verified_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->verified_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->verified_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->verified_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-		$sSqlWrk .= " ORDER BY `id`";
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->verified_by->ViewValue = $this->verified_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
-			}
-		} else {
-			$this->verified_by->ViewValue = NULL;
-		}
-		$this->verified_by->ViewCustomAttributes = "";
-
-			// date_recieved
-			$this->date_recieved->LinkCustomAttributes = "";
-			$this->date_recieved->HrefValue = "";
-			$this->date_recieved->TooltipValue = "";
-
-			// reference_id
-			$this->reference_id->LinkCustomAttributes = "";
-			$this->reference_id->HrefValue = "";
-			$this->reference_id->TooltipValue = "";
-
-			// material_name
-			$this->material_name->LinkCustomAttributes = "";
-			$this->material_name->HrefValue = "";
-			$this->material_name->TooltipValue = "";
-
-			// quantity
-			$this->quantity->LinkCustomAttributes = "";
-			$this->quantity->HrefValue = "";
-			$this->quantity->TooltipValue = "";
-
-			// type
-			$this->type->LinkCustomAttributes = "";
-			$this->type->HrefValue = "";
-			$this->type->TooltipValue = "";
-
-			// capacity
-			$this->capacity->LinkCustomAttributes = "";
-			$this->capacity->HrefValue = "";
-			$this->capacity->TooltipValue = "";
-
-			// recieved_by
-			$this->recieved_by->LinkCustomAttributes = "";
-			$this->recieved_by->HrefValue = "";
-			$this->recieved_by->TooltipValue = "";
-
-			// statuss
-			$this->statuss->LinkCustomAttributes = "";
-			$this->statuss->HrefValue = "";
-			$this->statuss->TooltipValue = "";
+			// description
+			$this->description->LinkCustomAttributes = "";
+			$this->description->HrefValue = "";
+			$this->description->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2121,7 +1560,7 @@ class cinventory_list extends cinventory {
 		// Export to Email
 		$item = &$this->ExportOptions->Add("email");
 		$url = "";
-		$item->Body = "<button id=\"emf_inventory\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_inventory',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.finventorylist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
+		$item->Body = "<button id=\"emf_statuss\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_statuss',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fstatusslist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
 		$item->Visible = FALSE;
 
 		// Drop down button for export
@@ -2251,9 +1690,6 @@ class cinventory_list extends cinventory {
 	function Page_Load() {
 
 		//echo "Page Load";
-			if (CurrentPageID() == "list"){
-			 $_SESSION['INV_ID'] = generateINVKey();
-		 }
 	}
 
 	// Page Unload event
@@ -2383,31 +1819,31 @@ class cinventory_list extends cinventory {
 <?php
 
 // Create page object
-if (!isset($inventory_list)) $inventory_list = new cinventory_list();
+if (!isset($statuss_list)) $statuss_list = new cstatuss_list();
 
 // Page init
-$inventory_list->Page_Init();
+$statuss_list->Page_Init();
 
 // Page main
-$inventory_list->Page_Main();
+$statuss_list->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$inventory_list->Page_Render();
+$statuss_list->Page_Render();
 ?>
 <?php include_once "header.php" ?>
-<?php if ($inventory->Export == "") { ?>
+<?php if ($statuss->Export == "") { ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "list";
-var CurrentForm = finventorylist = new ew_Form("finventorylist", "list");
-finventorylist.FormKeyCountName = '<?php echo $inventory_list->FormKeyCountName ?>';
+var CurrentForm = fstatusslist = new ew_Form("fstatusslist", "list");
+fstatusslist.FormKeyCountName = '<?php echo $statuss_list->FormKeyCountName ?>';
 
 // Form_CustomValidate event
-finventorylist.Form_CustomValidate = 
+fstatusslist.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid.
@@ -2415,84 +1851,79 @@ finventorylist.Form_CustomValidate =
  }
 
 // Use JavaScript validation or not
-finventorylist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+fstatusslist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-finventorylist.Lists["x_recieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-finventorylist.Lists["x_recieved_by"].Data = "<?php echo $inventory_list->recieved_by->LookupFilterQuery(FALSE, "list") ?>";
-finventorylist.AutoSuggests["x_recieved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_list->recieved_by->LookupFilterQuery(TRUE, "list"))) ?>;
-finventorylist.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
-finventorylist.Lists["x_statuss"].Data = "<?php echo $inventory_list->statuss->LookupFilterQuery(FALSE, "list") ?>";
-
 // Form object for search
-var CurrentSearchForm = finventorylistsrch = new ew_Form("finventorylistsrch");
+
+var CurrentSearchForm = fstatusslistsrch = new ew_Form("fstatusslistsrch");
 </script>
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
 </script>
 <?php } ?>
-<?php if ($inventory->Export == "") { ?>
+<?php if ($statuss->Export == "") { ?>
 <div class="ewToolbar">
-<?php if ($inventory_list->TotalRecs > 0 && $inventory_list->ExportOptions->Visible()) { ?>
-<?php $inventory_list->ExportOptions->Render("body") ?>
+<?php if ($statuss_list->TotalRecs > 0 && $statuss_list->ExportOptions->Visible()) { ?>
+<?php $statuss_list->ExportOptions->Render("body") ?>
 <?php } ?>
-<?php if ($inventory_list->SearchOptions->Visible()) { ?>
-<?php $inventory_list->SearchOptions->Render("body") ?>
+<?php if ($statuss_list->SearchOptions->Visible()) { ?>
+<?php $statuss_list->SearchOptions->Render("body") ?>
 <?php } ?>
-<?php if ($inventory_list->FilterOptions->Visible()) { ?>
-<?php $inventory_list->FilterOptions->Render("body") ?>
+<?php if ($statuss_list->FilterOptions->Visible()) { ?>
+<?php $statuss_list->FilterOptions->Render("body") ?>
 <?php } ?>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
 <?php
-	$bSelectLimit = $inventory_list->UseSelectLimit;
+	$bSelectLimit = $statuss_list->UseSelectLimit;
 	if ($bSelectLimit) {
-		if ($inventory_list->TotalRecs <= 0)
-			$inventory_list->TotalRecs = $inventory->ListRecordCount();
+		if ($statuss_list->TotalRecs <= 0)
+			$statuss_list->TotalRecs = $statuss->ListRecordCount();
 	} else {
-		if (!$inventory_list->Recordset && ($inventory_list->Recordset = $inventory_list->LoadRecordset()))
-			$inventory_list->TotalRecs = $inventory_list->Recordset->RecordCount();
+		if (!$statuss_list->Recordset && ($statuss_list->Recordset = $statuss_list->LoadRecordset()))
+			$statuss_list->TotalRecs = $statuss_list->Recordset->RecordCount();
 	}
-	$inventory_list->StartRec = 1;
-	if ($inventory_list->DisplayRecs <= 0 || ($inventory->Export <> "" && $inventory->ExportAll)) // Display all records
-		$inventory_list->DisplayRecs = $inventory_list->TotalRecs;
-	if (!($inventory->Export <> "" && $inventory->ExportAll))
-		$inventory_list->SetupStartRec(); // Set up start record position
+	$statuss_list->StartRec = 1;
+	if ($statuss_list->DisplayRecs <= 0 || ($statuss->Export <> "" && $statuss->ExportAll)) // Display all records
+		$statuss_list->DisplayRecs = $statuss_list->TotalRecs;
+	if (!($statuss->Export <> "" && $statuss->ExportAll))
+		$statuss_list->SetupStartRec(); // Set up start record position
 	if ($bSelectLimit)
-		$inventory_list->Recordset = $inventory_list->LoadRecordset($inventory_list->StartRec-1, $inventory_list->DisplayRecs);
+		$statuss_list->Recordset = $statuss_list->LoadRecordset($statuss_list->StartRec-1, $statuss_list->DisplayRecs);
 
 	// Set no record found message
-	if ($inventory->CurrentAction == "" && $inventory_list->TotalRecs == 0) {
+	if ($statuss->CurrentAction == "" && $statuss_list->TotalRecs == 0) {
 		if (!$Security->CanList())
-			$inventory_list->setWarningMessage(ew_DeniedMsg());
-		if ($inventory_list->SearchWhere == "0=101")
-			$inventory_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
+			$statuss_list->setWarningMessage(ew_DeniedMsg());
+		if ($statuss_list->SearchWhere == "0=101")
+			$statuss_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
 		else
-			$inventory_list->setWarningMessage($Language->Phrase("NoRecord"));
+			$statuss_list->setWarningMessage($Language->Phrase("NoRecord"));
 	}
-$inventory_list->RenderOtherOptions();
+$statuss_list->RenderOtherOptions();
 ?>
 <?php if ($Security->CanSearch()) { ?>
-<?php if ($inventory->Export == "" && $inventory->CurrentAction == "") { ?>
-<form name="finventorylistsrch" id="finventorylistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
-<?php $SearchPanelClass = ($inventory_list->SearchWhere <> "") ? " in" : " in"; ?>
-<div id="finventorylistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
+<?php if ($statuss->Export == "" && $statuss->CurrentAction == "") { ?>
+<form name="fstatusslistsrch" id="fstatusslistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
+<?php $SearchPanelClass = ($statuss_list->SearchWhere <> "") ? " in" : " in"; ?>
+<div id="fstatusslistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
 <input type="hidden" name="cmd" value="search">
-<input type="hidden" name="t" value="inventory">
+<input type="hidden" name="t" value="statuss">
 	<div class="ewBasicSearch">
 <div id="xsr_1" class="ewRow">
 	<div class="ewQuickSearch input-group">
-	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($inventory_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
-	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($inventory_list->BasicSearch->getType()) ?>">
+	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($statuss_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
+	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($statuss_list->BasicSearch->getType()) ?>">
 	<div class="input-group-btn">
-		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $inventory_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
+		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $statuss_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
 		<ul class="dropdown-menu pull-right" role="menu">
-			<li<?php if ($inventory_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
-			<li<?php if ($inventory_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
-			<li<?php if ($inventory_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
-			<li<?php if ($inventory_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
+			<li<?php if ($statuss_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
+			<li<?php if ($statuss_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
+			<li<?php if ($statuss_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
+			<li<?php if ($statuss_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
 		</ul>
 	<button class="btn btn-primary ewButton" name="btnsubmit" id="btnsubmit" type="submit"><?php echo $Language->Phrase("SearchBtn") ?></button>
 	</div>
@@ -2503,71 +1934,71 @@ $inventory_list->RenderOtherOptions();
 </form>
 <?php } ?>
 <?php } ?>
-<?php $inventory_list->ShowPageHeader(); ?>
+<?php $statuss_list->ShowPageHeader(); ?>
 <?php
-$inventory_list->ShowMessage();
+$statuss_list->ShowMessage();
 ?>
-<?php if ($inventory_list->TotalRecs > 0 || $inventory->CurrentAction <> "") { ?>
-<div class="box ewBox ewGrid<?php if ($inventory_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> inventory">
-<?php if ($inventory->Export == "") { ?>
+<?php if ($statuss_list->TotalRecs > 0 || $statuss->CurrentAction <> "") { ?>
+<div class="box ewBox ewGrid<?php if ($statuss_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> statuss">
+<?php if ($statuss->Export == "") { ?>
 <div class="box-header ewGridUpperPanel">
-<?php if ($inventory->CurrentAction <> "gridadd" && $inventory->CurrentAction <> "gridedit") { ?>
+<?php if ($statuss->CurrentAction <> "gridadd" && $statuss->CurrentAction <> "gridedit") { ?>
 <form name="ewPagerForm" class="form-inline ewForm ewPagerForm" action="<?php echo ew_CurrentPage() ?>">
-<?php if (!isset($inventory_list->Pager)) $inventory_list->Pager = new cPrevNextPager($inventory_list->StartRec, $inventory_list->DisplayRecs, $inventory_list->TotalRecs, $inventory_list->AutoHidePager) ?>
-<?php if ($inventory_list->Pager->RecordCount > 0 && $inventory_list->Pager->Visible) { ?>
+<?php if (!isset($statuss_list->Pager)) $statuss_list->Pager = new cPrevNextPager($statuss_list->StartRec, $statuss_list->DisplayRecs, $statuss_list->TotalRecs, $statuss_list->AutoHidePager) ?>
+<?php if ($statuss_list->Pager->RecordCount > 0 && $statuss_list->Pager->Visible) { ?>
 <div class="ewPager">
 <span><?php echo $Language->Phrase("Page") ?>&nbsp;</span>
 <div class="ewPrevNext"><div class="input-group">
 <div class="input-group-btn">
 <!--first page button-->
-	<?php if ($inventory_list->Pager->FirstButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $inventory_list->PageUrl() ?>start=<?php echo $inventory_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
+	<?php if ($statuss_list->Pager->FirstButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $statuss_list->PageUrl() ?>start=<?php echo $statuss_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerFirst") ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } ?>
 <!--previous page button-->
-	<?php if ($inventory_list->Pager->PrevButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $inventory_list->PageUrl() ?>start=<?php echo $inventory_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php if ($statuss_list->Pager->PrevButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $statuss_list->PageUrl() ?>start=<?php echo $statuss_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerPrevious") ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } ?>
 </div>
 <!--current page number-->
-	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $inventory_list->Pager->CurrentPage ?>">
+	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $statuss_list->Pager->CurrentPage ?>">
 <div class="input-group-btn">
 <!--next page button-->
-	<?php if ($inventory_list->Pager->NextButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $inventory_list->PageUrl() ?>start=<?php echo $inventory_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
+	<?php if ($statuss_list->Pager->NextButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $statuss_list->PageUrl() ?>start=<?php echo $statuss_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerNext") ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } ?>
 <!--last page button-->
-	<?php if ($inventory_list->Pager->LastButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $inventory_list->PageUrl() ?>start=<?php echo $inventory_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
+	<?php if ($statuss_list->Pager->LastButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $statuss_list->PageUrl() ?>start=<?php echo $statuss_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerLast") ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } ?>
 </div>
 </div>
 </div>
-<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $inventory_list->Pager->PageCount ?></span>
+<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $statuss_list->Pager->PageCount ?></span>
 </div>
 <?php } ?>
-<?php if ($inventory_list->Pager->RecordCount > 0) { ?>
+<?php if ($statuss_list->Pager->RecordCount > 0) { ?>
 <div class="ewPager ewRec">
-	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $inventory_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $inventory_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $inventory_list->Pager->RecordCount ?></span>
+	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $statuss_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $statuss_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $statuss_list->Pager->RecordCount ?></span>
 </div>
 <?php } ?>
-<?php if ($inventory_list->TotalRecs > 0 && (!$inventory_list->AutoHidePageSizeSelector || $inventory_list->Pager->Visible)) { ?>
+<?php if ($statuss_list->TotalRecs > 0 && (!$statuss_list->AutoHidePageSizeSelector || $statuss_list->Pager->Visible)) { ?>
 <div class="ewPager">
-<input type="hidden" name="t" value="inventory">
+<input type="hidden" name="t" value="statuss">
 <select name="<?php echo EW_TABLE_REC_PER_PAGE ?>" class="form-control input-sm ewTooltip" title="<?php echo $Language->Phrase("RecordsPerPage") ?>" onchange="this.form.submit();">
-<option value="5"<?php if ($inventory_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
-<option value="10"<?php if ($inventory_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
-<option value="15"<?php if ($inventory_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
-<option value="20"<?php if ($inventory_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
-<option value="50"<?php if ($inventory_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
-<option value="ALL"<?php if ($inventory->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
+<option value="5"<?php if ($statuss_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
+<option value="10"<?php if ($statuss_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
+<option value="15"<?php if ($statuss_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
+<option value="20"<?php if ($statuss_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
+<option value="50"<?php if ($statuss_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
+<option value="ALL"<?php if ($statuss->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
 </select>
 </div>
 <?php } ?>
@@ -2575,251 +2006,149 @@ $inventory_list->ShowMessage();
 <?php } ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($inventory_list->OtherOptions as &$option)
+	foreach ($statuss_list->OtherOptions as &$option)
 		$option->Render("body");
 ?>
 </div>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
-<form name="finventorylist" id="finventorylist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($inventory_list->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $inventory_list->Token ?>">
+<form name="fstatusslist" id="fstatusslist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($statuss_list->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $statuss_list->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="inventory">
-<div id="gmp_inventory" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
-<?php if ($inventory_list->TotalRecs > 0 || $inventory->CurrentAction == "gridedit") { ?>
-<table id="tbl_inventorylist" class="table ewTable">
+<input type="hidden" name="t" value="statuss">
+<div id="gmp_statuss" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
+<?php if ($statuss_list->TotalRecs > 0 || $statuss->CurrentAction == "gridedit") { ?>
+<table id="tbl_statusslist" class="table ewTable">
 <thead>
 	<tr class="ewTableHeader">
 <?php
 
 // Header row
-$inventory_list->RowType = EW_ROWTYPE_HEADER;
+$statuss_list->RowType = EW_ROWTYPE_HEADER;
 
 // Render list options
-$inventory_list->RenderListOptions();
+$statuss_list->RenderListOptions();
 
 // Render list options (header, left)
-$inventory_list->ListOptions->Render("header", "left");
+$statuss_list->ListOptions->Render("header", "left");
 ?>
-<?php if ($inventory->date_recieved->Visible) { // date_recieved ?>
-	<?php if ($inventory->SortUrl($inventory->date_recieved) == "") { ?>
-		<th data-name="date_recieved" class="<?php echo $inventory->date_recieved->HeaderCellClass() ?>"><div id="elh_inventory_date_recieved" class="inventory_date_recieved"><div class="ewTableHeaderCaption"><?php echo $inventory->date_recieved->FldCaption() ?></div></div></th>
+<?php if ($statuss->id->Visible) { // id ?>
+	<?php if ($statuss->SortUrl($statuss->id) == "") { ?>
+		<th data-name="id" class="<?php echo $statuss->id->HeaderCellClass() ?>"><div id="elh_statuss_id" class="statuss_id"><div class="ewTableHeaderCaption"><?php echo $statuss->id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="date_recieved" class="<?php echo $inventory->date_recieved->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->date_recieved) ?>',1);"><div id="elh_inventory_date_recieved" class="inventory_date_recieved">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->date_recieved->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory->date_recieved->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->date_recieved->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="id" class="<?php echo $statuss->id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $statuss->SortUrl($statuss->id) ?>',1);"><div id="elh_statuss_id" class="statuss_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $statuss->id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($statuss->id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($statuss->id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory->reference_id->Visible) { // reference_id ?>
-	<?php if ($inventory->SortUrl($inventory->reference_id) == "") { ?>
-		<th data-name="reference_id" class="<?php echo $inventory->reference_id->HeaderCellClass() ?>"><div id="elh_inventory_reference_id" class="inventory_reference_id"><div class="ewTableHeaderCaption"><?php echo $inventory->reference_id->FldCaption() ?></div></div></th>
+<?php if ($statuss->description->Visible) { // description ?>
+	<?php if ($statuss->SortUrl($statuss->description) == "") { ?>
+		<th data-name="description" class="<?php echo $statuss->description->HeaderCellClass() ?>"><div id="elh_statuss_description" class="statuss_description"><div class="ewTableHeaderCaption"><?php echo $statuss->description->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="reference_id" class="<?php echo $inventory->reference_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->reference_id) ?>',1);"><div id="elh_inventory_reference_id" class="inventory_reference_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->reference_id->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory->reference_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->reference_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($inventory->material_name->Visible) { // material_name ?>
-	<?php if ($inventory->SortUrl($inventory->material_name) == "") { ?>
-		<th data-name="material_name" class="<?php echo $inventory->material_name->HeaderCellClass() ?>"><div id="elh_inventory_material_name" class="inventory_material_name"><div class="ewTableHeaderCaption"><?php echo $inventory->material_name->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="material_name" class="<?php echo $inventory->material_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->material_name) ?>',1);"><div id="elh_inventory_material_name" class="inventory_material_name">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->material_name->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory->material_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->material_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($inventory->quantity->Visible) { // quantity ?>
-	<?php if ($inventory->SortUrl($inventory->quantity) == "") { ?>
-		<th data-name="quantity" class="<?php echo $inventory->quantity->HeaderCellClass() ?>"><div id="elh_inventory_quantity" class="inventory_quantity"><div class="ewTableHeaderCaption"><?php echo $inventory->quantity->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="quantity" class="<?php echo $inventory->quantity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->quantity) ?>',1);"><div id="elh_inventory_quantity" class="inventory_quantity">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->quantity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory->quantity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->quantity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($inventory->type->Visible) { // type ?>
-	<?php if ($inventory->SortUrl($inventory->type) == "") { ?>
-		<th data-name="type" class="<?php echo $inventory->type->HeaderCellClass() ?>"><div id="elh_inventory_type" class="inventory_type"><div class="ewTableHeaderCaption"><?php echo $inventory->type->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="type" class="<?php echo $inventory->type->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->type) ?>',1);"><div id="elh_inventory_type" class="inventory_type">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->type->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory->type->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->type->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($inventory->capacity->Visible) { // capacity ?>
-	<?php if ($inventory->SortUrl($inventory->capacity) == "") { ?>
-		<th data-name="capacity" class="<?php echo $inventory->capacity->HeaderCellClass() ?>"><div id="elh_inventory_capacity" class="inventory_capacity"><div class="ewTableHeaderCaption"><?php echo $inventory->capacity->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="capacity" class="<?php echo $inventory->capacity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->capacity) ?>',1);"><div id="elh_inventory_capacity" class="inventory_capacity">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->capacity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory->capacity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->capacity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($inventory->recieved_by->Visible) { // recieved_by ?>
-	<?php if ($inventory->SortUrl($inventory->recieved_by) == "") { ?>
-		<th data-name="recieved_by" class="<?php echo $inventory->recieved_by->HeaderCellClass() ?>"><div id="elh_inventory_recieved_by" class="inventory_recieved_by"><div class="ewTableHeaderCaption"><?php echo $inventory->recieved_by->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="recieved_by" class="<?php echo $inventory->recieved_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->recieved_by) ?>',1);"><div id="elh_inventory_recieved_by" class="inventory_recieved_by">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->recieved_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory->recieved_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->recieved_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($inventory->statuss->Visible) { // statuss ?>
-	<?php if ($inventory->SortUrl($inventory->statuss) == "") { ?>
-		<th data-name="statuss" class="<?php echo $inventory->statuss->HeaderCellClass() ?>"><div id="elh_inventory_statuss" class="inventory_statuss"><div class="ewTableHeaderCaption"><?php echo $inventory->statuss->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="statuss" class="<?php echo $inventory->statuss->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->statuss) ?>',1);"><div id="elh_inventory_statuss" class="inventory_statuss">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->statuss->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory->statuss->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->statuss->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="description" class="<?php echo $statuss->description->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $statuss->SortUrl($statuss->description) ?>',1);"><div id="elh_statuss_description" class="statuss_description">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $statuss->description->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($statuss->description->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($statuss->description->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
 <?php
 
 // Render list options (header, right)
-$inventory_list->ListOptions->Render("header", "right");
+$statuss_list->ListOptions->Render("header", "right");
 ?>
 	</tr>
 </thead>
 <tbody>
 <?php
-if ($inventory->ExportAll && $inventory->Export <> "") {
-	$inventory_list->StopRec = $inventory_list->TotalRecs;
+if ($statuss->ExportAll && $statuss->Export <> "") {
+	$statuss_list->StopRec = $statuss_list->TotalRecs;
 } else {
 
 	// Set the last record to display
-	if ($inventory_list->TotalRecs > $inventory_list->StartRec + $inventory_list->DisplayRecs - 1)
-		$inventory_list->StopRec = $inventory_list->StartRec + $inventory_list->DisplayRecs - 1;
+	if ($statuss_list->TotalRecs > $statuss_list->StartRec + $statuss_list->DisplayRecs - 1)
+		$statuss_list->StopRec = $statuss_list->StartRec + $statuss_list->DisplayRecs - 1;
 	else
-		$inventory_list->StopRec = $inventory_list->TotalRecs;
+		$statuss_list->StopRec = $statuss_list->TotalRecs;
 }
-$inventory_list->RecCnt = $inventory_list->StartRec - 1;
-if ($inventory_list->Recordset && !$inventory_list->Recordset->EOF) {
-	$inventory_list->Recordset->MoveFirst();
-	$bSelectLimit = $inventory_list->UseSelectLimit;
-	if (!$bSelectLimit && $inventory_list->StartRec > 1)
-		$inventory_list->Recordset->Move($inventory_list->StartRec - 1);
-} elseif (!$inventory->AllowAddDeleteRow && $inventory_list->StopRec == 0) {
-	$inventory_list->StopRec = $inventory->GridAddRowCount;
+$statuss_list->RecCnt = $statuss_list->StartRec - 1;
+if ($statuss_list->Recordset && !$statuss_list->Recordset->EOF) {
+	$statuss_list->Recordset->MoveFirst();
+	$bSelectLimit = $statuss_list->UseSelectLimit;
+	if (!$bSelectLimit && $statuss_list->StartRec > 1)
+		$statuss_list->Recordset->Move($statuss_list->StartRec - 1);
+} elseif (!$statuss->AllowAddDeleteRow && $statuss_list->StopRec == 0) {
+	$statuss_list->StopRec = $statuss->GridAddRowCount;
 }
 
 // Initialize aggregate
-$inventory->RowType = EW_ROWTYPE_AGGREGATEINIT;
-$inventory->ResetAttrs();
-$inventory_list->RenderRow();
-while ($inventory_list->RecCnt < $inventory_list->StopRec) {
-	$inventory_list->RecCnt++;
-	if (intval($inventory_list->RecCnt) >= intval($inventory_list->StartRec)) {
-		$inventory_list->RowCnt++;
+$statuss->RowType = EW_ROWTYPE_AGGREGATEINIT;
+$statuss->ResetAttrs();
+$statuss_list->RenderRow();
+while ($statuss_list->RecCnt < $statuss_list->StopRec) {
+	$statuss_list->RecCnt++;
+	if (intval($statuss_list->RecCnt) >= intval($statuss_list->StartRec)) {
+		$statuss_list->RowCnt++;
 
 		// Set up key count
-		$inventory_list->KeyCount = $inventory_list->RowIndex;
+		$statuss_list->KeyCount = $statuss_list->RowIndex;
 
 		// Init row class and style
-		$inventory->ResetAttrs();
-		$inventory->CssClass = "";
-		if ($inventory->CurrentAction == "gridadd") {
+		$statuss->ResetAttrs();
+		$statuss->CssClass = "";
+		if ($statuss->CurrentAction == "gridadd") {
 		} else {
-			$inventory_list->LoadRowValues($inventory_list->Recordset); // Load row values
+			$statuss_list->LoadRowValues($statuss_list->Recordset); // Load row values
 		}
-		$inventory->RowType = EW_ROWTYPE_VIEW; // Render view
+		$statuss->RowType = EW_ROWTYPE_VIEW; // Render view
 
 		// Set up row id / data-rowindex
-		$inventory->RowAttrs = array_merge($inventory->RowAttrs, array('data-rowindex'=>$inventory_list->RowCnt, 'id'=>'r' . $inventory_list->RowCnt . '_inventory', 'data-rowtype'=>$inventory->RowType));
+		$statuss->RowAttrs = array_merge($statuss->RowAttrs, array('data-rowindex'=>$statuss_list->RowCnt, 'id'=>'r' . $statuss_list->RowCnt . '_statuss', 'data-rowtype'=>$statuss->RowType));
 
 		// Render row
-		$inventory_list->RenderRow();
+		$statuss_list->RenderRow();
 
 		// Render list options
-		$inventory_list->RenderListOptions();
+		$statuss_list->RenderListOptions();
 ?>
-	<tr<?php echo $inventory->RowAttributes() ?>>
+	<tr<?php echo $statuss->RowAttributes() ?>>
 <?php
 
 // Render list options (body, left)
-$inventory_list->ListOptions->Render("body", "left", $inventory_list->RowCnt);
+$statuss_list->ListOptions->Render("body", "left", $statuss_list->RowCnt);
 ?>
-	<?php if ($inventory->date_recieved->Visible) { // date_recieved ?>
-		<td data-name="date_recieved"<?php echo $inventory->date_recieved->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_date_recieved" class="inventory_date_recieved">
-<span<?php echo $inventory->date_recieved->ViewAttributes() ?>>
-<?php echo $inventory->date_recieved->ListViewValue() ?></span>
+	<?php if ($statuss->id->Visible) { // id ?>
+		<td data-name="id"<?php echo $statuss->id->CellAttributes() ?>>
+<span id="el<?php echo $statuss_list->RowCnt ?>_statuss_id" class="statuss_id">
+<span<?php echo $statuss->id->ViewAttributes() ?>>
+<?php echo $statuss->id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory->reference_id->Visible) { // reference_id ?>
-		<td data-name="reference_id"<?php echo $inventory->reference_id->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_reference_id" class="inventory_reference_id">
-<span<?php echo $inventory->reference_id->ViewAttributes() ?>>
-<?php echo $inventory->reference_id->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($inventory->material_name->Visible) { // material_name ?>
-		<td data-name="material_name"<?php echo $inventory->material_name->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_material_name" class="inventory_material_name">
-<span<?php echo $inventory->material_name->ViewAttributes() ?>>
-<?php echo $inventory->material_name->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($inventory->quantity->Visible) { // quantity ?>
-		<td data-name="quantity"<?php echo $inventory->quantity->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_quantity" class="inventory_quantity">
-<span<?php echo $inventory->quantity->ViewAttributes() ?>>
-<?php echo $inventory->quantity->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($inventory->type->Visible) { // type ?>
-		<td data-name="type"<?php echo $inventory->type->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_type" class="inventory_type">
-<span<?php echo $inventory->type->ViewAttributes() ?>>
-<?php echo $inventory->type->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($inventory->capacity->Visible) { // capacity ?>
-		<td data-name="capacity"<?php echo $inventory->capacity->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_capacity" class="inventory_capacity">
-<span<?php echo $inventory->capacity->ViewAttributes() ?>>
-<?php echo $inventory->capacity->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($inventory->recieved_by->Visible) { // recieved_by ?>
-		<td data-name="recieved_by"<?php echo $inventory->recieved_by->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_recieved_by" class="inventory_recieved_by">
-<span<?php echo $inventory->recieved_by->ViewAttributes() ?>>
-<?php echo $inventory->recieved_by->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($inventory->statuss->Visible) { // statuss ?>
-		<td data-name="statuss"<?php echo $inventory->statuss->CellAttributes() ?>>
-<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_statuss" class="inventory_statuss">
-<span<?php echo $inventory->statuss->ViewAttributes() ?>>
-<?php echo $inventory->statuss->ListViewValue() ?></span>
+	<?php if ($statuss->description->Visible) { // description ?>
+		<td data-name="description"<?php echo $statuss->description->CellAttributes() ?>>
+<span id="el<?php echo $statuss_list->RowCnt ?>_statuss_description" class="statuss_description">
+<span<?php echo $statuss->description->ViewAttributes() ?>>
+<?php echo $statuss->description->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
 <?php
 
 // Render list options (body, right)
-$inventory_list->ListOptions->Render("body", "right", $inventory_list->RowCnt);
+$statuss_list->ListOptions->Render("body", "right", $statuss_list->RowCnt);
 ?>
 	</tr>
 <?php
 	}
-	if ($inventory->CurrentAction <> "gridadd")
-		$inventory_list->Recordset->MoveNext();
+	if ($statuss->CurrentAction <> "gridadd")
+		$statuss_list->Recordset->MoveNext();
 }
 ?>
 </tbody>
 </table>
 <?php } ?>
-<?php if ($inventory->CurrentAction == "") { ?>
+<?php if ($statuss->CurrentAction == "") { ?>
 <input type="hidden" name="a_list" id="a_list" value="">
 <?php } ?>
 </div>
@@ -2827,15 +2156,15 @@ $inventory_list->ListOptions->Render("body", "right", $inventory_list->RowCnt);
 <?php
 
 // Close recordset
-if ($inventory_list->Recordset)
-	$inventory_list->Recordset->Close();
+if ($statuss_list->Recordset)
+	$statuss_list->Recordset->Close();
 ?>
 </div>
 <?php } ?>
-<?php if ($inventory_list->TotalRecs == 0 && $inventory->CurrentAction == "") { // Show other options ?>
+<?php if ($statuss_list->TotalRecs == 0 && $statuss->CurrentAction == "") { // Show other options ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($inventory_list->OtherOptions as &$option) {
+	foreach ($statuss_list->OtherOptions as &$option) {
 		$option->ButtonClass = "";
 		$option->Render("body", "");
 	}
@@ -2843,19 +2172,19 @@ if ($inventory_list->Recordset)
 </div>
 <div class="clearfix"></div>
 <?php } ?>
-<?php if ($inventory->Export == "") { ?>
+<?php if ($statuss->Export == "") { ?>
 <script type="text/javascript">
-finventorylistsrch.FilterList = <?php echo $inventory_list->GetFilterList() ?>;
-finventorylistsrch.Init();
-finventorylist.Init();
+fstatusslistsrch.FilterList = <?php echo $statuss_list->GetFilterList() ?>;
+fstatusslistsrch.Init();
+fstatusslist.Init();
 </script>
 <?php } ?>
 <?php
-$inventory_list->ShowPageFooter();
+$statuss_list->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
-<?php if ($inventory->Export == "") { ?>
+<?php if ($statuss->Export == "") { ?>
 <script type="text/javascript">
 
 // Write your table-specific startup script here
@@ -2865,5 +2194,5 @@ if (EW_DEBUG_ENABLED)
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php
-$inventory_list->Page_Terminate();
+$statuss_list->Page_Terminate();
 ?>

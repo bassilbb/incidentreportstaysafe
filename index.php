@@ -387,6 +387,12 @@ class cdefault {
 			$this->Page_Terminate("dispenser_reportlist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'action_taken'))
 			$this->Page_Terminate("action_takenlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'statuss'))
+			$this->Page_Terminate("statusslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'inventory_report'))
+			$this->Page_Terminate("inventory_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'store_report'))
+			$this->Page_Terminate("store_reportlist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

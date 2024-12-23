@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<configuration date="2024/12/11" author="e.World Technology Ltd.">
-  <project id="{DD9080C0-D1CA-431F-831F-CAC8FA61260C}" file="C:\Users\Bassey\Documents\PHPMaker\Projects\incident_report_app_staysafe.pmp" name="incident_report_app" product="PHPMaker" version="14.0" datetime="2024/12/11 16:45:13" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0">
+<configuration date="2024/12/23" author="e.World Technology Ltd.">
+  <project id="{DD9080C0-D1CA-431F-831F-CAC8FA61260C}" file="C:\Users\Bassey\Documents\PHPMaker\Projects\incident_report_app_staysafe.pmp" name="incident_report_app" product="PHPMaker" version="14.0" datetime="2024/12/23 18:41:06" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0">
     <table id="branch" name="branch" caption="Organization" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="category" name="category" caption="Category" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="client" name="client" caption="Client" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
@@ -44,5 +44,8 @@
     <table id="dispenser_type" name="dispenser_type" caption="Dispenser Type" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="dispenser_report" name="dispenser_report" caption="Dispenser Report" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="action_taken" name="action_taken" caption="action taken" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="statuss" name="statuss" caption="statuss" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="inventory_report" name="inventory_report" caption="Inventory Report" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="store_report" name="store_report" caption="Inventory Store Report" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
   </project>
 </configuration>

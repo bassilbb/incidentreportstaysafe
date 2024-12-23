@@ -324,6 +324,7 @@ class cinventory_delete extends cinventory {
 		$this->type->SetVisibility();
 		$this->capacity->SetVisibility();
 		$this->recieved_by->SetVisibility();
+		$this->statuss->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -512,6 +513,17 @@ class cinventory_delete extends cinventory {
 		$this->type->setDbValue($row['type']);
 		$this->capacity->setDbValue($row['capacity']);
 		$this->recieved_by->setDbValue($row['recieved_by']);
+		$this->statuss->setDbValue($row['statuss']);
+		$this->recieved_action->setDbValue($row['recieved_action']);
+		$this->recieved_comment->setDbValue($row['recieved_comment']);
+		$this->date_approved->setDbValue($row['date_approved']);
+		$this->approver_action->setDbValue($row['approver_action']);
+		$this->approver_comment->setDbValue($row['approver_comment']);
+		$this->approved_by->setDbValue($row['approved_by']);
+		$this->verified_date->setDbValue($row['verified_date']);
+		$this->verified_action->setDbValue($row['verified_action']);
+		$this->verified_comment->setDbValue($row['verified_comment']);
+		$this->verified_by->setDbValue($row['verified_by']);
 	}
 
 	// Return a row with default values
@@ -526,6 +538,17 @@ class cinventory_delete extends cinventory {
 		$row['type'] = NULL;
 		$row['capacity'] = NULL;
 		$row['recieved_by'] = NULL;
+		$row['statuss'] = NULL;
+		$row['recieved_action'] = NULL;
+		$row['recieved_comment'] = NULL;
+		$row['date_approved'] = NULL;
+		$row['approver_action'] = NULL;
+		$row['approver_comment'] = NULL;
+		$row['approved_by'] = NULL;
+		$row['verified_date'] = NULL;
+		$row['verified_action'] = NULL;
+		$row['verified_comment'] = NULL;
+		$row['verified_by'] = NULL;
 		return $row;
 	}
 
@@ -543,6 +566,17 @@ class cinventory_delete extends cinventory {
 		$this->type->DbValue = $row['type'];
 		$this->capacity->DbValue = $row['capacity'];
 		$this->recieved_by->DbValue = $row['recieved_by'];
+		$this->statuss->DbValue = $row['statuss'];
+		$this->recieved_action->DbValue = $row['recieved_action'];
+		$this->recieved_comment->DbValue = $row['recieved_comment'];
+		$this->date_approved->DbValue = $row['date_approved'];
+		$this->approver_action->DbValue = $row['approver_action'];
+		$this->approver_comment->DbValue = $row['approver_comment'];
+		$this->approved_by->DbValue = $row['approved_by'];
+		$this->verified_date->DbValue = $row['verified_date'];
+		$this->verified_action->DbValue = $row['verified_action'];
+		$this->verified_comment->DbValue = $row['verified_comment'];
+		$this->verified_by->DbValue = $row['verified_by'];
 	}
 
 	// Render row values based on field settings
@@ -564,6 +598,17 @@ class cinventory_delete extends cinventory {
 		// type
 		// capacity
 		// recieved_by
+		// statuss
+		// recieved_action
+		// recieved_comment
+		// date_approved
+		// approver_action
+		// approver_comment
+		// approved_by
+		// verified_date
+		// verified_action
+		// verified_comment
+		// verified_by
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -624,7 +669,7 @@ class cinventory_delete extends cinventory {
 		$this->recieved_by->ViewValue = $this->recieved_by->CurrentValue;
 		if (strval($this->recieved_by->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->recieved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
 		$this->recieved_by->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
@@ -635,6 +680,7 @@ class cinventory_delete extends cinventory {
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
 				$this->recieved_by->ViewValue = $this->recieved_by->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
@@ -644,6 +690,128 @@ class cinventory_delete extends cinventory {
 			$this->recieved_by->ViewValue = NULL;
 		}
 		$this->recieved_by->ViewCustomAttributes = "";
+
+		// statuss
+		if (strval($this->statuss->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
+		$sWhereWrk = "";
+		$this->statuss->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->statuss->ViewValue = $this->statuss->CurrentValue;
+			}
+		} else {
+			$this->statuss->ViewValue = NULL;
+		}
+		$this->statuss->ViewCustomAttributes = "";
+
+		// recieved_action
+		if (strval($this->recieved_action->CurrentValue) <> "") {
+			$this->recieved_action->ViewValue = $this->recieved_action->OptionCaption($this->recieved_action->CurrentValue);
+		} else {
+			$this->recieved_action->ViewValue = NULL;
+		}
+		$this->recieved_action->ViewCustomAttributes = "";
+
+		// recieved_comment
+		$this->recieved_comment->ViewValue = $this->recieved_comment->CurrentValue;
+		$this->recieved_comment->ViewCustomAttributes = "";
+
+		// date_approved
+		$this->date_approved->ViewValue = $this->date_approved->CurrentValue;
+		$this->date_approved->ViewValue = ew_FormatDateTime($this->date_approved->ViewValue, 17);
+		$this->date_approved->ViewCustomAttributes = "";
+
+		// approver_action
+		if (strval($this->approver_action->CurrentValue) <> "") {
+			$this->approver_action->ViewValue = $this->approver_action->OptionCaption($this->approver_action->CurrentValue);
+		} else {
+			$this->approver_action->ViewValue = NULL;
+		}
+		$this->approver_action->ViewCustomAttributes = "";
+
+		// approver_comment
+		$this->approver_comment->ViewValue = $this->approver_comment->CurrentValue;
+		$this->approver_comment->ViewCustomAttributes = "";
+
+		// approved_by
+		$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
+		if (strval($this->approved_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->approved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->approved_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->approved_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->approved_by->ViewValue = $this->approved_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
+			}
+		} else {
+			$this->approved_by->ViewValue = NULL;
+		}
+		$this->approved_by->ViewCustomAttributes = "";
+
+		// verified_date
+		$this->verified_date->ViewValue = $this->verified_date->CurrentValue;
+		$this->verified_date->ViewValue = ew_FormatDateTime($this->verified_date->ViewValue, 17);
+		$this->verified_date->ViewCustomAttributes = "";
+
+		// verified_action
+		if (strval($this->verified_action->CurrentValue) <> "") {
+			$this->verified_action->ViewValue = $this->verified_action->OptionCaption($this->verified_action->CurrentValue);
+		} else {
+			$this->verified_action->ViewValue = NULL;
+		}
+		$this->verified_action->ViewCustomAttributes = "";
+
+		// verified_comment
+		$this->verified_comment->ViewValue = $this->verified_comment->CurrentValue;
+		$this->verified_comment->ViewCustomAttributes = "";
+
+		// verified_by
+		$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
+		if (strval($this->verified_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->verified_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->verified_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->verified_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+		$sSqlWrk .= " ORDER BY `id`";
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->verified_by->ViewValue = $this->verified_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
+			}
+		} else {
+			$this->verified_by->ViewValue = NULL;
+		}
+		$this->verified_by->ViewCustomAttributes = "";
 
 			// date_recieved
 			$this->date_recieved->LinkCustomAttributes = "";
@@ -679,6 +847,11 @@ class cinventory_delete extends cinventory {
 			$this->recieved_by->LinkCustomAttributes = "";
 			$this->recieved_by->HrefValue = "";
 			$this->recieved_by->TooltipValue = "";
+
+			// statuss
+			$this->statuss->LinkCustomAttributes = "";
+			$this->statuss->HrefValue = "";
+			$this->statuss->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -893,9 +1066,11 @@ finventorydelete.Form_CustomValidate =
 finventorydelete.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-finventorydelete.Lists["x_recieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventorydelete.Lists["x_recieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 finventorydelete.Lists["x_recieved_by"].Data = "<?php echo $inventory_delete->recieved_by->LookupFilterQuery(FALSE, "delete") ?>";
 finventorydelete.AutoSuggests["x_recieved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_delete->recieved_by->LookupFilterQuery(TRUE, "delete"))) ?>;
+finventorydelete.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
+finventorydelete.Lists["x_statuss"].Data = "<?php echo $inventory_delete->statuss->LookupFilterQuery(FALSE, "delete") ?>";
 
 // Form object for search
 </script>
@@ -942,6 +1117,9 @@ $inventory_delete->ShowMessage();
 <?php } ?>
 <?php if ($inventory->recieved_by->Visible) { // recieved_by ?>
 		<th class="<?php echo $inventory->recieved_by->HeaderCellClass() ?>"><span id="elh_inventory_recieved_by" class="inventory_recieved_by"><?php echo $inventory->recieved_by->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($inventory->statuss->Visible) { // statuss ?>
+		<th class="<?php echo $inventory->statuss->HeaderCellClass() ?>"><span id="elh_inventory_statuss" class="inventory_statuss"><?php echo $inventory->statuss->FldCaption() ?></span></th>
 <?php } ?>
 	</tr>
 	</thead>
@@ -1017,6 +1195,14 @@ while (!$inventory_delete->Recordset->EOF) {
 <span id="el<?php echo $inventory_delete->RowCnt ?>_inventory_recieved_by" class="inventory_recieved_by">
 <span<?php echo $inventory->recieved_by->ViewAttributes() ?>>
 <?php echo $inventory->recieved_by->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($inventory->statuss->Visible) { // statuss ?>
+		<td<?php echo $inventory->statuss->CellAttributes() ?>>
+<span id="el<?php echo $inventory_delete->RowCnt ?>_inventory_statuss" class="inventory_statuss">
+<span<?php echo $inventory->statuss->ViewAttributes() ?>>
+<?php echo $inventory->statuss->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>
