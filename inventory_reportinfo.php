@@ -109,8 +109,10 @@ class cinventory_report extends cTable {
 		$this->fields['capacity'] = &$this->capacity;
 
 		// recieved_by
-		$this->recieved_by = new cField('inventory_report', 'inventory_report', 'x_recieved_by', 'recieved_by', '`recieved_by`', '`recieved_by`', 3, -1, FALSE, '`recieved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->recieved_by = new cField('inventory_report', 'inventory_report', 'x_recieved_by', 'recieved_by', '`recieved_by`', '`recieved_by`', 3, -1, FALSE, '`recieved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->recieved_by->Sortable = TRUE; // Allow sort
+		$this->recieved_by->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->recieved_by->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['recieved_by'] = &$this->recieved_by;
 
 		// statuss
@@ -819,12 +821,11 @@ class cinventory_report extends cTable {
 		$this->capacity->ViewCustomAttributes = "";
 
 		// recieved_by
-		$this->recieved_by->ViewValue = $this->recieved_by->CurrentValue;
 		if (strval($this->recieved_by->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->recieved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->recieved_by->LookupFilters = array();
+		$this->recieved_by->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->recieved_by, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1131,8 +1132,6 @@ class cinventory_report extends cTable {
 		// recieved_by
 		$this->recieved_by->EditAttrs["class"] = "form-control";
 		$this->recieved_by->EditCustomAttributes = "";
-		$this->recieved_by->EditValue = $this->recieved_by->CurrentValue;
-		$this->recieved_by->PlaceHolder = ew_RemoveHtml($this->recieved_by->FldCaption());
 
 		// statuss
 		$this->statuss->EditAttrs["class"] = "form-control";

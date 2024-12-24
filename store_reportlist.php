@@ -652,12 +652,18 @@ class cstore_report_list extends cstore_report {
 
 			// Get default search criteria
 			ew_AddFilter($this->DefaultSearchWhere, $this->BasicSearchWhere(TRUE));
+			ew_AddFilter($this->DefaultSearchWhere, $this->AdvancedSearchWhere(TRUE));
 
 			// Get basic search values
 			$this->LoadBasicSearchValues();
 
+			// Get and validate search values for advanced search
+			$this->LoadSearchValues(); // Get search values
+
 			// Process filter list
 			$this->ProcessFilterList();
+			if (!$this->ValidateSearch())
+				$this->setFailureMessage($gsSearchError);
 
 			// Restore search parms from Session if not searching / reset / export
 			if (($this->Export <> "" || $this->Command <> "search" && $this->Command <> "reset" && $this->Command <> "resetall") && $this->Command <> "json" && $this->CheckSearchParms())
@@ -672,6 +678,10 @@ class cstore_report_list extends cstore_report {
 			// Get basic search criteria
 			if ($gsSearchError == "")
 				$sSrchBasic = $this->BasicSearchWhere();
+
+			// Get search criteria for advanced search
+			if ($gsSearchError == "")
+				$sSrchAdvanced = $this->AdvancedSearchWhere();
 		}
 
 		// Restore display records
@@ -692,6 +702,11 @@ class cstore_report_list extends cstore_report {
 			$this->BasicSearch->LoadDefault();
 			if ($this->BasicSearch->Keyword != "")
 				$sSrchBasic = $this->BasicSearchWhere();
+
+			// Load advanced search from default
+			if ($this->LoadAdvancedSearchDefault()) {
+				$sSrchAdvanced = $this->AdvancedSearchWhere();
+			}
 		}
 
 		// Build search criteria
@@ -1063,6 +1078,109 @@ class cstore_report_list extends cstore_report {
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
 
+	// Advanced search WHERE clause based on QueryString
+	function AdvancedSearchWhere($Default = FALSE) {
+		global $Security;
+		$sWhere = "";
+		if (!$Security->CanSearch()) return "";
+		$this->BuildSearchSql($sWhere, $this->id, $Default, FALSE); // id
+		$this->BuildSearchSql($sWhere, $this->date, $Default, FALSE); // date
+		$this->BuildSearchSql($sWhere, $this->reference_id, $Default, FALSE); // reference_id
+		$this->BuildSearchSql($sWhere, $this->staff_id, $Default, FALSE); // staff_id
+		$this->BuildSearchSql($sWhere, $this->material_name, $Default, FALSE); // material_name
+		$this->BuildSearchSql($sWhere, $this->quantity_in, $Default, FALSE); // quantity_in
+		$this->BuildSearchSql($sWhere, $this->quantity_type, $Default, FALSE); // quantity_type
+		$this->BuildSearchSql($sWhere, $this->quantity_out, $Default, FALSE); // quantity_out
+		$this->BuildSearchSql($sWhere, $this->total_quantity, $Default, FALSE); // total_quantity
+		$this->BuildSearchSql($sWhere, $this->treated_by, $Default, FALSE); // treated_by
+		$this->BuildSearchSql($sWhere, $this->status, $Default, FALSE); // status
+		$this->BuildSearchSql($sWhere, $this->issued_action, $Default, FALSE); // issued_action
+		$this->BuildSearchSql($sWhere, $this->issued_comment, $Default, FALSE); // issued_comment
+		$this->BuildSearchSql($sWhere, $this->issued_by, $Default, FALSE); // issued_by
+		$this->BuildSearchSql($sWhere, $this->approver_date, $Default, FALSE); // approver_date
+		$this->BuildSearchSql($sWhere, $this->approver_action, $Default, FALSE); // approver_action
+		$this->BuildSearchSql($sWhere, $this->approved_comment, $Default, FALSE); // approved_comment
+		$this->BuildSearchSql($sWhere, $this->approved_by, $Default, FALSE); // approved_by
+		$this->BuildSearchSql($sWhere, $this->verified_date, $Default, FALSE); // verified_date
+		$this->BuildSearchSql($sWhere, $this->verified_action, $Default, FALSE); // verified_action
+		$this->BuildSearchSql($sWhere, $this->verified_comment, $Default, FALSE); // verified_comment
+		$this->BuildSearchSql($sWhere, $this->verified_by, $Default, FALSE); // verified_by
+
+		// Set up search parm
+		if (!$Default && $sWhere <> "" && in_array($this->Command, array("", "reset", "resetall"))) {
+			$this->Command = "search";
+		}
+		if (!$Default && $this->Command == "search") {
+			$this->id->AdvancedSearch->Save(); // id
+			$this->date->AdvancedSearch->Save(); // date
+			$this->reference_id->AdvancedSearch->Save(); // reference_id
+			$this->staff_id->AdvancedSearch->Save(); // staff_id
+			$this->material_name->AdvancedSearch->Save(); // material_name
+			$this->quantity_in->AdvancedSearch->Save(); // quantity_in
+			$this->quantity_type->AdvancedSearch->Save(); // quantity_type
+			$this->quantity_out->AdvancedSearch->Save(); // quantity_out
+			$this->total_quantity->AdvancedSearch->Save(); // total_quantity
+			$this->treated_by->AdvancedSearch->Save(); // treated_by
+			$this->status->AdvancedSearch->Save(); // status
+			$this->issued_action->AdvancedSearch->Save(); // issued_action
+			$this->issued_comment->AdvancedSearch->Save(); // issued_comment
+			$this->issued_by->AdvancedSearch->Save(); // issued_by
+			$this->approver_date->AdvancedSearch->Save(); // approver_date
+			$this->approver_action->AdvancedSearch->Save(); // approver_action
+			$this->approved_comment->AdvancedSearch->Save(); // approved_comment
+			$this->approved_by->AdvancedSearch->Save(); // approved_by
+			$this->verified_date->AdvancedSearch->Save(); // verified_date
+			$this->verified_action->AdvancedSearch->Save(); // verified_action
+			$this->verified_comment->AdvancedSearch->Save(); // verified_comment
+			$this->verified_by->AdvancedSearch->Save(); // verified_by
+		}
+		return $sWhere;
+	}
+
+	// Build search SQL
+	function BuildSearchSql(&$Where, &$Fld, $Default, $MultiValue) {
+		$FldParm = $Fld->FldParm();
+		$FldVal = ($Default) ? $Fld->AdvancedSearch->SearchValueDefault : $Fld->AdvancedSearch->SearchValue; // @$_GET["x_$FldParm"]
+		$FldOpr = ($Default) ? $Fld->AdvancedSearch->SearchOperatorDefault : $Fld->AdvancedSearch->SearchOperator; // @$_GET["z_$FldParm"]
+		$FldCond = ($Default) ? $Fld->AdvancedSearch->SearchConditionDefault : $Fld->AdvancedSearch->SearchCondition; // @$_GET["v_$FldParm"]
+		$FldVal2 = ($Default) ? $Fld->AdvancedSearch->SearchValue2Default : $Fld->AdvancedSearch->SearchValue2; // @$_GET["y_$FldParm"]
+		$FldOpr2 = ($Default) ? $Fld->AdvancedSearch->SearchOperator2Default : $Fld->AdvancedSearch->SearchOperator2; // @$_GET["w_$FldParm"]
+		$sWrk = "";
+		if (is_array($FldVal)) $FldVal = implode(",", $FldVal);
+		if (is_array($FldVal2)) $FldVal2 = implode(",", $FldVal2);
+		$FldOpr = strtoupper(trim($FldOpr));
+		if ($FldOpr == "") $FldOpr = "=";
+		$FldOpr2 = strtoupper(trim($FldOpr2));
+		if ($FldOpr2 == "") $FldOpr2 = "=";
+		if (EW_SEARCH_MULTI_VALUE_OPTION == 1)
+			$MultiValue = FALSE;
+		if ($MultiValue) {
+			$sWrk1 = ($FldVal <> "") ? ew_GetMultiSearchSql($Fld, $FldOpr, $FldVal, $this->DBID) : ""; // Field value 1
+			$sWrk2 = ($FldVal2 <> "") ? ew_GetMultiSearchSql($Fld, $FldOpr2, $FldVal2, $this->DBID) : ""; // Field value 2
+			$sWrk = $sWrk1; // Build final SQL
+			if ($sWrk2 <> "")
+				$sWrk = ($sWrk <> "") ? "($sWrk) $FldCond ($sWrk2)" : $sWrk2;
+		} else {
+			$FldVal = $this->ConvertSearchValue($Fld, $FldVal);
+			$FldVal2 = $this->ConvertSearchValue($Fld, $FldVal2);
+			$sWrk = ew_GetSearchSql($Fld, $FldVal, $FldOpr, $FldCond, $FldVal2, $FldOpr2, $this->DBID);
+		}
+		ew_AddFilter($Where, $sWrk);
+	}
+
+	// Convert search value
+	function ConvertSearchValue(&$Fld, $FldVal) {
+		if ($FldVal == EW_NULL_VALUE || $FldVal == EW_NOT_NULL_VALUE)
+			return $FldVal;
+		$Value = $FldVal;
+		if ($Fld->FldDataType == EW_DATATYPE_BOOLEAN) {
+			if ($FldVal <> "") $Value = ($FldVal == "1" || strtolower(strval($FldVal)) == "y" || strtolower(strval($FldVal)) == "t") ? $Fld->TrueValue : $Fld->FalseValue;
+		} elseif ($Fld->FldDataType == EW_DATATYPE_DATE || $Fld->FldDataType == EW_DATATYPE_TIME) {
+			if ($FldVal <> "") $Value = ew_UnFormatDateTime($FldVal, $Fld->FldDateTimeFormat);
+		}
+		return $Value;
+	}
+
 	// Return basic search SQL
 	function BasicSearchSQL($arKeywords, $type) {
 		$sWhere = "";
@@ -1182,6 +1300,50 @@ class cstore_report_list extends cstore_report {
 		// Check basic search
 		if ($this->BasicSearch->IssetSession())
 			return TRUE;
+		if ($this->id->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->date->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->reference_id->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->staff_id->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->material_name->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->quantity_in->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->quantity_type->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->quantity_out->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->total_quantity->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->treated_by->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->status->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->issued_action->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->issued_comment->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->issued_by->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->approver_date->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->approver_action->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->approved_comment->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->approved_by->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->verified_date->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->verified_action->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->verified_comment->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->verified_by->AdvancedSearch->IssetSession())
+			return TRUE;
 		return FALSE;
 	}
 
@@ -1194,6 +1356,9 @@ class cstore_report_list extends cstore_report {
 
 		// Clear basic search parameters
 		$this->ResetBasicSearchParms();
+
+		// Clear advanced search parameters
+		$this->ResetAdvancedSearchParms();
 	}
 
 	// Load advanced search default values
@@ -1206,12 +1371,62 @@ class cstore_report_list extends cstore_report {
 		$this->BasicSearch->UnsetSession();
 	}
 
+	// Clear all advanced search parameters
+	function ResetAdvancedSearchParms() {
+		$this->id->AdvancedSearch->UnsetSession();
+		$this->date->AdvancedSearch->UnsetSession();
+		$this->reference_id->AdvancedSearch->UnsetSession();
+		$this->staff_id->AdvancedSearch->UnsetSession();
+		$this->material_name->AdvancedSearch->UnsetSession();
+		$this->quantity_in->AdvancedSearch->UnsetSession();
+		$this->quantity_type->AdvancedSearch->UnsetSession();
+		$this->quantity_out->AdvancedSearch->UnsetSession();
+		$this->total_quantity->AdvancedSearch->UnsetSession();
+		$this->treated_by->AdvancedSearch->UnsetSession();
+		$this->status->AdvancedSearch->UnsetSession();
+		$this->issued_action->AdvancedSearch->UnsetSession();
+		$this->issued_comment->AdvancedSearch->UnsetSession();
+		$this->issued_by->AdvancedSearch->UnsetSession();
+		$this->approver_date->AdvancedSearch->UnsetSession();
+		$this->approver_action->AdvancedSearch->UnsetSession();
+		$this->approved_comment->AdvancedSearch->UnsetSession();
+		$this->approved_by->AdvancedSearch->UnsetSession();
+		$this->verified_date->AdvancedSearch->UnsetSession();
+		$this->verified_action->AdvancedSearch->UnsetSession();
+		$this->verified_comment->AdvancedSearch->UnsetSession();
+		$this->verified_by->AdvancedSearch->UnsetSession();
+	}
+
 	// Restore all search parameters
 	function RestoreSearchParms() {
 		$this->RestoreSearch = TRUE;
 
 		// Restore basic search values
 		$this->BasicSearch->Load();
+
+		// Restore advanced search values
+		$this->id->AdvancedSearch->Load();
+		$this->date->AdvancedSearch->Load();
+		$this->reference_id->AdvancedSearch->Load();
+		$this->staff_id->AdvancedSearch->Load();
+		$this->material_name->AdvancedSearch->Load();
+		$this->quantity_in->AdvancedSearch->Load();
+		$this->quantity_type->AdvancedSearch->Load();
+		$this->quantity_out->AdvancedSearch->Load();
+		$this->total_quantity->AdvancedSearch->Load();
+		$this->treated_by->AdvancedSearch->Load();
+		$this->status->AdvancedSearch->Load();
+		$this->issued_action->AdvancedSearch->Load();
+		$this->issued_comment->AdvancedSearch->Load();
+		$this->issued_by->AdvancedSearch->Load();
+		$this->approver_date->AdvancedSearch->Load();
+		$this->approver_action->AdvancedSearch->Load();
+		$this->approved_comment->AdvancedSearch->Load();
+		$this->approved_by->AdvancedSearch->Load();
+		$this->verified_date->AdvancedSearch->Load();
+		$this->verified_action->AdvancedSearch->Load();
+		$this->verified_comment->AdvancedSearch->Load();
+		$this->verified_by->AdvancedSearch->Load();
 	}
 
 	// Set up sort parameters
@@ -1611,6 +1826,123 @@ class cstore_report_list extends cstore_report {
 		$this->BasicSearch->Type = @$_GET[EW_TABLE_BASIC_SEARCH_TYPE];
 	}
 
+	// Load search values for validation
+	function LoadSearchValues() {
+		global $objForm;
+
+		// Load search values
+		// id
+
+		$this->id->AdvancedSearch->SearchValue = @$_GET["x_id"];
+		if ($this->id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->id->AdvancedSearch->SearchOperator = @$_GET["z_id"];
+
+		// date
+		$this->date->AdvancedSearch->SearchValue = @$_GET["x_date"];
+		if ($this->date->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->date->AdvancedSearch->SearchOperator = @$_GET["z_date"];
+
+		// reference_id
+		$this->reference_id->AdvancedSearch->SearchValue = @$_GET["x_reference_id"];
+		if ($this->reference_id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->reference_id->AdvancedSearch->SearchOperator = @$_GET["z_reference_id"];
+
+		// staff_id
+		$this->staff_id->AdvancedSearch->SearchValue = @$_GET["x_staff_id"];
+		if ($this->staff_id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->staff_id->AdvancedSearch->SearchOperator = @$_GET["z_staff_id"];
+
+		// material_name
+		$this->material_name->AdvancedSearch->SearchValue = @$_GET["x_material_name"];
+		if ($this->material_name->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->material_name->AdvancedSearch->SearchOperator = @$_GET["z_material_name"];
+
+		// quantity_in
+		$this->quantity_in->AdvancedSearch->SearchValue = @$_GET["x_quantity_in"];
+		if ($this->quantity_in->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->quantity_in->AdvancedSearch->SearchOperator = @$_GET["z_quantity_in"];
+
+		// quantity_type
+		$this->quantity_type->AdvancedSearch->SearchValue = @$_GET["x_quantity_type"];
+		if ($this->quantity_type->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->quantity_type->AdvancedSearch->SearchOperator = @$_GET["z_quantity_type"];
+
+		// quantity_out
+		$this->quantity_out->AdvancedSearch->SearchValue = @$_GET["x_quantity_out"];
+		if ($this->quantity_out->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->quantity_out->AdvancedSearch->SearchOperator = @$_GET["z_quantity_out"];
+
+		// total_quantity
+		$this->total_quantity->AdvancedSearch->SearchValue = @$_GET["x_total_quantity"];
+		if ($this->total_quantity->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->total_quantity->AdvancedSearch->SearchOperator = @$_GET["z_total_quantity"];
+
+		// treated_by
+		$this->treated_by->AdvancedSearch->SearchValue = @$_GET["x_treated_by"];
+		if ($this->treated_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->treated_by->AdvancedSearch->SearchOperator = @$_GET["z_treated_by"];
+
+		// status
+		$this->status->AdvancedSearch->SearchValue = @$_GET["x_status"];
+		if ($this->status->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->status->AdvancedSearch->SearchOperator = @$_GET["z_status"];
+
+		// issued_action
+		$this->issued_action->AdvancedSearch->SearchValue = @$_GET["x_issued_action"];
+		if ($this->issued_action->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->issued_action->AdvancedSearch->SearchOperator = @$_GET["z_issued_action"];
+
+		// issued_comment
+		$this->issued_comment->AdvancedSearch->SearchValue = @$_GET["x_issued_comment"];
+		if ($this->issued_comment->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->issued_comment->AdvancedSearch->SearchOperator = @$_GET["z_issued_comment"];
+
+		// issued_by
+		$this->issued_by->AdvancedSearch->SearchValue = @$_GET["x_issued_by"];
+		if ($this->issued_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->issued_by->AdvancedSearch->SearchOperator = @$_GET["z_issued_by"];
+
+		// approver_date
+		$this->approver_date->AdvancedSearch->SearchValue = @$_GET["x_approver_date"];
+		if ($this->approver_date->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->approver_date->AdvancedSearch->SearchOperator = @$_GET["z_approver_date"];
+
+		// approver_action
+		$this->approver_action->AdvancedSearch->SearchValue = @$_GET["x_approver_action"];
+		if ($this->approver_action->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->approver_action->AdvancedSearch->SearchOperator = @$_GET["z_approver_action"];
+
+		// approved_comment
+		$this->approved_comment->AdvancedSearch->SearchValue = @$_GET["x_approved_comment"];
+		if ($this->approved_comment->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->approved_comment->AdvancedSearch->SearchOperator = @$_GET["z_approved_comment"];
+
+		// approved_by
+		$this->approved_by->AdvancedSearch->SearchValue = @$_GET["x_approved_by"];
+		if ($this->approved_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->approved_by->AdvancedSearch->SearchOperator = @$_GET["z_approved_by"];
+
+		// verified_date
+		$this->verified_date->AdvancedSearch->SearchValue = @$_GET["x_verified_date"];
+		if ($this->verified_date->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->verified_date->AdvancedSearch->SearchOperator = @$_GET["z_verified_date"];
+
+		// verified_action
+		$this->verified_action->AdvancedSearch->SearchValue = @$_GET["x_verified_action"];
+		if ($this->verified_action->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->verified_action->AdvancedSearch->SearchOperator = @$_GET["z_verified_action"];
+
+		// verified_comment
+		$this->verified_comment->AdvancedSearch->SearchValue = @$_GET["x_verified_comment"];
+		if ($this->verified_comment->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->verified_comment->AdvancedSearch->SearchOperator = @$_GET["z_verified_comment"];
+
+		// verified_by
+		$this->verified_by->AdvancedSearch->SearchValue = @$_GET["x_verified_by"];
+		if ($this->verified_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->verified_by->AdvancedSearch->SearchOperator = @$_GET["z_verified_by"];
+	}
+
 	// Load recordset
 	function LoadRecordset($offset = -1, $rowcnt = -1) {
 
@@ -1953,12 +2285,11 @@ class cstore_report_list extends cstore_report {
 		$this->issued_comment->ViewCustomAttributes = "";
 
 		// issued_by
-		$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
 		if (strval($this->issued_by->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->issued_by->LookupFilters = array();
+		$this->issued_by->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -2133,11 +2464,190 @@ class cstore_report_list extends cstore_report {
 			$this->verified_by->LinkCustomAttributes = "";
 			$this->verified_by->HrefValue = "";
 			$this->verified_by->TooltipValue = "";
+		} elseif ($this->RowType == EW_ROWTYPE_SEARCH) { // Search row
+
+			// id
+			$this->id->EditAttrs["class"] = "form-control";
+			$this->id->EditCustomAttributes = "";
+			$this->id->EditValue = ew_HtmlEncode($this->id->AdvancedSearch->SearchValue);
+			$this->id->PlaceHolder = ew_RemoveHtml($this->id->FldCaption());
+
+			// date
+			$this->date->EditAttrs["class"] = "form-control";
+			$this->date->EditCustomAttributes = "";
+			$this->date->EditValue = ew_HtmlEncode(ew_FormatDateTime(ew_UnFormatDateTime($this->date->AdvancedSearch->SearchValue, 0), 8));
+			$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
+
+			// reference_id
+			$this->reference_id->EditAttrs["class"] = "form-control";
+			$this->reference_id->EditCustomAttributes = "";
+			$this->reference_id->EditValue = ew_HtmlEncode($this->reference_id->AdvancedSearch->SearchValue);
+			$this->reference_id->PlaceHolder = ew_RemoveHtml($this->reference_id->FldCaption());
+
+			// staff_id
+			$this->staff_id->EditAttrs["class"] = "form-control";
+			$this->staff_id->EditCustomAttributes = "";
+			$this->staff_id->EditValue = ew_HtmlEncode($this->staff_id->AdvancedSearch->SearchValue);
+			$this->staff_id->PlaceHolder = ew_RemoveHtml($this->staff_id->FldCaption());
+
+			// material_name
+			$this->material_name->EditCustomAttributes = "";
+			if (trim(strval($this->material_name->AdvancedSearch->SearchValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->AdvancedSearch->SearchValue, EW_DATATYPE_NUMBER, "");
+			}
+			$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `inventory`";
+			$sWhereWrk = "";
+			$this->material_name->LookupFilters = array("dx1" => '`material_name`');
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+				$this->material_name->AdvancedSearch->ViewValue = $this->material_name->DisplayValue($arwrk);
+			} else {
+				$this->material_name->AdvancedSearch->ViewValue = $Language->Phrase("PleaseSelect");
+			}
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->material_name->EditValue = $arwrk;
+
+			// quantity_in
+			$this->quantity_in->EditAttrs["class"] = "form-control";
+			$this->quantity_in->EditCustomAttributes = "";
+			$this->quantity_in->EditValue = ew_HtmlEncode($this->quantity_in->AdvancedSearch->SearchValue);
+			$this->quantity_in->PlaceHolder = ew_RemoveHtml($this->quantity_in->FldCaption());
+
+			// quantity_type
+			$this->quantity_type->EditAttrs["class"] = "form-control";
+			$this->quantity_type->EditCustomAttributes = "";
+			$this->quantity_type->EditValue = ew_HtmlEncode($this->quantity_type->AdvancedSearch->SearchValue);
+			$this->quantity_type->PlaceHolder = ew_RemoveHtml($this->quantity_type->FldCaption());
+
+			// quantity_out
+			$this->quantity_out->EditAttrs["class"] = "form-control";
+			$this->quantity_out->EditCustomAttributes = "";
+			$this->quantity_out->EditValue = ew_HtmlEncode($this->quantity_out->AdvancedSearch->SearchValue);
+			$this->quantity_out->PlaceHolder = ew_RemoveHtml($this->quantity_out->FldCaption());
+
+			// total_quantity
+			$this->total_quantity->EditAttrs["class"] = "form-control";
+			$this->total_quantity->EditCustomAttributes = "";
+			$this->total_quantity->EditValue = ew_HtmlEncode($this->total_quantity->AdvancedSearch->SearchValue);
+			$this->total_quantity->PlaceHolder = ew_RemoveHtml($this->total_quantity->FldCaption());
+
+			// status
+			$this->status->EditAttrs["class"] = "form-control";
+			$this->status->EditCustomAttributes = "";
+			$this->status->EditValue = ew_HtmlEncode($this->status->AdvancedSearch->SearchValue);
+			$this->status->PlaceHolder = ew_RemoveHtml($this->status->FldCaption());
+
+			// issued_comment
+			$this->issued_comment->EditAttrs["class"] = "form-control";
+			$this->issued_comment->EditCustomAttributes = "";
+			$this->issued_comment->EditValue = ew_HtmlEncode($this->issued_comment->AdvancedSearch->SearchValue);
+			$this->issued_comment->PlaceHolder = ew_RemoveHtml($this->issued_comment->FldCaption());
+
+			// issued_by
+			$this->issued_by->EditCustomAttributes = "";
+			if (trim(strval($this->issued_by->AdvancedSearch->SearchValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->AdvancedSearch->SearchValue, EW_DATATYPE_NUMBER, "");
+			}
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
+			$sWhereWrk = "";
+			$this->issued_by->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+				$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
+				$arwrk[3] = ew_HtmlEncode($rswrk->fields('Disp3Fld'));
+				$this->issued_by->AdvancedSearch->ViewValue = $this->issued_by->DisplayValue($arwrk);
+			} else {
+				$this->issued_by->AdvancedSearch->ViewValue = $Language->Phrase("PleaseSelect");
+			}
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->issued_by->EditValue = $arwrk;
+
+			// approved_by
+			$this->approved_by->EditAttrs["class"] = "form-control";
+			$this->approved_by->EditCustomAttributes = "";
+			$this->approved_by->EditValue = ew_HtmlEncode($this->approved_by->AdvancedSearch->SearchValue);
+			$this->approved_by->PlaceHolder = ew_RemoveHtml($this->approved_by->FldCaption());
+
+			// verified_by
+			$this->verified_by->EditAttrs["class"] = "form-control";
+			$this->verified_by->EditCustomAttributes = "";
+			$this->verified_by->EditValue = ew_HtmlEncode($this->verified_by->AdvancedSearch->SearchValue);
+			$this->verified_by->PlaceHolder = ew_RemoveHtml($this->verified_by->FldCaption());
 		}
+		if ($this->RowType == EW_ROWTYPE_ADD || $this->RowType == EW_ROWTYPE_EDIT || $this->RowType == EW_ROWTYPE_SEARCH) // Add/Edit/Search row
+			$this->SetupFieldTitles();
 
 		// Call Row Rendered event
 		if ($this->RowType <> EW_ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
+	}
+
+	// Validate search
+	function ValidateSearch() {
+		global $gsSearchError;
+
+		// Initialize
+		$gsSearchError = "";
+
+		// Check if validation required
+		if (!EW_SERVER_VALIDATE)
+			return TRUE;
+		if (!ew_CheckDateDef($this->date->AdvancedSearch->SearchValue)) {
+			ew_AddMessage($gsSearchError, $this->date->FldErrMsg());
+		}
+
+		// Return validate result
+		$ValidateSearch = ($gsSearchError == "");
+
+		// Call Form_CustomValidate event
+		$sFormCustomError = "";
+		$ValidateSearch = $ValidateSearch && $this->Form_CustomValidate($sFormCustomError);
+		if ($sFormCustomError <> "") {
+			ew_AddMessage($gsSearchError, $sFormCustomError);
+		}
+		return $ValidateSearch;
+	}
+
+	// Load advanced search
+	function LoadAdvancedSearch() {
+		$this->id->AdvancedSearch->Load();
+		$this->date->AdvancedSearch->Load();
+		$this->reference_id->AdvancedSearch->Load();
+		$this->staff_id->AdvancedSearch->Load();
+		$this->material_name->AdvancedSearch->Load();
+		$this->quantity_in->AdvancedSearch->Load();
+		$this->quantity_type->AdvancedSearch->Load();
+		$this->quantity_out->AdvancedSearch->Load();
+		$this->total_quantity->AdvancedSearch->Load();
+		$this->treated_by->AdvancedSearch->Load();
+		$this->status->AdvancedSearch->Load();
+		$this->issued_action->AdvancedSearch->Load();
+		$this->issued_comment->AdvancedSearch->Load();
+		$this->issued_by->AdvancedSearch->Load();
+		$this->approver_date->AdvancedSearch->Load();
+		$this->approver_action->AdvancedSearch->Load();
+		$this->approved_comment->AdvancedSearch->Load();
+		$this->approved_by->AdvancedSearch->Load();
+		$this->verified_date->AdvancedSearch->Load();
+		$this->verified_action->AdvancedSearch->Load();
+		$this->verified_comment->AdvancedSearch->Load();
+		$this->verified_by->AdvancedSearch->Load();
 	}
 
 	// Set up export options
@@ -2296,7 +2806,36 @@ class cstore_report_list extends cstore_report {
 	function SetupLookupFilters($fld, $pageId = null) {
 		global $gsLanguage;
 		$pageId = $pageId ?: $this->PageID;
-		switch ($fld->FldVar) {
+		if ($pageId == "list") {
+			switch ($fld->FldVar) {
+			}
+		} elseif ($pageId == "extbs") {
+			switch ($fld->FldVar) {
+		case "x_material_name":
+			$sSqlWrk = "";
+				$sSqlWrk = "SELECT `id` AS `LinkFld`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
+				$sWhereWrk = "{filter}";
+				$fld->LookupFilters = array("dx1" => '`material_name`');
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+				$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
+				if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+		case "x_issued_by":
+			$sSqlWrk = "";
+				$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+				$sWhereWrk = "{filter}";
+				$fld->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+				$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
+				if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+			}
 		}
 	}
 
@@ -2304,7 +2843,12 @@ class cstore_report_list extends cstore_report {
 	function SetupAutoSuggestFilters($fld, $pageId = null) {
 		global $gsLanguage;
 		$pageId = $pageId ?: $this->PageID;
-		switch ($fld->FldVar) {
+		if ($pageId == "list") {
+			switch ($fld->FldVar) {
+			}
+		} elseif ($pageId == "extbs") {
+			switch ($fld->FldVar) {
+			}
 		}
 	}
 
@@ -2486,7 +3030,6 @@ fstore_reportlist.Lists["x_status"].Data = "<?php echo $store_report_list->statu
 fstore_reportlist.AutoSuggests["x_status"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_report_list->status->LookupFilterQuery(TRUE, "list"))) ?>;
 fstore_reportlist.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fstore_reportlist.Lists["x_issued_by"].Data = "<?php echo $store_report_list->issued_by->LookupFilterQuery(FALSE, "list") ?>";
-fstore_reportlist.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_report_list->issued_by->LookupFilterQuery(TRUE, "list"))) ?>;
 fstore_reportlist.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fstore_reportlist.Lists["x_approved_by"].Data = "<?php echo $store_report_list->approved_by->LookupFilterQuery(FALSE, "list") ?>";
 fstore_reportlist.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_report_list->approved_by->LookupFilterQuery(TRUE, "list"))) ?>;
@@ -2496,6 +3039,39 @@ fstore_reportlist.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("
 
 // Form object for search
 var CurrentSearchForm = fstore_reportlistsrch = new ew_Form("fstore_reportlistsrch");
+
+// Validate function for search
+fstore_reportlistsrch.Validate = function(fobj) {
+	if (!this.ValidateRequired)
+		return true; // Ignore validation
+	fobj = fobj || this.Form;
+	var infix = "";
+	elm = this.GetElements("x" + infix + "_date");
+	if (elm && !ew_CheckDateDef(elm.value))
+		return this.OnError(elm, "<?php echo ew_JsEncode2($store_report->date->FldErrMsg()) ?>");
+
+	// Fire Form_CustomValidate event
+	if (!this.Form_CustomValidate(fobj))
+		return false;
+	return true;
+}
+
+// Form_CustomValidate event
+fstore_reportlistsrch.Form_CustomValidate = 
+ function(fobj) { // DO NOT CHANGE THIS LINE!
+
+ 	// Your custom validation code here, return false if invalid.
+ 	return true;
+ }
+
+// Use JavaScript validation or not
+fstore_reportlistsrch.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+
+// Dynamic selection lists
+fstore_reportlistsrch.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
+fstore_reportlistsrch.Lists["x_material_name"].Data = "<?php echo $store_report_list->material_name->LookupFilterQuery(FALSE, "extbs") ?>";
+fstore_reportlistsrch.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportlistsrch.Lists["x_issued_by"].Data = "<?php echo $store_report_list->issued_by->LookupFilterQuery(FALSE, "extbs") ?>";
 </script>
 <script type="text/javascript">
 
@@ -2552,7 +3128,70 @@ $store_report_list->RenderOtherOptions();
 <input type="hidden" name="cmd" value="search">
 <input type="hidden" name="t" value="store_report">
 	<div class="ewBasicSearch">
+<?php
+if ($gsSearchError == "")
+	$store_report_list->LoadAdvancedSearch(); // Load advanced search
+
+// Render for search
+$store_report->RowType = EW_ROWTYPE_SEARCH;
+
+// Render row
+$store_report->ResetAttrs();
+$store_report_list->RenderRow();
+?>
 <div id="xsr_1" class="ewRow">
+<?php if ($store_report->date->Visible) { // date ?>
+	<div id="xsc_date" class="ewCell form-group">
+		<label for="x_date" class="ewSearchCaption ewLabel"><?php echo $store_report->date->FldCaption() ?></label>
+		<span class="ewSearchOperator"><?php echo $Language->Phrase("=") ?><input type="hidden" name="z_date" id="z_date" value="="></span>
+		<span class="ewSearchField">
+<input type="text" data-table="store_report" data-field="x_date" name="x_date" id="x_date" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($store_report->date->getPlaceHolder()) ?>" value="<?php echo $store_report->date->EditValue ?>"<?php echo $store_report->date->EditAttributes() ?>>
+</span>
+	</div>
+<?php } ?>
+</div>
+<div id="xsr_2" class="ewRow">
+<?php if ($store_report->reference_id->Visible) { // reference_id ?>
+	<div id="xsc_reference_id" class="ewCell form-group">
+		<label for="x_reference_id" class="ewSearchCaption ewLabel"><?php echo $store_report->reference_id->FldCaption() ?></label>
+		<span class="ewSearchOperator"><?php echo $Language->Phrase("LIKE") ?><input type="hidden" name="z_reference_id" id="z_reference_id" value="LIKE"></span>
+		<span class="ewSearchField">
+<input type="text" data-table="store_report" data-field="x_reference_id" name="x_reference_id" id="x_reference_id" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($store_report->reference_id->getPlaceHolder()) ?>" value="<?php echo $store_report->reference_id->EditValue ?>"<?php echo $store_report->reference_id->EditAttributes() ?>>
+</span>
+	</div>
+<?php } ?>
+</div>
+<div id="xsr_3" class="ewRow">
+<?php if ($store_report->material_name->Visible) { // material_name ?>
+	<div id="xsc_material_name" class="ewCell form-group">
+		<label for="x_material_name" class="ewSearchCaption ewLabel"><?php echo $store_report->material_name->FldCaption() ?></label>
+		<span class="ewSearchOperator"><?php echo $Language->Phrase("LIKE") ?><input type="hidden" name="z_material_name" id="z_material_name" value="LIKE"></span>
+		<span class="ewSearchField">
+<span class="ewLookupList">
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_material_name"><?php echo (strval($store_report->material_name->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $store_report->material_name->AdvancedSearch->ViewValue); ?></span>
+</span>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($store_report->material_name->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_material_name',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($store_report->material_name->ReadOnly || $store_report->material_name->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="store_report" data-field="x_material_name" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $store_report->material_name->DisplayValueSeparatorAttribute() ?>" name="x_material_name" id="x_material_name" value="<?php echo $store_report->material_name->AdvancedSearch->SearchValue ?>"<?php echo $store_report->material_name->EditAttributes() ?>>
+</span>
+	</div>
+<?php } ?>
+</div>
+<div id="xsr_4" class="ewRow">
+<?php if ($store_report->issued_by->Visible) { // issued_by ?>
+	<div id="xsc_issued_by" class="ewCell form-group">
+		<label for="x_issued_by" class="ewSearchCaption ewLabel"><?php echo $store_report->issued_by->FldCaption() ?></label>
+		<span class="ewSearchOperator"><?php echo $Language->Phrase("=") ?><input type="hidden" name="z_issued_by" id="z_issued_by" value="="></span>
+		<span class="ewSearchField">
+<span class="ewLookupList">
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_issued_by"><?php echo (strval($store_report->issued_by->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $store_report->issued_by->AdvancedSearch->ViewValue); ?></span>
+</span>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($store_report->issued_by->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_issued_by',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($store_report->issued_by->ReadOnly || $store_report->issued_by->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="store_report" data-field="x_issued_by" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $store_report->issued_by->DisplayValueSeparatorAttribute() ?>" name="x_issued_by" id="x_issued_by" value="<?php echo $store_report->issued_by->AdvancedSearch->SearchValue ?>"<?php echo $store_report->issued_by->EditAttributes() ?>>
+</span>
+	</div>
+<?php } ?>
+</div>
+<div id="xsr_5" class="ewRow">
 	<div class="ewQuickSearch input-group">
 	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($store_report_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
 	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($store_report_list->BasicSearch->getType()) ?>">

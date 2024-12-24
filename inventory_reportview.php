@@ -912,12 +912,11 @@ class cinventory_report_view extends cinventory_report {
 		$this->capacity->ViewCustomAttributes = "";
 
 		// recieved_by
-		$this->recieved_by->ViewValue = $this->recieved_by->CurrentValue;
 		if (strval($this->recieved_by->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->recieved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->recieved_by->LookupFilters = array();
+		$this->recieved_by->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->recieved_by, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1458,7 +1457,6 @@ finventory_reportview.Lists["x_staff_id"].Data = "<?php echo $inventory_report_v
 finventory_reportview.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_report_view->staff_id->LookupFilterQuery(TRUE, "view"))) ?>;
 finventory_reportview.Lists["x_recieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 finventory_reportview.Lists["x_recieved_by"].Data = "<?php echo $inventory_report_view->recieved_by->LookupFilterQuery(FALSE, "view") ?>";
-finventory_reportview.AutoSuggests["x_recieved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_report_view->recieved_by->LookupFilterQuery(TRUE, "view"))) ?>;
 finventory_reportview.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
 finventory_reportview.Lists["x_statuss"].Data = "<?php echo $inventory_report_view->statuss->LookupFilterQuery(FALSE, "view") ?>";
 finventory_reportview.Lists["x_recieved_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};

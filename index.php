@@ -393,6 +393,8 @@ class cdefault {
 			$this->Page_Terminate("inventory_reportlist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'store_report'))
 			$this->Page_Terminate("store_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'inventory_record'))
+			$this->Page_Terminate("inventory_recordlist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {
