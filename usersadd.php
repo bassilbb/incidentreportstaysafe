@@ -64,6 +64,12 @@ class cusers_add extends cusers {
 		if ($this->UseTokenInUrl) $PageUrl .= "t=" . $this->TableVar . "&"; // Add page token
 		return $PageUrl;
 	}
+	var $AuditTrailOnAdd = TRUE;
+	var $AuditTrailOnEdit = TRUE;
+	var $AuditTrailOnDelete = TRUE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -334,7 +340,6 @@ class cusers_add extends cusers {
 		$this->status->SetVisibility();
 		$this->profile->SetVisibility();
 		$this->staff_id->SetVisibility();
-		$this->flag->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -570,8 +575,6 @@ class cusers_add extends cusers {
 		$this->profile->OldValue = $this->profile->CurrentValue;
 		$this->staff_id->CurrentValue = NULL;
 		$this->staff_id->OldValue = $this->staff_id->CurrentValue;
-		$this->flag->CurrentValue = NULL;
-		$this->flag->OldValue = $this->flag->CurrentValue;
 	}
 
 	// Load form values
@@ -628,9 +631,6 @@ class cusers_add extends cusers {
 		if (!$this->staff_id->FldIsDetailKey) {
 			$this->staff_id->setFormValue($objForm->GetValue("x_staff_id"));
 		}
-		if (!$this->flag->FldIsDetailKey) {
-			$this->flag->setFormValue($objForm->GetValue("x_flag"));
-		}
 	}
 
 	// Restore form values
@@ -653,7 +653,6 @@ class cusers_add extends cusers {
 		$this->status->CurrentValue = $this->status->FormValue;
 		$this->profile->CurrentValue = $this->profile->FormValue;
 		$this->staff_id->CurrentValue = $this->staff_id->FormValue;
-		$this->flag->CurrentValue = $this->flag->FormValue;
 	}
 
 	// Load row based on key values
@@ -706,7 +705,6 @@ class cusers_add extends cusers {
 		$this->status->setDbValue($row['status']);
 		$this->profile->setDbValue($row['profile']);
 		$this->staff_id->setDbValue($row['staff_id']);
-		$this->flag->setDbValue($row['flag']);
 	}
 
 	// Return a row with default values
@@ -730,7 +728,6 @@ class cusers_add extends cusers {
 		$row['status'] = $this->status->CurrentValue;
 		$row['profile'] = $this->profile->CurrentValue;
 		$row['staff_id'] = $this->staff_id->CurrentValue;
-		$row['flag'] = $this->flag->CurrentValue;
 		return $row;
 	}
 
@@ -756,7 +753,6 @@ class cusers_add extends cusers {
 		$this->status->DbValue = $row['status'];
 		$this->profile->DbValue = $row['profile'];
 		$this->staff_id->DbValue = $row['staff_id'];
-		$this->flag->DbValue = $row['flag'];
 	}
 
 	// Load old record
@@ -808,7 +804,6 @@ class cusers_add extends cusers {
 		// status
 		// profile
 		// staff_id
-		// flag
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -987,10 +982,6 @@ class cusers_add extends cusers {
 		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
 		$this->staff_id->ViewCustomAttributes = "";
 
-		// flag
-		$this->flag->ViewValue = $this->flag->CurrentValue;
-		$this->flag->ViewCustomAttributes = "";
-
 			// staffno
 			$this->staffno->LinkCustomAttributes = "";
 			$this->staffno->HrefValue = "";
@@ -1070,11 +1061,6 @@ class cusers_add extends cusers {
 			$this->staff_id->LinkCustomAttributes = "";
 			$this->staff_id->HrefValue = "";
 			$this->staff_id->TooltipValue = "";
-
-			// flag
-			$this->flag->LinkCustomAttributes = "";
-			$this->flag->HrefValue = "";
-			$this->flag->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_ADD) { // Add row
 
 			// staffno
@@ -1254,12 +1240,6 @@ class cusers_add extends cusers {
 			$this->staff_id->EditValue = ew_HtmlEncode($this->staff_id->CurrentValue);
 			$this->staff_id->PlaceHolder = ew_RemoveHtml($this->staff_id->FldCaption());
 
-			// flag
-			$this->flag->EditAttrs["class"] = "form-control";
-			$this->flag->EditCustomAttributes = "";
-			$this->flag->EditValue = ew_HtmlEncode($this->flag->CurrentValue);
-			$this->flag->PlaceHolder = ew_RemoveHtml($this->flag->FldCaption());
-
 			// Add refer script
 			// staffno
 
@@ -1325,10 +1305,6 @@ class cusers_add extends cusers {
 			// staff_id
 			$this->staff_id->LinkCustomAttributes = "";
 			$this->staff_id->HrefValue = "";
-
-			// flag
-			$this->flag->LinkCustomAttributes = "";
-			$this->flag->HrefValue = "";
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD || $this->RowType == EW_ROWTYPE_EDIT || $this->RowType == EW_ROWTYPE_SEARCH) // Add/Edit/Search row
 			$this->SetupFieldTitles();
@@ -1389,9 +1365,6 @@ class cusers_add extends cusers {
 		}
 		if (!ew_CheckInteger($this->staff_id->FormValue)) {
 			ew_AddMessage($gsFormError, $this->staff_id->FldErrMsg());
-		}
-		if (!ew_CheckInteger($this->flag->FormValue)) {
-			ew_AddMessage($gsFormError, $this->flag->FldErrMsg());
 		}
 
 		// Return validate result
@@ -1466,9 +1439,6 @@ class cusers_add extends cusers {
 
 		// staff_id
 		$this->staff_id->SetDbValueDef($rsnew, $this->staff_id->CurrentValue, NULL, FALSE);
-
-		// flag
-		$this->flag->SetDbValueDef($rsnew, $this->flag->CurrentValue, NULL, FALSE);
 
 		// Call Row Inserting event
 		$rs = ($rsold == NULL) ? NULL : $rsold->fields;
@@ -1739,9 +1709,6 @@ fusersadd.Validate = function() {
 			elm = this.GetElements("x" + infix + "_staff_id");
 			if (elm && !ew_CheckInteger(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($users->staff_id->FldErrMsg()) ?>");
-			elm = this.GetElements("x" + infix + "_flag");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($users->flag->FldErrMsg()) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -1893,7 +1860,7 @@ $users_add->ShowMessage();
 		<div class="<?php echo $users_add->RightColumnClass ?>"><div<?php echo $users->branch->CellAttributes() ?>>
 <span id="el_users_branch">
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next().click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_branch"><?php echo (strval($users->branch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $users->branch->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_branch"><?php echo (strval($users->branch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $users->branch->ViewValue); ?></span>
 </span>
 <button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($users->branch->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_branch',m:0,n:5});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($users->branch->ReadOnly || $users->branch->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
 <input type="hidden" data-table="users" data-field="x_branch" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $users->branch->DisplayValueSeparatorAttribute() ?>" name="x_branch" id="x_branch" value="<?php echo $users->branch->CurrentValue ?>"<?php echo $users->branch->EditAttributes() ?>>
@@ -1907,7 +1874,7 @@ $users_add->ShowMessage();
 		<div class="<?php echo $users_add->RightColumnClass ?>"><div<?php echo $users->department->CellAttributes() ?>>
 <span id="el_users_department">
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next().click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_department"><?php echo (strval($users->department->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $users->department->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_department"><?php echo (strval($users->department->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $users->department->ViewValue); ?></span>
 </span>
 <button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($users->department->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_department',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($users->department->ReadOnly || $users->department->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
 <input type="hidden" data-table="users" data-field="x_department" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $users->department->DisplayValueSeparatorAttribute() ?>" name="x_department" id="x_department" value="<?php echo $users->department->CurrentValue ?>"<?php echo $users->department->EditAttributes() ?>>
@@ -2007,16 +1974,6 @@ $users_add->ShowMessage();
 <input type="text" data-table="users" data-field="x_staff_id" name="x_staff_id" id="x_staff_id" size="30" placeholder="<?php echo ew_HtmlEncode($users->staff_id->getPlaceHolder()) ?>" value="<?php echo $users->staff_id->EditValue ?>"<?php echo $users->staff_id->EditAttributes() ?>>
 </span>
 <?php echo $users->staff_id->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
-<?php if ($users->flag->Visible) { // flag ?>
-	<div id="r_flag" class="form-group">
-		<label id="elh_users_flag" for="x_flag" class="<?php echo $users_add->LeftColumnClass ?>"><?php echo $users->flag->FldCaption() ?></label>
-		<div class="<?php echo $users_add->RightColumnClass ?>"><div<?php echo $users->flag->CellAttributes() ?>>
-<span id="el_users_flag">
-<input type="text" data-table="users" data-field="x_flag" name="x_flag" id="x_flag" size="30" placeholder="<?php echo ew_HtmlEncode($users->flag->getPlaceHolder()) ?>" value="<?php echo $users->flag->EditValue ?>"<?php echo $users->flag->EditAttributes() ?>>
-</span>
-<?php echo $users->flag->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 </div><!-- /page* -->

@@ -528,8 +528,6 @@ class cregister extends cusers {
 		$this->profile->OldValue = $this->profile->CurrentValue;
 		$this->staff_id->CurrentValue = NULL;
 		$this->staff_id->OldValue = $this->staff_id->CurrentValue;
-		$this->flag->CurrentValue = NULL;
-		$this->flag->OldValue = $this->flag->CurrentValue;
 	}
 
 	// Load form values
@@ -653,7 +651,6 @@ class cregister extends cusers {
 		$this->status->setDbValue($row['status']);
 		$this->profile->setDbValue($row['profile']);
 		$this->staff_id->setDbValue($row['staff_id']);
-		$this->flag->setDbValue($row['flag']);
 	}
 
 	// Return a row with default values
@@ -677,7 +674,6 @@ class cregister extends cusers {
 		$row['status'] = $this->status->CurrentValue;
 		$row['profile'] = $this->profile->CurrentValue;
 		$row['staff_id'] = $this->staff_id->CurrentValue;
-		$row['flag'] = $this->flag->CurrentValue;
 		return $row;
 	}
 
@@ -703,7 +699,6 @@ class cregister extends cusers {
 		$this->status->DbValue = $row['status'];
 		$this->profile->DbValue = $row['profile'];
 		$this->staff_id->DbValue = $row['staff_id'];
-		$this->flag->DbValue = $row['flag'];
 	}
 
 	// Render row values based on field settings
@@ -733,7 +728,6 @@ class cregister extends cusers {
 		// status
 		// profile
 		// staff_id
-		// flag
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -907,10 +901,6 @@ class cregister extends cusers {
 		// staff_id
 		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
 		$this->staff_id->ViewCustomAttributes = "";
-
-		// flag
-		$this->flag->ViewValue = $this->flag->CurrentValue;
-		$this->flag->ViewCustomAttributes = "";
 
 			// staffno
 			$this->staffno->LinkCustomAttributes = "";
