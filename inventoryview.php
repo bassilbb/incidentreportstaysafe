@@ -892,7 +892,7 @@ class cinventory_view extends cinventory {
 
 		// date_recieved
 		$this->date_recieved->ViewValue = $this->date_recieved->CurrentValue;
-		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 0);
+		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 17);
 		$this->date_recieved->ViewCustomAttributes = "";
 
 		// reference_id

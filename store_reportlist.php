@@ -1841,6 +1841,10 @@ class cstore_report_list extends cstore_report {
 		$this->date->AdvancedSearch->SearchValue = @$_GET["x_date"];
 		if ($this->date->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
 		$this->date->AdvancedSearch->SearchOperator = @$_GET["z_date"];
+		$this->date->AdvancedSearch->SearchCondition = @$_GET["v_date"];
+		$this->date->AdvancedSearch->SearchValue2 = @$_GET["y_date"];
+		if ($this->date->AdvancedSearch->SearchValue2 <> "" && $this->Command == "") $this->Command = "search";
+		$this->date->AdvancedSearch->SearchOperator2 = @$_GET["w_date"];
 
 		// reference_id
 		$this->reference_id->AdvancedSearch->SearchValue = @$_GET["x_reference_id"];
@@ -2477,6 +2481,10 @@ class cstore_report_list extends cstore_report {
 			$this->date->EditCustomAttributes = "";
 			$this->date->EditValue = ew_HtmlEncode(ew_FormatDateTime(ew_UnFormatDateTime($this->date->AdvancedSearch->SearchValue, 0), 8));
 			$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
+			$this->date->EditAttrs["class"] = "form-control";
+			$this->date->EditCustomAttributes = "";
+			$this->date->EditValue2 = ew_HtmlEncode(ew_FormatDateTime(ew_UnFormatDateTime($this->date->AdvancedSearch->SearchValue2, 0), 8));
+			$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
 
 			// reference_id
 			$this->reference_id->EditAttrs["class"] = "form-control";
@@ -2608,9 +2616,6 @@ class cstore_report_list extends cstore_report {
 		// Check if validation required
 		if (!EW_SERVER_VALIDATE)
 			return TRUE;
-		if (!ew_CheckDateDef($this->date->AdvancedSearch->SearchValue)) {
-			ew_AddMessage($gsSearchError, $this->date->FldErrMsg());
-		}
 
 		// Return validate result
 		$ValidateSearch = ($gsSearchError == "");
@@ -3046,9 +3051,6 @@ fstore_reportlistsrch.Validate = function(fobj) {
 		return true; // Ignore validation
 	fobj = fobj || this.Form;
 	var infix = "";
-	elm = this.GetElements("x" + infix + "_date");
-	if (elm && !ew_CheckDateDef(elm.value))
-		return this.OnError(elm, "<?php echo ew_JsEncode2($store_report->date->FldErrMsg()) ?>");
 
 	// Fire Form_CustomValidate event
 	if (!this.Form_CustomValidate(fobj))
@@ -3143,9 +3145,23 @@ $store_report_list->RenderRow();
 <?php if ($store_report->date->Visible) { // date ?>
 	<div id="xsc_date" class="ewCell form-group">
 		<label for="x_date" class="ewSearchCaption ewLabel"><?php echo $store_report->date->FldCaption() ?></label>
-		<span class="ewSearchOperator"><?php echo $Language->Phrase("=") ?><input type="hidden" name="z_date" id="z_date" value="="></span>
+		<span class="ewSearchOperator"><?php echo $Language->Phrase("BETWEEN") ?><input type="hidden" name="z_date" id="z_date" value="BETWEEN"></span>
 		<span class="ewSearchField">
 <input type="text" data-table="store_report" data-field="x_date" name="x_date" id="x_date" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($store_report->date->getPlaceHolder()) ?>" value="<?php echo $store_report->date->EditValue ?>"<?php echo $store_report->date->EditAttributes() ?>>
+<?php if (!$store_report->date->ReadOnly && !$store_report->date->Disabled && !isset($store_report->date->EditAttrs["readonly"]) && !isset($store_report->date->EditAttrs["disabled"])) { ?>
+<script type="text/javascript">
+ew_CreateDateTimePicker("fstore_reportlistsrch", "x_date", {"ignoreReadonly":true,"useCurrent":false,"format":0});
+</script>
+<?php } ?>
+</span>
+		<span class="ewSearchCond btw1_date">&nbsp;<?php echo $Language->Phrase("AND") ?>&nbsp;</span>
+		<span class="ewSearchField btw1_date">
+<input type="text" data-table="store_report" data-field="x_date" name="y_date" id="y_date" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($store_report->date->getPlaceHolder()) ?>" value="<?php echo $store_report->date->EditValue2 ?>"<?php echo $store_report->date->EditAttributes() ?>>
+<?php if (!$store_report->date->ReadOnly && !$store_report->date->Disabled && !isset($store_report->date->EditAttrs["readonly"]) && !isset($store_report->date->EditAttrs["disabled"])) { ?>
+<script type="text/javascript">
+ew_CreateDateTimePicker("fstore_reportlistsrch", "y_date", {"ignoreReadonly":true,"useCurrent":false,"format":0});
+</script>
+<?php } ?>
 </span>
 	</div>
 <?php } ?>

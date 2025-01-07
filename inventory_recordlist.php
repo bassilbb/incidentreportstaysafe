@@ -454,6 +454,11 @@ class cinventory_record_list extends cinventory_record {
 		$this->capacity->SetVisibility();
 		$this->recieved_by->SetVisibility();
 		$this->statuss->SetVisibility();
+		$this->recieved_comment->SetVisibility();
+		$this->approver_comment->SetVisibility();
+		$this->approved_by->SetVisibility();
+		$this->verified_comment->SetVisibility();
+		$this->verified_by->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -1202,6 +1207,11 @@ class cinventory_record_list extends cinventory_record {
 			$this->UpdateSort($this->capacity); // capacity
 			$this->UpdateSort($this->recieved_by); // recieved_by
 			$this->UpdateSort($this->statuss); // statuss
+			$this->UpdateSort($this->recieved_comment); // recieved_comment
+			$this->UpdateSort($this->approver_comment); // approver_comment
+			$this->UpdateSort($this->approved_by); // approved_by
+			$this->UpdateSort($this->verified_comment); // verified_comment
+			$this->UpdateSort($this->verified_by); // verified_by
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1242,6 +1252,11 @@ class cinventory_record_list extends cinventory_record {
 				$this->capacity->setSort("");
 				$this->recieved_by->setSort("");
 				$this->statuss->setSort("");
+				$this->recieved_comment->setSort("");
+				$this->approver_comment->setSort("");
+				$this->approved_by->setSort("");
+				$this->verified_comment->setSort("");
+				$this->verified_by->setSort("");
 			}
 
 			// Reset start position
@@ -2007,6 +2022,31 @@ class cinventory_record_list extends cinventory_record {
 			$this->statuss->LinkCustomAttributes = "";
 			$this->statuss->HrefValue = "";
 			$this->statuss->TooltipValue = "";
+
+			// recieved_comment
+			$this->recieved_comment->LinkCustomAttributes = "";
+			$this->recieved_comment->HrefValue = "";
+			$this->recieved_comment->TooltipValue = "";
+
+			// approver_comment
+			$this->approver_comment->LinkCustomAttributes = "";
+			$this->approver_comment->HrefValue = "";
+			$this->approver_comment->TooltipValue = "";
+
+			// approved_by
+			$this->approved_by->LinkCustomAttributes = "";
+			$this->approved_by->HrefValue = "";
+			$this->approved_by->TooltipValue = "";
+
+			// verified_comment
+			$this->verified_comment->LinkCustomAttributes = "";
+			$this->verified_comment->HrefValue = "";
+			$this->verified_comment->TooltipValue = "";
+
+			// verified_by
+			$this->verified_by->LinkCustomAttributes = "";
+			$this->verified_by->HrefValue = "";
+			$this->verified_by->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2355,6 +2395,12 @@ finventory_recordlist.Lists["x_recieved_by"].Data = "<?php echo $inventory_recor
 finventory_recordlist.AutoSuggests["x_recieved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_record_list->recieved_by->LookupFilterQuery(TRUE, "list"))) ?>;
 finventory_recordlist.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
 finventory_recordlist.Lists["x_statuss"].Data = "<?php echo $inventory_record_list->statuss->LookupFilterQuery(FALSE, "list") ?>";
+finventory_recordlist.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventory_recordlist.Lists["x_approved_by"].Data = "<?php echo $inventory_record_list->approved_by->LookupFilterQuery(FALSE, "list") ?>";
+finventory_recordlist.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_record_list->approved_by->LookupFilterQuery(TRUE, "list"))) ?>;
+finventory_recordlist.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventory_recordlist.Lists["x_verified_by"].Data = "<?php echo $inventory_record_list->verified_by->LookupFilterQuery(FALSE, "list") ?>";
+finventory_recordlist.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_record_list->verified_by->LookupFilterQuery(TRUE, "list"))) ?>;
 
 // Form object for search
 var CurrentSearchForm = finventory_recordlistsrch = new ew_Form("finventory_recordlistsrch");
@@ -2607,6 +2653,51 @@ $inventory_record_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
+<?php if ($inventory_record->recieved_comment->Visible) { // recieved_comment ?>
+	<?php if ($inventory_record->SortUrl($inventory_record->recieved_comment) == "") { ?>
+		<th data-name="recieved_comment" class="<?php echo $inventory_record->recieved_comment->HeaderCellClass() ?>"><div id="elh_inventory_record_recieved_comment" class="inventory_record_recieved_comment"><div class="ewTableHeaderCaption"><?php echo $inventory_record->recieved_comment->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="recieved_comment" class="<?php echo $inventory_record->recieved_comment->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_record->SortUrl($inventory_record->recieved_comment) ?>',1);"><div id="elh_inventory_record_recieved_comment" class="inventory_record_recieved_comment">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_record->recieved_comment->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_record->recieved_comment->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_record->recieved_comment->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($inventory_record->approver_comment->Visible) { // approver_comment ?>
+	<?php if ($inventory_record->SortUrl($inventory_record->approver_comment) == "") { ?>
+		<th data-name="approver_comment" class="<?php echo $inventory_record->approver_comment->HeaderCellClass() ?>"><div id="elh_inventory_record_approver_comment" class="inventory_record_approver_comment"><div class="ewTableHeaderCaption"><?php echo $inventory_record->approver_comment->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="approver_comment" class="<?php echo $inventory_record->approver_comment->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_record->SortUrl($inventory_record->approver_comment) ?>',1);"><div id="elh_inventory_record_approver_comment" class="inventory_record_approver_comment">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_record->approver_comment->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_record->approver_comment->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_record->approver_comment->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($inventory_record->approved_by->Visible) { // approved_by ?>
+	<?php if ($inventory_record->SortUrl($inventory_record->approved_by) == "") { ?>
+		<th data-name="approved_by" class="<?php echo $inventory_record->approved_by->HeaderCellClass() ?>"><div id="elh_inventory_record_approved_by" class="inventory_record_approved_by"><div class="ewTableHeaderCaption"><?php echo $inventory_record->approved_by->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="approved_by" class="<?php echo $inventory_record->approved_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_record->SortUrl($inventory_record->approved_by) ?>',1);"><div id="elh_inventory_record_approved_by" class="inventory_record_approved_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_record->approved_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_record->approved_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_record->approved_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($inventory_record->verified_comment->Visible) { // verified_comment ?>
+	<?php if ($inventory_record->SortUrl($inventory_record->verified_comment) == "") { ?>
+		<th data-name="verified_comment" class="<?php echo $inventory_record->verified_comment->HeaderCellClass() ?>"><div id="elh_inventory_record_verified_comment" class="inventory_record_verified_comment"><div class="ewTableHeaderCaption"><?php echo $inventory_record->verified_comment->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="verified_comment" class="<?php echo $inventory_record->verified_comment->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_record->SortUrl($inventory_record->verified_comment) ?>',1);"><div id="elh_inventory_record_verified_comment" class="inventory_record_verified_comment">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_record->verified_comment->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_record->verified_comment->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_record->verified_comment->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($inventory_record->verified_by->Visible) { // verified_by ?>
+	<?php if ($inventory_record->SortUrl($inventory_record->verified_by) == "") { ?>
+		<th data-name="verified_by" class="<?php echo $inventory_record->verified_by->HeaderCellClass() ?>"><div id="elh_inventory_record_verified_by" class="inventory_record_verified_by"><div class="ewTableHeaderCaption"><?php echo $inventory_record->verified_by->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="verified_by" class="<?php echo $inventory_record->verified_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_record->SortUrl($inventory_record->verified_by) ?>',1);"><div id="elh_inventory_record_verified_by" class="inventory_record_verified_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_record->verified_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_record->verified_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_record->verified_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
 <?php
 
 // Render list options (header, right)
@@ -2733,6 +2824,46 @@ $inventory_record_list->ListOptions->Render("body", "left", $inventory_record_li
 <span id="el<?php echo $inventory_record_list->RowCnt ?>_inventory_record_statuss" class="inventory_record_statuss">
 <span<?php echo $inventory_record->statuss->ViewAttributes() ?>>
 <?php echo $inventory_record->statuss->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($inventory_record->recieved_comment->Visible) { // recieved_comment ?>
+		<td data-name="recieved_comment"<?php echo $inventory_record->recieved_comment->CellAttributes() ?>>
+<span id="el<?php echo $inventory_record_list->RowCnt ?>_inventory_record_recieved_comment" class="inventory_record_recieved_comment">
+<span<?php echo $inventory_record->recieved_comment->ViewAttributes() ?>>
+<?php echo $inventory_record->recieved_comment->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($inventory_record->approver_comment->Visible) { // approver_comment ?>
+		<td data-name="approver_comment"<?php echo $inventory_record->approver_comment->CellAttributes() ?>>
+<span id="el<?php echo $inventory_record_list->RowCnt ?>_inventory_record_approver_comment" class="inventory_record_approver_comment">
+<span<?php echo $inventory_record->approver_comment->ViewAttributes() ?>>
+<?php echo $inventory_record->approver_comment->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($inventory_record->approved_by->Visible) { // approved_by ?>
+		<td data-name="approved_by"<?php echo $inventory_record->approved_by->CellAttributes() ?>>
+<span id="el<?php echo $inventory_record_list->RowCnt ?>_inventory_record_approved_by" class="inventory_record_approved_by">
+<span<?php echo $inventory_record->approved_by->ViewAttributes() ?>>
+<?php echo $inventory_record->approved_by->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($inventory_record->verified_comment->Visible) { // verified_comment ?>
+		<td data-name="verified_comment"<?php echo $inventory_record->verified_comment->CellAttributes() ?>>
+<span id="el<?php echo $inventory_record_list->RowCnt ?>_inventory_record_verified_comment" class="inventory_record_verified_comment">
+<span<?php echo $inventory_record->verified_comment->ViewAttributes() ?>>
+<?php echo $inventory_record->verified_comment->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($inventory_record->verified_by->Visible) { // verified_by ?>
+		<td data-name="verified_by"<?php echo $inventory_record->verified_by->CellAttributes() ?>>
+<span id="el<?php echo $inventory_record_list->RowCnt ?>_inventory_record_verified_by" class="inventory_record_verified_by">
+<span<?php echo $inventory_record->verified_by->ViewAttributes() ?>>
+<?php echo $inventory_record->verified_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

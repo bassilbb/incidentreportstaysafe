@@ -454,6 +454,8 @@ class cinventory_list extends cinventory {
 		$this->capacity->SetVisibility();
 		$this->recieved_by->SetVisibility();
 		$this->statuss->SetVisibility();
+		$this->approved_by->SetVisibility();
+		$this->verified_by->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -1202,6 +1204,8 @@ class cinventory_list extends cinventory {
 			$this->UpdateSort($this->capacity); // capacity
 			$this->UpdateSort($this->recieved_by); // recieved_by
 			$this->UpdateSort($this->statuss); // statuss
+			$this->UpdateSort($this->approved_by); // approved_by
+			$this->UpdateSort($this->verified_by); // verified_by
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1242,6 +1246,8 @@ class cinventory_list extends cinventory {
 				$this->capacity->setSort("");
 				$this->recieved_by->setSort("");
 				$this->statuss->setSort("");
+				$this->approved_by->setSort("");
+				$this->verified_by->setSort("");
 			}
 
 			// Reset start position
@@ -1838,7 +1844,7 @@ class cinventory_list extends cinventory {
 
 		// date_recieved
 		$this->date_recieved->ViewValue = $this->date_recieved->CurrentValue;
-		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 0);
+		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 17);
 		$this->date_recieved->ViewCustomAttributes = "";
 
 		// reference_id
@@ -2072,6 +2078,16 @@ class cinventory_list extends cinventory {
 			$this->statuss->LinkCustomAttributes = "";
 			$this->statuss->HrefValue = "";
 			$this->statuss->TooltipValue = "";
+
+			// approved_by
+			$this->approved_by->LinkCustomAttributes = "";
+			$this->approved_by->HrefValue = "";
+			$this->approved_by->TooltipValue = "";
+
+			// verified_by
+			$this->verified_by->LinkCustomAttributes = "";
+			$this->verified_by->HrefValue = "";
+			$this->verified_by->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2423,6 +2439,12 @@ finventorylist.Lists["x_recieved_by"].Data = "<?php echo $inventory_list->reciev
 finventorylist.AutoSuggests["x_recieved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_list->recieved_by->LookupFilterQuery(TRUE, "list"))) ?>;
 finventorylist.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
 finventorylist.Lists["x_statuss"].Data = "<?php echo $inventory_list->statuss->LookupFilterQuery(FALSE, "list") ?>";
+finventorylist.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventorylist.Lists["x_approved_by"].Data = "<?php echo $inventory_list->approved_by->LookupFilterQuery(FALSE, "list") ?>";
+finventorylist.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_list->approved_by->LookupFilterQuery(TRUE, "list"))) ?>;
+finventorylist.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventorylist.Lists["x_verified_by"].Data = "<?php echo $inventory_list->verified_by->LookupFilterQuery(FALSE, "list") ?>";
+finventorylist.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_list->verified_by->LookupFilterQuery(TRUE, "list"))) ?>;
 
 // Form object for search
 var CurrentSearchForm = finventorylistsrch = new ew_Form("finventorylistsrch");
@@ -2675,6 +2697,24 @@ $inventory_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
+<?php if ($inventory->approved_by->Visible) { // approved_by ?>
+	<?php if ($inventory->SortUrl($inventory->approved_by) == "") { ?>
+		<th data-name="approved_by" class="<?php echo $inventory->approved_by->HeaderCellClass() ?>"><div id="elh_inventory_approved_by" class="inventory_approved_by"><div class="ewTableHeaderCaption"><?php echo $inventory->approved_by->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="approved_by" class="<?php echo $inventory->approved_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->approved_by) ?>',1);"><div id="elh_inventory_approved_by" class="inventory_approved_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->approved_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory->approved_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->approved_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($inventory->verified_by->Visible) { // verified_by ?>
+	<?php if ($inventory->SortUrl($inventory->verified_by) == "") { ?>
+		<th data-name="verified_by" class="<?php echo $inventory->verified_by->HeaderCellClass() ?>"><div id="elh_inventory_verified_by" class="inventory_verified_by"><div class="ewTableHeaderCaption"><?php echo $inventory->verified_by->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="verified_by" class="<?php echo $inventory->verified_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory->SortUrl($inventory->verified_by) ?>',1);"><div id="elh_inventory_verified_by" class="inventory_verified_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory->verified_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory->verified_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory->verified_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
 <?php
 
 // Render list options (header, right)
@@ -2801,6 +2841,22 @@ $inventory_list->ListOptions->Render("body", "left", $inventory_list->RowCnt);
 <span id="el<?php echo $inventory_list->RowCnt ?>_inventory_statuss" class="inventory_statuss">
 <span<?php echo $inventory->statuss->ViewAttributes() ?>>
 <?php echo $inventory->statuss->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($inventory->approved_by->Visible) { // approved_by ?>
+		<td data-name="approved_by"<?php echo $inventory->approved_by->CellAttributes() ?>>
+<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_approved_by" class="inventory_approved_by">
+<span<?php echo $inventory->approved_by->ViewAttributes() ?>>
+<?php echo $inventory->approved_by->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($inventory->verified_by->Visible) { // verified_by ?>
+		<td data-name="verified_by"<?php echo $inventory->verified_by->CellAttributes() ?>>
+<span id="el<?php echo $inventory_list->RowCnt ?>_inventory_verified_by" class="inventory_verified_by">
+<span<?php echo $inventory->verified_by->ViewAttributes() ?>>
+<?php echo $inventory->verified_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

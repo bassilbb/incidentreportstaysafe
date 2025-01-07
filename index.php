@@ -369,8 +369,6 @@ class cdefault {
 			$this->Page_Terminate("maintenancelist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'maintained_status'))
 			$this->Page_Terminate("maintained_statuslist.php");
-		if ($Security->AllowList(CurrentProjectID() . 'maintenance_report'))
-			$this->Page_Terminate("maintenance_reportlist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'assign_task'))
 			$this->Page_Terminate("assign_tasklist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'inventory'))

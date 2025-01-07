@@ -325,6 +325,8 @@ class cinventory_delete extends cinventory {
 		$this->capacity->SetVisibility();
 		$this->recieved_by->SetVisibility();
 		$this->statuss->SetVisibility();
+		$this->approved_by->SetVisibility();
+		$this->verified_by->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -618,7 +620,7 @@ class cinventory_delete extends cinventory {
 
 		// date_recieved
 		$this->date_recieved->ViewValue = $this->date_recieved->CurrentValue;
-		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 0);
+		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 17);
 		$this->date_recieved->ViewCustomAttributes = "";
 
 		// reference_id
@@ -852,6 +854,16 @@ class cinventory_delete extends cinventory {
 			$this->statuss->LinkCustomAttributes = "";
 			$this->statuss->HrefValue = "";
 			$this->statuss->TooltipValue = "";
+
+			// approved_by
+			$this->approved_by->LinkCustomAttributes = "";
+			$this->approved_by->HrefValue = "";
+			$this->approved_by->TooltipValue = "";
+
+			// verified_by
+			$this->verified_by->LinkCustomAttributes = "";
+			$this->verified_by->HrefValue = "";
+			$this->verified_by->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1071,6 +1083,12 @@ finventorydelete.Lists["x_recieved_by"].Data = "<?php echo $inventory_delete->re
 finventorydelete.AutoSuggests["x_recieved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_delete->recieved_by->LookupFilterQuery(TRUE, "delete"))) ?>;
 finventorydelete.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
 finventorydelete.Lists["x_statuss"].Data = "<?php echo $inventory_delete->statuss->LookupFilterQuery(FALSE, "delete") ?>";
+finventorydelete.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventorydelete.Lists["x_approved_by"].Data = "<?php echo $inventory_delete->approved_by->LookupFilterQuery(FALSE, "delete") ?>";
+finventorydelete.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_delete->approved_by->LookupFilterQuery(TRUE, "delete"))) ?>;
+finventorydelete.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventorydelete.Lists["x_verified_by"].Data = "<?php echo $inventory_delete->verified_by->LookupFilterQuery(FALSE, "delete") ?>";
+finventorydelete.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_delete->verified_by->LookupFilterQuery(TRUE, "delete"))) ?>;
 
 // Form object for search
 </script>
@@ -1120,6 +1138,12 @@ $inventory_delete->ShowMessage();
 <?php } ?>
 <?php if ($inventory->statuss->Visible) { // statuss ?>
 		<th class="<?php echo $inventory->statuss->HeaderCellClass() ?>"><span id="elh_inventory_statuss" class="inventory_statuss"><?php echo $inventory->statuss->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($inventory->approved_by->Visible) { // approved_by ?>
+		<th class="<?php echo $inventory->approved_by->HeaderCellClass() ?>"><span id="elh_inventory_approved_by" class="inventory_approved_by"><?php echo $inventory->approved_by->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($inventory->verified_by->Visible) { // verified_by ?>
+		<th class="<?php echo $inventory->verified_by->HeaderCellClass() ?>"><span id="elh_inventory_verified_by" class="inventory_verified_by"><?php echo $inventory->verified_by->FldCaption() ?></span></th>
 <?php } ?>
 	</tr>
 	</thead>
@@ -1203,6 +1227,22 @@ while (!$inventory_delete->Recordset->EOF) {
 <span id="el<?php echo $inventory_delete->RowCnt ?>_inventory_statuss" class="inventory_statuss">
 <span<?php echo $inventory->statuss->ViewAttributes() ?>>
 <?php echo $inventory->statuss->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($inventory->approved_by->Visible) { // approved_by ?>
+		<td<?php echo $inventory->approved_by->CellAttributes() ?>>
+<span id="el<?php echo $inventory_delete->RowCnt ?>_inventory_approved_by" class="inventory_approved_by">
+<span<?php echo $inventory->approved_by->ViewAttributes() ?>>
+<?php echo $inventory->approved_by->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($inventory->verified_by->Visible) { // verified_by ?>
+		<td<?php echo $inventory->verified_by->CellAttributes() ?>>
+<span id="el<?php echo $inventory_delete->RowCnt ?>_inventory_verified_by" class="inventory_verified_by">
+<span<?php echo $inventory->verified_by->ViewAttributes() ?>>
+<?php echo $inventory->verified_by->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

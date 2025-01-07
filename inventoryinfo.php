@@ -67,9 +67,9 @@ class cinventory extends cTable {
 		$this->fields['id'] = &$this->id;
 
 		// date_recieved
-		$this->date_recieved = new cField('inventory', 'inventory', 'x_date_recieved', 'date_recieved', '`date_recieved`', ew_CastDateFieldForLike('`date_recieved`', 0, "DB"), 135, 0, FALSE, '`date_recieved`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date_recieved = new cField('inventory', 'inventory', 'x_date_recieved', 'date_recieved', '`date_recieved`', ew_CastDateFieldForLike('`date_recieved`', 17, "DB"), 135, 17, FALSE, '`date_recieved`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->date_recieved->Sortable = TRUE; // Allow sort
-		$this->date_recieved->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
+		$this->date_recieved->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
 		$this->fields['date_recieved'] = &$this->date_recieved;
 
 		// reference_id
@@ -78,9 +78,8 @@ class cinventory extends cTable {
 		$this->fields['reference_id'] = &$this->reference_id;
 
 		// staff_id
-		$this->staff_id = new cField('inventory', 'inventory', 'x_staff_id', 'staff_id', '`staff_id`', '`staff_id`', 3, -1, FALSE, '`staff_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->staff_id = new cField('inventory', 'inventory', 'x_staff_id', 'staff_id', '`staff_id`', '`staff_id`', 200, -1, FALSE, '`staff_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->staff_id->Sortable = TRUE; // Allow sort
-		$this->staff_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['staff_id'] = &$this->staff_id;
 
 		// material_name
@@ -756,7 +755,7 @@ class cinventory extends cTable {
 
 		// date_recieved
 		$this->date_recieved->ViewValue = $this->date_recieved->CurrentValue;
-		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 0);
+		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 17);
 		$this->date_recieved->ViewCustomAttributes = "";
 
 		// reference_id
@@ -1074,7 +1073,7 @@ class cinventory extends cTable {
 		// date_recieved
 		$this->date_recieved->EditAttrs["class"] = "form-control";
 		$this->date_recieved->EditCustomAttributes = "";
-		$this->date_recieved->EditValue = ew_FormatDateTime($this->date_recieved->CurrentValue, 8);
+		$this->date_recieved->EditValue = ew_FormatDateTime($this->date_recieved->CurrentValue, 17);
 		$this->date_recieved->PlaceHolder = ew_RemoveHtml($this->date_recieved->FldCaption());
 
 		// reference_id
@@ -1414,8 +1413,13 @@ class cinventory extends cTable {
 
 		// Enter your code here
 		// To cancel, set return value to FALSE
-			// Officer Only
 
+		date_default_timezone_set('Africa/Lagos');
+		$now = new DateTime();
+		$this->date_recieved->CurrentValue = $now->Format('Y-m-d H:i:s');
+		$this->date_recieved->EditValue = $this->date_recieved->CurrentValue;
+
+			// Officer Only
 		if (CurrentPageID() == "add" && CurrentUserLevel() == 1) {
 
 			// Save and forward
@@ -1507,6 +1511,8 @@ class cinventory extends cTable {
 
 		date_default_timezone_set('Africa/Lagos');
 		$now = new DateTime();
+		$this->date_recieved->CurrentValue = $now->Format('Y-m-d H:i:s');
+		$this->date_recieved->EditValue = $this->date_recieved->CurrentValue;
 		$this->date_approved->CurrentValue = $now->Format('Y-m-d H:i:s');
 		$this->date_approved->EditValue = $this->date_approved->CurrentValue;
 		$this->verified_date->CurrentValue = $now->Format('Y-m-d H:i:s');
@@ -1735,7 +1741,7 @@ class cinventory extends cTable {
 	function Row_Rendering() {
 
 		// Enter your code here
-		if ((CurrentPageID() == "add" || CurrentPageID() == "edit"))  {
+		if (CurrentPageID() == "add" )  {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$this->date_recieved->CurrentValue = $now->Format('Y-m-d H:i:s');
@@ -1752,20 +1758,20 @@ class cinventory extends cTable {
 			$this->reference_id->EditValue = $this->reference_id->CurrentValue;
 		}
 		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 ) {
-
-			//$this->date_approved->CurrentValue = $now->Format('Y-m-d H:i:s');
-			//$this->date_approved->EditValue = $this->date_approved->CurrentValue;
-
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_approved->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_approved->EditValue = $this->date_approved->CurrentValue;
 			$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
 			$this->staff_id->EditValue = $this->staff_id->CurrentValue;
 			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
 			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
 		}
 		if (CurrentPageID() == "edit" && CurrentUserLevel() == 5 ) {
-
-		 	//$this->verified_date->CurrentValue = $now->Format('Y-m-d H:i:s');
-			//$this->verified_date->EditValue = $this->verified_date->CurrentValue;
-
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+		 	$this->verified_date->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->verified_date->EditValue = $this->verified_date->CurrentValue;
 			$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
 			$this->staff_id->EditValue = $this->staff_id->CurrentValue;
 			$this->verified_by->CurrentValue = $_SESSION['Staff_ID'];
@@ -1915,8 +1921,7 @@ class cinventory extends cTable {
 				$this->approver_action->CellCssStyle = "color: orange; text-align: left;";
 				$this->approver_comment->CellCssStyle = "color: orange; text-align: left;";
 				$this->approved_by->CellCssStyle = "color: orange; text-align: left;";
-
-				//$this->description->CellCssStyle = "color: orange; text-align: left;";
+				$this->verified_by->CellCssStyle = "color: orange; text-align: left;";
 			}
 			if ($this->statuss->CurrentValue == 2) {
 				$this->id->CellCssStyle = "color: red; text-align: left;";
@@ -1933,6 +1938,7 @@ class cinventory extends cTable {
 				$this->approver_action->CellCssStyle = "color: red; text-align: left;";
 				$this->approver_comment->CellCssStyle = "color: red; text-align: left;";
 				$this->approved_by->CellCssStyle = "color: red; text-align: left;";
+				$this->verified_by->CellCssStyle = "color: red; text-align: left;";
 			}
 			if ($this->statuss->CurrentValue == 3) {
 				$this->id->CellCssStyle = "color: blue; text-align: left;";
@@ -1949,6 +1955,7 @@ class cinventory extends cTable {
 				$this->approver_action->CellCssStyle = "color: blue; text-align: left;";
 				$this->approver_comment->CellCssStyle = "color: blue; text-align: left;";
 				$this->approved_by->CellCssStyle = "color: blue; text-align: left;";
+				$this->verified_by->CellCssStyle = "color: blue; text-align: left;";
 			}
 			if ($this->statuss->CurrentValue == 4) {
 				$this->id->CellCssStyle = "color: green; text-align: left;";
@@ -1965,6 +1972,7 @@ class cinventory extends cTable {
 				$this->approver_action->CellCssStyle = "color: green; text-align: left;";
 				$this->approver_comment->CellCssStyle = "color: green; text-align: left;";
 				$this->approved_by->CellCssStyle = "color: green; text-align: left;";
+				$this->verified_by->CellCssStyle = "color: green; text-align: left;";
 			}
 		}
 	}

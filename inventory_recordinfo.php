@@ -78,7 +78,7 @@ class cinventory_record extends cTable {
 		$this->fields['reference_id'] = &$this->reference_id;
 
 		// staff_id
-		$this->staff_id = new cField('inventory_record', 'inventory_record', 'x_staff_id', 'staff_id', '`staff_id`', '`staff_id`', 3, -1, FALSE, '`staff_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->staff_id = new cField('inventory_record', 'inventory_record', 'x_staff_id', 'staff_id', '`staff_id`', '`staff_id`', 200, -1, FALSE, '`staff_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->staff_id->Sortable = TRUE; // Allow sort
 		$this->staff_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['staff_id'] = &$this->staff_id;
@@ -1507,7 +1507,88 @@ class cinventory_record extends cTable {
 
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
+			// Highligh rows in color based on the status
 
+		if (CurrentPageID() == "list") {
+
+			//$this->branch_code->Visible = FALSE;
+			if ($this->statuss->CurrentValue == 1) {
+				$this->id->CellCssStyle = "color: orange; text-align: left;";
+				$this->date_recieved->CellCssStyle = "color: orange; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: orange; text-align: left;";
+				$this->material_name->CellCssStyle = "color: orange; text-align: left;";
+				$this->recieved_by->CellCssStyle = "color: orange; text-align: left;";
+				$this->recieved_comment->CellCssStyle = "color: orange; text-align: left;";
+				$this->quantity->CellCssStyle = "color: orange; text-align: left;";
+				$this->type->CellCssStyle = "color: orange; text-align: left;";
+				$this->reference_id->CellCssStyle = "color: orange; text-align: left;";
+				$this->capacity->CellCssStyle = "color: orange; text-align: left;";
+				$this->statuss->CellCssStyle = "color: orange; text-align: left;";
+				$this->date_approved->CellCssStyle = "color: orange; text-align: left;";
+				$this->approver_action->CellCssStyle = "color: orange; text-align: left;";
+				$this->approver_comment->CellCssStyle = "color: orange; text-align: left;";
+				$this->approved_by->CellCssStyle = "color: orange; text-align: left;";
+				$this->verified_by->CellCssStyle = "color: orange; text-align: left;";
+				$this->verified_comment->CellCssStyle = "color: orange; text-align: left;";
+			}
+			if ($this->statuss->CurrentValue == 2) {
+				$this->id->CellCssStyle = "color: red; text-align: left;";
+				$this->date_recieved->CellCssStyle = "color: red; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: red; text-align: left;";
+				$this->material_name->CellCssStyle = "color: red; text-align: left;";
+				$this->recieved_by->CellCssStyle = "color: red; text-align: left;";
+				$this->recieved_comment->CellCssStyle = "color: red; text-align: left;";
+				$this->quantity->CellCssStyle = "color: red; text-align: left;";
+				$this->type->CellCssStyle = "color: red; text-align: left;";
+				$this->reference_id->CellCssStyle = "color: red; text-align: left;";
+				$this->capacity->CellCssStyle = "color: red; text-align: left;";
+				$this->statuss->CellCssStyle = "color: red; text-align: left;";
+				$this->date_approved->CellCssStyle = "color: red; text-align: left;";
+				$this->approver_action->CellCssStyle = "color: red; text-align: left;";
+				$this->approver_comment->CellCssStyle = "color: red; text-align: left;";
+				$this->approved_by->CellCssStyle = "color: red; text-align: left;";
+				$this->verified_by->CellCssStyle = "color: red; text-align: left;";
+				$this->verified_comment->CellCssStyle = "color: red; text-align: left;";
+			}
+			if ($this->statuss->CurrentValue == 3) {
+				$this->id->CellCssStyle = "color: blue; text-align: left;";
+				$this->date_recieved->CellCssStyle = "color: blue; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: blue; text-align: left;";
+				$this->material_name->CellCssStyle = "color: blue; text-align: left;";
+				$this->recieved_by->CellCssStyle = "color: blue; text-align: left;";
+				$this->recieved_comment->CellCssStyle = "color: blue; text-align: left;";
+				$this->quantity->CellCssStyle = "color: blue; text-align: left;";
+				$this->type->CellCssStyle = "color: blue; text-align: left;";
+				$this->reference_id->CellCssStyle = "color: blue; text-align: left;";
+				$this->capacity->CellCssStyle = "color: blue; text-align: left;";
+				$this->statuss->CellCssStyle = "color: blue; text-align: left;";
+				$this->date_approved->CellCssStyle = "color: blue; text-align: left;";
+				$this->approver_action->CellCssStyle = "color: blue; text-align: left;";
+				$this->approver_comment->CellCssStyle = "color: blue; text-align: left;";
+				$this->approved_by->CellCssStyle = "color: blue; text-align: left;";
+				$this->verified_by->CellCssStyle = "color: blue; text-align: left;";
+				$this->verified_comment->CellCssStyle = "color: blue; text-align: left;";
+			}
+			if ($this->statuss->CurrentValue == 4) {
+				$this->id->CellCssStyle = "color: green; text-align: left;";
+				$this->date_recieved->CellCssStyle = "color: green; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: green; text-align: left;";
+				$this->material_name->CellCssStyle = "color: green; text-align: left;";
+				$this->recieved_by->CellCssStyle = "color: green; text-align: left;";
+				$this->recieved_comment->CellCssStyle = "color: green; text-align: left;";
+				$this->quantity->CellCssStyle = "color: green; text-align: left;";
+				$this->type->CellCssStyle = "color: green; text-align: left;";
+				$this->reference_id->CellCssStyle = "color: green; text-align: left;";
+				$this->capacity->CellCssStyle = "color: green; text-align: left;";
+				$this->statuss->CellCssStyle = "color: green; text-align: left;";
+				$this->date_approved->CellCssStyle = "color: green; text-align: left;";
+				$this->approver_action->CellCssStyle = "color: green; text-align: left;";
+				$this->approver_comment->CellCssStyle = "color: green; text-align: left;";
+				$this->approved_by->CellCssStyle = "color: green; text-align: left;";
+				$this->verified_by->CellCssStyle = "color: green; text-align: left;";
+				$this->verified_comment->CellCssStyle = "color: green; text-align: left;";
+			}
+		}
 	}
 
 	// User ID Filtering event

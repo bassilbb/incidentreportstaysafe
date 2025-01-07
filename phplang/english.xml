@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2024/12/27" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2025/1/7" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -706,7 +706,7 @@
       <phrase id="menutext" value="Dispenser Status" />
     </menu>
     <menu id="196">
-      <phrase id="menutext" value="statuss" />
+      <phrase id="menutext" value="status" />
     </menu>
     <menu id="34">
       <phrase id="menutext" value="Incidents" />
@@ -757,16 +757,16 @@
       <phrase id="menutext" value="Inventory Module" />
     </menu>
     <menu id="101">
-      <phrase id="menutext" value="Inventory" />
-    </menu>
-    <menu id="102">
       <phrase id="menutext" value="Inventory Store" />
     </menu>
+    <menu id="102">
+      <phrase id="menutext" value="Inventory Issurance " />
+    </menu>
     <menu id="197">
-      <phrase id="menutext" value="Inventory Report" />
+      <phrase id="menutext" value="Inventory Store Report" />
     </menu>
     <menu id="198">
-      <phrase id="menutext" value="Inventory Store Report" />
+      <phrase id="menutext" value="Inventory Issurance Report" />
     </menu>
     <menu id="199">
       <phrase id="menutext" value="inventory records" />
@@ -1899,7 +1899,7 @@
       </field>
     </table>
     <table id="inventory">
-      <phrase id="tblcaption" value="Inventory" />
+      <phrase id="tblcaption" value="Inventory Store" />
       <field id="id">
         <phrase id="fldcaption" value="ID" />
       </field>
@@ -1972,7 +1972,7 @@
       </field>
     </table>
     <table id="inventory_store">
-      <phrase id="tblcaption" value="Inventory Store" />
+      <phrase id="tblcaption" value="Inventory Issurance " />
       <phrase id="tblpagecaption1" value="Inventory Store Info" />
       <field id="id">
         <phrase id="fldcaption" value="ID" />
@@ -2204,7 +2204,7 @@
       </field>
     </table>
     <table id="statuss">
-      <phrase id="tblcaption" value="statuss" />
+      <phrase id="tblcaption" value="status" />
       <field id="id">
         <phrase id="fldcaption" value="id" />
       </field>
@@ -2213,7 +2213,7 @@
       </field>
     </table>
     <table id="inventory_report">
-      <phrase id="tblcaption" value="Inventory Report" />
+      <phrase id="tblcaption" value="Inventory Store Report" />
       <field id="id">
         <phrase id="fldcaption" value="ID" />
       </field>
@@ -2238,12 +2238,6 @@
       <field id="capacity">
         <phrase id="fldcaption" value="Capacity" />
       </field>
-      <field id="recieved_by">
-        <phrase id="fldcaption" value="Recieved By" />
-      </field>
-      <field id="statuss">
-        <phrase id="fldcaption" value="Status" />
-      </field>
       <field id="recieved_action">
         <phrase id="fldcaption" value="Recieved Action" />
         <phrase id="fldtagvalue1" value="0" />
@@ -2253,6 +2247,9 @@
       </field>
       <field id="recieved_comment">
         <phrase id="fldcaption" value="Recieved Comment" />
+      </field>
+      <field id="recieved_by">
+        <phrase id="fldcaption" value="Recieved By" />
       </field>
       <field id="date_approved">
         <phrase id="fldcaption" value="Date Approved" />
@@ -2286,9 +2283,12 @@
       <field id="verified_by">
         <phrase id="fldcaption" value="Verified By" />
       </field>
+      <field id="statuss">
+        <phrase id="fldcaption" value="Status" />
+      </field>
     </table>
     <table id="store_report">
-      <phrase id="tblcaption" value="Inventory Store Report" />
+      <phrase id="tblcaption" value="Inventory Issurance Report" />
       <field id="id">
         <phrase id="fldcaption" value="ID" />
       </field>

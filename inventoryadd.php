@@ -591,7 +591,7 @@ class cinventory_add extends cinventory {
 		global $objForm;
 		if (!$this->date_recieved->FldIsDetailKey) {
 			$this->date_recieved->setFormValue($objForm->GetValue("x_date_recieved"));
-			$this->date_recieved->CurrentValue = ew_UnFormatDateTime($this->date_recieved->CurrentValue, 0);
+			$this->date_recieved->CurrentValue = ew_UnFormatDateTime($this->date_recieved->CurrentValue, 17);
 		}
 		if (!$this->reference_id->FldIsDetailKey) {
 			$this->reference_id->setFormValue($objForm->GetValue("x_reference_id"));
@@ -655,7 +655,7 @@ class cinventory_add extends cinventory {
 	function RestoreFormValues() {
 		global $objForm;
 		$this->date_recieved->CurrentValue = $this->date_recieved->FormValue;
-		$this->date_recieved->CurrentValue = ew_UnFormatDateTime($this->date_recieved->CurrentValue, 0);
+		$this->date_recieved->CurrentValue = ew_UnFormatDateTime($this->date_recieved->CurrentValue, 17);
 		$this->reference_id->CurrentValue = $this->reference_id->FormValue;
 		$this->staff_id->CurrentValue = $this->staff_id->FormValue;
 		$this->material_name->CurrentValue = $this->material_name->FormValue;
@@ -848,7 +848,7 @@ class cinventory_add extends cinventory {
 
 		// date_recieved
 		$this->date_recieved->ViewValue = $this->date_recieved->CurrentValue;
-		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 0);
+		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 17);
 		$this->date_recieved->ViewCustomAttributes = "";
 
 		// reference_id
@@ -1142,7 +1142,7 @@ class cinventory_add extends cinventory {
 			// date_recieved
 			$this->date_recieved->EditAttrs["class"] = "form-control";
 			$this->date_recieved->EditCustomAttributes = "";
-			$this->date_recieved->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->date_recieved->CurrentValue, 8));
+			$this->date_recieved->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->date_recieved->CurrentValue, 17));
 			$this->date_recieved->PlaceHolder = ew_RemoveHtml($this->date_recieved->FldCaption());
 
 			// reference_id
@@ -1446,7 +1446,7 @@ class cinventory_add extends cinventory {
 		if (!$this->date_recieved->FldIsDetailKey && !is_null($this->date_recieved->FormValue) && $this->date_recieved->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->date_recieved->FldCaption(), $this->date_recieved->ReqErrMsg));
 		}
-		if (!ew_CheckDateDef($this->date_recieved->FormValue)) {
+		if (!ew_CheckShortEuroDate($this->date_recieved->FormValue)) {
 			ew_AddMessage($gsFormError, $this->date_recieved->FldErrMsg());
 		}
 		if (!$this->reference_id->FldIsDetailKey && !is_null($this->reference_id->FormValue) && $this->reference_id->FormValue == "") {
@@ -1454,9 +1454,6 @@ class cinventory_add extends cinventory {
 		}
 		if (!$this->staff_id->FldIsDetailKey && !is_null($this->staff_id->FormValue) && $this->staff_id->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->staff_id->FldCaption(), $this->staff_id->ReqErrMsg));
-		}
-		if (!ew_CheckInteger($this->staff_id->FormValue)) {
-			ew_AddMessage($gsFormError, $this->staff_id->FldErrMsg());
 		}
 		if (!$this->material_name->FldIsDetailKey && !is_null($this->material_name->FormValue) && $this->material_name->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->material_name->FldCaption(), $this->material_name->ReqErrMsg));
@@ -1504,13 +1501,13 @@ class cinventory_add extends cinventory {
 		$rsnew = array();
 
 		// date_recieved
-		$this->date_recieved->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->date_recieved->CurrentValue, 0), ew_CurrentDate(), FALSE);
+		$this->date_recieved->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->date_recieved->CurrentValue, 17), ew_CurrentDate(), FALSE);
 
 		// reference_id
 		$this->reference_id->SetDbValueDef($rsnew, $this->reference_id->CurrentValue, "", FALSE);
 
 		// staff_id
-		$this->staff_id->SetDbValueDef($rsnew, $this->staff_id->CurrentValue, 0, FALSE);
+		$this->staff_id->SetDbValueDef($rsnew, $this->staff_id->CurrentValue, "", FALSE);
 
 		// material_name
 		$this->material_name->SetDbValueDef($rsnew, $this->material_name->CurrentValue, "", FALSE);
@@ -1838,7 +1835,7 @@ finventoryadd.Validate = function() {
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory->date_recieved->FldCaption(), $inventory->date_recieved->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_date_recieved");
-			if (elm && !ew_CheckDateDef(elm.value))
+			if (elm && !ew_CheckShortEuroDate(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory->date_recieved->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_reference_id");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
@@ -1846,9 +1843,6 @@ finventoryadd.Validate = function() {
 			elm = this.GetElements("x" + infix + "_staff_id");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory->staff_id->FldCaption(), $inventory->staff_id->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_staff_id");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory->staff_id->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_material_name");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory->material_name->FldCaption(), $inventory->material_name->ReqErrMsg)) ?>");
@@ -2183,7 +2177,7 @@ $inventory_add->ShowMessage();
 		<label id="elh_inventory_date_recieved" for="x_date_recieved" class="<?php echo $inventory_add->LeftColumnClass ?>"><?php echo $inventory->date_recieved->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_add->RightColumnClass ?>"><div<?php echo $inventory->date_recieved->CellAttributes() ?>>
 <span id="el_inventory_date_recieved">
-<input type="text" data-table="inventory" data-field="x_date_recieved" name="x_date_recieved" id="x_date_recieved" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($inventory->date_recieved->getPlaceHolder()) ?>" value="<?php echo $inventory->date_recieved->EditValue ?>"<?php echo $inventory->date_recieved->EditAttributes() ?>>
+<input type="text" data-table="inventory" data-field="x_date_recieved" data-format="17" name="x_date_recieved" id="x_date_recieved" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($inventory->date_recieved->getPlaceHolder()) ?>" value="<?php echo $inventory->date_recieved->EditValue ?>"<?php echo $inventory->date_recieved->EditAttributes() ?>>
 </span>
 <?php echo $inventory->date_recieved->CustomMsg ?></div></div>
 	</div>

@@ -438,10 +438,9 @@ class cinventory_report_view extends cinventory_report {
 		$this->quantity->SetVisibility();
 		$this->type->SetVisibility();
 		$this->capacity->SetVisibility();
-		$this->recieved_by->SetVisibility();
-		$this->statuss->SetVisibility();
 		$this->recieved_action->SetVisibility();
 		$this->recieved_comment->SetVisibility();
+		$this->recieved_by->SetVisibility();
 		$this->date_approved->SetVisibility();
 		$this->approver_action->SetVisibility();
 		$this->approver_comment->SetVisibility();
@@ -450,6 +449,7 @@ class cinventory_report_view extends cinventory_report {
 		$this->verified_action->SetVisibility();
 		$this->verified_comment->SetVisibility();
 		$this->verified_by->SetVisibility();
+		$this->statuss->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -752,10 +752,9 @@ class cinventory_report_view extends cinventory_report {
 		$this->quantity->setDbValue($row['quantity']);
 		$this->type->setDbValue($row['type']);
 		$this->capacity->setDbValue($row['capacity']);
-		$this->recieved_by->setDbValue($row['recieved_by']);
-		$this->statuss->setDbValue($row['statuss']);
 		$this->recieved_action->setDbValue($row['recieved_action']);
 		$this->recieved_comment->setDbValue($row['recieved_comment']);
+		$this->recieved_by->setDbValue($row['recieved_by']);
 		$this->date_approved->setDbValue($row['date_approved']);
 		$this->approver_action->setDbValue($row['approver_action']);
 		$this->approver_comment->setDbValue($row['approver_comment']);
@@ -764,6 +763,7 @@ class cinventory_report_view extends cinventory_report {
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
+		$this->statuss->setDbValue($row['statuss']);
 	}
 
 	// Return a row with default values
@@ -777,10 +777,9 @@ class cinventory_report_view extends cinventory_report {
 		$row['quantity'] = NULL;
 		$row['type'] = NULL;
 		$row['capacity'] = NULL;
-		$row['recieved_by'] = NULL;
-		$row['statuss'] = NULL;
 		$row['recieved_action'] = NULL;
 		$row['recieved_comment'] = NULL;
+		$row['recieved_by'] = NULL;
 		$row['date_approved'] = NULL;
 		$row['approver_action'] = NULL;
 		$row['approver_comment'] = NULL;
@@ -789,6 +788,7 @@ class cinventory_report_view extends cinventory_report {
 		$row['verified_action'] = NULL;
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
+		$row['statuss'] = NULL;
 		return $row;
 	}
 
@@ -805,10 +805,9 @@ class cinventory_report_view extends cinventory_report {
 		$this->quantity->DbValue = $row['quantity'];
 		$this->type->DbValue = $row['type'];
 		$this->capacity->DbValue = $row['capacity'];
-		$this->recieved_by->DbValue = $row['recieved_by'];
-		$this->statuss->DbValue = $row['statuss'];
 		$this->recieved_action->DbValue = $row['recieved_action'];
 		$this->recieved_comment->DbValue = $row['recieved_comment'];
+		$this->recieved_by->DbValue = $row['recieved_by'];
 		$this->date_approved->DbValue = $row['date_approved'];
 		$this->approver_action->DbValue = $row['approver_action'];
 		$this->approver_comment->DbValue = $row['approver_comment'];
@@ -817,6 +816,7 @@ class cinventory_report_view extends cinventory_report {
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
+		$this->statuss->DbValue = $row['statuss'];
 	}
 
 	// Render row values based on field settings
@@ -843,10 +843,9 @@ class cinventory_report_view extends cinventory_report {
 		// quantity
 		// type
 		// capacity
-		// recieved_by
-		// statuss
 		// recieved_action
 		// recieved_comment
+		// recieved_by
 		// date_approved
 		// approver_action
 		// approver_comment
@@ -855,6 +854,7 @@ class cinventory_report_view extends cinventory_report {
 		// verified_action
 		// verified_comment
 		// verified_by
+		// statuss
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -896,7 +896,26 @@ class cinventory_report_view extends cinventory_report {
 		$this->staff_id->ViewCustomAttributes = "";
 
 		// material_name
-		$this->material_name->ViewValue = $this->material_name->CurrentValue;
+		if (strval($this->material_name->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
+		$sWhereWrk = "";
+		$this->material_name->LookupFilters = array("dx1" => '`material_name`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->material_name->ViewValue = $this->material_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->material_name->ViewValue = $this->material_name->CurrentValue;
+			}
+		} else {
+			$this->material_name->ViewValue = NULL;
+		}
 		$this->material_name->ViewCustomAttributes = "";
 
 		// quantity
@@ -910,6 +929,18 @@ class cinventory_report_view extends cinventory_report {
 		// capacity
 		$this->capacity->ViewValue = $this->capacity->CurrentValue;
 		$this->capacity->ViewCustomAttributes = "";
+
+		// recieved_action
+		if (strval($this->recieved_action->CurrentValue) <> "") {
+			$this->recieved_action->ViewValue = $this->recieved_action->OptionCaption($this->recieved_action->CurrentValue);
+		} else {
+			$this->recieved_action->ViewValue = NULL;
+		}
+		$this->recieved_action->ViewCustomAttributes = "";
+
+		// recieved_comment
+		$this->recieved_comment->ViewValue = $this->recieved_comment->CurrentValue;
+		$this->recieved_comment->ViewCustomAttributes = "";
 
 		// recieved_by
 		if (strval($this->recieved_by->CurrentValue) <> "") {
@@ -935,41 +966,6 @@ class cinventory_report_view extends cinventory_report {
 			$this->recieved_by->ViewValue = NULL;
 		}
 		$this->recieved_by->ViewCustomAttributes = "";
-
-		// statuss
-		if (strval($this->statuss->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
-		$sWhereWrk = "";
-		$this->statuss->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->statuss->ViewValue = $this->statuss->CurrentValue;
-			}
-		} else {
-			$this->statuss->ViewValue = NULL;
-		}
-		$this->statuss->ViewCustomAttributes = "";
-
-		// recieved_action
-		if (strval($this->recieved_action->CurrentValue) <> "") {
-			$this->recieved_action->ViewValue = $this->recieved_action->OptionCaption($this->recieved_action->CurrentValue);
-		} else {
-			$this->recieved_action->ViewValue = NULL;
-		}
-		$this->recieved_action->ViewCustomAttributes = "";
-
-		// recieved_comment
-		$this->recieved_comment->ViewValue = $this->recieved_comment->CurrentValue;
-		$this->recieved_comment->ViewCustomAttributes = "";
 
 		// date_approved
 		$this->date_approved->ViewValue = $this->date_approved->CurrentValue;
@@ -1058,6 +1054,29 @@ class cinventory_report_view extends cinventory_report {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
+		// statuss
+		if (strval($this->statuss->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
+		$sWhereWrk = "";
+		$this->statuss->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->statuss->ViewValue = $this->statuss->CurrentValue;
+			}
+		} else {
+			$this->statuss->ViewValue = NULL;
+		}
+		$this->statuss->ViewCustomAttributes = "";
+
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
@@ -1098,16 +1117,6 @@ class cinventory_report_view extends cinventory_report {
 			$this->capacity->HrefValue = "";
 			$this->capacity->TooltipValue = "";
 
-			// recieved_by
-			$this->recieved_by->LinkCustomAttributes = "";
-			$this->recieved_by->HrefValue = "";
-			$this->recieved_by->TooltipValue = "";
-
-			// statuss
-			$this->statuss->LinkCustomAttributes = "";
-			$this->statuss->HrefValue = "";
-			$this->statuss->TooltipValue = "";
-
 			// recieved_action
 			$this->recieved_action->LinkCustomAttributes = "";
 			$this->recieved_action->HrefValue = "";
@@ -1117,6 +1126,11 @@ class cinventory_report_view extends cinventory_report {
 			$this->recieved_comment->LinkCustomAttributes = "";
 			$this->recieved_comment->HrefValue = "";
 			$this->recieved_comment->TooltipValue = "";
+
+			// recieved_by
+			$this->recieved_by->LinkCustomAttributes = "";
+			$this->recieved_by->HrefValue = "";
+			$this->recieved_by->TooltipValue = "";
 
 			// date_approved
 			$this->date_approved->LinkCustomAttributes = "";
@@ -1157,6 +1171,11 @@ class cinventory_report_view extends cinventory_report {
 			$this->verified_by->LinkCustomAttributes = "";
 			$this->verified_by->HrefValue = "";
 			$this->verified_by->TooltipValue = "";
+
+			// statuss
+			$this->statuss->LinkCustomAttributes = "";
+			$this->statuss->HrefValue = "";
+			$this->statuss->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1455,12 +1474,12 @@ finventory_reportview.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDA
 finventory_reportview.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_staffno","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 finventory_reportview.Lists["x_staff_id"].Data = "<?php echo $inventory_report_view->staff_id->LookupFilterQuery(FALSE, "view") ?>";
 finventory_reportview.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_report_view->staff_id->LookupFilterQuery(TRUE, "view"))) ?>;
-finventory_reportview.Lists["x_recieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-finventory_reportview.Lists["x_recieved_by"].Data = "<?php echo $inventory_report_view->recieved_by->LookupFilterQuery(FALSE, "view") ?>";
-finventory_reportview.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
-finventory_reportview.Lists["x_statuss"].Data = "<?php echo $inventory_report_view->statuss->LookupFilterQuery(FALSE, "view") ?>";
+finventory_reportview.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
+finventory_reportview.Lists["x_material_name"].Data = "<?php echo $inventory_report_view->material_name->LookupFilterQuery(FALSE, "view") ?>";
 finventory_reportview.Lists["x_recieved_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 finventory_reportview.Lists["x_recieved_action"].Options = <?php echo json_encode($inventory_report_view->recieved_action->Options()) ?>;
+finventory_reportview.Lists["x_recieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventory_reportview.Lists["x_recieved_by"].Data = "<?php echo $inventory_report_view->recieved_by->LookupFilterQuery(FALSE, "view") ?>";
 finventory_reportview.Lists["x_approver_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 finventory_reportview.Lists["x_approver_action"].Options = <?php echo json_encode($inventory_report_view->approver_action->Options()) ?>;
 finventory_reportview.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
@@ -1471,6 +1490,8 @@ finventory_reportview.Lists["x_verified_action"].Options = <?php echo json_encod
 finventory_reportview.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 finventory_reportview.Lists["x_verified_by"].Data = "<?php echo $inventory_report_view->verified_by->LookupFilterQuery(FALSE, "view") ?>";
 finventory_reportview.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_report_view->verified_by->LookupFilterQuery(TRUE, "view"))) ?>;
+finventory_reportview.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
+finventory_reportview.Lists["x_statuss"].Data = "<?php echo $inventory_report_view->statuss->LookupFilterQuery(FALSE, "view") ?>";
 
 // Form object for search
 </script>
@@ -1635,28 +1656,6 @@ $inventory_report_view->ShowMessage();
 </td>
 	</tr>
 <?php } ?>
-<?php if ($inventory_report->recieved_by->Visible) { // recieved_by ?>
-	<tr id="r_recieved_by">
-		<td class="col-sm-2"><span id="elh_inventory_report_recieved_by"><?php echo $inventory_report->recieved_by->FldCaption() ?></span></td>
-		<td data-name="recieved_by"<?php echo $inventory_report->recieved_by->CellAttributes() ?>>
-<span id="el_inventory_report_recieved_by" data-page="1">
-<span<?php echo $inventory_report->recieved_by->ViewAttributes() ?>>
-<?php echo $inventory_report->recieved_by->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($inventory_report->statuss->Visible) { // statuss ?>
-	<tr id="r_statuss">
-		<td class="col-sm-2"><span id="elh_inventory_report_statuss"><?php echo $inventory_report->statuss->FldCaption() ?></span></td>
-		<td data-name="statuss"<?php echo $inventory_report->statuss->CellAttributes() ?>>
-<span id="el_inventory_report_statuss" data-page="1">
-<span<?php echo $inventory_report->statuss->ViewAttributes() ?>>
-<?php echo $inventory_report->statuss->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
 <?php if ($inventory_report->recieved_action->Visible) { // recieved_action ?>
 	<tr id="r_recieved_action">
 		<td class="col-sm-2"><span id="elh_inventory_report_recieved_action"><?php echo $inventory_report->recieved_action->FldCaption() ?></span></td>
@@ -1675,6 +1674,17 @@ $inventory_report_view->ShowMessage();
 <span id="el_inventory_report_recieved_comment" data-page="1">
 <span<?php echo $inventory_report->recieved_comment->ViewAttributes() ?>>
 <?php echo $inventory_report->recieved_comment->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($inventory_report->recieved_by->Visible) { // recieved_by ?>
+	<tr id="r_recieved_by">
+		<td class="col-sm-2"><span id="elh_inventory_report_recieved_by"><?php echo $inventory_report->recieved_by->FldCaption() ?></span></td>
+		<td data-name="recieved_by"<?php echo $inventory_report->recieved_by->CellAttributes() ?>>
+<span id="el_inventory_report_recieved_by" data-page="1">
+<span<?php echo $inventory_report->recieved_by->ViewAttributes() ?>>
+<?php echo $inventory_report->recieved_by->ViewValue ?></span>
 </span>
 </td>
 	</tr>
@@ -1763,6 +1773,17 @@ $inventory_report_view->ShowMessage();
 <span id="el_inventory_report_verified_by" data-page="1">
 <span<?php echo $inventory_report->verified_by->ViewAttributes() ?>>
 <?php echo $inventory_report->verified_by->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($inventory_report->statuss->Visible) { // statuss ?>
+	<tr id="r_statuss">
+		<td class="col-sm-2"><span id="elh_inventory_report_statuss"><?php echo $inventory_report->statuss->FldCaption() ?></span></td>
+		<td data-name="statuss"<?php echo $inventory_report->statuss->CellAttributes() ?>>
+<span id="el_inventory_report_statuss" data-page="1">
+<span<?php echo $inventory_report->statuss->ViewAttributes() ?>>
+<?php echo $inventory_report->statuss->ViewValue ?></span>
 </span>
 </td>
 	</tr>

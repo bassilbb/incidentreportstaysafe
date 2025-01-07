@@ -44,7 +44,6 @@ $RootMenu->AddMenuItem(59, "mi_floors", $Language->MenuPhrase("59", "MenuText"),
 $RootMenu->AddMenuItem(60, "mi_items", $Language->MenuPhrase("60", "MenuText"), "itemslist.php", 93, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}items'), FALSE, FALSE, "fa-light fa-bars");
 $RootMenu->AddMenuItem(94, "mci_maintenances", $Language->MenuPhrase("94", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fas fa-cogs");
 $RootMenu->AddMenuItem(61, "mi_maintenance", $Language->MenuPhrase("61", "MenuText"), "maintenancelist.php", 94, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}maintenance'), FALSE, FALSE, "fa fa-wrench");
-$RootMenu->AddMenuItem(99, "mi_maintenance_report", $Language->MenuPhrase("99", "MenuText"), "maintenance_reportlist.php", 94, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}maintenance_report'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(100, "mi_assign_task", $Language->MenuPhrase("100", "MenuText"), "assign_tasklist.php", -1, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}assign_task'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(145, "mci_Inventory_Module", $Language->MenuPhrase("145", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fa fa-cube");
 $RootMenu->AddMenuItem(101, "mi_inventory", $Language->MenuPhrase("101", "MenuText"), "inventorylist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}inventory'), FALSE, FALSE, "fa fa-cubes");
