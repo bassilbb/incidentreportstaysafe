@@ -1362,12 +1362,21 @@ class cinventory extends cTable {
 	function Recordset_Selecting(&$filter) {
 
 		// Enter your code here
+		//if (CurrentUserLevel() == 1) {
+			//ew_AddFilter($filter, "`statuss` in (0,2)");
+		//}
+
 		if (CurrentUserLevel() == 1) {
-			ew_AddFilter($filter, "`statuss` in (0,2)");
+			ew_AddFilter($filter, "`statuss` in (2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 		}
 		if (CurrentUserLevel() == 2) {
-			ew_AddFilter($filter, "`statuss` in (0,2)");
+			ew_AddFilter($filter, "`statuss` in (2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 		}
+
+		//if (CurrentUserLevel() == 2) {
+			//ew_AddFilter($filter, "`statuss` in (0,2)");
+		//}
+
 		if (CurrentUserLevel() == 3) {
 			ew_AddFilter($filter, "`statuss` in (1)");
 		}
@@ -1427,7 +1436,7 @@ class cinventory extends cTable {
 				$rsnew["statuss"] = 1;
 				$rsnew["recieved_action"] = 1;
 				$rsnew["recieved_by"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; Record sent for Approved &#x2714;"); 					
+				$this->setSuccessMessage("&#x25C9; Record sent for Approval &#x2714;"); 					
 			}
 
 			// Saved only
@@ -1446,7 +1455,7 @@ class cinventory extends cTable {
 				$rsnew["statuss"] = 1;
 				$rsnew["recieved_action"] = 1;
 				$rsnew["recieved_by"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; Record sent for Approved &#x2714;"); 					
+				$this->setSuccessMessage("&#x25C9; Record sent for Approval &#x2714;"); 					
 			}
 
 			// Saved only
@@ -1521,11 +1530,29 @@ class cinventory extends cTable {
 		}	
 
 		// Officer Only
-				if (CurrentPageID() == "edit" && (CurrentUserLevel() == 1 || CurrentUserLevel() == 2)) {
+			if (CurrentPageID() == "edit" && CurrentUserLevel() == 1) {
 
-				//if (CurrentPageID() == "edit" && CurrentUserLevel() == 1) {
 			// Save and forward
+			if ($this->recieved_action->CurrentValue == 1 && ($this->statuss->CurrentValue == 0 || $this->statuss->CurrentValue == 2)) {
+				$rsnew["statuss"] = 1;
+				$rsnew["recieved_action"] = 1;
+				$rsnew["approver_action"] = NULL;
+				$rsnew["approver_comment"] = NULL;
+				$this->setSuccessMessage("&#x25C9; Recieved Items sent for Review and Approval &#x2714;"); 					
+			}
 
+			// Saved only
+			if ($this->recieved_action->CurrentValue == 0 && $this->status->CurrentValue == 0) {
+				$rsnew["statuss"] = 0;			
+				$rsnew["recieved_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}
+		}
+
+		   // Officer Only
+			if (CurrentPageID() == "edit" && CurrentUserLevel() == 2) {
+
+			// Save and forward
 			if ($this->recieved_action->CurrentValue == 1 && ($this->statuss->CurrentValue == 0 || $this->statuss->CurrentValue == 2)) {
 				$rsnew["statuss"] = 1;
 				$rsnew["recieved_action"] = 1;
@@ -1822,19 +1849,23 @@ class cinventory extends cTable {
 					$this->verified_comment->Visible = FALSE;
 					$this->verified_by->Visible = FALSE;
 				}
-				if (CurrentUserLevel() == 2) {
-					$this->date_recieved->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->staff_id->ReadOnly = TRUE;
-
-					//$this->recieved_by->Visible = FALSE;	
-				}
 				if (CurrentUserLevel() == 3) {
 					$this->date_recieved->ReadOnly = TRUE;
 					$this->reference_id->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
-
-					//$this->recieved_by->Visible = FALSE;	
+					$this->material_name->Visible = TRUE;
+					$this->quantity->Visible = TRUE;
+					$this->type->Visible = TRUE;
+					$this->capacity->Visible = TRUE;
+					$this->recieved_by->Visible = FALSE;
+					$this->date_approved->Visible = FALSE;
+					$this->approver_action->Visible = FALSE;
+					$this->approver_comment->Visible = FALSE;
+					$this->approved_by->Visible = FALSE;
+					$this->verified_date->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;	
 				}
 		   }
 

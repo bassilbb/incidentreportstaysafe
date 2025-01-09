@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2025/1/7" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2025/1/9" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -618,6 +618,9 @@
   <project>
     <phrase id="bodytitle" value="INCIDENT REPORT APPLICATION" />
     <phrase id="footertext" value="&amp;copy;2022 e.World Technology Ltd. All rights reserved." />
+    <menu id="257">
+      <phrase id="menutext" value="tablet issues" />
+    </menu>
     <menu id="17">
       <phrase id="menutext" value="Home Page" />
     </menu>
@@ -779,6 +782,15 @@
     </menu>
     <menu id="194">
       <phrase id="menutext" value="Dispenser Report" />
+    </menu>
+    <menu id="256">
+      <phrase id="menutext" value="Tablet Module" />
+    </menu>
+    <menu id="200">
+      <phrase id="menutext" value="laptop tablet" />
+    </menu>
+    <menu id="201">
+      <phrase id="menutext" value="tablet status" />
     </menu>
     <table id="branch">
       <phrase id="tblcaption" value="Organization" />
@@ -2443,6 +2455,120 @@
       </field>
       <field id="verified_by">
         <phrase id="fldcaption" value="Verified By" />
+      </field>
+    </table>
+    <table id="laptop_tablet">
+      <phrase id="tblcaption" value="laptop tablet" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="asset_tag">
+        <phrase id="fldcaption" value="asset tag" />
+      </field>
+      <field id="start_sate">
+        <phrase id="fldcaption" value="start sate" />
+      </field>
+      <field id="end_date">
+        <phrase id="fldcaption" value="end date" />
+      </field>
+      <field id="cost_for_repair">
+        <phrase id="fldcaption" value="cost for repair" />
+      </field>
+      <field id="service_provider">
+        <phrase id="fldcaption" value="service provider" />
+      </field>
+      <field id="address">
+        <phrase id="fldcaption" value="address" />
+      </field>
+      <field id="type_of_repair">
+        <phrase id="fldcaption" value="type of repair" />
+      </field>
+      <field id="note">
+        <phrase id="fldcaption" value="note" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="status" />
+      </field>
+      <field id="asset_category">
+        <phrase id="fldcaption" value="asset category" />
+      </field>
+      <field id="asset_sub_category">
+        <phrase id="fldcaption" value="asset sub category" />
+      </field>
+      <field id="serial_number">
+        <phrase id="fldcaption" value="serial number" />
+      </field>
+      <field id="programe_area">
+        <phrase id="fldcaption" value="programe area" />
+      </field>
+      <field id="division">
+        <phrase id="fldcaption" value="division" />
+      </field>
+      <field id="branch">
+        <phrase id="fldcaption" value="branch" />
+      </field>
+      <field id="department">
+        <phrase id="fldcaption" value="department" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="staff id" />
+      </field>
+      <field id="created_by">
+        <phrase id="fldcaption" value="created by" />
+      </field>
+      <field id="created_date">
+        <phrase id="fldcaption" value="created date" />
+      </field>
+      <field id="device_number">
+        <phrase id="fldcaption" value="device number" />
+      </field>
+      <field id="tablet_imie_number">
+        <phrase id="fldcaption" value="tablet imie number" />
+      </field>
+      <field id="model">
+        <phrase id="fldcaption" value="model" />
+      </field>
+      <field id="flag">
+        <phrase id="fldcaption" value="flag" />
+      </field>
+      <field id="area">
+        <phrase id="fldcaption" value="area" />
+      </field>
+      <field id="updated_date">
+        <phrase id="fldcaption" value="updated date" />
+      </field>
+      <field id="updated_by">
+        <phrase id="fldcaption" value="updated by" />
+      </field>
+      <field id="received_date">
+        <phrase id="fldcaption" value="received date" />
+      </field>
+      <field id="received_by">
+        <phrase id="fldcaption" value="received by" />
+      </field>
+    </table>
+    <table id="tablet_issues">
+      <phrase id="tblcaption" value="tablet issues" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="description" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="status" />
+      </field>
+    </table>
+    <table id="tablet_status">
+      <phrase id="tblcaption" value="tablet status" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="description" />
+      </field>
+      <field id="flag">
+        <phrase id="fldcaption" value="flag" />
       </field>
     </table>
   </project>

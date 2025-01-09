@@ -1601,14 +1601,23 @@ class cinventory_store extends cTable {
 	function Recordset_Selecting(&$filter) {
 
 		// Enter your code here
+		//if (CurrentUserLevel() == 1) {
+			//ew_AddFilter($filter, "`status` in (0,2)");
+		//}
+
 		if (CurrentUserLevel() == 1) {
-			ew_AddFilter($filter, "`status` in (0,2)");
+			ew_AddFilter($filter, "`status` in (2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 		}
 		if (CurrentUserLevel() == 2) {
-			ew_AddFilter($filter, "`status` in (0,2,4)");
+			ew_AddFilter($filter, "`status` in (2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 		}
+
+	//	if (CurrentUserLevel() == 2) {
+			//ew_AddFilter($filter, "`status` in (0,2,4)");
+		//}
+
 		if (CurrentUserLevel() == 3) {
-			ew_AddFilter($filter, "`status` in (1,4)");
+			ew_AddFilter($filter, "`status` in (1)");
 		}
 		if (CurrentUserLevel() == 5) {
 			ew_AddFilter($filter, "`status` in (3)");
@@ -1661,7 +1670,7 @@ class cinventory_store extends cTable {
 				$rsnew["status"] = 1;
 				$rsnew["issued_action"] = 1;
 				$rsnew["issued_by"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; Record sent for Approved &#x2714;"); 					
+				$this->setSuccessMessage("&#x25C9; Record sent for Approval &#x2714;"); 					
 			}
 
 			// Saved only
@@ -1680,7 +1689,7 @@ class cinventory_store extends cTable {
 				$rsnew["status"] = 1;
 				$rsnew["issued_action"] = 1;
 				$rsnew["issued_by"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; Record sent for Approved &#x2714;"); 					
+				$this->setSuccessMessage("&#x25C9; Record sent for Approval &#x2714;"); 					
 			}
 
 			// Saved only
@@ -1699,7 +1708,7 @@ class cinventory_store extends cTable {
 				$rsnew["status"] = 1;
 				$rsnew["issued_action"] = 1;
 				$rsnew["issued_by"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; Record sent for Approved &#x2714;"); 					
+				$this->setSuccessMessage("&#x25C9; Record sent for Approval &#x2714;"); 					
 			}
 
 			// Saved only
@@ -1718,7 +1727,7 @@ class cinventory_store extends cTable {
 				$rsnew["status"] = 1;
 				$rsnew["issued_action"] = 1;
 				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; Record sent for Approved &#x2714;"); 					
+				$this->setSuccessMessage("&#x25C9; Record sent for Approval &#x2714;"); 					
 			}
 
 			// Saved only
@@ -1756,11 +1765,31 @@ class cinventory_store extends cTable {
 		}	
 
 		// Officer Only
-				if (CurrentPageID() == "edit" && (CurrentUserLevel() == 1 || CurrentUserLevel() == 2)) {
+				//if (CurrentPageID() == "edit" && (CurrentUserLevel() == 1 || CurrentUserLevel() == 2)) {
 
-				//if (CurrentPageID() == "edit" && CurrentUserLevel() == 1) {
+			if (CurrentPageID() == "edit" && CurrentUserLevel() == 2) {
+
 			// Save and forward
+			if ($this->issued_action->CurrentValue == 1 && ($this->statuss->CurrentValue == 0 || $this->statuss->CurrentValue == 2)) {
+				$rsnew["status"] = 1;
+				$rsnew["issued_action"] = 1;
+				$rsnew["approver_action"] = NULL;
+				$rsnew["approved_comment"] = NULL;
+				$this->setSuccessMessage("&#x25C9; Issued Items sent for Review and Approval &#x2714;"); 					
+			}
 
+			// Saved only
+			if ($this->issued_action->CurrentValue == 0 && $this->status->CurrentValue == 0) {
+				$rsnew["status"] = 0;			
+				$rsnew["issued_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}
+		}
+
+		// Manager Only
+			if (CurrentPageID() == "edit" && CurrentUserLevel() == 3) {
+
+			// Save and forward
 			if ($this->issued_action->CurrentValue == 1 && ($this->statuss->CurrentValue == 0 || $this->statuss->CurrentValue == 2)) {
 				$rsnew["status"] = 1;
 				$rsnew["issued_action"] = 1;
