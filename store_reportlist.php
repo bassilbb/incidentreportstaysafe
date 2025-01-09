@@ -105,6 +105,12 @@ class cstore_report_list extends cstore_report {
 	var $GridEditUrl;
 	var $MultiDeleteUrl;
 	var $MultiUpdateUrl;
+	var $AuditTrailOnAdd = TRUE;
+	var $AuditTrailOnEdit = TRUE;
+	var $AuditTrailOnDelete = TRUE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -731,6 +737,10 @@ class cstore_report_list extends cstore_report {
 			$sFilter = "(0=1)"; // Filter all records
 		ew_AddFilter($sFilter, $this->DbDetailFilter);
 		ew_AddFilter($sFilter, $this->SearchWhere);
+		if ($sFilter == "") {
+			$sFilter = "0=101";
+			$this->SearchWhere = $sFilter;
+		}
 
 		// Set up filter
 		if ($this->Command == "json") {
@@ -1514,6 +1524,12 @@ class cstore_report_list extends cstore_report {
 		$item->OnLeft = TRUE;
 		$item->Visible = FALSE;
 
+		// "view"
+		$item = &$this->ListOptions->Add("view");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = $Security->CanView();
+		$item->OnLeft = TRUE;
+
 		// List actions
 		$item = &$this->ListOptions->Add("listactions");
 		$item->CssClass = "text-nowrap";
@@ -1554,6 +1570,18 @@ class cstore_report_list extends cstore_report {
 
 		// Call ListOptions_Rendering event
 		$this->ListOptions_Rendering();
+
+		// "view"
+		$oListOpt = &$this->ListOptions->Items["view"];
+		$viewcaption = ew_HtmlTitle($Language->Phrase("ViewLink"));
+		if ($Security->CanView()) {
+			if (ew_IsMobile())
+				$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-caption=\"" . $viewcaption . "\" href=\"" . ew_HtmlEncode($this->ViewUrl) . "\">" . $Language->Phrase("ViewLink") . "</a>";
+			else
+				$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-table=\"store_report\" data-caption=\"" . $viewcaption . "\" href=\"javascript:void(0);\" onclick=\"ew_ModalDialogShow({lnk:this,url:'" . ew_HtmlEncode($this->ViewUrl) . "',btn:null});\">" . $Language->Phrase("ViewLink") . "</a>";
+		} else {
+			$oListOpt->Body = "";
+		}
 
 		// Set up list action buttons
 		$oListOpt = &$this->ListOptions->GetItem("listactions");
@@ -1751,8 +1779,13 @@ class cstore_report_list extends cstore_report {
 
 		// Show all button
 		$item = &$this->SearchOptions->Add("showall");
-		$item->Body = "<a class=\"btn btn-default ewShowAll\" title=\"" . $Language->Phrase("ShowAll") . "\" data-caption=\"" . $Language->Phrase("ShowAll") . "\" href=\"" . $this->PageUrl() . "cmd=reset\">" . $Language->Phrase("ShowAllBtn") . "</a>";
+		$item->Body = "<a class=\"btn btn-default ewShowAll\" title=\"" . $Language->Phrase("ResetSearch") . "\" data-caption=\"" . $Language->Phrase("ResetSearch") . "\" href=\"" . $this->PageUrl() . "cmd=reset\">" . $Language->Phrase("ResetSearchBtn") . "</a>";
 		$item->Visible = ($this->SearchWhere <> $this->DefaultSearchWhere && $this->SearchWhere <> "0=101");
+
+		// Advanced search button
+		$item = &$this->SearchOptions->Add("advancedsearch");
+		$item->Body = "<a class=\"btn btn-default ewAdvancedSearch\" title=\"" . $Language->Phrase("AdvancedSearch") . "\" data-caption=\"" . $Language->Phrase("AdvancedSearch") . "\" href=\"store_reportsrch.php\">" . $Language->Phrase("AdvancedSearchBtn") . "</a>";
+		$item->Visible = TRUE;
 
 		// Button group for search
 		$this->SearchOptions->UseDropDownButton = FALSE;
@@ -3119,6 +3152,13 @@ fstore_reportlistsrch.Lists["x_issued_by"].Data = "<?php echo $store_report_list
 			$store_report_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
 		else
 			$store_report_list->setWarningMessage($Language->Phrase("NoRecord"));
+	}
+
+	// Audit trail on search
+	if ($store_report_list->AuditTrailOnSearch && $store_report_list->Command == "search" && !$store_report_list->RestoreSearch) {
+		$searchparm = ew_ServerVar("QUERY_STRING");
+		$searchsql = $store_report_list->getSessionWhere();
+		$store_report_list->WriteAuditTrailOnSearch($searchparm, $searchsql);
 	}
 $store_report_list->RenderOtherOptions();
 ?>

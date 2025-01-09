@@ -763,13 +763,13 @@
       <phrase id="menutext" value="Inventory Store" />
     </menu>
     <menu id="102">
-      <phrase id="menutext" value="Inventory Issurance " />
+      <phrase id="menutext" value="Inventory Issuance " />
     </menu>
     <menu id="197">
       <phrase id="menutext" value="Inventory Store Report" />
     </menu>
     <menu id="198">
-      <phrase id="menutext" value="Inventory Issurance Report" />
+      <phrase id="menutext" value="Inventory Issuance Report" />
     </menu>
     <menu id="199">
       <phrase id="menutext" value="inventory records" />
@@ -1984,7 +1984,7 @@
       </field>
     </table>
     <table id="inventory_store">
-      <phrase id="tblcaption" value="Inventory Issurance " />
+      <phrase id="tblcaption" value="Inventory Issuance " />
       <phrase id="tblpagecaption1" value="Inventory Store Info" />
       <field id="id">
         <phrase id="fldcaption" value="ID" />
@@ -2015,9 +2015,6 @@
       </field>
       <field id="treated_by">
         <phrase id="fldcaption" value="Issued By" />
-      </field>
-      <field id="status">
-        <phrase id="fldcaption" value="Status" />
       </field>
       <field id="issued_action">
         <phrase id="fldcaption" value="Issued Action" />
@@ -2067,6 +2064,9 @@
       </field>
       <field id="verified_by">
         <phrase id="fldcaption" value="Verified By" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="Status" />
       </field>
     </table>
     <table id="dispenser">
@@ -2300,7 +2300,7 @@
       </field>
     </table>
     <table id="store_report">
-      <phrase id="tblcaption" value="Inventory Issurance Report" />
+      <phrase id="tblcaption" value="Inventory Issuance Report" />
       <field id="id">
         <phrase id="fldcaption" value="ID" />
       </field>

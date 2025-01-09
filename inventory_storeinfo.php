@@ -23,7 +23,6 @@ class cinventory_store extends cTable {
 	var $quantity_out;
 	var $total_quantity;
 	var $treated_by;
-	var $status;
 	var $issued_action;
 	var $issued_comment;
 	var $issued_by;
@@ -35,6 +34,7 @@ class cinventory_store extends cTable {
 	var $verified_action;
 	var $verified_comment;
 	var $verified_by;
+	var $status;
 
 	//
 	// Table class constructor
@@ -124,11 +124,6 @@ class cinventory_store extends cTable {
 		$this->treated_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['treated_by'] = &$this->treated_by;
 
-		// status
-		$this->status = new cField('inventory_store', 'inventory_store', 'x_status', 'status', '`status`', '`status`', 3, -1, FALSE, '`status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->status->Sortable = TRUE; // Allow sort
-		$this->fields['status'] = &$this->status;
-
 		// issued_action
 		$this->issued_action = new cField('inventory_store', 'inventory_store', 'x_issued_action', 'issued_action', '`issued_action`', '`issued_action`', 3, -1, FALSE, '`issued_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->issued_action->Sortable = TRUE; // Allow sort
@@ -194,6 +189,11 @@ class cinventory_store extends cTable {
 		$this->verified_by->Sortable = TRUE; // Allow sort
 		$this->verified_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['verified_by'] = &$this->verified_by;
+
+		// status
+		$this->status = new cField('inventory_store', 'inventory_store', 'x_status', 'status', '`status`', '`status`', 3, -1, FALSE, '`status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->status->Sortable = TRUE; // Allow sort
+		$this->fields['status'] = &$this->status;
 	}
 
 	// Field Visibility
@@ -741,7 +741,6 @@ class cinventory_store extends cTable {
 		$this->quantity_out->setDbValue($rs->fields('quantity_out'));
 		$this->total_quantity->setDbValue($rs->fields('total_quantity'));
 		$this->treated_by->setDbValue($rs->fields('treated_by'));
-		$this->status->setDbValue($rs->fields('status'));
 		$this->issued_action->setDbValue($rs->fields('issued_action'));
 		$this->issued_comment->setDbValue($rs->fields('issued_comment'));
 		$this->issued_by->setDbValue($rs->fields('issued_by'));
@@ -753,6 +752,7 @@ class cinventory_store extends cTable {
 		$this->verified_action->setDbValue($rs->fields('verified_action'));
 		$this->verified_comment->setDbValue($rs->fields('verified_comment'));
 		$this->verified_by->setDbValue($rs->fields('verified_by'));
+		$this->status->setDbValue($rs->fields('status'));
 	}
 
 	// Render list row values
@@ -773,7 +773,6 @@ class cinventory_store extends cTable {
 		// quantity_out
 		// total_quantity
 		// treated_by
-		// status
 		// issued_action
 		// issued_comment
 		// issued_by
@@ -785,6 +784,7 @@ class cinventory_store extends cTable {
 		// verified_action
 		// verified_comment
 		// verified_by
+		// status
 		// id
 
 		$this->id->ViewValue = $this->id->CurrentValue;
@@ -887,30 +887,6 @@ class cinventory_store extends cTable {
 			$this->treated_by->ViewValue = NULL;
 		}
 		$this->treated_by->ViewCustomAttributes = "";
-
-		// status
-		$this->status->ViewValue = $this->status->CurrentValue;
-		if (strval($this->status->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
-		$sWhereWrk = "";
-		$this->status->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->status->ViewValue = $this->status->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->status->ViewValue = $this->status->CurrentValue;
-			}
-		} else {
-			$this->status->ViewValue = NULL;
-		}
-		$this->status->ViewCustomAttributes = "";
 
 		// issued_action
 		if (strval($this->issued_action->CurrentValue) <> "") {
@@ -1036,6 +1012,30 @@ class cinventory_store extends cTable {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
+		// status
+		$this->status->ViewValue = $this->status->CurrentValue;
+		if (strval($this->status->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
+		$sWhereWrk = "";
+		$this->status->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->status->ViewValue = $this->status->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->status->ViewValue = $this->status->CurrentValue;
+			}
+		} else {
+			$this->status->ViewValue = NULL;
+		}
+		$this->status->ViewCustomAttributes = "";
+
 		// id
 		$this->id->LinkCustomAttributes = "";
 		$this->id->HrefValue = "";
@@ -1085,11 +1085,6 @@ class cinventory_store extends cTable {
 		$this->treated_by->LinkCustomAttributes = "";
 		$this->treated_by->HrefValue = "";
 		$this->treated_by->TooltipValue = "";
-
-		// status
-		$this->status->LinkCustomAttributes = "";
-		$this->status->HrefValue = "";
-		$this->status->TooltipValue = "";
 
 		// issued_action
 		$this->issued_action->LinkCustomAttributes = "";
@@ -1145,6 +1140,11 @@ class cinventory_store extends cTable {
 		$this->verified_by->LinkCustomAttributes = "";
 		$this->verified_by->HrefValue = "";
 		$this->verified_by->TooltipValue = "";
+
+		// status
+		$this->status->LinkCustomAttributes = "";
+		$this->status->HrefValue = "";
+		$this->status->TooltipValue = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -1218,12 +1218,6 @@ class cinventory_store extends cTable {
 		$this->treated_by->EditValue = $this->treated_by->CurrentValue;
 		$this->treated_by->PlaceHolder = ew_RemoveHtml($this->treated_by->FldCaption());
 
-		// status
-		$this->status->EditAttrs["class"] = "form-control";
-		$this->status->EditCustomAttributes = "";
-		$this->status->EditValue = $this->status->CurrentValue;
-		$this->status->PlaceHolder = ew_RemoveHtml($this->status->FldCaption());
-
 		// issued_action
 		$this->issued_action->EditCustomAttributes = "";
 		$this->issued_action->EditValue = $this->issued_action->Options(FALSE);
@@ -1284,6 +1278,12 @@ class cinventory_store extends cTable {
 		$this->verified_by->EditValue = $this->verified_by->CurrentValue;
 		$this->verified_by->PlaceHolder = ew_RemoveHtml($this->verified_by->FldCaption());
 
+		// status
+		$this->status->EditAttrs["class"] = "form-control";
+		$this->status->EditCustomAttributes = "";
+		$this->status->EditValue = $this->status->CurrentValue;
+		$this->status->PlaceHolder = ew_RemoveHtml($this->status->FldCaption());
+
 		// Call Row Rendered event
 		$this->Row_Rendered();
 	}
@@ -1321,7 +1321,6 @@ class cinventory_store extends cTable {
 					if ($this->quantity_out->Exportable) $Doc->ExportCaption($this->quantity_out);
 					if ($this->total_quantity->Exportable) $Doc->ExportCaption($this->total_quantity);
 					if ($this->treated_by->Exportable) $Doc->ExportCaption($this->treated_by);
-					if ($this->status->Exportable) $Doc->ExportCaption($this->status);
 					if ($this->issued_action->Exportable) $Doc->ExportCaption($this->issued_action);
 					if ($this->issued_comment->Exportable) $Doc->ExportCaption($this->issued_comment);
 					if ($this->issued_by->Exportable) $Doc->ExportCaption($this->issued_by);
@@ -1333,6 +1332,7 @@ class cinventory_store extends cTable {
 					if ($this->verified_action->Exportable) $Doc->ExportCaption($this->verified_action);
 					if ($this->verified_comment->Exportable) $Doc->ExportCaption($this->verified_comment);
 					if ($this->verified_by->Exportable) $Doc->ExportCaption($this->verified_by);
+					if ($this->status->Exportable) $Doc->ExportCaption($this->status);
 				} else {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->date->Exportable) $Doc->ExportCaption($this->date);
@@ -1344,7 +1344,6 @@ class cinventory_store extends cTable {
 					if ($this->quantity_out->Exportable) $Doc->ExportCaption($this->quantity_out);
 					if ($this->total_quantity->Exportable) $Doc->ExportCaption($this->total_quantity);
 					if ($this->treated_by->Exportable) $Doc->ExportCaption($this->treated_by);
-					if ($this->status->Exportable) $Doc->ExportCaption($this->status);
 					if ($this->issued_action->Exportable) $Doc->ExportCaption($this->issued_action);
 					if ($this->issued_comment->Exportable) $Doc->ExportCaption($this->issued_comment);
 					if ($this->issued_by->Exportable) $Doc->ExportCaption($this->issued_by);
@@ -1356,6 +1355,7 @@ class cinventory_store extends cTable {
 					if ($this->verified_action->Exportable) $Doc->ExportCaption($this->verified_action);
 					if ($this->verified_comment->Exportable) $Doc->ExportCaption($this->verified_comment);
 					if ($this->verified_by->Exportable) $Doc->ExportCaption($this->verified_by);
+					if ($this->status->Exportable) $Doc->ExportCaption($this->status);
 				}
 				$Doc->EndExportRow();
 			}
@@ -1397,7 +1397,6 @@ class cinventory_store extends cTable {
 						if ($this->quantity_out->Exportable) $Doc->ExportField($this->quantity_out);
 						if ($this->total_quantity->Exportable) $Doc->ExportField($this->total_quantity);
 						if ($this->treated_by->Exportable) $Doc->ExportField($this->treated_by);
-						if ($this->status->Exportable) $Doc->ExportField($this->status);
 						if ($this->issued_action->Exportable) $Doc->ExportField($this->issued_action);
 						if ($this->issued_comment->Exportable) $Doc->ExportField($this->issued_comment);
 						if ($this->issued_by->Exportable) $Doc->ExportField($this->issued_by);
@@ -1409,6 +1408,7 @@ class cinventory_store extends cTable {
 						if ($this->verified_action->Exportable) $Doc->ExportField($this->verified_action);
 						if ($this->verified_comment->Exportable) $Doc->ExportField($this->verified_comment);
 						if ($this->verified_by->Exportable) $Doc->ExportField($this->verified_by);
+						if ($this->status->Exportable) $Doc->ExportField($this->status);
 					} else {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->date->Exportable) $Doc->ExportField($this->date);
@@ -1420,7 +1420,6 @@ class cinventory_store extends cTable {
 						if ($this->quantity_out->Exportable) $Doc->ExportField($this->quantity_out);
 						if ($this->total_quantity->Exportable) $Doc->ExportField($this->total_quantity);
 						if ($this->treated_by->Exportable) $Doc->ExportField($this->treated_by);
-						if ($this->status->Exportable) $Doc->ExportField($this->status);
 						if ($this->issued_action->Exportable) $Doc->ExportField($this->issued_action);
 						if ($this->issued_comment->Exportable) $Doc->ExportField($this->issued_comment);
 						if ($this->issued_by->Exportable) $Doc->ExportField($this->issued_by);
@@ -1432,6 +1431,7 @@ class cinventory_store extends cTable {
 						if ($this->verified_action->Exportable) $Doc->ExportField($this->verified_action);
 						if ($this->verified_comment->Exportable) $Doc->ExportField($this->verified_comment);
 						if ($this->verified_by->Exportable) $Doc->ExportField($this->verified_by);
+						if ($this->status->Exportable) $Doc->ExportField($this->status);
 					}
 					$Doc->EndExportRow($RowCnt);
 				}
@@ -1755,7 +1755,7 @@ class cinventory_store extends cTable {
 		// Enter your code here
 		// To cancel, set return value to FALSE
 
-			date_default_timezone_set('Africa/Lagos');
+		date_default_timezone_set('Africa/Lagos');
 		$now = new DateTime();
 		$this->date_approved->CurrentValue = $now->Format('Y-m-d H:i:s');
 		$this->date_approved->EditValue = $this->date_approved->CurrentValue;

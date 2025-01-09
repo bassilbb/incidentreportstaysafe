@@ -334,11 +334,11 @@ class cinventory_store_delete extends cinventory_store {
 		$this->quantity_type->SetVisibility();
 		$this->quantity_out->SetVisibility();
 		$this->total_quantity->SetVisibility();
-		$this->status->SetVisibility();
 		$this->issued_comment->SetVisibility();
 		$this->issued_by->SetVisibility();
 		$this->approved_by->SetVisibility();
 		$this->verified_by->SetVisibility();
+		$this->status->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -528,7 +528,6 @@ class cinventory_store_delete extends cinventory_store {
 		$this->quantity_out->setDbValue($row['quantity_out']);
 		$this->total_quantity->setDbValue($row['total_quantity']);
 		$this->treated_by->setDbValue($row['treated_by']);
-		$this->status->setDbValue($row['status']);
 		$this->issued_action->setDbValue($row['issued_action']);
 		$this->issued_comment->setDbValue($row['issued_comment']);
 		$this->issued_by->setDbValue($row['issued_by']);
@@ -540,6 +539,7 @@ class cinventory_store_delete extends cinventory_store {
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
+		$this->status->setDbValue($row['status']);
 	}
 
 	// Return a row with default values
@@ -555,7 +555,6 @@ class cinventory_store_delete extends cinventory_store {
 		$row['quantity_out'] = NULL;
 		$row['total_quantity'] = NULL;
 		$row['treated_by'] = NULL;
-		$row['status'] = NULL;
 		$row['issued_action'] = NULL;
 		$row['issued_comment'] = NULL;
 		$row['issued_by'] = NULL;
@@ -567,6 +566,7 @@ class cinventory_store_delete extends cinventory_store {
 		$row['verified_action'] = NULL;
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
+		$row['status'] = NULL;
 		return $row;
 	}
 
@@ -585,7 +585,6 @@ class cinventory_store_delete extends cinventory_store {
 		$this->quantity_out->DbValue = $row['quantity_out'];
 		$this->total_quantity->DbValue = $row['total_quantity'];
 		$this->treated_by->DbValue = $row['treated_by'];
-		$this->status->DbValue = $row['status'];
 		$this->issued_action->DbValue = $row['issued_action'];
 		$this->issued_comment->DbValue = $row['issued_comment'];
 		$this->issued_by->DbValue = $row['issued_by'];
@@ -597,6 +596,7 @@ class cinventory_store_delete extends cinventory_store {
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
+		$this->status->DbValue = $row['status'];
 	}
 
 	// Render row values based on field settings
@@ -619,7 +619,6 @@ class cinventory_store_delete extends cinventory_store {
 		// quantity_out
 		// total_quantity
 		// treated_by
-		// status
 		// issued_action
 		// issued_comment
 		// issued_by
@@ -631,6 +630,7 @@ class cinventory_store_delete extends cinventory_store {
 		// verified_action
 		// verified_comment
 		// verified_by
+		// status
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -735,30 +735,6 @@ class cinventory_store_delete extends cinventory_store {
 			$this->treated_by->ViewValue = NULL;
 		}
 		$this->treated_by->ViewCustomAttributes = "";
-
-		// status
-		$this->status->ViewValue = $this->status->CurrentValue;
-		if (strval($this->status->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
-		$sWhereWrk = "";
-		$this->status->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->status->ViewValue = $this->status->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->status->ViewValue = $this->status->CurrentValue;
-			}
-		} else {
-			$this->status->ViewValue = NULL;
-		}
-		$this->status->ViewCustomAttributes = "";
 
 		// issued_action
 		if (strval($this->issued_action->CurrentValue) <> "") {
@@ -884,6 +860,30 @@ class cinventory_store_delete extends cinventory_store {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
+		// status
+		$this->status->ViewValue = $this->status->CurrentValue;
+		if (strval($this->status->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
+		$sWhereWrk = "";
+		$this->status->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->status->ViewValue = $this->status->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->status->ViewValue = $this->status->CurrentValue;
+			}
+		} else {
+			$this->status->ViewValue = NULL;
+		}
+		$this->status->ViewCustomAttributes = "";
+
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
@@ -929,11 +929,6 @@ class cinventory_store_delete extends cinventory_store {
 			$this->total_quantity->HrefValue = "";
 			$this->total_quantity->TooltipValue = "";
 
-			// status
-			$this->status->LinkCustomAttributes = "";
-			$this->status->HrefValue = "";
-			$this->status->TooltipValue = "";
-
 			// issued_comment
 			$this->issued_comment->LinkCustomAttributes = "";
 			$this->issued_comment->HrefValue = "";
@@ -953,6 +948,11 @@ class cinventory_store_delete extends cinventory_store {
 			$this->verified_by->LinkCustomAttributes = "";
 			$this->verified_by->HrefValue = "";
 			$this->verified_by->TooltipValue = "";
+
+			// status
+			$this->status->LinkCustomAttributes = "";
+			$this->status->HrefValue = "";
+			$this->status->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1175,9 +1175,6 @@ finventory_storedelete.Lists["x_staff_id"].Data = "<?php echo $inventory_store_d
 finventory_storedelete.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_delete->staff_id->LookupFilterQuery(TRUE, "delete"))) ?>;
 finventory_storedelete.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
 finventory_storedelete.Lists["x_material_name"].Data = "<?php echo $inventory_store_delete->material_name->LookupFilterQuery(FALSE, "delete") ?>";
-finventory_storedelete.Lists["x_status"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
-finventory_storedelete.Lists["x_status"].Data = "<?php echo $inventory_store_delete->status->LookupFilterQuery(FALSE, "delete") ?>";
-finventory_storedelete.AutoSuggests["x_status"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_delete->status->LookupFilterQuery(TRUE, "delete"))) ?>;
 finventory_storedelete.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 finventory_storedelete.Lists["x_issued_by"].Data = "<?php echo $inventory_store_delete->issued_by->LookupFilterQuery(FALSE, "delete") ?>";
 finventory_storedelete.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_delete->issued_by->LookupFilterQuery(TRUE, "delete"))) ?>;
@@ -1187,6 +1184,9 @@ finventory_storedelete.AutoSuggests["x_approved_by"] = <?php echo json_encode(ar
 finventory_storedelete.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 finventory_storedelete.Lists["x_verified_by"].Data = "<?php echo $inventory_store_delete->verified_by->LookupFilterQuery(FALSE, "delete") ?>";
 finventory_storedelete.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_delete->verified_by->LookupFilterQuery(TRUE, "delete"))) ?>;
+finventory_storedelete.Lists["x_status"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
+finventory_storedelete.Lists["x_status"].Data = "<?php echo $inventory_store_delete->status->LookupFilterQuery(FALSE, "delete") ?>";
+finventory_storedelete.AutoSuggests["x_status"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_delete->status->LookupFilterQuery(TRUE, "delete"))) ?>;
 
 // Form object for search
 </script>
@@ -1240,9 +1240,6 @@ $inventory_store_delete->ShowMessage();
 <?php if ($inventory_store->total_quantity->Visible) { // total_quantity ?>
 		<th class="<?php echo $inventory_store->total_quantity->HeaderCellClass() ?>"><span id="elh_inventory_store_total_quantity" class="inventory_store_total_quantity"><?php echo $inventory_store->total_quantity->FldCaption() ?></span></th>
 <?php } ?>
-<?php if ($inventory_store->status->Visible) { // status ?>
-		<th class="<?php echo $inventory_store->status->HeaderCellClass() ?>"><span id="elh_inventory_store_status" class="inventory_store_status"><?php echo $inventory_store->status->FldCaption() ?></span></th>
-<?php } ?>
 <?php if ($inventory_store->issued_comment->Visible) { // issued_comment ?>
 		<th class="<?php echo $inventory_store->issued_comment->HeaderCellClass() ?>"><span id="elh_inventory_store_issued_comment" class="inventory_store_issued_comment"><?php echo $inventory_store->issued_comment->FldCaption() ?></span></th>
 <?php } ?>
@@ -1254,6 +1251,9 @@ $inventory_store_delete->ShowMessage();
 <?php } ?>
 <?php if ($inventory_store->verified_by->Visible) { // verified_by ?>
 		<th class="<?php echo $inventory_store->verified_by->HeaderCellClass() ?>"><span id="elh_inventory_store_verified_by" class="inventory_store_verified_by"><?php echo $inventory_store->verified_by->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($inventory_store->status->Visible) { // status ?>
+		<th class="<?php echo $inventory_store->status->HeaderCellClass() ?>"><span id="elh_inventory_store_status" class="inventory_store_status"><?php echo $inventory_store->status->FldCaption() ?></span></th>
 <?php } ?>
 	</tr>
 	</thead>
@@ -1348,14 +1348,6 @@ while (!$inventory_store_delete->Recordset->EOF) {
 </span>
 </td>
 <?php } ?>
-<?php if ($inventory_store->status->Visible) { // status ?>
-		<td<?php echo $inventory_store->status->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_delete->RowCnt ?>_inventory_store_status" class="inventory_store_status">
-<span<?php echo $inventory_store->status->ViewAttributes() ?>>
-<?php echo $inventory_store->status->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
 <?php if ($inventory_store->issued_comment->Visible) { // issued_comment ?>
 		<td<?php echo $inventory_store->issued_comment->CellAttributes() ?>>
 <span id="el<?php echo $inventory_store_delete->RowCnt ?>_inventory_store_issued_comment" class="inventory_store_issued_comment">
@@ -1385,6 +1377,14 @@ while (!$inventory_store_delete->Recordset->EOF) {
 <span id="el<?php echo $inventory_store_delete->RowCnt ?>_inventory_store_verified_by" class="inventory_store_verified_by">
 <span<?php echo $inventory_store->verified_by->ViewAttributes() ?>>
 <?php echo $inventory_store->verified_by->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($inventory_store->status->Visible) { // status ?>
+		<td<?php echo $inventory_store->status->CellAttributes() ?>>
+<span id="el<?php echo $inventory_store_delete->RowCnt ?>_inventory_store_status" class="inventory_store_status">
+<span<?php echo $inventory_store->status->ViewAttributes() ?>>
+<?php echo $inventory_store->status->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>
