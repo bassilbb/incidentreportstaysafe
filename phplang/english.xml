@@ -697,7 +697,7 @@
       <phrase id="menutext" value="Maintained Status" />
     </menu>
     <menu id="195">
-      <phrase id="menutext" value="action taken" />
+      <phrase id="menutext" value="Action Taken" />
     </menu>
     <menu id="148">
       <phrase id="menutext" value="Dispenser Type" />
@@ -706,7 +706,7 @@
       <phrase id="menutext" value="Dispenser Status" />
     </menu>
     <menu id="196">
-      <phrase id="menutext" value="status" />
+      <phrase id="menutext" value="Status" />
     </menu>
     <menu id="34">
       <phrase id="menutext" value="Incidents" />
@@ -769,13 +769,13 @@
       <phrase id="menutext" value="Inventory Issuance Module" />
     </menu>
     <menu id="102">
-      <phrase id="menutext" value="Inventory Issuance " />
+      <phrase id="menutext" value="Create Issuance " />
     </menu>
     <menu id="258">
       <phrase id="menutext" value="Issuance Reports" />
     </menu>
     <menu id="269">
-      <phrase id="menutext" value="Issuance Records" />
+      <phrase id="menutext" value="Issuance Tracking Records" />
     </menu>
     <menu id="193">
       <phrase id="menutext" value="Dispenser Module" />
@@ -790,16 +790,16 @@
       <phrase id="menutext" value="Laptop Module" />
     </menu>
     <menu id="200">
-      <phrase id="menutext" value="laptop tablet" />
+      <phrase id="menutext" value="Laptop Tablet" />
     </menu>
     <menu id="201">
-      <phrase id="menutext" value="tablet status" />
+      <phrase id="menutext" value="Tablet Status" />
     </menu>
     <menu id="257">
-      <phrase id="menutext" value="tablet issues" />
+      <phrase id="menutext" value="Tablet Issues" />
     </menu>
     <menu id="259">
-      <phrase id="menutext" value="pc issuance" />
+      <phrase id="menutext" value="PC Issuance" />
     </menu>
     <table id="branch">
       <phrase id="tblcaption" value="Organization" />
@@ -2218,7 +2218,7 @@
       </field>
     </table>
     <table id="action_taken">
-      <phrase id="tblcaption" value="action taken" />
+      <phrase id="tblcaption" value="Action Taken" />
       <field id="id">
         <phrase id="fldcaption" value="id" />
       </field>
@@ -2227,7 +2227,7 @@
       </field>
     </table>
     <table id="statuss">
-      <phrase id="tblcaption" value="status" />
+      <phrase id="tblcaption" value="Status" />
       <field id="id">
         <phrase id="fldcaption" value="id" />
       </field>
@@ -2384,7 +2384,7 @@
       </field>
     </table>
     <table id="laptop_tablet">
-      <phrase id="tblcaption" value="laptop tablet" />
+      <phrase id="tblcaption" value="Laptop Tablet" />
       <field id="id">
         <phrase id="fldcaption" value="id" />
       </field>
@@ -2474,7 +2474,7 @@
       </field>
     </table>
     <table id="tablet_issues">
-      <phrase id="tblcaption" value="tablet issues" />
+      <phrase id="tblcaption" value="Tablet Issues" />
       <field id="id">
         <phrase id="fldcaption" value="id" />
       </field>
@@ -2486,7 +2486,7 @@
       </field>
     </table>
     <table id="tablet_status">
-      <phrase id="tblcaption" value="tablet status" />
+      <phrase id="tblcaption" value="Tablet Status" />
       <field id="id">
         <phrase id="fldcaption" value="id" />
       </field>
@@ -2583,7 +2583,7 @@
       </field>
     </table>
     <table id="pc_issuance">
-      <phrase id="tblcaption" value="pc issuance" />
+      <phrase id="tblcaption" value="PC Issuance" />
       <field id="id">
         <phrase id="fldcaption" value="id" />
       </field>
@@ -2640,7 +2640,7 @@
       </field>
     </table>
     <table id="issuance_records">
-      <phrase id="tblcaption" value="issuance records" />
+      <phrase id="tblcaption" value="Issuance Records" />
       <field id="id">
         <phrase id="fldcaption" value="ID" />
       </field>

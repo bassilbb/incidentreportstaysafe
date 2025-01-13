@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <configuration date="2025/01/13" author="e.World Technology Ltd.">
-  <project id="{DD9080C0-D1CA-431F-831F-CAC8FA61260C}" file="C:\Users\Bassey\Documents\PHPMaker\Projects\incident_report_app_staysafe.pmp" name="incident_report_app" product="PHPMaker" version="14.0" datetime="2025/01/13 14:22:38" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0">
+  <project id="{DD9080C0-D1CA-431F-831F-CAC8FA61260C}" file="C:\Users\Bassey\Documents\PHPMaker\Projects\incident_report_app_staysafe.pmp" name="incident_report_app" product="PHPMaker" version="14.0" datetime="2025/01/13 14:52:53" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0">
     <table id="branch" name="branch" caption="Organization" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="category" name="category" caption="Category" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="client" name="client" caption="Client" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
@@ -43,15 +43,15 @@
     <table id="dispenser_status" name="dispenser_status" caption="Dispenser Status" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="dispenser_type" name="dispenser_type" caption="Dispenser Type" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="dispenser_report" name="dispenser_report" caption="Dispenser Report" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="action_taken" name="action_taken" caption="action taken" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="statuss" name="statuss" caption="status" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="action_taken" name="action_taken" caption="Action Taken" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="statuss" name="statuss" caption="Status" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="inventory_report" name="inventory_report" caption="Inventory Store Report" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="inventory_record" name="inventory_record" caption="Inventory Record Tracking" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="laptop_tablet" name="laptop_tablet" caption="laptop tablet" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="tablet_issues" name="tablet_issues" caption="tablet issues" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="tablet_status" name="tablet_status" caption="tablet status" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="laptop_tablet" name="laptop_tablet" caption="Laptop Tablet" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="tablet_issues" name="tablet_issues" caption="Tablet Issues" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="tablet_status" name="tablet_status" caption="Tablet Status" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="store_reports" name="store_reports" caption="Inventory Issuance Reports" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="pc_issuance" name="pc_issuance" caption="pc issuance" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="issuance_records" name="issuance_records" caption="issuance records" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="pc_issuance" name="pc_issuance" caption="PC Issuance" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="issuance_records" name="issuance_records" caption="Issuance Records" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
   </project>
 </configuration>
