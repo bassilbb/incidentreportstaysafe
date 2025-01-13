@@ -1614,11 +1614,26 @@ class cinventory_store_add extends cinventory_store {
 		if (!$this->quantity_in->FldIsDetailKey && !is_null($this->quantity_in->FormValue) && $this->quantity_in->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->quantity_in->FldCaption(), $this->quantity_in->ReqErrMsg));
 		}
+		if (!$this->quantity_type->FldIsDetailKey && !is_null($this->quantity_type->FormValue) && $this->quantity_type->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->quantity_type->FldCaption(), $this->quantity_type->ReqErrMsg));
+		}
+		if (!$this->quantity_out->FldIsDetailKey && !is_null($this->quantity_out->FormValue) && $this->quantity_out->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->quantity_out->FldCaption(), $this->quantity_out->ReqErrMsg));
+		}
+		if (!$this->total_quantity->FldIsDetailKey && !is_null($this->total_quantity->FormValue) && $this->total_quantity->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->total_quantity->FldCaption(), $this->total_quantity->ReqErrMsg));
+		}
 		if (!$this->treated_by->FldIsDetailKey && !is_null($this->treated_by->FormValue) && $this->treated_by->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->treated_by->FldCaption(), $this->treated_by->ReqErrMsg));
 		}
 		if (!ew_CheckInteger($this->treated_by->FormValue)) {
 			ew_AddMessage($gsFormError, $this->treated_by->FldErrMsg());
+		}
+		if ($this->issued_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->issued_action->FldCaption(), $this->issued_action->ReqErrMsg));
+		}
+		if (!$this->issued_comment->FldIsDetailKey && !is_null($this->issued_comment->FormValue) && $this->issued_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->issued_comment->FldCaption(), $this->issued_comment->ReqErrMsg));
 		}
 		if (!ew_CheckDateDef($this->approver_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->approver_date->FldErrMsg());
@@ -2061,12 +2076,27 @@ finventory_storeadd.Validate = function() {
 			elm = this.GetElements("x" + infix + "_quantity_in");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->quantity_in->FldCaption(), $inventory_store->quantity_in->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_quantity_type");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->quantity_type->FldCaption(), $inventory_store->quantity_type->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_quantity_out");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->quantity_out->FldCaption(), $inventory_store->quantity_out->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_total_quantity");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->total_quantity->FldCaption(), $inventory_store->total_quantity->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_treated_by");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->treated_by->FldCaption(), $inventory_store->treated_by->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_treated_by");
 			if (elm && !ew_CheckInteger(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory_store->treated_by->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_issued_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->issued_action->FldCaption(), $inventory_store->issued_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_issued_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->issued_comment->FldCaption(), $inventory_store->issued_comment->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_approver_date");
 			if (elm && !ew_CheckDateDef(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory_store->approver_date->FldErrMsg()) ?>");
@@ -2316,7 +2346,7 @@ finventory_storeadd.CreateAutoSuggest({"id":"x_staff_id","forceSelect":false});
 <?php } ?>
 <?php if ($inventory_store->quantity_type->Visible) { // quantity_type ?>
 	<div id="r_quantity_type" class="form-group">
-		<label id="elh_inventory_store_quantity_type" for="x_quantity_type" class="<?php echo $inventory_store_add->LeftColumnClass ?>"><?php echo $inventory_store->quantity_type->FldCaption() ?></label>
+		<label id="elh_inventory_store_quantity_type" for="x_quantity_type" class="<?php echo $inventory_store_add->LeftColumnClass ?>"><?php echo $inventory_store->quantity_type->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_store_add->RightColumnClass ?>"><div<?php echo $inventory_store->quantity_type->CellAttributes() ?>>
 <?php if ($inventory_store->CurrentAction <> "F") { ?>
 <span id="el_inventory_store_quantity_type">
@@ -2334,7 +2364,7 @@ finventory_storeadd.CreateAutoSuggest({"id":"x_staff_id","forceSelect":false});
 <?php } ?>
 <?php if ($inventory_store->quantity_out->Visible) { // quantity_out ?>
 	<div id="r_quantity_out" class="form-group">
-		<label id="elh_inventory_store_quantity_out" for="x_quantity_out" class="<?php echo $inventory_store_add->LeftColumnClass ?>"><?php echo $inventory_store->quantity_out->FldCaption() ?></label>
+		<label id="elh_inventory_store_quantity_out" for="x_quantity_out" class="<?php echo $inventory_store_add->LeftColumnClass ?>"><?php echo $inventory_store->quantity_out->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_store_add->RightColumnClass ?>"><div<?php echo $inventory_store->quantity_out->CellAttributes() ?>>
 <?php if ($inventory_store->CurrentAction <> "F") { ?>
 <span id="el_inventory_store_quantity_out">
@@ -2352,7 +2382,7 @@ finventory_storeadd.CreateAutoSuggest({"id":"x_staff_id","forceSelect":false});
 <?php } ?>
 <?php if ($inventory_store->total_quantity->Visible) { // total_quantity ?>
 	<div id="r_total_quantity" class="form-group">
-		<label id="elh_inventory_store_total_quantity" for="x_total_quantity" class="<?php echo $inventory_store_add->LeftColumnClass ?>"><?php echo $inventory_store->total_quantity->FldCaption() ?></label>
+		<label id="elh_inventory_store_total_quantity" for="x_total_quantity" class="<?php echo $inventory_store_add->LeftColumnClass ?>"><?php echo $inventory_store->total_quantity->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_store_add->RightColumnClass ?>"><div<?php echo $inventory_store->total_quantity->CellAttributes() ?>>
 <?php if ($inventory_store->CurrentAction <> "F") { ?>
 <span id="el_inventory_store_total_quantity">
@@ -2399,7 +2429,7 @@ finventory_storeadd.CreateAutoSuggest({"id":"x_treated_by","forceSelect":false})
 <?php } ?>
 <?php if ($inventory_store->issued_action->Visible) { // issued_action ?>
 	<div id="r_issued_action" class="form-group">
-		<label id="elh_inventory_store_issued_action" class="<?php echo $inventory_store_add->LeftColumnClass ?>"><?php echo $inventory_store->issued_action->FldCaption() ?></label>
+		<label id="elh_inventory_store_issued_action" class="<?php echo $inventory_store_add->LeftColumnClass ?>"><?php echo $inventory_store->issued_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_store_add->RightColumnClass ?>"><div<?php echo $inventory_store->issued_action->CellAttributes() ?>>
 <?php if ($inventory_store->CurrentAction <> "F") { ?>
 <span id="el_inventory_store_issued_action">
@@ -2420,7 +2450,7 @@ finventory_storeadd.CreateAutoSuggest({"id":"x_treated_by","forceSelect":false})
 <?php } ?>
 <?php if ($inventory_store->issued_comment->Visible) { // issued_comment ?>
 	<div id="r_issued_comment" class="form-group">
-		<label id="elh_inventory_store_issued_comment" for="x_issued_comment" class="<?php echo $inventory_store_add->LeftColumnClass ?>"><?php echo $inventory_store->issued_comment->FldCaption() ?></label>
+		<label id="elh_inventory_store_issued_comment" for="x_issued_comment" class="<?php echo $inventory_store_add->LeftColumnClass ?>"><?php echo $inventory_store->issued_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_store_add->RightColumnClass ?>"><div<?php echo $inventory_store->issued_comment->CellAttributes() ?>>
 <?php if ($inventory_store->CurrentAction <> "F") { ?>
 <span id="el_inventory_store_issued_comment">
