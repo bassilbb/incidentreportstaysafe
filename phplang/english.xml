@@ -763,13 +763,13 @@
       <phrase id="menutext" value="Inventory Store Report" />
     </menu>
     <menu id="199">
-      <phrase id="menutext" value="Inventory Records" />
+      <phrase id="menutext" value="Inventory Store Records" />
     </menu>
     <menu id="268">
       <phrase id="menutext" value="Inventory Issuance Module" />
     </menu>
     <menu id="102">
-      <phrase id="menutext" value="Create Issuance " />
+      <phrase id="menutext" value="Inventory Issuance " />
     </menu>
     <menu id="258">
       <phrase id="menutext" value="Issuance Reports" />

@@ -1556,11 +1556,29 @@ class cinventory_edit extends cinventory {
 		if (!$this->recieved_by->FldIsDetailKey && !is_null($this->recieved_by->FormValue) && $this->recieved_by->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->recieved_by->FldCaption(), $this->recieved_by->ReqErrMsg));
 		}
+		if ($this->recieved_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->recieved_action->FldCaption(), $this->recieved_action->ReqErrMsg));
+		}
+		if (!$this->recieved_comment->FldIsDetailKey && !is_null($this->recieved_comment->FormValue) && $this->recieved_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->recieved_comment->FldCaption(), $this->recieved_comment->ReqErrMsg));
+		}
 		if (!ew_CheckShortEuroDate($this->date_approved->FormValue)) {
 			ew_AddMessage($gsFormError, $this->date_approved->FldErrMsg());
 		}
+		if ($this->approver_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->approver_action->FldCaption(), $this->approver_action->ReqErrMsg));
+		}
+		if (!$this->approver_comment->FldIsDetailKey && !is_null($this->approver_comment->FormValue) && $this->approver_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->approver_comment->FldCaption(), $this->approver_comment->ReqErrMsg));
+		}
 		if (!ew_CheckShortEuroDate($this->verified_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->verified_date->FldErrMsg());
+		}
+		if ($this->verified_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->verified_action->FldCaption(), $this->verified_action->ReqErrMsg));
+		}
+		if (!$this->verified_comment->FldIsDetailKey && !is_null($this->verified_comment->FormValue) && $this->verified_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->verified_comment->FldCaption(), $this->verified_comment->ReqErrMsg));
 		}
 
 		// Return validate result
@@ -1626,19 +1644,19 @@ class cinventory_edit extends cinventory {
 			$this->statuss->SetDbValueDef($rsnew, $this->statuss->CurrentValue, NULL, $this->statuss->ReadOnly);
 
 			// recieved_action
-			$this->recieved_action->SetDbValueDef($rsnew, $this->recieved_action->CurrentValue, NULL, $this->recieved_action->ReadOnly);
+			$this->recieved_action->SetDbValueDef($rsnew, $this->recieved_action->CurrentValue, 0, $this->recieved_action->ReadOnly);
 
 			// recieved_comment
-			$this->recieved_comment->SetDbValueDef($rsnew, $this->recieved_comment->CurrentValue, NULL, $this->recieved_comment->ReadOnly);
+			$this->recieved_comment->SetDbValueDef($rsnew, $this->recieved_comment->CurrentValue, "", $this->recieved_comment->ReadOnly);
 
 			// date_approved
 			$this->date_approved->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->date_approved->CurrentValue, 17), NULL, $this->date_approved->ReadOnly);
 
 			// approver_action
-			$this->approver_action->SetDbValueDef($rsnew, $this->approver_action->CurrentValue, NULL, $this->approver_action->ReadOnly);
+			$this->approver_action->SetDbValueDef($rsnew, $this->approver_action->CurrentValue, 0, $this->approver_action->ReadOnly);
 
 			// approver_comment
-			$this->approver_comment->SetDbValueDef($rsnew, $this->approver_comment->CurrentValue, NULL, $this->approver_comment->ReadOnly);
+			$this->approver_comment->SetDbValueDef($rsnew, $this->approver_comment->CurrentValue, "", $this->approver_comment->ReadOnly);
 
 			// approved_by
 			$this->approved_by->SetDbValueDef($rsnew, $this->approved_by->CurrentValue, NULL, $this->approved_by->ReadOnly);
@@ -1647,10 +1665,10 @@ class cinventory_edit extends cinventory {
 			$this->verified_date->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->verified_date->CurrentValue, 17), NULL, $this->verified_date->ReadOnly);
 
 			// verified_action
-			$this->verified_action->SetDbValueDef($rsnew, $this->verified_action->CurrentValue, NULL, $this->verified_action->ReadOnly);
+			$this->verified_action->SetDbValueDef($rsnew, $this->verified_action->CurrentValue, 0, $this->verified_action->ReadOnly);
 
 			// verified_comment
-			$this->verified_comment->SetDbValueDef($rsnew, $this->verified_comment->CurrentValue, NULL, $this->verified_comment->ReadOnly);
+			$this->verified_comment->SetDbValueDef($rsnew, $this->verified_comment->CurrentValue, "", $this->verified_comment->ReadOnly);
 
 			// verified_by
 			$this->verified_by->SetDbValueDef($rsnew, $this->verified_by->CurrentValue, NULL, $this->verified_by->ReadOnly);
@@ -1958,12 +1976,30 @@ finventoryedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_recieved_by");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory->recieved_by->FldCaption(), $inventory->recieved_by->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_recieved_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory->recieved_action->FldCaption(), $inventory->recieved_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_recieved_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory->recieved_comment->FldCaption(), $inventory->recieved_comment->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_date_approved");
 			if (elm && !ew_CheckShortEuroDate(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory->date_approved->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_approver_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory->approver_action->FldCaption(), $inventory->approver_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_approver_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory->approver_comment->FldCaption(), $inventory->approver_comment->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_verified_date");
 			if (elm && !ew_CheckShortEuroDate(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory->verified_date->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_verified_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory->verified_action->FldCaption(), $inventory->verified_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_verified_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory->verified_comment->FldCaption(), $inventory->verified_comment->ReqErrMsg)) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -2019,6 +2055,7 @@ finventoryedit.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("dat
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
+$('#r_statuss').hide();
 </script>
 <?php $inventory_edit->ShowPageHeader(); ?>
 <?php
@@ -2292,7 +2329,7 @@ finventoryedit.CreateAutoSuggest({"id":"x_recieved_by","forceSelect":false});
 <?php } ?>
 <?php if ($inventory->recieved_action->Visible) { // recieved_action ?>
 	<div id="r_recieved_action" class="form-group">
-		<label id="elh_inventory_recieved_action" class="<?php echo $inventory_edit->LeftColumnClass ?>"><?php echo $inventory->recieved_action->FldCaption() ?></label>
+		<label id="elh_inventory_recieved_action" class="<?php echo $inventory_edit->LeftColumnClass ?>"><?php echo $inventory->recieved_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_edit->RightColumnClass ?>"><div<?php echo $inventory->recieved_action->CellAttributes() ?>>
 <?php if ($inventory->CurrentAction <> "F") { ?>
 <span id="el_inventory_recieved_action">
@@ -2313,7 +2350,7 @@ finventoryedit.CreateAutoSuggest({"id":"x_recieved_by","forceSelect":false});
 <?php } ?>
 <?php if ($inventory->recieved_comment->Visible) { // recieved_comment ?>
 	<div id="r_recieved_comment" class="form-group">
-		<label id="elh_inventory_recieved_comment" for="x_recieved_comment" class="<?php echo $inventory_edit->LeftColumnClass ?>"><?php echo $inventory->recieved_comment->FldCaption() ?></label>
+		<label id="elh_inventory_recieved_comment" for="x_recieved_comment" class="<?php echo $inventory_edit->LeftColumnClass ?>"><?php echo $inventory->recieved_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_edit->RightColumnClass ?>"><div<?php echo $inventory->recieved_comment->CellAttributes() ?>>
 <?php if ($inventory->CurrentAction <> "F") { ?>
 <span id="el_inventory_recieved_comment">
@@ -2349,7 +2386,7 @@ finventoryedit.CreateAutoSuggest({"id":"x_recieved_by","forceSelect":false});
 <?php } ?>
 <?php if ($inventory->approver_action->Visible) { // approver_action ?>
 	<div id="r_approver_action" class="form-group">
-		<label id="elh_inventory_approver_action" class="<?php echo $inventory_edit->LeftColumnClass ?>"><?php echo $inventory->approver_action->FldCaption() ?></label>
+		<label id="elh_inventory_approver_action" class="<?php echo $inventory_edit->LeftColumnClass ?>"><?php echo $inventory->approver_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_edit->RightColumnClass ?>"><div<?php echo $inventory->approver_action->CellAttributes() ?>>
 <?php if ($inventory->CurrentAction <> "F") { ?>
 <span id="el_inventory_approver_action">
@@ -2370,7 +2407,7 @@ finventoryedit.CreateAutoSuggest({"id":"x_recieved_by","forceSelect":false});
 <?php } ?>
 <?php if ($inventory->approver_comment->Visible) { // approver_comment ?>
 	<div id="r_approver_comment" class="form-group">
-		<label id="elh_inventory_approver_comment" for="x_approver_comment" class="<?php echo $inventory_edit->LeftColumnClass ?>"><?php echo $inventory->approver_comment->FldCaption() ?></label>
+		<label id="elh_inventory_approver_comment" for="x_approver_comment" class="<?php echo $inventory_edit->LeftColumnClass ?>"><?php echo $inventory->approver_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_edit->RightColumnClass ?>"><div<?php echo $inventory->approver_comment->CellAttributes() ?>>
 <?php if ($inventory->CurrentAction <> "F") { ?>
 <span id="el_inventory_approver_comment">
@@ -2435,7 +2472,7 @@ finventoryedit.CreateAutoSuggest({"id":"x_approved_by","forceSelect":false});
 <?php } ?>
 <?php if ($inventory->verified_action->Visible) { // verified_action ?>
 	<div id="r_verified_action" class="form-group">
-		<label id="elh_inventory_verified_action" class="<?php echo $inventory_edit->LeftColumnClass ?>"><?php echo $inventory->verified_action->FldCaption() ?></label>
+		<label id="elh_inventory_verified_action" class="<?php echo $inventory_edit->LeftColumnClass ?>"><?php echo $inventory->verified_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_edit->RightColumnClass ?>"><div<?php echo $inventory->verified_action->CellAttributes() ?>>
 <?php if ($inventory->CurrentAction <> "F") { ?>
 <span id="el_inventory_verified_action">
@@ -2456,7 +2493,7 @@ finventoryedit.CreateAutoSuggest({"id":"x_approved_by","forceSelect":false});
 <?php } ?>
 <?php if ($inventory->verified_comment->Visible) { // verified_comment ?>
 	<div id="r_verified_comment" class="form-group">
-		<label id="elh_inventory_verified_comment" for="x_verified_comment" class="<?php echo $inventory_edit->LeftColumnClass ?>"><?php echo $inventory->verified_comment->FldCaption() ?></label>
+		<label id="elh_inventory_verified_comment" for="x_verified_comment" class="<?php echo $inventory_edit->LeftColumnClass ?>"><?php echo $inventory->verified_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_edit->RightColumnClass ?>"><div<?php echo $inventory->verified_comment->CellAttributes() ?>>
 <?php if ($inventory->CurrentAction <> "F") { ?>
 <span id="el_inventory_verified_comment">
@@ -2533,11 +2570,11 @@ $("#r_staff_id").hide();
 $("#r_recieved_by").hide();
 $("#r_approved_by").hide();
 $("#r_verified_by").hide();
-
-//$('#r_status').hide();
+$('#r_statuss').hide();
 $('#r_date_approved').hide();
 $('#r_verified_date').hide();
-$('#x_statuss').attr('readonly',true);
+
+//$('#x_statuss').attr('readonly',true);
 </script>
 <?php include_once "footer.php" ?>
 <?php

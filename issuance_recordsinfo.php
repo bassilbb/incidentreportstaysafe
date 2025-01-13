@@ -43,7 +43,7 @@ class cissuance_records extends cTable {
 		$this->TableType = 'VIEW';
 
 		// Update Table
-		$this->UpdateTable = "inventory_store";
+		$this->UpdateTable = "`issuance_records`";
 		$this->DBID = 'DB';
 		$this->ExportAll = TRUE;
 		$this->ExportPageBreakCount = 0; // Page break per every n record (PDF only)
