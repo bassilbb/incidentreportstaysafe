@@ -579,6 +579,9 @@ class cstore_reports_search extends cstore_reports {
 		// date
 		$this->date->AdvancedSearch->SearchValue = $objForm->GetValue("x_date");
 		$this->date->AdvancedSearch->SearchOperator = $objForm->GetValue("z_date");
+		$this->date->AdvancedSearch->SearchCondition = $objForm->GetValue("v_date");
+		$this->date->AdvancedSearch->SearchValue2 = $objForm->GetValue("y_date");
+		$this->date->AdvancedSearch->SearchOperator2 = $objForm->GetValue("w_date");
 
 		// reference_id
 		$this->reference_id->AdvancedSearch->SearchValue = $objForm->GetValue("x_reference_id");
@@ -835,12 +838,11 @@ class cstore_reports_search extends cstore_reports {
 		$this->issued_comment->ViewCustomAttributes = "";
 
 		// issued_by
-		$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
 		if (strval($this->issued_by->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->issued_by->LookupFilters = array();
+		$this->issued_by->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1068,6 +1070,10 @@ class cstore_reports_search extends cstore_reports {
 			$this->date->EditCustomAttributes = "";
 			$this->date->EditValue = ew_HtmlEncode(ew_FormatDateTime(ew_UnFormatDateTime($this->date->AdvancedSearch->SearchValue, 0), 8));
 			$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
+			$this->date->EditAttrs["class"] = "form-control";
+			$this->date->EditCustomAttributes = "";
+			$this->date->EditValue2 = ew_HtmlEncode(ew_FormatDateTime(ew_UnFormatDateTime($this->date->AdvancedSearch->SearchValue2, 0), 8));
+			$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
 
 			// reference_id
 			$this->reference_id->EditAttrs["class"] = "form-control";
@@ -1215,32 +1221,31 @@ class cstore_reports_search extends cstore_reports {
 			$this->issued_comment->PlaceHolder = ew_RemoveHtml($this->issued_comment->FldCaption());
 
 			// issued_by
-			$this->issued_by->EditAttrs["class"] = "form-control";
 			$this->issued_by->EditCustomAttributes = "";
-			$this->issued_by->EditValue = ew_HtmlEncode($this->issued_by->AdvancedSearch->SearchValue);
-			if (strval($this->issued_by->AdvancedSearch->SearchValue) <> "") {
+			if (trim(strval($this->issued_by->AdvancedSearch->SearchValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
 				$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->AdvancedSearch->SearchValue, EW_DATATYPE_NUMBER, "");
-			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			}
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
 			$sWhereWrk = "";
-			$this->issued_by->LookupFilters = array();
+			$this->issued_by->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
 			$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-				$rswrk = Conn()->Execute($sSqlWrk);
-				if ($rswrk && !$rswrk->EOF) { // Lookup values found
-					$arwrk = array();
-					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
-					$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
-					$arwrk[3] = ew_HtmlEncode($rswrk->fields('Disp3Fld'));
-					$this->issued_by->EditValue = $this->issued_by->DisplayValue($arwrk);
-					$rswrk->Close();
-				} else {
-					$this->issued_by->EditValue = ew_HtmlEncode($this->issued_by->AdvancedSearch->SearchValue);
-				}
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+				$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
+				$arwrk[3] = ew_HtmlEncode($rswrk->fields('Disp3Fld'));
+				$this->issued_by->AdvancedSearch->ViewValue = $this->issued_by->DisplayValue($arwrk);
 			} else {
-				$this->issued_by->EditValue = NULL;
+				$this->issued_by->AdvancedSearch->ViewValue = $Language->Phrase("PleaseSelect");
 			}
-			$this->issued_by->PlaceHolder = ew_RemoveHtml($this->issued_by->FldCaption());
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->issued_by->EditValue = $arwrk;
 
 			// approver_date
 			$this->approver_date->EditAttrs["class"] = "form-control";
@@ -1356,9 +1361,6 @@ class cstore_reports_search extends cstore_reports {
 		}
 		if (!ew_CheckInteger($this->treated_by->AdvancedSearch->SearchValue)) {
 			ew_AddMessage($gsSearchError, $this->treated_by->FldErrMsg());
-		}
-		if (!ew_CheckInteger($this->issued_by->AdvancedSearch->SearchValue)) {
-			ew_AddMessage($gsSearchError, $this->issued_by->FldErrMsg());
 		}
 		if (!ew_CheckDateDef($this->approver_date->AdvancedSearch->SearchValue)) {
 			ew_AddMessage($gsSearchError, $this->approver_date->FldErrMsg());
@@ -1478,7 +1480,7 @@ class cstore_reports_search extends cstore_reports {
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 			$sWhereWrk = "{filter}";
-			$fld->LookupFilters = array();
+			$fld->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
@@ -1550,18 +1552,6 @@ class cstore_reports_search extends cstore_reports {
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
-			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			if ($sSqlWrk <> "")
-				$fld->LookupFilters["s"] .= $sSqlWrk;
-			break;
-		case "x_issued_by":
-			$sSqlWrk = "";
-			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld` FROM `users`";
-			$sWhereWrk = "`firstname` LIKE '{query_value}%' OR CONCAT(COALESCE(`firstname`, ''),'" . ew_ValueSeparator(1, $this->issued_by) . "',COALESCE(`lastname`,''),'" . ew_ValueSeparator(2, $this->issued_by) . "',COALESCE(`staffno`,'')) LIKE '{query_value}%'";
-			$fld->LookupFilters = array();
-			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
-			$sSqlWrk = "";
-			$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
@@ -1717,7 +1707,6 @@ fstore_reportssearch.Lists["x_issued_action"] = {"LinkField":"","Ajax":null,"Aut
 fstore_reportssearch.Lists["x_issued_action"].Options = <?php echo json_encode($store_reports_search->issued_action->Options()) ?>;
 fstore_reportssearch.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fstore_reportssearch.Lists["x_issued_by"].Data = "<?php echo $store_reports_search->issued_by->LookupFilterQuery(FALSE, "search") ?>";
-fstore_reportssearch.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_search->issued_by->LookupFilterQuery(TRUE, "search"))) ?>;
 fstore_reportssearch.Lists["x_approver_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 fstore_reportssearch.Lists["x_approver_action"].Options = <?php echo json_encode($store_reports_search->approver_action->Options()) ?>;
 fstore_reportssearch.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
@@ -1746,9 +1735,6 @@ fstore_reportssearch.Validate = function(fobj) {
 	elm = this.GetElements("x" + infix + "_treated_by");
 	if (elm && !ew_CheckInteger(elm.value))
 		return this.OnError(elm, "<?php echo ew_JsEncode2($store_reports->treated_by->FldErrMsg()) ?>");
-	elm = this.GetElements("x" + infix + "_issued_by");
-	if (elm && !ew_CheckInteger(elm.value))
-		return this.OnError(elm, "<?php echo ew_JsEncode2($store_reports->issued_by->FldErrMsg()) ?>");
 	elm = this.GetElements("x" + infix + "_approver_date");
 	if (elm && !ew_CheckDateDef(elm.value))
 		return this.OnError(elm, "<?php echo ew_JsEncode2($store_reports->approver_date->FldErrMsg()) ?>");
@@ -1799,7 +1785,7 @@ $store_reports_search->ShowMessage();
 <?php if ($store_reports->date->Visible) { // date ?>
 	<div id="r_date" class="form-group">
 		<label for="x_date" class="<?php echo $store_reports_search->LeftColumnClass ?>"><span id="elh_store_reports_date"><?php echo $store_reports->date->FldCaption() ?></span>
-		<p class="form-control-static ewSearchOperator"><?php echo $Language->Phrase("=") ?><input type="hidden" name="z_date" id="z_date" value="="></p>
+		<p class="form-control-static ewSearchOperator"><?php echo $Language->Phrase("BETWEEN") ?><input type="hidden" name="z_date" id="z_date" value="BETWEEN"></p>
 		</label>
 		<div class="<?php echo $store_reports_search->RightColumnClass ?>"><div<?php echo $store_reports->date->CellAttributes() ?>>
 			<span id="el_store_reports_date">
@@ -1807,6 +1793,15 @@ $store_reports_search->ShowMessage();
 <?php if (!$store_reports->date->ReadOnly && !$store_reports->date->Disabled && !isset($store_reports->date->EditAttrs["readonly"]) && !isset($store_reports->date->EditAttrs["disabled"])) { ?>
 <script type="text/javascript">
 ew_CreateDateTimePicker("fstore_reportssearch", "x_date", {"ignoreReadonly":true,"useCurrent":false,"format":0});
+</script>
+<?php } ?>
+</span>
+			<span class="ewSearchCond btw1_date">&nbsp;<?php echo $Language->Phrase("AND") ?>&nbsp;</span>
+			<span id="e2_store_reports_date" class="btw1_date">
+<input type="text" data-table="store_reports" data-field="x_date" name="y_date" id="y_date" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($store_reports->date->getPlaceHolder()) ?>" value="<?php echo $store_reports->date->EditValue2 ?>"<?php echo $store_reports->date->EditAttributes() ?>>
+<?php if (!$store_reports->date->ReadOnly && !$store_reports->date->Disabled && !isset($store_reports->date->EditAttrs["readonly"]) && !isset($store_reports->date->EditAttrs["disabled"])) { ?>
+<script type="text/javascript">
+ew_CreateDateTimePicker("fstore_reportssearch", "y_date", {"ignoreReadonly":true,"useCurrent":false,"format":0});
 </script>
 <?php } ?>
 </span>
@@ -1987,23 +1982,16 @@ fstore_reportssearch.CreateAutoSuggest({"id":"x_statuss","forceSelect":false});
 <?php } ?>
 <?php if ($store_reports->issued_by->Visible) { // issued_by ?>
 	<div id="r_issued_by" class="form-group">
-		<label class="<?php echo $store_reports_search->LeftColumnClass ?>"><span id="elh_store_reports_issued_by"><?php echo $store_reports->issued_by->FldCaption() ?></span>
+		<label for="x_issued_by" class="<?php echo $store_reports_search->LeftColumnClass ?>"><span id="elh_store_reports_issued_by"><?php echo $store_reports->issued_by->FldCaption() ?></span>
 		<p class="form-control-static ewSearchOperator"><?php echo $Language->Phrase("=") ?><input type="hidden" name="z_issued_by" id="z_issued_by" value="="></p>
 		</label>
 		<div class="<?php echo $store_reports_search->RightColumnClass ?>"><div<?php echo $store_reports->issued_by->CellAttributes() ?>>
 			<span id="el_store_reports_issued_by">
-<?php
-$wrkonchange = trim(" " . @$store_reports->issued_by->EditAttrs["onchange"]);
-if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
-$store_reports->issued_by->EditAttrs["onchange"] = "";
-?>
-<span id="as_x_issued_by" style="white-space: nowrap; z-index: 8860">
-	<input type="text" name="sv_x_issued_by" id="sv_x_issued_by" value="<?php echo $store_reports->issued_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($store_reports->issued_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($store_reports->issued_by->getPlaceHolder()) ?>"<?php echo $store_reports->issued_by->EditAttributes() ?>>
+<span class="ewLookupList">
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_issued_by"><?php echo (strval($store_reports->issued_by->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $store_reports->issued_by->AdvancedSearch->ViewValue); ?></span>
 </span>
-<input type="hidden" data-table="store_reports" data-field="x_issued_by" data-value-separator="<?php echo $store_reports->issued_by->DisplayValueSeparatorAttribute() ?>" name="x_issued_by" id="x_issued_by" value="<?php echo ew_HtmlEncode($store_reports->issued_by->AdvancedSearch->SearchValue) ?>"<?php echo $wrkonchange ?>>
-<script type="text/javascript">
-fstore_reportssearch.CreateAutoSuggest({"id":"x_issued_by","forceSelect":false});
-</script>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($store_reports->issued_by->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_issued_by',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($store_reports->issued_by->ReadOnly || $store_reports->issued_by->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="store_reports" data-field="x_issued_by" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $store_reports->issued_by->DisplayValueSeparatorAttribute() ?>" name="x_issued_by" id="x_issued_by" value="<?php echo $store_reports->issued_by->AdvancedSearch->SearchValue ?>"<?php echo $store_reports->issued_by->EditAttributes() ?>>
 </span>
 		</div></div>
 	</div>

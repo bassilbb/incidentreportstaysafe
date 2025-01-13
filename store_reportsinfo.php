@@ -141,8 +141,10 @@ class cstore_reports extends cTable {
 		$this->fields['issued_comment'] = &$this->issued_comment;
 
 		// issued_by
-		$this->issued_by = new cField('store_reports', 'store_reports', 'x_issued_by', 'issued_by', '`issued_by`', '`issued_by`', 3, -1, FALSE, '`issued_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->issued_by = new cField('store_reports', 'store_reports', 'x_issued_by', 'issued_by', '`issued_by`', '`issued_by`', 3, -1, FALSE, '`issued_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->issued_by->Sortable = TRUE; // Allow sort
+		$this->issued_by->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->issued_by->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->issued_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['issued_by'] = &$this->issued_by;
 
@@ -924,12 +926,11 @@ class cstore_reports extends cTable {
 		$this->issued_comment->ViewCustomAttributes = "";
 
 		// issued_by
-		$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
 		if (strval($this->issued_by->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->issued_by->LookupFilters = array();
+		$this->issued_by->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1236,8 +1237,6 @@ class cstore_reports extends cTable {
 		// issued_by
 		$this->issued_by->EditAttrs["class"] = "form-control";
 		$this->issued_by->EditCustomAttributes = "";
-		$this->issued_by->EditValue = $this->issued_by->CurrentValue;
-		$this->issued_by->PlaceHolder = ew_RemoveHtml($this->issued_by->FldCaption());
 
 		// approver_date
 		$this->approver_date->EditAttrs["class"] = "form-control";

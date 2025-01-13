@@ -1698,17 +1698,26 @@ class cinventory_store_edit extends cinventory_store {
 		if (!ew_CheckInteger($this->treated_by->FormValue)) {
 			ew_AddMessage($gsFormError, $this->treated_by->FldErrMsg());
 		}
-		if (!ew_CheckInteger($this->issued_by->FormValue)) {
-			ew_AddMessage($gsFormError, $this->issued_by->FldErrMsg());
-		}
 		if (!ew_CheckDateDef($this->approver_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->approver_date->FldErrMsg());
+		}
+		if ($this->approver_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->approver_action->FldCaption(), $this->approver_action->ReqErrMsg));
+		}
+		if (!$this->approved_comment->FldIsDetailKey && !is_null($this->approved_comment->FormValue) && $this->approved_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->approved_comment->FldCaption(), $this->approved_comment->ReqErrMsg));
 		}
 		if (!ew_CheckInteger($this->approved_by->FormValue)) {
 			ew_AddMessage($gsFormError, $this->approved_by->FldErrMsg());
 		}
 		if (!ew_CheckDateDef($this->verified_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->verified_date->FldErrMsg());
+		}
+		if ($this->verified_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->verified_action->FldCaption(), $this->verified_action->ReqErrMsg));
+		}
+		if (!$this->verified_comment->FldIsDetailKey && !is_null($this->verified_comment->FormValue) && $this->verified_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->verified_comment->FldCaption(), $this->verified_comment->ReqErrMsg));
 		}
 		if (!ew_CheckInteger($this->verified_by->FormValue)) {
 			ew_AddMessage($gsFormError, $this->verified_by->FldErrMsg());
@@ -2149,18 +2158,27 @@ finventory_storeedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_treated_by");
 			if (elm && !ew_CheckInteger(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory_store->treated_by->FldErrMsg()) ?>");
-			elm = this.GetElements("x" + infix + "_issued_by");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory_store->issued_by->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_approver_date");
 			if (elm && !ew_CheckDateDef(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory_store->approver_date->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_approver_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->approver_action->FldCaption(), $inventory_store->approver_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_approved_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->approved_comment->FldCaption(), $inventory_store->approved_comment->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_approved_by");
 			if (elm && !ew_CheckInteger(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory_store->approved_by->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_verified_date");
 			if (elm && !ew_CheckDateDef(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory_store->verified_date->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_verified_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->verified_action->FldCaption(), $inventory_store->verified_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_verified_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->verified_comment->FldCaption(), $inventory_store->verified_comment->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_verified_by");
 			if (elm && !ew_CheckInteger(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory_store->verified_by->FldErrMsg()) ?>");
@@ -2585,7 +2603,7 @@ finventory_storeedit.CreateAutoSuggest({"id":"x_issued_by","forceSelect":false})
 <?php } ?>
 <?php if ($inventory_store->approver_action->Visible) { // approver_action ?>
 	<div id="r_approver_action" class="form-group">
-		<label id="elh_inventory_store_approver_action" class="<?php echo $inventory_store_edit->LeftColumnClass ?>"><?php echo $inventory_store->approver_action->FldCaption() ?></label>
+		<label id="elh_inventory_store_approver_action" class="<?php echo $inventory_store_edit->LeftColumnClass ?>"><?php echo $inventory_store->approver_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_store_edit->RightColumnClass ?>"><div<?php echo $inventory_store->approver_action->CellAttributes() ?>>
 <?php if ($inventory_store->CurrentAction <> "F") { ?>
 <span id="el_inventory_store_approver_action">
@@ -2606,7 +2624,7 @@ finventory_storeedit.CreateAutoSuggest({"id":"x_issued_by","forceSelect":false})
 <?php } ?>
 <?php if ($inventory_store->approved_comment->Visible) { // approved_comment ?>
 	<div id="r_approved_comment" class="form-group">
-		<label id="elh_inventory_store_approved_comment" for="x_approved_comment" class="<?php echo $inventory_store_edit->LeftColumnClass ?>"><?php echo $inventory_store->approved_comment->FldCaption() ?></label>
+		<label id="elh_inventory_store_approved_comment" for="x_approved_comment" class="<?php echo $inventory_store_edit->LeftColumnClass ?>"><?php echo $inventory_store->approved_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_store_edit->RightColumnClass ?>"><div<?php echo $inventory_store->approved_comment->CellAttributes() ?>>
 <?php if ($inventory_store->CurrentAction <> "F") { ?>
 <span id="el_inventory_store_approved_comment">
@@ -2671,7 +2689,7 @@ finventory_storeedit.CreateAutoSuggest({"id":"x_approved_by","forceSelect":false
 <?php } ?>
 <?php if ($inventory_store->verified_action->Visible) { // verified_action ?>
 	<div id="r_verified_action" class="form-group">
-		<label id="elh_inventory_store_verified_action" class="<?php echo $inventory_store_edit->LeftColumnClass ?>"><?php echo $inventory_store->verified_action->FldCaption() ?></label>
+		<label id="elh_inventory_store_verified_action" class="<?php echo $inventory_store_edit->LeftColumnClass ?>"><?php echo $inventory_store->verified_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_store_edit->RightColumnClass ?>"><div<?php echo $inventory_store->verified_action->CellAttributes() ?>>
 <?php if ($inventory_store->CurrentAction <> "F") { ?>
 <span id="el_inventory_store_verified_action">
@@ -2692,7 +2710,7 @@ finventory_storeedit.CreateAutoSuggest({"id":"x_approved_by","forceSelect":false
 <?php } ?>
 <?php if ($inventory_store->verified_comment->Visible) { // verified_comment ?>
 	<div id="r_verified_comment" class="form-group">
-		<label id="elh_inventory_store_verified_comment" for="x_verified_comment" class="<?php echo $inventory_store_edit->LeftColumnClass ?>"><?php echo $inventory_store->verified_comment->FldCaption() ?></label>
+		<label id="elh_inventory_store_verified_comment" for="x_verified_comment" class="<?php echo $inventory_store_edit->LeftColumnClass ?>"><?php echo $inventory_store->verified_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $inventory_store_edit->RightColumnClass ?>"><div<?php echo $inventory_store->verified_comment->CellAttributes() ?>>
 <?php if ($inventory_store->CurrentAction <> "F") { ?>
 <span id="el_inventory_store_verified_comment">
@@ -2788,7 +2806,8 @@ if (EW_DEBUG_ENABLED)
 $("#r_staff_id").hide();
 $("#r_treated_by").hide();
 $("#r_statuss").hide();
-$('#x_statuss').attr('readonly',true);
+
+//$('#x_statuss').attr('readonly',true);
 </script>
 <?php include_once "footer.php" ?>
 <?php

@@ -1007,12 +1007,11 @@ class cstore_reports_view extends cstore_reports {
 		$this->issued_comment->ViewCustomAttributes = "";
 
 		// issued_by
-		$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
 		if (strval($this->issued_by->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->issued_by->LookupFilters = array();
+		$this->issued_by->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1537,7 +1536,6 @@ fstore_reportsview.Lists["x_issued_action"] = {"LinkField":"","Ajax":null,"AutoF
 fstore_reportsview.Lists["x_issued_action"].Options = <?php echo json_encode($store_reports_view->issued_action->Options()) ?>;
 fstore_reportsview.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fstore_reportsview.Lists["x_issued_by"].Data = "<?php echo $store_reports_view->issued_by->LookupFilterQuery(FALSE, "view") ?>";
-fstore_reportsview.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_view->issued_by->LookupFilterQuery(TRUE, "view"))) ?>;
 fstore_reportsview.Lists["x_approver_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 fstore_reportsview.Lists["x_approver_action"].Options = <?php echo json_encode($store_reports_view->approver_action->Options()) ?>;
 fstore_reportsview.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};

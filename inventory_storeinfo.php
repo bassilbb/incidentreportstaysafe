@@ -139,7 +139,6 @@ class cinventory_store extends cTable {
 		// issued_by
 		$this->issued_by = new cField('inventory_store', 'inventory_store', 'x_issued_by', 'issued_by', '`issued_by`', '`issued_by`', 3, -1, FALSE, '`issued_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->issued_by->Sortable = TRUE; // Allow sort
-		$this->issued_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['issued_by'] = &$this->issued_by;
 
 		// approver_date
@@ -1891,12 +1890,12 @@ class cinventory_store extends cTable {
 				}
 
 				// Verified by Guard
-				if ($this->verified_action->CurrentValue == 1 ) {
+				if ($this->verified_action->CurrentValue == 2 ) {
 
 					// New
 					if ($this->statuss->CurrentValue == 3 && CurrentUserLevel() == 5 ) {
 						$rsnew["statuss"] = 4;					
-						$rsnew["verified_action"] = 1;
+						$rsnew["verified_action"] = 2;
 
 						//$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
 					}
