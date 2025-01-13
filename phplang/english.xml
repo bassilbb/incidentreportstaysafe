@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2025/1/9" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2025/1/13" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -618,9 +618,6 @@
   <project>
     <phrase id="bodytitle" value="INCIDENT REPORT APPLICATION" />
     <phrase id="footertext" value="&amp;copy;2022 e.World Technology Ltd. All rights reserved." />
-    <menu id="257">
-      <phrase id="menutext" value="tablet issues" />
-    </menu>
     <menu id="17">
       <phrase id="menutext" value="Home Page" />
     </menu>
@@ -762,17 +759,17 @@
     <menu id="101">
       <phrase id="menutext" value="Inventory Store" />
     </menu>
-    <menu id="102">
-      <phrase id="menutext" value="Inventory Issuance " />
-    </menu>
     <menu id="197">
       <phrase id="menutext" value="Inventory Store Report" />
     </menu>
-    <menu id="198">
-      <phrase id="menutext" value="Inventory Issuance Report" />
+    <menu id="102">
+      <phrase id="menutext" value="Inventory Issuance " />
+    </menu>
+    <menu id="258">
+      <phrase id="menutext" value="Inventory Issuance Reports" />
     </menu>
     <menu id="199">
-      <phrase id="menutext" value="inventory records" />
+      <phrase id="menutext" value="Inventory Records" />
     </menu>
     <menu id="193">
       <phrase id="menutext" value="Dispenser Module" />
@@ -784,13 +781,19 @@
       <phrase id="menutext" value="Dispenser Report" />
     </menu>
     <menu id="256">
-      <phrase id="menutext" value="Tablet Module" />
+      <phrase id="menutext" value="Laptop Module" />
     </menu>
     <menu id="200">
       <phrase id="menutext" value="laptop tablet" />
     </menu>
     <menu id="201">
       <phrase id="menutext" value="tablet status" />
+    </menu>
+    <menu id="257">
+      <phrase id="menutext" value="tablet issues" />
+    </menu>
+    <menu id="259">
+      <phrase id="menutext" value="pc issuance" />
     </menu>
     <table id="branch">
       <phrase id="tblcaption" value="Organization" />
@@ -1973,8 +1976,10 @@
       </field>
       <field id="verified_action">
         <phrase id="fldcaption" value="Verified Action" />
-        <phrase id="fldtagvalue1" value="2" />
-        <phrase id="fldtagcaption1" value="Verified" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Declind" />
+        <phrase id="fldtagvalue2" value="2" />
+        <phrase id="fldtagcaption2" value="Verified" />
       </field>
       <field id="verified_comment">
         <phrase id="fldcaption" value="Verified Comment" />
@@ -2055,8 +2060,8 @@
       <field id="verified_action">
         <phrase id="fldcaption" value="Verified Action" />
         <phrase id="fldtagvalue1" value="0" />
-        <phrase id="fldtagcaption1" value="Save Only" />
-        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption1" value="Declined" />
+        <phrase id="fldtagvalue2" value="2" />
         <phrase id="fldtagcaption2" value="Verified" />
       </field>
       <field id="verified_comment">
@@ -2065,7 +2070,7 @@
       <field id="verified_by">
         <phrase id="fldcaption" value="Verified By" />
       </field>
-      <field id="status">
+      <field id="statuss">
         <phrase id="fldcaption" value="Status" />
       </field>
     </table>
@@ -2299,91 +2304,6 @@
         <phrase id="fldcaption" value="Status" />
       </field>
     </table>
-    <table id="store_report">
-      <phrase id="tblcaption" value="Inventory Issuance Report" />
-      <field id="id">
-        <phrase id="fldcaption" value="ID" />
-      </field>
-      <field id="date">
-        <phrase id="fldcaption" value="Date" />
-      </field>
-      <field id="reference_id">
-        <phrase id="fldcaption" value="Reference ID" />
-      </field>
-      <field id="staff_id">
-        <phrase id="fldcaption" value="Staff ID" />
-      </field>
-      <field id="material_name">
-        <phrase id="fldcaption" value="Material Name" />
-      </field>
-      <field id="quantity_in">
-        <phrase id="fldcaption" value="Qty In-Store" />
-      </field>
-      <field id="quantity_type">
-        <phrase id="fldcaption" value="Material Type" />
-      </field>
-      <field id="quantity_out">
-        <phrase id="fldcaption" value="Qty Out" />
-      </field>
-      <field id="total_quantity">
-        <phrase id="fldcaption" value="Total  Balance" />
-      </field>
-      <field id="treated_by">
-        <phrase id="fldcaption" value="Issued By" />
-      </field>
-      <field id="status">
-        <phrase id="fldcaption" value="Status" />
-      </field>
-      <field id="issued_action">
-        <phrase id="fldcaption" value="Issued Action" />
-        <phrase id="fldtagvalue1" value="0" />
-        <phrase id="fldtagcaption1" value="Save Only" />
-        <phrase id="fldtagvalue2" value="1" />
-        <phrase id="fldtagcaption2" value="Save and Forward" />
-      </field>
-      <field id="issued_comment">
-        <phrase id="fldcaption" value="Issued Comment" />
-      </field>
-      <field id="issued_by">
-        <phrase id="fldcaption" value="Issued By" />
-      </field>
-      <field id="approver_date">
-        <phrase id="fldcaption" value="Approver Date" />
-      </field>
-      <field id="approver_action">
-        <phrase id="fldcaption" value="Approver Action" />
-        <phrase id="fldtagvalue1" value="0" />
-        <phrase id="fldtagcaption1" value="Declined" />
-        <phrase id="fldtagvalue2" value="1" />
-        <phrase id="fldtagcaption2" value="Approved" />
-      </field>
-      <field id="approved_comment">
-        <phrase id="fldcaption" value="Approved Comment" />
-      </field>
-      <field id="approved_by">
-        <phrase id="fldcaption" value="Approved By" />
-        <phrase id="fldtagvalue1" value="0" />
-        <phrase id="fldtagcaption1" value="Declined" />
-        <phrase id="fldtagvalue2" value="1" />
-        <phrase id="fldtagcaption2" value="Approved" />
-      </field>
-      <field id="verified_date">
-        <phrase id="fldcaption" value="Verified Date" />
-      </field>
-      <field id="verified_action">
-        <phrase id="fldcaption" value="Verified Action" />
-        <phrase id="fldtagvalue1" value="0" />
-        <phrase id="fldtagcaption1" value="Save Only" />
-        <phrase id="fldtagvalue2" value="1" />
-        <phrase id="fldtagcaption2" value="Verified" />
-      </field>
-      <field id="verified_comment">
-        <phrase id="fldcaption" value="Verified Comment" />
-      </field>
-      <field id="verified_by">
-        <phrase id="fldcaption" value="Verified By" />
-      </field>
-    </table>
     <table id="inventory_record">
       <phrase id="tblcaption" value="Inventory Record Tracking" />
       <field id="id">
@@ -2569,6 +2489,148 @@
       </field>
       <field id="flag">
         <phrase id="fldcaption" value="flag" />
+      </field>
+    </table>
+    <table id="store_reports">
+      <phrase id="tblcaption" value="Inventory Issuance Reports" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="date">
+        <phrase id="fldcaption" value="Date" />
+      </field>
+      <field id="reference_id">
+        <phrase id="fldcaption" value="Reference ID" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="Staff ID" />
+      </field>
+      <field id="material_name">
+        <phrase id="fldcaption" value="Material Name" />
+      </field>
+      <field id="quantity_in">
+        <phrase id="fldcaption" value="Qty In-Store" />
+      </field>
+      <field id="quantity_type">
+        <phrase id="fldcaption" value="Material Type" />
+      </field>
+      <field id="quantity_out">
+        <phrase id="fldcaption" value="Qty Out" />
+      </field>
+      <field id="total_quantity">
+        <phrase id="fldcaption" value="Total  Balance" />
+      </field>
+      <field id="treated_by">
+        <phrase id="fldcaption" value="Issued By" />
+      </field>
+      <field id="statuss">
+        <phrase id="fldcaption" value="Status" />
+      </field>
+      <field id="issued_action">
+        <phrase id="fldcaption" value="Issued Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Save and Forward" />
+      </field>
+      <field id="issued_comment">
+        <phrase id="fldcaption" value="Issued Comment" />
+      </field>
+      <field id="issued_by">
+        <phrase id="fldcaption" value="Issued By" />
+      </field>
+      <field id="approver_date">
+        <phrase id="fldcaption" value="Approver Date" />
+      </field>
+      <field id="approver_action">
+        <phrase id="fldcaption" value="Approver Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Declined" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Approved" />
+      </field>
+      <field id="approved_comment">
+        <phrase id="fldcaption" value="Approved Comment" />
+      </field>
+      <field id="approved_by">
+        <phrase id="fldcaption" value="Approved By" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Declined" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Approved" />
+      </field>
+      <field id="verified_date">
+        <phrase id="fldcaption" value="Verified Date" />
+      </field>
+      <field id="verified_action">
+        <phrase id="fldcaption" value="Verified Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Verified" />
+      </field>
+      <field id="verified_comment">
+        <phrase id="fldcaption" value="Verified Comment" />
+      </field>
+      <field id="verified_by">
+        <phrase id="fldcaption" value="Verified By" />
+      </field>
+    </table>
+    <table id="pc_issuance">
+      <phrase id="tblcaption" value="pc issuance" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="issued_date">
+        <phrase id="fldcaption" value="issued date" />
+      </field>
+      <field id="reference_id">
+        <phrase id="fldcaption" value="reference id" />
+      </field>
+      <field id="asset_tag">
+        <phrase id="fldcaption" value="asset tag" />
+      </field>
+      <field id="make">
+        <phrase id="fldcaption" value="make" />
+      </field>
+      <field id="color">
+        <phrase id="fldcaption" value="color" />
+      </field>
+      <field id="department">
+        <phrase id="fldcaption" value="department" />
+      </field>
+      <field id="designation">
+        <phrase id="fldcaption" value="designation" />
+      </field>
+      <field id="assign_to">
+        <phrase id="fldcaption" value="assign to" />
+      </field>
+      <field id="date_assign">
+        <phrase id="fldcaption" value="date assign" />
+      </field>
+      <field id="assign_action">
+        <phrase id="fldcaption" value="assign action" />
+      </field>
+      <field id="assign_comment">
+        <phrase id="fldcaption" value="assign comment" />
+      </field>
+      <field id="assign_by">
+        <phrase id="fldcaption" value="assign by" />
+      </field>
+      <field id="statuse">
+        <phrase id="fldcaption" value="statuse" />
+      </field>
+      <field id="date_retrieved">
+        <phrase id="fldcaption" value="date retrieved" />
+      </field>
+      <field id="retriever_action">
+        <phrase id="fldcaption" value="retriever action" />
+      </field>
+      <field id="retriever_comment">
+        <phrase id="fldcaption" value="retriever comment" />
+      </field>
+      <field id="retrieved_by">
+        <phrase id="fldcaption" value="retrieved by" />
       </field>
     </table>
   </project>

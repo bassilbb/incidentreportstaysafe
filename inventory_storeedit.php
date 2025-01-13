@@ -351,7 +351,7 @@ class cinventory_store_edit extends cinventory_store {
 		$this->verified_action->SetVisibility();
 		$this->verified_comment->SetVisibility();
 		$this->verified_by->SetVisibility();
-		$this->status->SetVisibility();
+		$this->statuss->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -705,8 +705,8 @@ class cinventory_store_edit extends cinventory_store {
 		if (!$this->verified_by->FldIsDetailKey) {
 			$this->verified_by->setFormValue($objForm->GetValue("x_verified_by"));
 		}
-		if (!$this->status->FldIsDetailKey) {
-			$this->status->setFormValue($objForm->GetValue("x_status"));
+		if (!$this->statuss->FldIsDetailKey) {
+			$this->statuss->setFormValue($objForm->GetValue("x_statuss"));
 		}
 	}
 
@@ -737,7 +737,7 @@ class cinventory_store_edit extends cinventory_store {
 		$this->verified_action->CurrentValue = $this->verified_action->FormValue;
 		$this->verified_comment->CurrentValue = $this->verified_comment->FormValue;
 		$this->verified_by->CurrentValue = $this->verified_by->FormValue;
-		$this->status->CurrentValue = $this->status->FormValue;
+		$this->statuss->CurrentValue = $this->statuss->FormValue;
 	}
 
 	// Load recordset
@@ -820,7 +820,7 @@ class cinventory_store_edit extends cinventory_store {
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
-		$this->status->setDbValue($row['status']);
+		$this->statuss->setDbValue($row['statuss']);
 	}
 
 	// Return a row with default values
@@ -847,7 +847,7 @@ class cinventory_store_edit extends cinventory_store {
 		$row['verified_action'] = NULL;
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
-		$row['status'] = NULL;
+		$row['statuss'] = NULL;
 		return $row;
 	}
 
@@ -877,7 +877,7 @@ class cinventory_store_edit extends cinventory_store {
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
-		$this->status->DbValue = $row['status'];
+		$this->statuss->DbValue = $row['statuss'];
 	}
 
 	// Load old record
@@ -933,7 +933,7 @@ class cinventory_store_edit extends cinventory_store {
 		// verified_action
 		// verified_comment
 		// verified_by
-		// status
+		// statuss
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1163,29 +1163,28 @@ class cinventory_store_edit extends cinventory_store {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
-		// status
-		$this->status->ViewValue = $this->status->CurrentValue;
-		if (strval($this->status->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
+		// statuss
+		if (strval($this->statuss->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
 		$sWhereWrk = "";
-		$this->status->LookupFilters = array();
+		$this->statuss->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->status->ViewValue = $this->status->DisplayValue($arwrk);
+				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->status->ViewValue = $this->status->CurrentValue;
+				$this->statuss->ViewValue = $this->statuss->CurrentValue;
 			}
 		} else {
-			$this->status->ViewValue = NULL;
+			$this->statuss->ViewValue = NULL;
 		}
-		$this->status->ViewCustomAttributes = "";
+		$this->statuss->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
@@ -1292,10 +1291,10 @@ class cinventory_store_edit extends cinventory_store {
 			$this->verified_by->HrefValue = "";
 			$this->verified_by->TooltipValue = "";
 
-			// status
-			$this->status->LinkCustomAttributes = "";
-			$this->status->HrefValue = "";
-			$this->status->TooltipValue = "";
+			// statuss
+			$this->statuss->LinkCustomAttributes = "";
+			$this->statuss->HrefValue = "";
+			$this->statuss->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_EDIT) { // Edit row
 
 			// id
@@ -1545,31 +1544,24 @@ class cinventory_store_edit extends cinventory_store {
 			}
 			$this->verified_by->PlaceHolder = ew_RemoveHtml($this->verified_by->FldCaption());
 
-			// status
-			$this->status->EditAttrs["class"] = "form-control";
-			$this->status->EditCustomAttributes = "";
-			$this->status->EditValue = ew_HtmlEncode($this->status->CurrentValue);
-			if (strval($this->status->CurrentValue) <> "") {
-				$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
-			$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
-			$sWhereWrk = "";
-			$this->status->LookupFilters = array();
-			ew_AddFilter($sWhereWrk, $sFilterWrk);
-			$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
-			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-				$rswrk = Conn()->Execute($sSqlWrk);
-				if ($rswrk && !$rswrk->EOF) { // Lookup values found
-					$arwrk = array();
-					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
-					$this->status->EditValue = $this->status->DisplayValue($arwrk);
-					$rswrk->Close();
-				} else {
-					$this->status->EditValue = ew_HtmlEncode($this->status->CurrentValue);
-				}
+			// statuss
+			$this->statuss->EditAttrs["class"] = "form-control";
+			$this->statuss->EditCustomAttributes = "";
+			if (trim(strval($this->statuss->CurrentValue)) == "") {
+				$sFilterWrk = "0=1";
 			} else {
-				$this->status->EditValue = NULL;
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
 			}
-			$this->status->PlaceHolder = ew_RemoveHtml($this->status->FldCaption());
+			$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `statuss`";
+			$sWhereWrk = "";
+			$this->statuss->LookupFilters = array();
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->statuss->EditValue = $arwrk;
 
 			// Edit refer script
 			// id
@@ -1657,9 +1649,9 @@ class cinventory_store_edit extends cinventory_store {
 			$this->verified_by->LinkCustomAttributes = "";
 			$this->verified_by->HrefValue = "";
 
-			// status
-			$this->status->LinkCustomAttributes = "";
-			$this->status->HrefValue = "";
+			// statuss
+			$this->statuss->LinkCustomAttributes = "";
+			$this->statuss->HrefValue = "";
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD || $this->RowType == EW_ROWTYPE_EDIT || $this->RowType == EW_ROWTYPE_SEARCH) // Add/Edit/Search row
 			$this->SetupFieldTitles();
@@ -1817,8 +1809,8 @@ class cinventory_store_edit extends cinventory_store {
 			// verified_by
 			$this->verified_by->SetDbValueDef($rsnew, $this->verified_by->CurrentValue, NULL, $this->verified_by->ReadOnly);
 
-			// status
-			$this->status->SetDbValueDef($rsnew, $this->status->CurrentValue, NULL, $this->status->ReadOnly);
+			// statuss
+			$this->statuss->SetDbValueDef($rsnew, $this->statuss->CurrentValue, NULL, $this->statuss->ReadOnly);
 
 			// Call Row Updating event
 			$bUpdateRow = $this->Row_Updating($rsold, $rsnew);
@@ -1939,14 +1931,14 @@ class cinventory_store_edit extends cinventory_store {
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
 			break;
-		case "x_status":
+		case "x_statuss":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
-			$sWhereWrk = "{filter}";
+			$sWhereWrk = "";
 			$fld->LookupFilters = array();
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
-			$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
+			$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
@@ -2015,18 +2007,6 @@ class cinventory_store_edit extends cinventory_store {
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->verified_by, $sWhereWrk); // Call Lookup Selecting
-			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			if ($sSqlWrk <> "")
-				$fld->LookupFilters["s"] .= $sSqlWrk;
-			break;
-		case "x_status":
-			$sSqlWrk = "";
-			$sSqlWrk = "SELECT `id`, `description` AS `DispFld` FROM `statuss`";
-			$sWhereWrk = "`description` LIKE '{query_value}%'";
-			$fld->LookupFilters = array();
-			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
-			$sSqlWrk = "";
-			$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
@@ -2236,9 +2216,8 @@ finventory_storeedit.Lists["x_verified_action"].Options = <?php echo json_encode
 finventory_storeedit.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 finventory_storeedit.Lists["x_verified_by"].Data = "<?php echo $inventory_store_edit->verified_by->LookupFilterQuery(FALSE, "edit") ?>";
 finventory_storeedit.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_edit->verified_by->LookupFilterQuery(TRUE, "edit"))) ?>;
-finventory_storeedit.Lists["x_status"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
-finventory_storeedit.Lists["x_status"].Data = "<?php echo $inventory_store_edit->status->LookupFilterQuery(FALSE, "edit") ?>";
-finventory_storeedit.AutoSuggests["x_status"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_edit->status->LookupFilterQuery(TRUE, "edit"))) ?>;
+finventory_storeedit.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
+finventory_storeedit.Lists["x_statuss"].Data = "<?php echo $inventory_store_edit->statuss->LookupFilterQuery(FALSE, "edit") ?>";
 
 // Form object for search
 </script>
@@ -2758,33 +2737,24 @@ finventory_storeedit.CreateAutoSuggest({"id":"x_verified_by","forceSelect":false
 <?php echo $inventory_store->verified_by->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($inventory_store->status->Visible) { // status ?>
-	<div id="r_status" class="form-group">
-		<label id="elh_inventory_store_status" class="<?php echo $inventory_store_edit->LeftColumnClass ?>"><?php echo $inventory_store->status->FldCaption() ?></label>
-		<div class="<?php echo $inventory_store_edit->RightColumnClass ?>"><div<?php echo $inventory_store->status->CellAttributes() ?>>
+<?php if ($inventory_store->statuss->Visible) { // statuss ?>
+	<div id="r_statuss" class="form-group">
+		<label id="elh_inventory_store_statuss" for="x_statuss" class="<?php echo $inventory_store_edit->LeftColumnClass ?>"><?php echo $inventory_store->statuss->FldCaption() ?></label>
+		<div class="<?php echo $inventory_store_edit->RightColumnClass ?>"><div<?php echo $inventory_store->statuss->CellAttributes() ?>>
 <?php if ($inventory_store->CurrentAction <> "F") { ?>
-<span id="el_inventory_store_status">
-<?php
-$wrkonchange = trim(" " . @$inventory_store->status->EditAttrs["onchange"]);
-if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
-$inventory_store->status->EditAttrs["onchange"] = "";
-?>
-<span id="as_x_status" style="white-space: nowrap; z-index: 8780">
-	<input type="text" name="sv_x_status" id="sv_x_status" value="<?php echo $inventory_store->status->EditValue ?>" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($inventory_store->status->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($inventory_store->status->getPlaceHolder()) ?>"<?php echo $inventory_store->status->EditAttributes() ?>>
-</span>
-<input type="hidden" data-table="inventory_store" data-field="x_status" data-page="1" data-value-separator="<?php echo $inventory_store->status->DisplayValueSeparatorAttribute() ?>" name="x_status" id="x_status" value="<?php echo ew_HtmlEncode($inventory_store->status->CurrentValue) ?>"<?php echo $wrkonchange ?>>
-<script type="text/javascript">
-finventory_storeedit.CreateAutoSuggest({"id":"x_status","forceSelect":false});
-</script>
+<span id="el_inventory_store_statuss">
+<select data-table="inventory_store" data-field="x_statuss" data-page="1" data-value-separator="<?php echo $inventory_store->statuss->DisplayValueSeparatorAttribute() ?>" id="x_statuss" name="x_statuss"<?php echo $inventory_store->statuss->EditAttributes() ?>>
+<?php echo $inventory_store->statuss->SelectOptionListHtml("x_statuss") ?>
+</select>
 </span>
 <?php } else { ?>
-<span id="el_inventory_store_status">
-<span<?php echo $inventory_store->status->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $inventory_store->status->ViewValue ?></p></span>
+<span id="el_inventory_store_statuss">
+<span<?php echo $inventory_store->statuss->ViewAttributes() ?>>
+<p class="form-control-static"><?php echo $inventory_store->statuss->ViewValue ?></p></span>
 </span>
-<input type="hidden" data-table="inventory_store" data-field="x_status" data-page="1" name="x_status" id="x_status" value="<?php echo ew_HtmlEncode($inventory_store->status->FormValue) ?>">
+<input type="hidden" data-table="inventory_store" data-field="x_statuss" data-page="1" name="x_statuss" id="x_statuss" value="<?php echo ew_HtmlEncode($inventory_store->statuss->FormValue) ?>">
 <?php } ?>
-<?php echo $inventory_store->status->CustomMsg ?></div></div>
+<?php echo $inventory_store->statuss->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 </div><!-- /page* -->
@@ -2817,7 +2787,8 @@ if (EW_DEBUG_ENABLED)
 
 $("#r_staff_id").hide();
 $("#r_treated_by").hide();
-$('#x_status').attr('readonly',true);
+$("#r_statuss").hide();
+$('#x_statuss').attr('readonly',true);
 </script>
 <?php include_once "footer.php" ?>
 <?php

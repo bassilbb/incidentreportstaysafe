@@ -369,8 +369,6 @@ class cdefault {
 			$this->Page_Terminate("maintenancelist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'maintained_status'))
 			$this->Page_Terminate("maintained_statuslist.php");
-		if ($Security->AllowList(CurrentProjectID() . 'servicing_history'))
-			$this->Page_Terminate("servicing_historylist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'maintenance_report'))
 			$this->Page_Terminate("maintenance_reportlist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'assign_task'))
@@ -393,8 +391,6 @@ class cdefault {
 			$this->Page_Terminate("statusslist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'inventory_report'))
 			$this->Page_Terminate("inventory_reportlist.php");
-		if ($Security->AllowList(CurrentProjectID() . 'store_report'))
-			$this->Page_Terminate("store_reportlist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'inventory_record'))
 			$this->Page_Terminate("inventory_recordlist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'laptop_tablet'))
@@ -403,6 +399,10 @@ class cdefault {
 			$this->Page_Terminate("tablet_issueslist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'tablet_status'))
 			$this->Page_Terminate("tablet_statuslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'store_reports'))
+			$this->Page_Terminate("store_reportslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'pc_issuance'))
+			$this->Page_Terminate("pc_issuancelist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

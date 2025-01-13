@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg14.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
 <?php include_once "phpfn14.php" ?>
-<?php include_once "inventory_storeinfo.php" ?>
+<?php include_once "store_reportsinfo.php" ?>
 <?php include_once "usersinfo.php" ?>
 <?php include_once "userfn14.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$inventory_store_view = NULL; // Initialize page object first
+$store_reports_view = NULL; // Initialize page object first
 
-class cinventory_store_view extends cinventory_store {
+class cstore_reports_view extends cstore_reports {
 
 	// Page ID
 	var $PageID = 'view';
@@ -25,10 +25,10 @@ class cinventory_store_view extends cinventory_store {
 	var $ProjectID = '{DD9080C0-D1CA-431F-831F-CAC8FA61260C}';
 
 	// Table name
-	var $TableName = 'inventory_store';
+	var $TableName = 'store_reports';
 
 	// Page object name
-	var $PageObjName = 'inventory_store_view';
+	var $PageObjName = 'store_reports_view';
 
 	// Page headings
 	var $Heading = '';
@@ -288,10 +288,10 @@ class cinventory_store_view extends cinventory_store {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (inventory_store)
-		if (!isset($GLOBALS["inventory_store"]) || get_class($GLOBALS["inventory_store"]) == "cinventory_store") {
-			$GLOBALS["inventory_store"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["inventory_store"];
+		// Table object (store_reports)
+		if (!isset($GLOBALS["store_reports"]) || get_class($GLOBALS["store_reports"]) == "cstore_reports") {
+			$GLOBALS["store_reports"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["store_reports"];
 		}
 		$KeyUrl = "";
 		if (@$_GET["id"] <> "") {
@@ -315,7 +315,7 @@ class cinventory_store_view extends cinventory_store {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'inventory_store', TRUE);
+			define("EW_TABLE_NAME", 'store_reports', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -372,7 +372,7 @@ class cinventory_store_view extends cinventory_store {
 			$Security->SaveLastUrl();
 			$this->setFailureMessage(ew_DeniedMsg()); // Set no permission
 			if ($Security->CanList())
-				$this->Page_Terminate(ew_GetUrl("inventory_storelist.php"));
+				$this->Page_Terminate(ew_GetUrl("store_reportslist.php"));
 			else
 				$this->Page_Terminate(ew_GetUrl("login.php"));
 		}
@@ -440,6 +440,7 @@ class cinventory_store_view extends cinventory_store {
 		$this->quantity_out->SetVisibility();
 		$this->total_quantity->SetVisibility();
 		$this->treated_by->SetVisibility();
+		$this->statuss->SetVisibility();
 		$this->issued_action->SetVisibility();
 		$this->issued_comment->SetVisibility();
 		$this->issued_by->SetVisibility();
@@ -451,7 +452,6 @@ class cinventory_store_view extends cinventory_store {
 		$this->verified_action->SetVisibility();
 		$this->verified_comment->SetVisibility();
 		$this->verified_by->SetVisibility();
-		$this->statuss->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -483,13 +483,13 @@ class cinventory_store_view extends cinventory_store {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $inventory_store;
+		global $EW_EXPORT, $store_reports;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($inventory_store);
+				$doc = new $class($store_reports);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -515,7 +515,7 @@ class cinventory_store_view extends cinventory_store {
 				$pageName = ew_GetPageName($url);
 				if ($pageName != $this->GetListUrl()) { // Not List page
 					$row["caption"] = $this->GetModalCaption($pageName);
-					if ($pageName == "inventory_storeview.php")
+					if ($pageName == "store_reportsview.php")
 						$row["view"] = "1";
 				} else { // List page should not be shown as modal => error
 					$row["error"] = $this->getFailureMessage();
@@ -581,7 +581,7 @@ class cinventory_store_view extends cinventory_store {
 					if ($this->TotalRecs <= 0) { // No record found
 						if ($this->getSuccessMessage() == "" && $this->getFailureMessage() == "")
 							$this->setFailureMessage($Language->Phrase("NoRecord")); // Set no record message
-						$this->Page_Terminate("inventory_storelist.php"); // Return to list page
+						$this->Page_Terminate("store_reportslist.php"); // Return to list page
 					} elseif ($bLoadCurrentRecord) { // Load current record position
 						$this->SetupStartRec(); // Set up start record position
 
@@ -605,7 +605,7 @@ class cinventory_store_view extends cinventory_store {
 					if (!$bMatchRecord) {
 						if ($this->getSuccessMessage() == "" && $this->getFailureMessage() == "")
 							$this->setFailureMessage($Language->Phrase("NoRecord")); // Set no record message
-						$sReturnUrl = "inventory_storelist.php"; // No matching record, return to list
+						$sReturnUrl = "store_reportslist.php"; // No matching record, return to list
 					} else {
 						$this->LoadRowValues($this->Recordset); // Load row values
 					}
@@ -618,7 +618,7 @@ class cinventory_store_view extends cinventory_store {
 				exit();
 			}
 		} else {
-			$sReturnUrl = "inventory_storelist.php"; // Not page request, return to list
+			$sReturnUrl = "store_reportslist.php"; // Not page request, return to list
 		}
 		if ($sReturnUrl <> "")
 			$this->Page_Terminate($sReturnUrl);
@@ -638,41 +638,6 @@ class cinventory_store_view extends cinventory_store {
 		global $Language, $Security;
 		$options = &$this->OtherOptions;
 		$option = &$options["action"];
-
-		// Add
-		$item = &$option->Add("add");
-		$addcaption = ew_HtmlTitle($Language->Phrase("ViewPageAddLink"));
-		if ($this->IsModal) // Modal
-			$item->Body = "<a class=\"ewAction ewAdd\" title=\"" . $addcaption . "\" data-caption=\"" . $addcaption . "\" href=\"javascript:void(0);\" onclick=\"ew_ModalDialogShow({lnk:this,url:'" . ew_HtmlEncode($this->AddUrl) . "'});\">" . $Language->Phrase("ViewPageAddLink") . "</a>";
-		else
-			$item->Body = "<a class=\"ewAction ewAdd\" title=\"" . $addcaption . "\" data-caption=\"" . $addcaption . "\" href=\"" . ew_HtmlEncode($this->AddUrl) . "\">" . $Language->Phrase("ViewPageAddLink") . "</a>";
-		$item->Visible = ($this->AddUrl <> "" && $Security->CanAdd());
-
-		// Edit
-		$item = &$option->Add("edit");
-		$editcaption = ew_HtmlTitle($Language->Phrase("ViewPageEditLink"));
-		if ($this->IsModal) // Modal
-			$item->Body = "<a class=\"ewAction ewEdit\" title=\"" . $editcaption . "\" data-caption=\"" . $editcaption . "\" href=\"javascript:void(0);\" onclick=\"ew_ModalDialogShow({lnk:this,url:'" . ew_HtmlEncode($this->EditUrl) . "'});\">" . $Language->Phrase("ViewPageEditLink") . "</a>";
-		else
-			$item->Body = "<a class=\"ewAction ewEdit\" title=\"" . $editcaption . "\" data-caption=\"" . $editcaption . "\" href=\"" . ew_HtmlEncode($this->EditUrl) . "\">" . $Language->Phrase("ViewPageEditLink") . "</a>";
-		$item->Visible = ($this->EditUrl <> "" && $Security->CanEdit());
-
-		// Copy
-		$item = &$option->Add("copy");
-		$copycaption = ew_HtmlTitle($Language->Phrase("ViewPageCopyLink"));
-		if ($this->IsModal) // Modal
-			$item->Body = "<a class=\"ewAction ewCopy\" title=\"" . $copycaption . "\" data-caption=\"" . $copycaption . "\" href=\"javascript:void(0);\" onclick=\"ew_ModalDialogShow({lnk:this,btn:'AddBtn',url:'" . ew_HtmlEncode($this->CopyUrl) . "'});\">" . $Language->Phrase("ViewPageCopyLink") . "</a>";
-		else
-			$item->Body = "<a class=\"ewAction ewCopy\" title=\"" . $copycaption . "\" data-caption=\"" . $copycaption . "\" href=\"" . ew_HtmlEncode($this->CopyUrl) . "\">" . $Language->Phrase("ViewPageCopyLink") . "</a>";
-		$item->Visible = ($this->CopyUrl <> "" && $Security->CanAdd());
-
-		// Delete
-		$item = &$option->Add("delete");
-		if ($this->IsModal) // Handle as inline delete
-			$item->Body = "<a onclick=\"return ew_ConfirmDelete(this);\" class=\"ewAction ewDelete\" title=\"" . ew_HtmlTitle($Language->Phrase("ViewPageDeleteLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("ViewPageDeleteLink")) . "\" href=\"" . ew_HtmlEncode(ew_UrlAddQuery($this->DeleteUrl, "a_delete=1")) . "\">" . $Language->Phrase("ViewPageDeleteLink") . "</a>";
-		else
-			$item->Body = "<a class=\"ewAction ewDelete\" title=\"" . ew_HtmlTitle($Language->Phrase("ViewPageDeleteLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("ViewPageDeleteLink")) . "\" href=\"" . ew_HtmlEncode($this->DeleteUrl) . "\">" . $Language->Phrase("ViewPageDeleteLink") . "</a>";
-		$item->Visible = ($this->DeleteUrl <> "" && $Security->CanDelete());
 
 		// Set up action default
 		$option = &$options["action"];
@@ -791,6 +756,7 @@ class cinventory_store_view extends cinventory_store {
 		$this->quantity_out->setDbValue($row['quantity_out']);
 		$this->total_quantity->setDbValue($row['total_quantity']);
 		$this->treated_by->setDbValue($row['treated_by']);
+		$this->statuss->setDbValue($row['statuss']);
 		$this->issued_action->setDbValue($row['issued_action']);
 		$this->issued_comment->setDbValue($row['issued_comment']);
 		$this->issued_by->setDbValue($row['issued_by']);
@@ -802,7 +768,6 @@ class cinventory_store_view extends cinventory_store {
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
-		$this->statuss->setDbValue($row['statuss']);
 	}
 
 	// Return a row with default values
@@ -818,6 +783,7 @@ class cinventory_store_view extends cinventory_store {
 		$row['quantity_out'] = NULL;
 		$row['total_quantity'] = NULL;
 		$row['treated_by'] = NULL;
+		$row['statuss'] = NULL;
 		$row['issued_action'] = NULL;
 		$row['issued_comment'] = NULL;
 		$row['issued_by'] = NULL;
@@ -829,7 +795,6 @@ class cinventory_store_view extends cinventory_store {
 		$row['verified_action'] = NULL;
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
-		$row['statuss'] = NULL;
 		return $row;
 	}
 
@@ -848,6 +813,7 @@ class cinventory_store_view extends cinventory_store {
 		$this->quantity_out->DbValue = $row['quantity_out'];
 		$this->total_quantity->DbValue = $row['total_quantity'];
 		$this->treated_by->DbValue = $row['treated_by'];
+		$this->statuss->DbValue = $row['statuss'];
 		$this->issued_action->DbValue = $row['issued_action'];
 		$this->issued_comment->DbValue = $row['issued_comment'];
 		$this->issued_by->DbValue = $row['issued_by'];
@@ -859,7 +825,6 @@ class cinventory_store_view extends cinventory_store {
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
-		$this->statuss->DbValue = $row['statuss'];
 	}
 
 	// Render row values based on field settings
@@ -888,6 +853,7 @@ class cinventory_store_view extends cinventory_store {
 		// quantity_out
 		// total_quantity
 		// treated_by
+		// statuss
 		// issued_action
 		// issued_comment
 		// issued_by
@@ -899,7 +865,6 @@ class cinventory_store_view extends cinventory_store {
 		// verified_action
 		// verified_comment
 		// verified_by
-		// statuss
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1004,6 +969,30 @@ class cinventory_store_view extends cinventory_store {
 			$this->treated_by->ViewValue = NULL;
 		}
 		$this->treated_by->ViewCustomAttributes = "";
+
+		// statuss
+		$this->statuss->ViewValue = $this->statuss->CurrentValue;
+		if (strval($this->statuss->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
+		$sWhereWrk = "";
+		$this->statuss->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->statuss->ViewValue = $this->statuss->CurrentValue;
+			}
+		} else {
+			$this->statuss->ViewValue = NULL;
+		}
+		$this->statuss->ViewCustomAttributes = "";
 
 		// issued_action
 		if (strval($this->issued_action->CurrentValue) <> "") {
@@ -1129,29 +1118,6 @@ class cinventory_store_view extends cinventory_store {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
-		// statuss
-		if (strval($this->statuss->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
-		$sWhereWrk = "";
-		$this->statuss->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->statuss->ViewValue = $this->statuss->CurrentValue;
-			}
-		} else {
-			$this->statuss->ViewValue = NULL;
-		}
-		$this->statuss->ViewCustomAttributes = "";
-
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
@@ -1201,6 +1167,11 @@ class cinventory_store_view extends cinventory_store {
 			$this->treated_by->LinkCustomAttributes = "";
 			$this->treated_by->HrefValue = "";
 			$this->treated_by->TooltipValue = "";
+
+			// statuss
+			$this->statuss->LinkCustomAttributes = "";
+			$this->statuss->HrefValue = "";
+			$this->statuss->TooltipValue = "";
 
 			// issued_action
 			$this->issued_action->LinkCustomAttributes = "";
@@ -1256,11 +1227,6 @@ class cinventory_store_view extends cinventory_store {
 			$this->verified_by->LinkCustomAttributes = "";
 			$this->verified_by->HrefValue = "";
 			$this->verified_by->TooltipValue = "";
-
-			// statuss
-			$this->statuss->LinkCustomAttributes = "";
-			$this->statuss->HrefValue = "";
-			$this->statuss->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1310,7 +1276,7 @@ class cinventory_store_view extends cinventory_store {
 		// Export to Email
 		$item = &$this->ExportOptions->Add("email");
 		$url = "";
-		$item->Body = "<button id=\"emf_inventory_store\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_inventory_store',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.finventory_storeview,key:" . ew_ArrayToJsonAttr($this->RecKey) . ",sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
+		$item->Body = "<button id=\"emf_store_reports\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_store_reports',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fstore_reportsview,key:" . ew_ArrayToJsonAttr($this->RecKey) . ",sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
 		$item->Visible = FALSE;
 
 		// Drop down button for export
@@ -1410,7 +1376,7 @@ class cinventory_store_view extends cinventory_store {
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new cBreadcrumb();
 		$url = substr(ew_CurrentUrl(), strrpos(ew_CurrentUrl(), "/")+1);
-		$Breadcrumb->Add("list", $this->TableVar, $this->AddMasterUrl("inventory_storelist.php"), "", $this->TableVar, TRUE);
+		$Breadcrumb->Add("list", $this->TableVar, $this->AddMasterUrl("store_reportslist.php"), "", $this->TableVar, TRUE);
 		$PageId = "view";
 		$Breadcrumb->Add("view", $PageId, $url);
 	}
@@ -1522,30 +1488,30 @@ class cinventory_store_view extends cinventory_store {
 <?php
 
 // Create page object
-if (!isset($inventory_store_view)) $inventory_store_view = new cinventory_store_view();
+if (!isset($store_reports_view)) $store_reports_view = new cstore_reports_view();
 
 // Page init
-$inventory_store_view->Page_Init();
+$store_reports_view->Page_Init();
 
 // Page main
-$inventory_store_view->Page_Main();
+$store_reports_view->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$inventory_store_view->Page_Render();
+$store_reports_view->Page_Render();
 ?>
 <?php include_once "header.php" ?>
-<?php if ($inventory_store->Export == "") { ?>
+<?php if ($store_reports->Export == "") { ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "view";
-var CurrentForm = finventory_storeview = new ew_Form("finventory_storeview", "view");
+var CurrentForm = fstore_reportsview = new ew_Form("fstore_reportsview", "view");
 
 // Form_CustomValidate event
-finventory_storeview.Form_CustomValidate = 
+fstore_reportsview.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid.
@@ -1553,34 +1519,35 @@ finventory_storeview.Form_CustomValidate =
  }
 
 // Use JavaScript validation or not
-finventory_storeview.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+fstore_reportsview.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-finventory_storeview.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_staffno","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-finventory_storeview.Lists["x_staff_id"].Data = "<?php echo $inventory_store_view->staff_id->LookupFilterQuery(FALSE, "view") ?>";
-finventory_storeview.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_view->staff_id->LookupFilterQuery(TRUE, "view"))) ?>;
-finventory_storeview.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
-finventory_storeview.Lists["x_material_name"].Data = "<?php echo $inventory_store_view->material_name->LookupFilterQuery(FALSE, "view") ?>";
-finventory_storeview.Lists["x_treated_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-finventory_storeview.Lists["x_treated_by"].Data = "<?php echo $inventory_store_view->treated_by->LookupFilterQuery(FALSE, "view") ?>";
-finventory_storeview.AutoSuggests["x_treated_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_view->treated_by->LookupFilterQuery(TRUE, "view"))) ?>;
-finventory_storeview.Lists["x_issued_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-finventory_storeview.Lists["x_issued_action"].Options = <?php echo json_encode($inventory_store_view->issued_action->Options()) ?>;
-finventory_storeview.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-finventory_storeview.Lists["x_issued_by"].Data = "<?php echo $inventory_store_view->issued_by->LookupFilterQuery(FALSE, "view") ?>";
-finventory_storeview.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_view->issued_by->LookupFilterQuery(TRUE, "view"))) ?>;
-finventory_storeview.Lists["x_approver_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-finventory_storeview.Lists["x_approver_action"].Options = <?php echo json_encode($inventory_store_view->approver_action->Options()) ?>;
-finventory_storeview.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-finventory_storeview.Lists["x_approved_by"].Data = "<?php echo $inventory_store_view->approved_by->LookupFilterQuery(FALSE, "view") ?>";
-finventory_storeview.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_view->approved_by->LookupFilterQuery(TRUE, "view"))) ?>;
-finventory_storeview.Lists["x_verified_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-finventory_storeview.Lists["x_verified_action"].Options = <?php echo json_encode($inventory_store_view->verified_action->Options()) ?>;
-finventory_storeview.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-finventory_storeview.Lists["x_verified_by"].Data = "<?php echo $inventory_store_view->verified_by->LookupFilterQuery(FALSE, "view") ?>";
-finventory_storeview.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_view->verified_by->LookupFilterQuery(TRUE, "view"))) ?>;
-finventory_storeview.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
-finventory_storeview.Lists["x_statuss"].Data = "<?php echo $inventory_store_view->statuss->LookupFilterQuery(FALSE, "view") ?>";
+fstore_reportsview.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_staffno","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportsview.Lists["x_staff_id"].Data = "<?php echo $store_reports_view->staff_id->LookupFilterQuery(FALSE, "view") ?>";
+fstore_reportsview.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_view->staff_id->LookupFilterQuery(TRUE, "view"))) ?>;
+fstore_reportsview.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
+fstore_reportsview.Lists["x_material_name"].Data = "<?php echo $store_reports_view->material_name->LookupFilterQuery(FALSE, "view") ?>";
+fstore_reportsview.Lists["x_treated_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportsview.Lists["x_treated_by"].Data = "<?php echo $store_reports_view->treated_by->LookupFilterQuery(FALSE, "view") ?>";
+fstore_reportsview.AutoSuggests["x_treated_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_view->treated_by->LookupFilterQuery(TRUE, "view"))) ?>;
+fstore_reportsview.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
+fstore_reportsview.Lists["x_statuss"].Data = "<?php echo $store_reports_view->statuss->LookupFilterQuery(FALSE, "view") ?>";
+fstore_reportsview.AutoSuggests["x_statuss"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_view->statuss->LookupFilterQuery(TRUE, "view"))) ?>;
+fstore_reportsview.Lists["x_issued_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+fstore_reportsview.Lists["x_issued_action"].Options = <?php echo json_encode($store_reports_view->issued_action->Options()) ?>;
+fstore_reportsview.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportsview.Lists["x_issued_by"].Data = "<?php echo $store_reports_view->issued_by->LookupFilterQuery(FALSE, "view") ?>";
+fstore_reportsview.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_view->issued_by->LookupFilterQuery(TRUE, "view"))) ?>;
+fstore_reportsview.Lists["x_approver_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+fstore_reportsview.Lists["x_approver_action"].Options = <?php echo json_encode($store_reports_view->approver_action->Options()) ?>;
+fstore_reportsview.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportsview.Lists["x_approved_by"].Data = "<?php echo $store_reports_view->approved_by->LookupFilterQuery(FALSE, "view") ?>";
+fstore_reportsview.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_view->approved_by->LookupFilterQuery(TRUE, "view"))) ?>;
+fstore_reportsview.Lists["x_verified_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+fstore_reportsview.Lists["x_verified_action"].Options = <?php echo json_encode($store_reports_view->verified_action->Options()) ?>;
+fstore_reportsview.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportsview.Lists["x_verified_by"].Data = "<?php echo $store_reports_view->verified_by->LookupFilterQuery(FALSE, "view") ?>";
+fstore_reportsview.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_view->verified_by->LookupFilterQuery(TRUE, "view"))) ?>;
 
 // Form object for search
 </script>
@@ -1589,329 +1556,329 @@ finventory_storeview.Lists["x_statuss"].Data = "<?php echo $inventory_store_view
 // Write your client script here, no need to add script tags.
 </script>
 <?php } ?>
-<?php if ($inventory_store->Export == "") { ?>
+<?php if ($store_reports->Export == "") { ?>
 <div class="ewToolbar">
-<?php $inventory_store_view->ExportOptions->Render("body") ?>
+<?php $store_reports_view->ExportOptions->Render("body") ?>
 <?php
-	foreach ($inventory_store_view->OtherOptions as &$option)
+	foreach ($store_reports_view->OtherOptions as &$option)
 		$option->Render("body");
 ?>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
-<?php $inventory_store_view->ShowPageHeader(); ?>
+<?php $store_reports_view->ShowPageHeader(); ?>
 <?php
-$inventory_store_view->ShowMessage();
+$store_reports_view->ShowMessage();
 ?>
-<?php if (!$inventory_store_view->IsModal) { ?>
-<?php if ($inventory_store->Export == "") { ?>
+<?php if (!$store_reports_view->IsModal) { ?>
+<?php if ($store_reports->Export == "") { ?>
 <form name="ewPagerForm" class="form-inline ewForm ewPagerForm" action="<?php echo ew_CurrentPage() ?>">
-<?php if (!isset($inventory_store_view->Pager)) $inventory_store_view->Pager = new cPrevNextPager($inventory_store_view->StartRec, $inventory_store_view->DisplayRecs, $inventory_store_view->TotalRecs, $inventory_store_view->AutoHidePager) ?>
-<?php if ($inventory_store_view->Pager->RecordCount > 0 && $inventory_store_view->Pager->Visible) { ?>
+<?php if (!isset($store_reports_view->Pager)) $store_reports_view->Pager = new cPrevNextPager($store_reports_view->StartRec, $store_reports_view->DisplayRecs, $store_reports_view->TotalRecs, $store_reports_view->AutoHidePager) ?>
+<?php if ($store_reports_view->Pager->RecordCount > 0 && $store_reports_view->Pager->Visible) { ?>
 <div class="ewPager">
 <span><?php echo $Language->Phrase("Page") ?>&nbsp;</span>
 <div class="ewPrevNext"><div class="input-group">
 <div class="input-group-btn">
 <!--first page button-->
-	<?php if ($inventory_store_view->Pager->FirstButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $inventory_store_view->PageUrl() ?>start=<?php echo $inventory_store_view->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
+	<?php if ($store_reports_view->Pager->FirstButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $store_reports_view->PageUrl() ?>start=<?php echo $store_reports_view->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerFirst") ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } ?>
 <!--previous page button-->
-	<?php if ($inventory_store_view->Pager->PrevButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $inventory_store_view->PageUrl() ?>start=<?php echo $inventory_store_view->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php if ($store_reports_view->Pager->PrevButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $store_reports_view->PageUrl() ?>start=<?php echo $store_reports_view->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerPrevious") ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } ?>
 </div>
 <!--current page number-->
-	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $inventory_store_view->Pager->CurrentPage ?>">
+	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $store_reports_view->Pager->CurrentPage ?>">
 <div class="input-group-btn">
 <!--next page button-->
-	<?php if ($inventory_store_view->Pager->NextButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $inventory_store_view->PageUrl() ?>start=<?php echo $inventory_store_view->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
+	<?php if ($store_reports_view->Pager->NextButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $store_reports_view->PageUrl() ?>start=<?php echo $store_reports_view->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerNext") ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } ?>
 <!--last page button-->
-	<?php if ($inventory_store_view->Pager->LastButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $inventory_store_view->PageUrl() ?>start=<?php echo $inventory_store_view->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
+	<?php if ($store_reports_view->Pager->LastButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $store_reports_view->PageUrl() ?>start=<?php echo $store_reports_view->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerLast") ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } ?>
 </div>
 </div>
 </div>
-<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $inventory_store_view->Pager->PageCount ?></span>
+<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $store_reports_view->Pager->PageCount ?></span>
 </div>
 <?php } ?>
 <div class="clearfix"></div>
 </form>
 <?php } ?>
 <?php } ?>
-<form name="finventory_storeview" id="finventory_storeview" class="form-inline ewForm ewViewForm" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($inventory_store_view->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $inventory_store_view->Token ?>">
+<form name="fstore_reportsview" id="fstore_reportsview" class="form-inline ewForm ewViewForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($store_reports_view->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $store_reports_view->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="inventory_store">
-<input type="hidden" name="modal" value="<?php echo intval($inventory_store_view->IsModal) ?>">
+<input type="hidden" name="t" value="store_reports">
+<input type="hidden" name="modal" value="<?php echo intval($store_reports_view->IsModal) ?>">
 <table class="table table-striped table-bordered table-hover table-condensed ewViewTable">
-<?php if ($inventory_store->id->Visible) { // id ?>
+<?php if ($store_reports->id->Visible) { // id ?>
 	<tr id="r_id">
-		<td class="col-sm-2"><span id="elh_inventory_store_id"><?php echo $inventory_store->id->FldCaption() ?></span></td>
-		<td data-name="id"<?php echo $inventory_store->id->CellAttributes() ?>>
-<span id="el_inventory_store_id" data-page="1">
-<span<?php echo $inventory_store->id->ViewAttributes() ?>>
-<?php echo $inventory_store->id->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_store_reports_id"><?php echo $store_reports->id->FldCaption() ?></span></td>
+		<td data-name="id"<?php echo $store_reports->id->CellAttributes() ?>>
+<span id="el_store_reports_id" data-page="1">
+<span<?php echo $store_reports->id->ViewAttributes() ?>>
+<?php echo $store_reports->id->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($inventory_store->date->Visible) { // date ?>
+<?php if ($store_reports->date->Visible) { // date ?>
 	<tr id="r_date">
-		<td class="col-sm-2"><span id="elh_inventory_store_date"><?php echo $inventory_store->date->FldCaption() ?></span></td>
-		<td data-name="date"<?php echo $inventory_store->date->CellAttributes() ?>>
-<span id="el_inventory_store_date" data-page="1">
-<span<?php echo $inventory_store->date->ViewAttributes() ?>>
-<?php echo $inventory_store->date->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_store_reports_date"><?php echo $store_reports->date->FldCaption() ?></span></td>
+		<td data-name="date"<?php echo $store_reports->date->CellAttributes() ?>>
+<span id="el_store_reports_date" data-page="1">
+<span<?php echo $store_reports->date->ViewAttributes() ?>>
+<?php echo $store_reports->date->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($inventory_store->reference_id->Visible) { // reference_id ?>
+<?php if ($store_reports->reference_id->Visible) { // reference_id ?>
 	<tr id="r_reference_id">
-		<td class="col-sm-2"><span id="elh_inventory_store_reference_id"><?php echo $inventory_store->reference_id->FldCaption() ?></span></td>
-		<td data-name="reference_id"<?php echo $inventory_store->reference_id->CellAttributes() ?>>
-<span id="el_inventory_store_reference_id" data-page="1">
-<span<?php echo $inventory_store->reference_id->ViewAttributes() ?>>
-<?php echo $inventory_store->reference_id->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_store_reports_reference_id"><?php echo $store_reports->reference_id->FldCaption() ?></span></td>
+		<td data-name="reference_id"<?php echo $store_reports->reference_id->CellAttributes() ?>>
+<span id="el_store_reports_reference_id" data-page="1">
+<span<?php echo $store_reports->reference_id->ViewAttributes() ?>>
+<?php echo $store_reports->reference_id->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($inventory_store->staff_id->Visible) { // staff_id ?>
+<?php if ($store_reports->staff_id->Visible) { // staff_id ?>
 	<tr id="r_staff_id">
-		<td class="col-sm-2"><span id="elh_inventory_store_staff_id"><?php echo $inventory_store->staff_id->FldCaption() ?></span></td>
-		<td data-name="staff_id"<?php echo $inventory_store->staff_id->CellAttributes() ?>>
-<span id="el_inventory_store_staff_id" data-page="1">
-<span<?php echo $inventory_store->staff_id->ViewAttributes() ?>>
-<?php echo $inventory_store->staff_id->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_store_reports_staff_id"><?php echo $store_reports->staff_id->FldCaption() ?></span></td>
+		<td data-name="staff_id"<?php echo $store_reports->staff_id->CellAttributes() ?>>
+<span id="el_store_reports_staff_id" data-page="1">
+<span<?php echo $store_reports->staff_id->ViewAttributes() ?>>
+<?php echo $store_reports->staff_id->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($inventory_store->material_name->Visible) { // material_name ?>
+<?php if ($store_reports->material_name->Visible) { // material_name ?>
 	<tr id="r_material_name">
-		<td class="col-sm-2"><span id="elh_inventory_store_material_name"><?php echo $inventory_store->material_name->FldCaption() ?></span></td>
-		<td data-name="material_name"<?php echo $inventory_store->material_name->CellAttributes() ?>>
-<span id="el_inventory_store_material_name" data-page="1">
-<span<?php echo $inventory_store->material_name->ViewAttributes() ?>>
-<?php echo $inventory_store->material_name->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_store_reports_material_name"><?php echo $store_reports->material_name->FldCaption() ?></span></td>
+		<td data-name="material_name"<?php echo $store_reports->material_name->CellAttributes() ?>>
+<span id="el_store_reports_material_name" data-page="1">
+<span<?php echo $store_reports->material_name->ViewAttributes() ?>>
+<?php echo $store_reports->material_name->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($inventory_store->quantity_in->Visible) { // quantity_in ?>
+<?php if ($store_reports->quantity_in->Visible) { // quantity_in ?>
 	<tr id="r_quantity_in">
-		<td class="col-sm-2"><span id="elh_inventory_store_quantity_in"><?php echo $inventory_store->quantity_in->FldCaption() ?></span></td>
-		<td data-name="quantity_in"<?php echo $inventory_store->quantity_in->CellAttributes() ?>>
-<span id="el_inventory_store_quantity_in" data-page="1">
-<span<?php echo $inventory_store->quantity_in->ViewAttributes() ?>>
-<?php echo $inventory_store->quantity_in->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_store_reports_quantity_in"><?php echo $store_reports->quantity_in->FldCaption() ?></span></td>
+		<td data-name="quantity_in"<?php echo $store_reports->quantity_in->CellAttributes() ?>>
+<span id="el_store_reports_quantity_in" data-page="1">
+<span<?php echo $store_reports->quantity_in->ViewAttributes() ?>>
+<?php echo $store_reports->quantity_in->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($inventory_store->quantity_type->Visible) { // quantity_type ?>
+<?php if ($store_reports->quantity_type->Visible) { // quantity_type ?>
 	<tr id="r_quantity_type">
-		<td class="col-sm-2"><span id="elh_inventory_store_quantity_type"><?php echo $inventory_store->quantity_type->FldCaption() ?></span></td>
-		<td data-name="quantity_type"<?php echo $inventory_store->quantity_type->CellAttributes() ?>>
-<span id="el_inventory_store_quantity_type" data-page="1">
-<span<?php echo $inventory_store->quantity_type->ViewAttributes() ?>>
-<?php echo $inventory_store->quantity_type->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_store_reports_quantity_type"><?php echo $store_reports->quantity_type->FldCaption() ?></span></td>
+		<td data-name="quantity_type"<?php echo $store_reports->quantity_type->CellAttributes() ?>>
+<span id="el_store_reports_quantity_type" data-page="1">
+<span<?php echo $store_reports->quantity_type->ViewAttributes() ?>>
+<?php echo $store_reports->quantity_type->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($inventory_store->quantity_out->Visible) { // quantity_out ?>
+<?php if ($store_reports->quantity_out->Visible) { // quantity_out ?>
 	<tr id="r_quantity_out">
-		<td class="col-sm-2"><span id="elh_inventory_store_quantity_out"><?php echo $inventory_store->quantity_out->FldCaption() ?></span></td>
-		<td data-name="quantity_out"<?php echo $inventory_store->quantity_out->CellAttributes() ?>>
-<span id="el_inventory_store_quantity_out" data-page="1">
-<span<?php echo $inventory_store->quantity_out->ViewAttributes() ?>>
-<?php echo $inventory_store->quantity_out->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_store_reports_quantity_out"><?php echo $store_reports->quantity_out->FldCaption() ?></span></td>
+		<td data-name="quantity_out"<?php echo $store_reports->quantity_out->CellAttributes() ?>>
+<span id="el_store_reports_quantity_out" data-page="1">
+<span<?php echo $store_reports->quantity_out->ViewAttributes() ?>>
+<?php echo $store_reports->quantity_out->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($inventory_store->total_quantity->Visible) { // total_quantity ?>
+<?php if ($store_reports->total_quantity->Visible) { // total_quantity ?>
 	<tr id="r_total_quantity">
-		<td class="col-sm-2"><span id="elh_inventory_store_total_quantity"><?php echo $inventory_store->total_quantity->FldCaption() ?></span></td>
-		<td data-name="total_quantity"<?php echo $inventory_store->total_quantity->CellAttributes() ?>>
-<span id="el_inventory_store_total_quantity" data-page="1">
-<span<?php echo $inventory_store->total_quantity->ViewAttributes() ?>>
-<?php echo $inventory_store->total_quantity->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_store_reports_total_quantity"><?php echo $store_reports->total_quantity->FldCaption() ?></span></td>
+		<td data-name="total_quantity"<?php echo $store_reports->total_quantity->CellAttributes() ?>>
+<span id="el_store_reports_total_quantity" data-page="1">
+<span<?php echo $store_reports->total_quantity->ViewAttributes() ?>>
+<?php echo $store_reports->total_quantity->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($inventory_store->treated_by->Visible) { // treated_by ?>
+<?php if ($store_reports->treated_by->Visible) { // treated_by ?>
 	<tr id="r_treated_by">
-		<td class="col-sm-2"><span id="elh_inventory_store_treated_by"><?php echo $inventory_store->treated_by->FldCaption() ?></span></td>
-		<td data-name="treated_by"<?php echo $inventory_store->treated_by->CellAttributes() ?>>
-<span id="el_inventory_store_treated_by" data-page="1">
-<span<?php echo $inventory_store->treated_by->ViewAttributes() ?>>
-<?php echo $inventory_store->treated_by->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_store_reports_treated_by"><?php echo $store_reports->treated_by->FldCaption() ?></span></td>
+		<td data-name="treated_by"<?php echo $store_reports->treated_by->CellAttributes() ?>>
+<span id="el_store_reports_treated_by" data-page="1">
+<span<?php echo $store_reports->treated_by->ViewAttributes() ?>>
+<?php echo $store_reports->treated_by->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($inventory_store->issued_action->Visible) { // issued_action ?>
-	<tr id="r_issued_action">
-		<td class="col-sm-2"><span id="elh_inventory_store_issued_action"><?php echo $inventory_store->issued_action->FldCaption() ?></span></td>
-		<td data-name="issued_action"<?php echo $inventory_store->issued_action->CellAttributes() ?>>
-<span id="el_inventory_store_issued_action" data-page="1">
-<span<?php echo $inventory_store->issued_action->ViewAttributes() ?>>
-<?php echo $inventory_store->issued_action->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($inventory_store->issued_comment->Visible) { // issued_comment ?>
-	<tr id="r_issued_comment">
-		<td class="col-sm-2"><span id="elh_inventory_store_issued_comment"><?php echo $inventory_store->issued_comment->FldCaption() ?></span></td>
-		<td data-name="issued_comment"<?php echo $inventory_store->issued_comment->CellAttributes() ?>>
-<span id="el_inventory_store_issued_comment" data-page="1">
-<span<?php echo $inventory_store->issued_comment->ViewAttributes() ?>>
-<?php echo $inventory_store->issued_comment->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($inventory_store->issued_by->Visible) { // issued_by ?>
-	<tr id="r_issued_by">
-		<td class="col-sm-2"><span id="elh_inventory_store_issued_by"><?php echo $inventory_store->issued_by->FldCaption() ?></span></td>
-		<td data-name="issued_by"<?php echo $inventory_store->issued_by->CellAttributes() ?>>
-<span id="el_inventory_store_issued_by" data-page="1">
-<span<?php echo $inventory_store->issued_by->ViewAttributes() ?>>
-<?php echo $inventory_store->issued_by->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($inventory_store->approver_date->Visible) { // approver_date ?>
-	<tr id="r_approver_date">
-		<td class="col-sm-2"><span id="elh_inventory_store_approver_date"><?php echo $inventory_store->approver_date->FldCaption() ?></span></td>
-		<td data-name="approver_date"<?php echo $inventory_store->approver_date->CellAttributes() ?>>
-<span id="el_inventory_store_approver_date" data-page="1">
-<span<?php echo $inventory_store->approver_date->ViewAttributes() ?>>
-<?php echo $inventory_store->approver_date->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($inventory_store->approver_action->Visible) { // approver_action ?>
-	<tr id="r_approver_action">
-		<td class="col-sm-2"><span id="elh_inventory_store_approver_action"><?php echo $inventory_store->approver_action->FldCaption() ?></span></td>
-		<td data-name="approver_action"<?php echo $inventory_store->approver_action->CellAttributes() ?>>
-<span id="el_inventory_store_approver_action" data-page="1">
-<span<?php echo $inventory_store->approver_action->ViewAttributes() ?>>
-<?php echo $inventory_store->approver_action->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($inventory_store->approved_comment->Visible) { // approved_comment ?>
-	<tr id="r_approved_comment">
-		<td class="col-sm-2"><span id="elh_inventory_store_approved_comment"><?php echo $inventory_store->approved_comment->FldCaption() ?></span></td>
-		<td data-name="approved_comment"<?php echo $inventory_store->approved_comment->CellAttributes() ?>>
-<span id="el_inventory_store_approved_comment" data-page="1">
-<span<?php echo $inventory_store->approved_comment->ViewAttributes() ?>>
-<?php echo $inventory_store->approved_comment->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($inventory_store->approved_by->Visible) { // approved_by ?>
-	<tr id="r_approved_by">
-		<td class="col-sm-2"><span id="elh_inventory_store_approved_by"><?php echo $inventory_store->approved_by->FldCaption() ?></span></td>
-		<td data-name="approved_by"<?php echo $inventory_store->approved_by->CellAttributes() ?>>
-<span id="el_inventory_store_approved_by" data-page="1">
-<span<?php echo $inventory_store->approved_by->ViewAttributes() ?>>
-<?php echo $inventory_store->approved_by->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($inventory_store->verified_date->Visible) { // verified_date ?>
-	<tr id="r_verified_date">
-		<td class="col-sm-2"><span id="elh_inventory_store_verified_date"><?php echo $inventory_store->verified_date->FldCaption() ?></span></td>
-		<td data-name="verified_date"<?php echo $inventory_store->verified_date->CellAttributes() ?>>
-<span id="el_inventory_store_verified_date" data-page="1">
-<span<?php echo $inventory_store->verified_date->ViewAttributes() ?>>
-<?php echo $inventory_store->verified_date->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($inventory_store->verified_action->Visible) { // verified_action ?>
-	<tr id="r_verified_action">
-		<td class="col-sm-2"><span id="elh_inventory_store_verified_action"><?php echo $inventory_store->verified_action->FldCaption() ?></span></td>
-		<td data-name="verified_action"<?php echo $inventory_store->verified_action->CellAttributes() ?>>
-<span id="el_inventory_store_verified_action" data-page="1">
-<span<?php echo $inventory_store->verified_action->ViewAttributes() ?>>
-<?php echo $inventory_store->verified_action->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($inventory_store->verified_comment->Visible) { // verified_comment ?>
-	<tr id="r_verified_comment">
-		<td class="col-sm-2"><span id="elh_inventory_store_verified_comment"><?php echo $inventory_store->verified_comment->FldCaption() ?></span></td>
-		<td data-name="verified_comment"<?php echo $inventory_store->verified_comment->CellAttributes() ?>>
-<span id="el_inventory_store_verified_comment" data-page="1">
-<span<?php echo $inventory_store->verified_comment->ViewAttributes() ?>>
-<?php echo $inventory_store->verified_comment->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($inventory_store->verified_by->Visible) { // verified_by ?>
-	<tr id="r_verified_by">
-		<td class="col-sm-2"><span id="elh_inventory_store_verified_by"><?php echo $inventory_store->verified_by->FldCaption() ?></span></td>
-		<td data-name="verified_by"<?php echo $inventory_store->verified_by->CellAttributes() ?>>
-<span id="el_inventory_store_verified_by" data-page="1">
-<span<?php echo $inventory_store->verified_by->ViewAttributes() ?>>
-<?php echo $inventory_store->verified_by->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($inventory_store->statuss->Visible) { // statuss ?>
+<?php if ($store_reports->statuss->Visible) { // statuss ?>
 	<tr id="r_statuss">
-		<td class="col-sm-2"><span id="elh_inventory_store_statuss"><?php echo $inventory_store->statuss->FldCaption() ?></span></td>
-		<td data-name="statuss"<?php echo $inventory_store->statuss->CellAttributes() ?>>
-<span id="el_inventory_store_statuss" data-page="1">
-<span<?php echo $inventory_store->statuss->ViewAttributes() ?>>
-<?php echo $inventory_store->statuss->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_store_reports_statuss"><?php echo $store_reports->statuss->FldCaption() ?></span></td>
+		<td data-name="statuss"<?php echo $store_reports->statuss->CellAttributes() ?>>
+<span id="el_store_reports_statuss" data-page="1">
+<span<?php echo $store_reports->statuss->ViewAttributes() ?>>
+<?php echo $store_reports->statuss->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($store_reports->issued_action->Visible) { // issued_action ?>
+	<tr id="r_issued_action">
+		<td class="col-sm-2"><span id="elh_store_reports_issued_action"><?php echo $store_reports->issued_action->FldCaption() ?></span></td>
+		<td data-name="issued_action"<?php echo $store_reports->issued_action->CellAttributes() ?>>
+<span id="el_store_reports_issued_action" data-page="1">
+<span<?php echo $store_reports->issued_action->ViewAttributes() ?>>
+<?php echo $store_reports->issued_action->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($store_reports->issued_comment->Visible) { // issued_comment ?>
+	<tr id="r_issued_comment">
+		<td class="col-sm-2"><span id="elh_store_reports_issued_comment"><?php echo $store_reports->issued_comment->FldCaption() ?></span></td>
+		<td data-name="issued_comment"<?php echo $store_reports->issued_comment->CellAttributes() ?>>
+<span id="el_store_reports_issued_comment" data-page="1">
+<span<?php echo $store_reports->issued_comment->ViewAttributes() ?>>
+<?php echo $store_reports->issued_comment->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($store_reports->issued_by->Visible) { // issued_by ?>
+	<tr id="r_issued_by">
+		<td class="col-sm-2"><span id="elh_store_reports_issued_by"><?php echo $store_reports->issued_by->FldCaption() ?></span></td>
+		<td data-name="issued_by"<?php echo $store_reports->issued_by->CellAttributes() ?>>
+<span id="el_store_reports_issued_by" data-page="1">
+<span<?php echo $store_reports->issued_by->ViewAttributes() ?>>
+<?php echo $store_reports->issued_by->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($store_reports->approver_date->Visible) { // approver_date ?>
+	<tr id="r_approver_date">
+		<td class="col-sm-2"><span id="elh_store_reports_approver_date"><?php echo $store_reports->approver_date->FldCaption() ?></span></td>
+		<td data-name="approver_date"<?php echo $store_reports->approver_date->CellAttributes() ?>>
+<span id="el_store_reports_approver_date" data-page="1">
+<span<?php echo $store_reports->approver_date->ViewAttributes() ?>>
+<?php echo $store_reports->approver_date->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($store_reports->approver_action->Visible) { // approver_action ?>
+	<tr id="r_approver_action">
+		<td class="col-sm-2"><span id="elh_store_reports_approver_action"><?php echo $store_reports->approver_action->FldCaption() ?></span></td>
+		<td data-name="approver_action"<?php echo $store_reports->approver_action->CellAttributes() ?>>
+<span id="el_store_reports_approver_action" data-page="1">
+<span<?php echo $store_reports->approver_action->ViewAttributes() ?>>
+<?php echo $store_reports->approver_action->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($store_reports->approved_comment->Visible) { // approved_comment ?>
+	<tr id="r_approved_comment">
+		<td class="col-sm-2"><span id="elh_store_reports_approved_comment"><?php echo $store_reports->approved_comment->FldCaption() ?></span></td>
+		<td data-name="approved_comment"<?php echo $store_reports->approved_comment->CellAttributes() ?>>
+<span id="el_store_reports_approved_comment" data-page="1">
+<span<?php echo $store_reports->approved_comment->ViewAttributes() ?>>
+<?php echo $store_reports->approved_comment->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($store_reports->approved_by->Visible) { // approved_by ?>
+	<tr id="r_approved_by">
+		<td class="col-sm-2"><span id="elh_store_reports_approved_by"><?php echo $store_reports->approved_by->FldCaption() ?></span></td>
+		<td data-name="approved_by"<?php echo $store_reports->approved_by->CellAttributes() ?>>
+<span id="el_store_reports_approved_by" data-page="1">
+<span<?php echo $store_reports->approved_by->ViewAttributes() ?>>
+<?php echo $store_reports->approved_by->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($store_reports->verified_date->Visible) { // verified_date ?>
+	<tr id="r_verified_date">
+		<td class="col-sm-2"><span id="elh_store_reports_verified_date"><?php echo $store_reports->verified_date->FldCaption() ?></span></td>
+		<td data-name="verified_date"<?php echo $store_reports->verified_date->CellAttributes() ?>>
+<span id="el_store_reports_verified_date" data-page="1">
+<span<?php echo $store_reports->verified_date->ViewAttributes() ?>>
+<?php echo $store_reports->verified_date->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($store_reports->verified_action->Visible) { // verified_action ?>
+	<tr id="r_verified_action">
+		<td class="col-sm-2"><span id="elh_store_reports_verified_action"><?php echo $store_reports->verified_action->FldCaption() ?></span></td>
+		<td data-name="verified_action"<?php echo $store_reports->verified_action->CellAttributes() ?>>
+<span id="el_store_reports_verified_action" data-page="1">
+<span<?php echo $store_reports->verified_action->ViewAttributes() ?>>
+<?php echo $store_reports->verified_action->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($store_reports->verified_comment->Visible) { // verified_comment ?>
+	<tr id="r_verified_comment">
+		<td class="col-sm-2"><span id="elh_store_reports_verified_comment"><?php echo $store_reports->verified_comment->FldCaption() ?></span></td>
+		<td data-name="verified_comment"<?php echo $store_reports->verified_comment->CellAttributes() ?>>
+<span id="el_store_reports_verified_comment" data-page="1">
+<span<?php echo $store_reports->verified_comment->ViewAttributes() ?>>
+<?php echo $store_reports->verified_comment->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($store_reports->verified_by->Visible) { // verified_by ?>
+	<tr id="r_verified_by">
+		<td class="col-sm-2"><span id="elh_store_reports_verified_by"><?php echo $store_reports->verified_by->FldCaption() ?></span></td>
+		<td data-name="verified_by"<?php echo $store_reports->verified_by->CellAttributes() ?>>
+<span id="el_store_reports_verified_by" data-page="1">
+<span<?php echo $store_reports->verified_by->ViewAttributes() ?>>
+<?php echo $store_reports->verified_by->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
 </table>
 </form>
-<?php if ($inventory_store->Export == "") { ?>
+<?php if ($store_reports->Export == "") { ?>
 <script type="text/javascript">
-finventory_storeview.Init();
+fstore_reportsview.Init();
 </script>
 <?php } ?>
 <?php
-$inventory_store_view->ShowPageFooter();
+$store_reports_view->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
-<?php if ($inventory_store->Export == "") { ?>
+<?php if ($store_reports->Export == "") { ?>
 <script type="text/javascript">
 
 // Write your table-specific startup script here
@@ -1921,5 +1888,5 @@ if (EW_DEBUG_ENABLED)
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php
-$inventory_store_view->Page_Terminate();
+$store_reports_view->Page_Terminate();
 ?>

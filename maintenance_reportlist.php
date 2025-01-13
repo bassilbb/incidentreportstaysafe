@@ -316,11 +316,11 @@ class cmaintenance_report_list extends cmaintenance_report {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'list');
+			define("EW_PAGE_ID", 'list', TRUE);
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'maintenance_report');
+			define("EW_TABLE_NAME", 'maintenance_report', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -3305,7 +3305,7 @@ ew_CreateDateTimePicker("fmaintenance_reportlistsrch", "y_date_initiated", {"ign
 		<span class="ewSearchField">
 <?php $maintenance_report->buildings->EditAttrs["onchange"] = "ew_UpdateOpt.call(this); " . @$maintenance_report->buildings->EditAttrs["onchange"]; ?>
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next().click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_buildings"><?php echo (strval($maintenance_report->buildings->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance_report->buildings->AdvancedSearch->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_buildings"><?php echo (strval($maintenance_report->buildings->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance_report->buildings->AdvancedSearch->ViewValue); ?></span>
 </span>
 <button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($maintenance_report->buildings->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_buildings',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($maintenance_report->buildings->ReadOnly || $maintenance_report->buildings->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
 <input type="hidden" data-table="maintenance_report" data-field="x_buildings" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $maintenance_report->buildings->DisplayValueSeparatorAttribute() ?>" name="x_buildings" id="x_buildings" value="<?php echo $maintenance_report->buildings->AdvancedSearch->SearchValue ?>"<?php echo $maintenance_report->buildings->EditAttributes() ?>>
@@ -3321,7 +3321,7 @@ ew_CreateDateTimePicker("fmaintenance_reportlistsrch", "y_date_initiated", {"ign
 		<span class="ewSearchField">
 <?php $maintenance_report->floors->EditAttrs["onchange"] = "ew_UpdateOpt.call(this); " . @$maintenance_report->floors->EditAttrs["onchange"]; ?>
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next().click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_floors"><?php echo (strval($maintenance_report->floors->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance_report->floors->AdvancedSearch->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_floors"><?php echo (strval($maintenance_report->floors->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance_report->floors->AdvancedSearch->ViewValue); ?></span>
 </span>
 <button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($maintenance_report->floors->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_floors',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($maintenance_report->floors->ReadOnly || $maintenance_report->floors->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
 <input type="hidden" data-table="maintenance_report" data-field="x_floors" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $maintenance_report->floors->DisplayValueSeparatorAttribute() ?>" name="x_floors" id="x_floors" value="<?php echo $maintenance_report->floors->AdvancedSearch->SearchValue ?>"<?php echo $maintenance_report->floors->EditAttributes() ?>>
@@ -3336,7 +3336,7 @@ ew_CreateDateTimePicker("fmaintenance_reportlistsrch", "y_date_initiated", {"ign
 		<span class="ewSearchOperator"><?php echo $Language->Phrase("=") ?><input type="hidden" name="z_items" id="z_items" value="="></span>
 		<span class="ewSearchField">
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next().click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_items"><?php echo (strval($maintenance_report->items->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance_report->items->AdvancedSearch->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_items"><?php echo (strval($maintenance_report->items->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance_report->items->AdvancedSearch->ViewValue); ?></span>
 </span>
 <button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($maintenance_report->items->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_items[]',m:1,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($maintenance_report->items->ReadOnly || $maintenance_report->items->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
 <input type="hidden" data-table="maintenance_report" data-field="x_items" data-multiple="1" data-lookup="1" data-value-separator="<?php echo $maintenance_report->items->DisplayValueSeparatorAttribute() ?>" name="x_items[]" id="x_items[]" value="<?php echo $maintenance_report->items->AdvancedSearch->SearchValue ?>"<?php echo $maintenance_report->items->EditAttributes() ?>>

@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg14.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
 <?php include_once "phpfn14.php" ?>
-<?php include_once "inventory_storeinfo.php" ?>
+<?php include_once "store_reportsinfo.php" ?>
 <?php include_once "usersinfo.php" ?>
 <?php include_once "userfn14.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$inventory_store_list = NULL; // Initialize page object first
+$store_reports_list = NULL; // Initialize page object first
 
-class cinventory_store_list extends cinventory_store {
+class cstore_reports_list extends cstore_reports {
 
 	// Page ID
 	var $PageID = 'list';
@@ -25,13 +25,13 @@ class cinventory_store_list extends cinventory_store {
 	var $ProjectID = '{DD9080C0-D1CA-431F-831F-CAC8FA61260C}';
 
 	// Table name
-	var $TableName = 'inventory_store';
+	var $TableName = 'store_reports';
 
 	// Page object name
-	var $PageObjName = 'inventory_store_list';
+	var $PageObjName = 'store_reports_list';
 
 	// Grid form hidden field names
-	var $FormName = 'finventory_storelist';
+	var $FormName = 'fstore_reportslist';
 	var $FormActionName = 'k_action';
 	var $FormKeyName = 'k_key';
 	var $FormOldKeyName = 'k_oldkey';
@@ -296,10 +296,10 @@ class cinventory_store_list extends cinventory_store {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (inventory_store)
-		if (!isset($GLOBALS["inventory_store"]) || get_class($GLOBALS["inventory_store"]) == "cinventory_store") {
-			$GLOBALS["inventory_store"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["inventory_store"];
+		// Table object (store_reports)
+		if (!isset($GLOBALS["store_reports"]) || get_class($GLOBALS["store_reports"]) == "cstore_reports") {
+			$GLOBALS["store_reports"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["store_reports"];
 		}
 
 		// Initialize URLs
@@ -310,12 +310,12 @@ class cinventory_store_list extends cinventory_store {
 		$this->ExportXmlUrl = $this->PageUrl() . "export=xml";
 		$this->ExportCsvUrl = $this->PageUrl() . "export=csv";
 		$this->ExportPdfUrl = $this->PageUrl() . "export=pdf";
-		$this->AddUrl = "inventory_storeadd.php";
+		$this->AddUrl = "store_reportsadd.php";
 		$this->InlineAddUrl = $this->PageUrl() . "a=add";
 		$this->GridAddUrl = $this->PageUrl() . "a=gridadd";
 		$this->GridEditUrl = $this->PageUrl() . "a=gridedit";
-		$this->MultiDeleteUrl = "inventory_storedelete.php";
-		$this->MultiUpdateUrl = "inventory_storeupdate.php";
+		$this->MultiDeleteUrl = "store_reportsdelete.php";
+		$this->MultiUpdateUrl = "store_reportsupdate.php";
 
 		// Table object (users)
 		if (!isset($GLOBALS['users'])) $GLOBALS['users'] = new cusers();
@@ -326,7 +326,7 @@ class cinventory_store_list extends cinventory_store {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'inventory_store', TRUE);
+			define("EW_TABLE_NAME", 'store_reports', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -368,7 +368,7 @@ class cinventory_store_list extends cinventory_store {
 		// Filter options
 		$this->FilterOptions = new cListOptions();
 		$this->FilterOptions->Tag = "div";
-		$this->FilterOptions->TagClassName = "ewFilterOption finventory_storelistsrch";
+		$this->FilterOptions->TagClassName = "ewFilterOption fstore_reportslistsrch";
 
 		// List actions
 		$this->ListActions = new cListActions();
@@ -463,13 +463,11 @@ class cinventory_store_list extends cinventory_store {
 		$this->quantity_type->SetVisibility();
 		$this->quantity_out->SetVisibility();
 		$this->total_quantity->SetVisibility();
+		$this->statuss->SetVisibility();
 		$this->issued_comment->SetVisibility();
 		$this->issued_by->SetVisibility();
-		$this->approved_comment->SetVisibility();
 		$this->approved_by->SetVisibility();
-		$this->verified_comment->SetVisibility();
 		$this->verified_by->SetVisibility();
-		$this->statuss->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -530,13 +528,13 @@ class cinventory_store_list extends cinventory_store {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $inventory_store;
+		global $EW_EXPORT, $store_reports;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($inventory_store);
+				$doc = new $class($store_reports);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -660,12 +658,18 @@ class cinventory_store_list extends cinventory_store {
 
 			// Get default search criteria
 			ew_AddFilter($this->DefaultSearchWhere, $this->BasicSearchWhere(TRUE));
+			ew_AddFilter($this->DefaultSearchWhere, $this->AdvancedSearchWhere(TRUE));
 
 			// Get basic search values
 			$this->LoadBasicSearchValues();
 
+			// Get and validate search values for advanced search
+			$this->LoadSearchValues(); // Get search values
+
 			// Process filter list
 			$this->ProcessFilterList();
+			if (!$this->ValidateSearch())
+				$this->setFailureMessage($gsSearchError);
 
 			// Restore search parms from Session if not searching / reset / export
 			if (($this->Export <> "" || $this->Command <> "search" && $this->Command <> "reset" && $this->Command <> "resetall") && $this->Command <> "json" && $this->CheckSearchParms())
@@ -680,6 +684,10 @@ class cinventory_store_list extends cinventory_store {
 			// Get basic search criteria
 			if ($gsSearchError == "")
 				$sSrchBasic = $this->BasicSearchWhere();
+
+			// Get search criteria for advanced search
+			if ($gsSearchError == "")
+				$sSrchAdvanced = $this->AdvancedSearchWhere();
 		}
 
 		// Restore display records
@@ -700,6 +708,11 @@ class cinventory_store_list extends cinventory_store {
 			$this->BasicSearch->LoadDefault();
 			if ($this->BasicSearch->Keyword != "")
 				$sSrchBasic = $this->BasicSearchWhere();
+
+			// Load advanced search from default
+			if ($this->LoadAdvancedSearchDefault()) {
+				$sSrchAdvanced = $this->AdvancedSearchWhere();
+			}
 		}
 
 		// Build search criteria
@@ -724,6 +737,10 @@ class cinventory_store_list extends cinventory_store {
 			$sFilter = "(0=1)"; // Filter all records
 		ew_AddFilter($sFilter, $this->DbDetailFilter);
 		ew_AddFilter($sFilter, $this->SearchWhere);
+		if ($sFilter == "") {
+			$sFilter = "0=101";
+			$this->SearchWhere = $sFilter;
+		}
 
 		// Set up filter
 		if ($this->Command == "json") {
@@ -825,7 +842,7 @@ class cinventory_store_list extends cinventory_store {
 
 		// Load server side filters
 		if (EW_SEARCH_FILTER_OPTION == "Server" && isset($UserProfile))
-			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "finventory_storelistsrch");
+			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "fstore_reportslistsrch");
 		$sFilterList = ew_Concat($sFilterList, $this->id->AdvancedSearch->ToJson(), ","); // Field id
 		$sFilterList = ew_Concat($sFilterList, $this->date->AdvancedSearch->ToJson(), ","); // Field date
 		$sFilterList = ew_Concat($sFilterList, $this->reference_id->AdvancedSearch->ToJson(), ","); // Field reference_id
@@ -836,6 +853,7 @@ class cinventory_store_list extends cinventory_store {
 		$sFilterList = ew_Concat($sFilterList, $this->quantity_out->AdvancedSearch->ToJson(), ","); // Field quantity_out
 		$sFilterList = ew_Concat($sFilterList, $this->total_quantity->AdvancedSearch->ToJson(), ","); // Field total_quantity
 		$sFilterList = ew_Concat($sFilterList, $this->treated_by->AdvancedSearch->ToJson(), ","); // Field treated_by
+		$sFilterList = ew_Concat($sFilterList, $this->statuss->AdvancedSearch->ToJson(), ","); // Field statuss
 		$sFilterList = ew_Concat($sFilterList, $this->issued_action->AdvancedSearch->ToJson(), ","); // Field issued_action
 		$sFilterList = ew_Concat($sFilterList, $this->issued_comment->AdvancedSearch->ToJson(), ","); // Field issued_comment
 		$sFilterList = ew_Concat($sFilterList, $this->issued_by->AdvancedSearch->ToJson(), ","); // Field issued_by
@@ -847,7 +865,6 @@ class cinventory_store_list extends cinventory_store {
 		$sFilterList = ew_Concat($sFilterList, $this->verified_action->AdvancedSearch->ToJson(), ","); // Field verified_action
 		$sFilterList = ew_Concat($sFilterList, $this->verified_comment->AdvancedSearch->ToJson(), ","); // Field verified_comment
 		$sFilterList = ew_Concat($sFilterList, $this->verified_by->AdvancedSearch->ToJson(), ","); // Field verified_by
-		$sFilterList = ew_Concat($sFilterList, $this->statuss->AdvancedSearch->ToJson(), ","); // Field statuss
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -870,7 +887,7 @@ class cinventory_store_list extends cinventory_store {
 		global $UserProfile;
 		if (@$_POST["ajax"] == "savefilters") { // Save filter request (Ajax)
 			$filters = @$_POST["filters"];
-			$UserProfile->SetSearchFilters(CurrentUserName(), "finventory_storelistsrch", $filters);
+			$UserProfile->SetSearchFilters(CurrentUserName(), "fstore_reportslistsrch", $filters);
 
 			// Clean output buffer
 			if (!EW_DEBUG_ENABLED && ob_get_length())
@@ -972,6 +989,14 @@ class cinventory_store_list extends cinventory_store {
 		$this->treated_by->AdvancedSearch->SearchOperator2 = @$filter["w_treated_by"];
 		$this->treated_by->AdvancedSearch->Save();
 
+		// Field statuss
+		$this->statuss->AdvancedSearch->SearchValue = @$filter["x_statuss"];
+		$this->statuss->AdvancedSearch->SearchOperator = @$filter["z_statuss"];
+		$this->statuss->AdvancedSearch->SearchCondition = @$filter["v_statuss"];
+		$this->statuss->AdvancedSearch->SearchValue2 = @$filter["y_statuss"];
+		$this->statuss->AdvancedSearch->SearchOperator2 = @$filter["w_statuss"];
+		$this->statuss->AdvancedSearch->Save();
+
 		// Field issued_action
 		$this->issued_action->AdvancedSearch->SearchValue = @$filter["x_issued_action"];
 		$this->issued_action->AdvancedSearch->SearchOperator = @$filter["z_issued_action"];
@@ -1059,16 +1084,111 @@ class cinventory_store_list extends cinventory_store {
 		$this->verified_by->AdvancedSearch->SearchValue2 = @$filter["y_verified_by"];
 		$this->verified_by->AdvancedSearch->SearchOperator2 = @$filter["w_verified_by"];
 		$this->verified_by->AdvancedSearch->Save();
-
-		// Field statuss
-		$this->statuss->AdvancedSearch->SearchValue = @$filter["x_statuss"];
-		$this->statuss->AdvancedSearch->SearchOperator = @$filter["z_statuss"];
-		$this->statuss->AdvancedSearch->SearchCondition = @$filter["v_statuss"];
-		$this->statuss->AdvancedSearch->SearchValue2 = @$filter["y_statuss"];
-		$this->statuss->AdvancedSearch->SearchOperator2 = @$filter["w_statuss"];
-		$this->statuss->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
+	}
+
+	// Advanced search WHERE clause based on QueryString
+	function AdvancedSearchWhere($Default = FALSE) {
+		global $Security;
+		$sWhere = "";
+		if (!$Security->CanSearch()) return "";
+		$this->BuildSearchSql($sWhere, $this->id, $Default, FALSE); // id
+		$this->BuildSearchSql($sWhere, $this->date, $Default, FALSE); // date
+		$this->BuildSearchSql($sWhere, $this->reference_id, $Default, FALSE); // reference_id
+		$this->BuildSearchSql($sWhere, $this->staff_id, $Default, FALSE); // staff_id
+		$this->BuildSearchSql($sWhere, $this->material_name, $Default, FALSE); // material_name
+		$this->BuildSearchSql($sWhere, $this->quantity_in, $Default, FALSE); // quantity_in
+		$this->BuildSearchSql($sWhere, $this->quantity_type, $Default, FALSE); // quantity_type
+		$this->BuildSearchSql($sWhere, $this->quantity_out, $Default, FALSE); // quantity_out
+		$this->BuildSearchSql($sWhere, $this->total_quantity, $Default, FALSE); // total_quantity
+		$this->BuildSearchSql($sWhere, $this->treated_by, $Default, FALSE); // treated_by
+		$this->BuildSearchSql($sWhere, $this->statuss, $Default, FALSE); // statuss
+		$this->BuildSearchSql($sWhere, $this->issued_action, $Default, FALSE); // issued_action
+		$this->BuildSearchSql($sWhere, $this->issued_comment, $Default, FALSE); // issued_comment
+		$this->BuildSearchSql($sWhere, $this->issued_by, $Default, FALSE); // issued_by
+		$this->BuildSearchSql($sWhere, $this->approver_date, $Default, FALSE); // approver_date
+		$this->BuildSearchSql($sWhere, $this->approver_action, $Default, FALSE); // approver_action
+		$this->BuildSearchSql($sWhere, $this->approved_comment, $Default, FALSE); // approved_comment
+		$this->BuildSearchSql($sWhere, $this->approved_by, $Default, FALSE); // approved_by
+		$this->BuildSearchSql($sWhere, $this->verified_date, $Default, FALSE); // verified_date
+		$this->BuildSearchSql($sWhere, $this->verified_action, $Default, FALSE); // verified_action
+		$this->BuildSearchSql($sWhere, $this->verified_comment, $Default, FALSE); // verified_comment
+		$this->BuildSearchSql($sWhere, $this->verified_by, $Default, FALSE); // verified_by
+
+		// Set up search parm
+		if (!$Default && $sWhere <> "" && in_array($this->Command, array("", "reset", "resetall"))) {
+			$this->Command = "search";
+		}
+		if (!$Default && $this->Command == "search") {
+			$this->id->AdvancedSearch->Save(); // id
+			$this->date->AdvancedSearch->Save(); // date
+			$this->reference_id->AdvancedSearch->Save(); // reference_id
+			$this->staff_id->AdvancedSearch->Save(); // staff_id
+			$this->material_name->AdvancedSearch->Save(); // material_name
+			$this->quantity_in->AdvancedSearch->Save(); // quantity_in
+			$this->quantity_type->AdvancedSearch->Save(); // quantity_type
+			$this->quantity_out->AdvancedSearch->Save(); // quantity_out
+			$this->total_quantity->AdvancedSearch->Save(); // total_quantity
+			$this->treated_by->AdvancedSearch->Save(); // treated_by
+			$this->statuss->AdvancedSearch->Save(); // statuss
+			$this->issued_action->AdvancedSearch->Save(); // issued_action
+			$this->issued_comment->AdvancedSearch->Save(); // issued_comment
+			$this->issued_by->AdvancedSearch->Save(); // issued_by
+			$this->approver_date->AdvancedSearch->Save(); // approver_date
+			$this->approver_action->AdvancedSearch->Save(); // approver_action
+			$this->approved_comment->AdvancedSearch->Save(); // approved_comment
+			$this->approved_by->AdvancedSearch->Save(); // approved_by
+			$this->verified_date->AdvancedSearch->Save(); // verified_date
+			$this->verified_action->AdvancedSearch->Save(); // verified_action
+			$this->verified_comment->AdvancedSearch->Save(); // verified_comment
+			$this->verified_by->AdvancedSearch->Save(); // verified_by
+		}
+		return $sWhere;
+	}
+
+	// Build search SQL
+	function BuildSearchSql(&$Where, &$Fld, $Default, $MultiValue) {
+		$FldParm = $Fld->FldParm();
+		$FldVal = ($Default) ? $Fld->AdvancedSearch->SearchValueDefault : $Fld->AdvancedSearch->SearchValue; // @$_GET["x_$FldParm"]
+		$FldOpr = ($Default) ? $Fld->AdvancedSearch->SearchOperatorDefault : $Fld->AdvancedSearch->SearchOperator; // @$_GET["z_$FldParm"]
+		$FldCond = ($Default) ? $Fld->AdvancedSearch->SearchConditionDefault : $Fld->AdvancedSearch->SearchCondition; // @$_GET["v_$FldParm"]
+		$FldVal2 = ($Default) ? $Fld->AdvancedSearch->SearchValue2Default : $Fld->AdvancedSearch->SearchValue2; // @$_GET["y_$FldParm"]
+		$FldOpr2 = ($Default) ? $Fld->AdvancedSearch->SearchOperator2Default : $Fld->AdvancedSearch->SearchOperator2; // @$_GET["w_$FldParm"]
+		$sWrk = "";
+		if (is_array($FldVal)) $FldVal = implode(",", $FldVal);
+		if (is_array($FldVal2)) $FldVal2 = implode(",", $FldVal2);
+		$FldOpr = strtoupper(trim($FldOpr));
+		if ($FldOpr == "") $FldOpr = "=";
+		$FldOpr2 = strtoupper(trim($FldOpr2));
+		if ($FldOpr2 == "") $FldOpr2 = "=";
+		if (EW_SEARCH_MULTI_VALUE_OPTION == 1)
+			$MultiValue = FALSE;
+		if ($MultiValue) {
+			$sWrk1 = ($FldVal <> "") ? ew_GetMultiSearchSql($Fld, $FldOpr, $FldVal, $this->DBID) : ""; // Field value 1
+			$sWrk2 = ($FldVal2 <> "") ? ew_GetMultiSearchSql($Fld, $FldOpr2, $FldVal2, $this->DBID) : ""; // Field value 2
+			$sWrk = $sWrk1; // Build final SQL
+			if ($sWrk2 <> "")
+				$sWrk = ($sWrk <> "") ? "($sWrk) $FldCond ($sWrk2)" : $sWrk2;
+		} else {
+			$FldVal = $this->ConvertSearchValue($Fld, $FldVal);
+			$FldVal2 = $this->ConvertSearchValue($Fld, $FldVal2);
+			$sWrk = ew_GetSearchSql($Fld, $FldVal, $FldOpr, $FldCond, $FldVal2, $FldOpr2, $this->DBID);
+		}
+		ew_AddFilter($Where, $sWrk);
+	}
+
+	// Convert search value
+	function ConvertSearchValue(&$Fld, $FldVal) {
+		if ($FldVal == EW_NULL_VALUE || $FldVal == EW_NOT_NULL_VALUE)
+			return $FldVal;
+		$Value = $FldVal;
+		if ($Fld->FldDataType == EW_DATATYPE_BOOLEAN) {
+			if ($FldVal <> "") $Value = ($FldVal == "1" || strtolower(strval($FldVal)) == "y" || strtolower(strval($FldVal)) == "t") ? $Fld->TrueValue : $Fld->FalseValue;
+		} elseif ($Fld->FldDataType == EW_DATATYPE_DATE || $Fld->FldDataType == EW_DATATYPE_TIME) {
+			if ($FldVal <> "") $Value = ew_UnFormatDateTime($FldVal, $Fld->FldDateTimeFormat);
+		}
+		return $Value;
 	}
 
 	// Return basic search SQL
@@ -1190,6 +1310,50 @@ class cinventory_store_list extends cinventory_store {
 		// Check basic search
 		if ($this->BasicSearch->IssetSession())
 			return TRUE;
+		if ($this->id->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->date->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->reference_id->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->staff_id->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->material_name->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->quantity_in->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->quantity_type->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->quantity_out->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->total_quantity->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->treated_by->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->statuss->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->issued_action->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->issued_comment->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->issued_by->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->approver_date->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->approver_action->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->approved_comment->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->approved_by->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->verified_date->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->verified_action->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->verified_comment->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->verified_by->AdvancedSearch->IssetSession())
+			return TRUE;
 		return FALSE;
 	}
 
@@ -1202,6 +1366,9 @@ class cinventory_store_list extends cinventory_store {
 
 		// Clear basic search parameters
 		$this->ResetBasicSearchParms();
+
+		// Clear advanced search parameters
+		$this->ResetAdvancedSearchParms();
 	}
 
 	// Load advanced search default values
@@ -1214,12 +1381,62 @@ class cinventory_store_list extends cinventory_store {
 		$this->BasicSearch->UnsetSession();
 	}
 
+	// Clear all advanced search parameters
+	function ResetAdvancedSearchParms() {
+		$this->id->AdvancedSearch->UnsetSession();
+		$this->date->AdvancedSearch->UnsetSession();
+		$this->reference_id->AdvancedSearch->UnsetSession();
+		$this->staff_id->AdvancedSearch->UnsetSession();
+		$this->material_name->AdvancedSearch->UnsetSession();
+		$this->quantity_in->AdvancedSearch->UnsetSession();
+		$this->quantity_type->AdvancedSearch->UnsetSession();
+		$this->quantity_out->AdvancedSearch->UnsetSession();
+		$this->total_quantity->AdvancedSearch->UnsetSession();
+		$this->treated_by->AdvancedSearch->UnsetSession();
+		$this->statuss->AdvancedSearch->UnsetSession();
+		$this->issued_action->AdvancedSearch->UnsetSession();
+		$this->issued_comment->AdvancedSearch->UnsetSession();
+		$this->issued_by->AdvancedSearch->UnsetSession();
+		$this->approver_date->AdvancedSearch->UnsetSession();
+		$this->approver_action->AdvancedSearch->UnsetSession();
+		$this->approved_comment->AdvancedSearch->UnsetSession();
+		$this->approved_by->AdvancedSearch->UnsetSession();
+		$this->verified_date->AdvancedSearch->UnsetSession();
+		$this->verified_action->AdvancedSearch->UnsetSession();
+		$this->verified_comment->AdvancedSearch->UnsetSession();
+		$this->verified_by->AdvancedSearch->UnsetSession();
+	}
+
 	// Restore all search parameters
 	function RestoreSearchParms() {
 		$this->RestoreSearch = TRUE;
 
 		// Restore basic search values
 		$this->BasicSearch->Load();
+
+		// Restore advanced search values
+		$this->id->AdvancedSearch->Load();
+		$this->date->AdvancedSearch->Load();
+		$this->reference_id->AdvancedSearch->Load();
+		$this->staff_id->AdvancedSearch->Load();
+		$this->material_name->AdvancedSearch->Load();
+		$this->quantity_in->AdvancedSearch->Load();
+		$this->quantity_type->AdvancedSearch->Load();
+		$this->quantity_out->AdvancedSearch->Load();
+		$this->total_quantity->AdvancedSearch->Load();
+		$this->treated_by->AdvancedSearch->Load();
+		$this->statuss->AdvancedSearch->Load();
+		$this->issued_action->AdvancedSearch->Load();
+		$this->issued_comment->AdvancedSearch->Load();
+		$this->issued_by->AdvancedSearch->Load();
+		$this->approver_date->AdvancedSearch->Load();
+		$this->approver_action->AdvancedSearch->Load();
+		$this->approved_comment->AdvancedSearch->Load();
+		$this->approved_by->AdvancedSearch->Load();
+		$this->verified_date->AdvancedSearch->Load();
+		$this->verified_action->AdvancedSearch->Load();
+		$this->verified_comment->AdvancedSearch->Load();
+		$this->verified_by->AdvancedSearch->Load();
 	}
 
 	// Set up sort parameters
@@ -1238,13 +1455,11 @@ class cinventory_store_list extends cinventory_store {
 			$this->UpdateSort($this->quantity_type); // quantity_type
 			$this->UpdateSort($this->quantity_out); // quantity_out
 			$this->UpdateSort($this->total_quantity); // total_quantity
+			$this->UpdateSort($this->statuss); // statuss
 			$this->UpdateSort($this->issued_comment); // issued_comment
 			$this->UpdateSort($this->issued_by); // issued_by
-			$this->UpdateSort($this->approved_comment); // approved_comment
 			$this->UpdateSort($this->approved_by); // approved_by
-			$this->UpdateSort($this->verified_comment); // verified_comment
 			$this->UpdateSort($this->verified_by); // verified_by
-			$this->UpdateSort($this->statuss); // statuss
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1286,13 +1501,11 @@ class cinventory_store_list extends cinventory_store {
 				$this->quantity_type->setSort("");
 				$this->quantity_out->setSort("");
 				$this->total_quantity->setSort("");
+				$this->statuss->setSort("");
 				$this->issued_comment->setSort("");
 				$this->issued_by->setSort("");
-				$this->approved_comment->setSort("");
 				$this->approved_by->setSort("");
-				$this->verified_comment->setSort("");
 				$this->verified_by->setSort("");
-				$this->statuss->setSort("");
 			}
 
 			// Reset start position
@@ -1315,24 +1528,6 @@ class cinventory_store_list extends cinventory_store {
 		$item = &$this->ListOptions->Add("view");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = $Security->CanView();
-		$item->OnLeft = TRUE;
-
-		// "edit"
-		$item = &$this->ListOptions->Add("edit");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanEdit();
-		$item->OnLeft = TRUE;
-
-		// "copy"
-		$item = &$this->ListOptions->Add("copy");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanAdd();
-		$item->OnLeft = TRUE;
-
-		// "delete"
-		$item = &$this->ListOptions->Add("delete");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanDelete();
 		$item->OnLeft = TRUE;
 
 		// List actions
@@ -1380,35 +1575,13 @@ class cinventory_store_list extends cinventory_store {
 		$oListOpt = &$this->ListOptions->Items["view"];
 		$viewcaption = ew_HtmlTitle($Language->Phrase("ViewLink"));
 		if ($Security->CanView()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-caption=\"" . $viewcaption . "\" href=\"" . ew_HtmlEncode($this->ViewUrl) . "\">" . $Language->Phrase("ViewLink") . "</a>";
+			if (ew_IsMobile())
+				$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-caption=\"" . $viewcaption . "\" href=\"" . ew_HtmlEncode($this->ViewUrl) . "\">" . $Language->Phrase("ViewLink") . "</a>";
+			else
+				$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-table=\"store_reports\" data-caption=\"" . $viewcaption . "\" href=\"javascript:void(0);\" onclick=\"ew_ModalDialogShow({lnk:this,url:'" . ew_HtmlEncode($this->ViewUrl) . "',btn:null});\">" . $Language->Phrase("ViewLink") . "</a>";
 		} else {
 			$oListOpt->Body = "";
 		}
-
-		// "edit"
-		$oListOpt = &$this->ListOptions->Items["edit"];
-		$editcaption = ew_HtmlTitle($Language->Phrase("EditLink"));
-		if ($Security->CanEdit()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewEdit\" title=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" href=\"" . ew_HtmlEncode($this->EditUrl) . "\">" . $Language->Phrase("EditLink") . "</a>";
-		} else {
-			$oListOpt->Body = "";
-		}
-
-		// "copy"
-		$oListOpt = &$this->ListOptions->Items["copy"];
-		$copycaption = ew_HtmlTitle($Language->Phrase("CopyLink"));
-		if ($Security->CanAdd()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewCopy\" title=\"" . $copycaption . "\" data-caption=\"" . $copycaption . "\" href=\"" . ew_HtmlEncode($this->CopyUrl) . "\">" . $Language->Phrase("CopyLink") . "</a>";
-		} else {
-			$oListOpt->Body = "";
-		}
-
-		// "delete"
-		$oListOpt = &$this->ListOptions->Items["delete"];
-		if ($Security->CanDelete())
-			$oListOpt->Body = "<a class=\"ewRowLink ewDelete\"" . "" . " title=\"" . ew_HtmlTitle($Language->Phrase("DeleteLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("DeleteLink")) . "\" href=\"" . ew_HtmlEncode($this->DeleteUrl) . "\">" . $Language->Phrase("DeleteLink") . "</a>";
-		else
-			$oListOpt->Body = "";
 
 		// Set up list action buttons
 		$oListOpt = &$this->ListOptions->GetItem("listactions");
@@ -1452,13 +1625,6 @@ class cinventory_store_list extends cinventory_store {
 	function SetupOtherOptions() {
 		global $Language, $Security;
 		$options = &$this->OtherOptions;
-		$option = $options["addedit"];
-
-		// Add
-		$item = &$option->Add("add");
-		$addcaption = ew_HtmlTitle($Language->Phrase("AddLink"));
-		$item->Body = "<a class=\"ewAddEdit ewAdd\" title=\"" . $addcaption . "\" data-caption=\"" . $addcaption . "\" href=\"" . ew_HtmlEncode($this->AddUrl) . "\">" . $Language->Phrase("AddLink") . "</a>";
-		$item->Visible = ($this->AddUrl <> "" && $Security->CanAdd());
 		$option = $options["action"];
 
 		// Set up options default
@@ -1477,10 +1643,10 @@ class cinventory_store_list extends cinventory_store {
 
 		// Filter button
 		$item = &$this->FilterOptions->Add("savecurrentfilter");
-		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"finventory_storelistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
+		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"fstore_reportslistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
 		$item->Visible = TRUE;
 		$item = &$this->FilterOptions->Add("deletefilter");
-		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"finventory_storelistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
+		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"fstore_reportslistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
 		$item->Visible = TRUE;
 		$this->FilterOptions->UseDropDownButton = TRUE;
 		$this->FilterOptions->UseButtonGroup = !$this->FilterOptions->UseDropDownButton;
@@ -1504,7 +1670,7 @@ class cinventory_store_list extends cinventory_store {
 					$item = &$option->Add("custom_" . $listaction->Action);
 					$caption = $listaction->Caption;
 					$icon = ($listaction->Icon <> "") ? "<span class=\"" . ew_HtmlEncode($listaction->Icon) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\"></span> " : $caption;
-					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.finventory_storelist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
+					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.fstore_reportslist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
 					$item->Visible = $listaction->Allow;
 				}
 			}
@@ -1608,13 +1774,18 @@ class cinventory_store_list extends cinventory_store {
 		// Search button
 		$item = &$this->SearchOptions->Add("searchtoggle");
 		$SearchToggleClass = ($this->SearchWhere <> "") ? " active" : " active";
-		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"finventory_storelistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"fstore_reportslistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
 		$item->Visible = TRUE;
 
 		// Show all button
 		$item = &$this->SearchOptions->Add("showall");
-		$item->Body = "<a class=\"btn btn-default ewShowAll\" title=\"" . $Language->Phrase("ShowAll") . "\" data-caption=\"" . $Language->Phrase("ShowAll") . "\" href=\"" . $this->PageUrl() . "cmd=reset\">" . $Language->Phrase("ShowAllBtn") . "</a>";
+		$item->Body = "<a class=\"btn btn-default ewShowAll\" title=\"" . $Language->Phrase("ResetSearch") . "\" data-caption=\"" . $Language->Phrase("ResetSearch") . "\" href=\"" . $this->PageUrl() . "cmd=reset\">" . $Language->Phrase("ResetSearchBtn") . "</a>";
 		$item->Visible = ($this->SearchWhere <> $this->DefaultSearchWhere && $this->SearchWhere <> "0=101");
+
+		// Advanced search button
+		$item = &$this->SearchOptions->Add("advancedsearch");
+		$item->Body = "<a class=\"btn btn-default ewAdvancedSearch\" title=\"" . $Language->Phrase("AdvancedSearch") . "\" data-caption=\"" . $Language->Phrase("AdvancedSearch") . "\" href=\"store_reportssrch.php\">" . $Language->Phrase("AdvancedSearchBtn") . "</a>";
+		$item->Visible = TRUE;
 
 		// Button group for search
 		$this->SearchOptions->UseDropDownButton = FALSE;
@@ -1688,6 +1859,123 @@ class cinventory_store_list extends cinventory_store {
 		$this->BasicSearch->Type = @$_GET[EW_TABLE_BASIC_SEARCH_TYPE];
 	}
 
+	// Load search values for validation
+	function LoadSearchValues() {
+		global $objForm;
+
+		// Load search values
+		// id
+
+		$this->id->AdvancedSearch->SearchValue = @$_GET["x_id"];
+		if ($this->id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->id->AdvancedSearch->SearchOperator = @$_GET["z_id"];
+
+		// date
+		$this->date->AdvancedSearch->SearchValue = @$_GET["x_date"];
+		if ($this->date->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->date->AdvancedSearch->SearchOperator = @$_GET["z_date"];
+
+		// reference_id
+		$this->reference_id->AdvancedSearch->SearchValue = @$_GET["x_reference_id"];
+		if ($this->reference_id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->reference_id->AdvancedSearch->SearchOperator = @$_GET["z_reference_id"];
+
+		// staff_id
+		$this->staff_id->AdvancedSearch->SearchValue = @$_GET["x_staff_id"];
+		if ($this->staff_id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->staff_id->AdvancedSearch->SearchOperator = @$_GET["z_staff_id"];
+
+		// material_name
+		$this->material_name->AdvancedSearch->SearchValue = @$_GET["x_material_name"];
+		if ($this->material_name->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->material_name->AdvancedSearch->SearchOperator = @$_GET["z_material_name"];
+
+		// quantity_in
+		$this->quantity_in->AdvancedSearch->SearchValue = @$_GET["x_quantity_in"];
+		if ($this->quantity_in->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->quantity_in->AdvancedSearch->SearchOperator = @$_GET["z_quantity_in"];
+
+		// quantity_type
+		$this->quantity_type->AdvancedSearch->SearchValue = @$_GET["x_quantity_type"];
+		if ($this->quantity_type->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->quantity_type->AdvancedSearch->SearchOperator = @$_GET["z_quantity_type"];
+
+		// quantity_out
+		$this->quantity_out->AdvancedSearch->SearchValue = @$_GET["x_quantity_out"];
+		if ($this->quantity_out->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->quantity_out->AdvancedSearch->SearchOperator = @$_GET["z_quantity_out"];
+
+		// total_quantity
+		$this->total_quantity->AdvancedSearch->SearchValue = @$_GET["x_total_quantity"];
+		if ($this->total_quantity->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->total_quantity->AdvancedSearch->SearchOperator = @$_GET["z_total_quantity"];
+
+		// treated_by
+		$this->treated_by->AdvancedSearch->SearchValue = @$_GET["x_treated_by"];
+		if ($this->treated_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->treated_by->AdvancedSearch->SearchOperator = @$_GET["z_treated_by"];
+
+		// statuss
+		$this->statuss->AdvancedSearch->SearchValue = @$_GET["x_statuss"];
+		if ($this->statuss->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->statuss->AdvancedSearch->SearchOperator = @$_GET["z_statuss"];
+
+		// issued_action
+		$this->issued_action->AdvancedSearch->SearchValue = @$_GET["x_issued_action"];
+		if ($this->issued_action->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->issued_action->AdvancedSearch->SearchOperator = @$_GET["z_issued_action"];
+
+		// issued_comment
+		$this->issued_comment->AdvancedSearch->SearchValue = @$_GET["x_issued_comment"];
+		if ($this->issued_comment->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->issued_comment->AdvancedSearch->SearchOperator = @$_GET["z_issued_comment"];
+
+		// issued_by
+		$this->issued_by->AdvancedSearch->SearchValue = @$_GET["x_issued_by"];
+		if ($this->issued_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->issued_by->AdvancedSearch->SearchOperator = @$_GET["z_issued_by"];
+
+		// approver_date
+		$this->approver_date->AdvancedSearch->SearchValue = @$_GET["x_approver_date"];
+		if ($this->approver_date->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->approver_date->AdvancedSearch->SearchOperator = @$_GET["z_approver_date"];
+
+		// approver_action
+		$this->approver_action->AdvancedSearch->SearchValue = @$_GET["x_approver_action"];
+		if ($this->approver_action->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->approver_action->AdvancedSearch->SearchOperator = @$_GET["z_approver_action"];
+
+		// approved_comment
+		$this->approved_comment->AdvancedSearch->SearchValue = @$_GET["x_approved_comment"];
+		if ($this->approved_comment->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->approved_comment->AdvancedSearch->SearchOperator = @$_GET["z_approved_comment"];
+
+		// approved_by
+		$this->approved_by->AdvancedSearch->SearchValue = @$_GET["x_approved_by"];
+		if ($this->approved_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->approved_by->AdvancedSearch->SearchOperator = @$_GET["z_approved_by"];
+
+		// verified_date
+		$this->verified_date->AdvancedSearch->SearchValue = @$_GET["x_verified_date"];
+		if ($this->verified_date->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->verified_date->AdvancedSearch->SearchOperator = @$_GET["z_verified_date"];
+
+		// verified_action
+		$this->verified_action->AdvancedSearch->SearchValue = @$_GET["x_verified_action"];
+		if ($this->verified_action->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->verified_action->AdvancedSearch->SearchOperator = @$_GET["z_verified_action"];
+
+		// verified_comment
+		$this->verified_comment->AdvancedSearch->SearchValue = @$_GET["x_verified_comment"];
+		if ($this->verified_comment->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->verified_comment->AdvancedSearch->SearchOperator = @$_GET["z_verified_comment"];
+
+		// verified_by
+		$this->verified_by->AdvancedSearch->SearchValue = @$_GET["x_verified_by"];
+		if ($this->verified_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->verified_by->AdvancedSearch->SearchOperator = @$_GET["z_verified_by"];
+	}
+
 	// Load recordset
 	function LoadRecordset($offset = -1, $rowcnt = -1) {
 
@@ -1757,6 +2045,7 @@ class cinventory_store_list extends cinventory_store {
 		$this->quantity_out->setDbValue($row['quantity_out']);
 		$this->total_quantity->setDbValue($row['total_quantity']);
 		$this->treated_by->setDbValue($row['treated_by']);
+		$this->statuss->setDbValue($row['statuss']);
 		$this->issued_action->setDbValue($row['issued_action']);
 		$this->issued_comment->setDbValue($row['issued_comment']);
 		$this->issued_by->setDbValue($row['issued_by']);
@@ -1768,7 +2057,6 @@ class cinventory_store_list extends cinventory_store {
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
-		$this->statuss->setDbValue($row['statuss']);
 	}
 
 	// Return a row with default values
@@ -1784,6 +2072,7 @@ class cinventory_store_list extends cinventory_store {
 		$row['quantity_out'] = NULL;
 		$row['total_quantity'] = NULL;
 		$row['treated_by'] = NULL;
+		$row['statuss'] = NULL;
 		$row['issued_action'] = NULL;
 		$row['issued_comment'] = NULL;
 		$row['issued_by'] = NULL;
@@ -1795,7 +2084,6 @@ class cinventory_store_list extends cinventory_store {
 		$row['verified_action'] = NULL;
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
-		$row['statuss'] = NULL;
 		return $row;
 	}
 
@@ -1814,6 +2102,7 @@ class cinventory_store_list extends cinventory_store {
 		$this->quantity_out->DbValue = $row['quantity_out'];
 		$this->total_quantity->DbValue = $row['total_quantity'];
 		$this->treated_by->DbValue = $row['treated_by'];
+		$this->statuss->DbValue = $row['statuss'];
 		$this->issued_action->DbValue = $row['issued_action'];
 		$this->issued_comment->DbValue = $row['issued_comment'];
 		$this->issued_by->DbValue = $row['issued_by'];
@@ -1825,7 +2114,6 @@ class cinventory_store_list extends cinventory_store {
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
-		$this->statuss->DbValue = $row['statuss'];
 	}
 
 	// Load old record
@@ -1876,6 +2164,7 @@ class cinventory_store_list extends cinventory_store {
 		// quantity_out
 		// total_quantity
 		// treated_by
+		// statuss
 		// issued_action
 		// issued_comment
 		// issued_by
@@ -1887,7 +2176,6 @@ class cinventory_store_list extends cinventory_store {
 		// verified_action
 		// verified_comment
 		// verified_by
-		// statuss
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1992,6 +2280,30 @@ class cinventory_store_list extends cinventory_store {
 			$this->treated_by->ViewValue = NULL;
 		}
 		$this->treated_by->ViewCustomAttributes = "";
+
+		// statuss
+		$this->statuss->ViewValue = $this->statuss->CurrentValue;
+		if (strval($this->statuss->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
+		$sWhereWrk = "";
+		$this->statuss->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->statuss->ViewValue = $this->statuss->CurrentValue;
+			}
+		} else {
+			$this->statuss->ViewValue = NULL;
+		}
+		$this->statuss->ViewCustomAttributes = "";
 
 		// issued_action
 		if (strval($this->issued_action->CurrentValue) <> "") {
@@ -2117,29 +2429,6 @@ class cinventory_store_list extends cinventory_store {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
-		// statuss
-		if (strval($this->statuss->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
-		$sWhereWrk = "";
-		$this->statuss->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->statuss->ViewValue = $this->statuss->CurrentValue;
-			}
-		} else {
-			$this->statuss->ViewValue = NULL;
-		}
-		$this->statuss->ViewCustomAttributes = "";
-
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
@@ -2185,6 +2474,11 @@ class cinventory_store_list extends cinventory_store {
 			$this->total_quantity->HrefValue = "";
 			$this->total_quantity->TooltipValue = "";
 
+			// statuss
+			$this->statuss->LinkCustomAttributes = "";
+			$this->statuss->HrefValue = "";
+			$this->statuss->TooltipValue = "";
+
 			// issued_comment
 			$this->issued_comment->LinkCustomAttributes = "";
 			$this->issued_comment->HrefValue = "";
@@ -2195,35 +2489,175 @@ class cinventory_store_list extends cinventory_store {
 			$this->issued_by->HrefValue = "";
 			$this->issued_by->TooltipValue = "";
 
-			// approved_comment
-			$this->approved_comment->LinkCustomAttributes = "";
-			$this->approved_comment->HrefValue = "";
-			$this->approved_comment->TooltipValue = "";
-
 			// approved_by
 			$this->approved_by->LinkCustomAttributes = "";
 			$this->approved_by->HrefValue = "";
 			$this->approved_by->TooltipValue = "";
 
-			// verified_comment
-			$this->verified_comment->LinkCustomAttributes = "";
-			$this->verified_comment->HrefValue = "";
-			$this->verified_comment->TooltipValue = "";
-
 			// verified_by
 			$this->verified_by->LinkCustomAttributes = "";
 			$this->verified_by->HrefValue = "";
 			$this->verified_by->TooltipValue = "";
+		} elseif ($this->RowType == EW_ROWTYPE_SEARCH) { // Search row
+
+			// id
+			$this->id->EditAttrs["class"] = "form-control";
+			$this->id->EditCustomAttributes = "";
+			$this->id->EditValue = ew_HtmlEncode($this->id->AdvancedSearch->SearchValue);
+			$this->id->PlaceHolder = ew_RemoveHtml($this->id->FldCaption());
+
+			// date
+			$this->date->EditAttrs["class"] = "form-control";
+			$this->date->EditCustomAttributes = "";
+			$this->date->EditValue = ew_HtmlEncode(ew_FormatDateTime(ew_UnFormatDateTime($this->date->AdvancedSearch->SearchValue, 0), 8));
+			$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
+
+			// reference_id
+			$this->reference_id->EditAttrs["class"] = "form-control";
+			$this->reference_id->EditCustomAttributes = "";
+			$this->reference_id->EditValue = ew_HtmlEncode($this->reference_id->AdvancedSearch->SearchValue);
+			$this->reference_id->PlaceHolder = ew_RemoveHtml($this->reference_id->FldCaption());
+
+			// staff_id
+			$this->staff_id->EditAttrs["class"] = "form-control";
+			$this->staff_id->EditCustomAttributes = "";
+			$this->staff_id->EditValue = ew_HtmlEncode($this->staff_id->AdvancedSearch->SearchValue);
+			$this->staff_id->PlaceHolder = ew_RemoveHtml($this->staff_id->FldCaption());
+
+			// material_name
+			$this->material_name->EditCustomAttributes = "";
+			if (trim(strval($this->material_name->AdvancedSearch->SearchValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->AdvancedSearch->SearchValue, EW_DATATYPE_NUMBER, "");
+			}
+			$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `inventory`";
+			$sWhereWrk = "";
+			$this->material_name->LookupFilters = array("dx1" => '`material_name`');
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+				$this->material_name->AdvancedSearch->ViewValue = $this->material_name->DisplayValue($arwrk);
+			} else {
+				$this->material_name->AdvancedSearch->ViewValue = $Language->Phrase("PleaseSelect");
+			}
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->material_name->EditValue = $arwrk;
+
+			// quantity_in
+			$this->quantity_in->EditAttrs["class"] = "form-control";
+			$this->quantity_in->EditCustomAttributes = "";
+			$this->quantity_in->EditValue = ew_HtmlEncode($this->quantity_in->AdvancedSearch->SearchValue);
+			$this->quantity_in->PlaceHolder = ew_RemoveHtml($this->quantity_in->FldCaption());
+
+			// quantity_type
+			$this->quantity_type->EditAttrs["class"] = "form-control";
+			$this->quantity_type->EditCustomAttributes = "";
+			$this->quantity_type->EditValue = ew_HtmlEncode($this->quantity_type->AdvancedSearch->SearchValue);
+			$this->quantity_type->PlaceHolder = ew_RemoveHtml($this->quantity_type->FldCaption());
+
+			// quantity_out
+			$this->quantity_out->EditAttrs["class"] = "form-control";
+			$this->quantity_out->EditCustomAttributes = "";
+			$this->quantity_out->EditValue = ew_HtmlEncode($this->quantity_out->AdvancedSearch->SearchValue);
+			$this->quantity_out->PlaceHolder = ew_RemoveHtml($this->quantity_out->FldCaption());
+
+			// total_quantity
+			$this->total_quantity->EditAttrs["class"] = "form-control";
+			$this->total_quantity->EditCustomAttributes = "";
+			$this->total_quantity->EditValue = ew_HtmlEncode($this->total_quantity->AdvancedSearch->SearchValue);
+			$this->total_quantity->PlaceHolder = ew_RemoveHtml($this->total_quantity->FldCaption());
 
 			// statuss
-			$this->statuss->LinkCustomAttributes = "";
-			$this->statuss->HrefValue = "";
-			$this->statuss->TooltipValue = "";
+			$this->statuss->EditAttrs["class"] = "form-control";
+			$this->statuss->EditCustomAttributes = "";
+			$this->statuss->EditValue = ew_HtmlEncode($this->statuss->AdvancedSearch->SearchValue);
+			$this->statuss->PlaceHolder = ew_RemoveHtml($this->statuss->FldCaption());
+
+			// issued_comment
+			$this->issued_comment->EditAttrs["class"] = "form-control";
+			$this->issued_comment->EditCustomAttributes = "";
+			$this->issued_comment->EditValue = ew_HtmlEncode($this->issued_comment->AdvancedSearch->SearchValue);
+			$this->issued_comment->PlaceHolder = ew_RemoveHtml($this->issued_comment->FldCaption());
+
+			// issued_by
+			$this->issued_by->EditAttrs["class"] = "form-control";
+			$this->issued_by->EditCustomAttributes = "";
+			$this->issued_by->EditValue = ew_HtmlEncode($this->issued_by->AdvancedSearch->SearchValue);
+			$this->issued_by->PlaceHolder = ew_RemoveHtml($this->issued_by->FldCaption());
+
+			// approved_by
+			$this->approved_by->EditAttrs["class"] = "form-control";
+			$this->approved_by->EditCustomAttributes = "";
+			$this->approved_by->EditValue = ew_HtmlEncode($this->approved_by->AdvancedSearch->SearchValue);
+			$this->approved_by->PlaceHolder = ew_RemoveHtml($this->approved_by->FldCaption());
+
+			// verified_by
+			$this->verified_by->EditAttrs["class"] = "form-control";
+			$this->verified_by->EditCustomAttributes = "";
+			$this->verified_by->EditValue = ew_HtmlEncode($this->verified_by->AdvancedSearch->SearchValue);
+			$this->verified_by->PlaceHolder = ew_RemoveHtml($this->verified_by->FldCaption());
 		}
+		if ($this->RowType == EW_ROWTYPE_ADD || $this->RowType == EW_ROWTYPE_EDIT || $this->RowType == EW_ROWTYPE_SEARCH) // Add/Edit/Search row
+			$this->SetupFieldTitles();
 
 		// Call Row Rendered event
 		if ($this->RowType <> EW_ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
+	}
+
+	// Validate search
+	function ValidateSearch() {
+		global $gsSearchError;
+
+		// Initialize
+		$gsSearchError = "";
+
+		// Check if validation required
+		if (!EW_SERVER_VALIDATE)
+			return TRUE;
+
+		// Return validate result
+		$ValidateSearch = ($gsSearchError == "");
+
+		// Call Form_CustomValidate event
+		$sFormCustomError = "";
+		$ValidateSearch = $ValidateSearch && $this->Form_CustomValidate($sFormCustomError);
+		if ($sFormCustomError <> "") {
+			ew_AddMessage($gsSearchError, $sFormCustomError);
+		}
+		return $ValidateSearch;
+	}
+
+	// Load advanced search
+	function LoadAdvancedSearch() {
+		$this->id->AdvancedSearch->Load();
+		$this->date->AdvancedSearch->Load();
+		$this->reference_id->AdvancedSearch->Load();
+		$this->staff_id->AdvancedSearch->Load();
+		$this->material_name->AdvancedSearch->Load();
+		$this->quantity_in->AdvancedSearch->Load();
+		$this->quantity_type->AdvancedSearch->Load();
+		$this->quantity_out->AdvancedSearch->Load();
+		$this->total_quantity->AdvancedSearch->Load();
+		$this->treated_by->AdvancedSearch->Load();
+		$this->statuss->AdvancedSearch->Load();
+		$this->issued_action->AdvancedSearch->Load();
+		$this->issued_comment->AdvancedSearch->Load();
+		$this->issued_by->AdvancedSearch->Load();
+		$this->approver_date->AdvancedSearch->Load();
+		$this->approver_action->AdvancedSearch->Load();
+		$this->approved_comment->AdvancedSearch->Load();
+		$this->approved_by->AdvancedSearch->Load();
+		$this->verified_date->AdvancedSearch->Load();
+		$this->verified_action->AdvancedSearch->Load();
+		$this->verified_comment->AdvancedSearch->Load();
+		$this->verified_by->AdvancedSearch->Load();
 	}
 
 	// Set up export options
@@ -2268,7 +2702,7 @@ class cinventory_store_list extends cinventory_store {
 		// Export to Email
 		$item = &$this->ExportOptions->Add("email");
 		$url = "";
-		$item->Body = "<button id=\"emf_inventory_store\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_inventory_store',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.finventory_storelist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
+		$item->Body = "<button id=\"emf_store_reports\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_store_reports',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fstore_reportslist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
 		$item->Visible = FALSE;
 
 		// Drop down button for export
@@ -2382,7 +2816,36 @@ class cinventory_store_list extends cinventory_store {
 	function SetupLookupFilters($fld, $pageId = null) {
 		global $gsLanguage;
 		$pageId = $pageId ?: $this->PageID;
-		switch ($fld->FldVar) {
+		if ($pageId == "list") {
+			switch ($fld->FldVar) {
+			}
+		} elseif ($pageId == "extbs") {
+			switch ($fld->FldVar) {
+		case "x_material_name":
+			$sSqlWrk = "";
+				$sSqlWrk = "SELECT `id` AS `LinkFld`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
+				$sWhereWrk = "{filter}";
+				$fld->LookupFilters = array("dx1" => '`material_name`');
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+				$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
+				if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+		case "x_treated_by":
+			$sSqlWrk = "";
+				$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+				$sWhereWrk = "{filter}";
+				$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+				$this->Lookup_Selecting($this->treated_by, $sWhereWrk); // Call Lookup Selecting
+				if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+			}
 		}
 	}
 
@@ -2390,7 +2853,24 @@ class cinventory_store_list extends cinventory_store {
 	function SetupAutoSuggestFilters($fld, $pageId = null) {
 		global $gsLanguage;
 		$pageId = $pageId ?: $this->PageID;
-		switch ($fld->FldVar) {
+		if ($pageId == "list") {
+			switch ($fld->FldVar) {
+			}
+		} elseif ($pageId == "extbs") {
+			switch ($fld->FldVar) {
+		case "x_treated_by":
+			$sSqlWrk = "";
+				$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld` FROM `users`";
+				$sWhereWrk = "`firstname` LIKE '{query_value}%' OR CONCAT(COALESCE(`firstname`, ''),'" . ew_ValueSeparator(1, $this->treated_by) . "',COALESCE(`lastname`,''),'" . ew_ValueSeparator(2, $this->treated_by) . "',COALESCE(`staffno`,'')) LIKE '{query_value}%'";
+				$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
+			$sSqlWrk = "";
+				$this->Lookup_Selecting($this->treated_by, $sWhereWrk); // Call Lookup Selecting
+				if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+			}
 		}
 	}
 
@@ -2398,9 +2878,6 @@ class cinventory_store_list extends cinventory_store {
 	function Page_Load() {
 
 		//echo "Page Load";
-		if (CurrentPageID() == "list"){
-			 $_SESSION['INS_ID'] = generateINSKey();
-		 }
 	}
 
 	// Page Unload event
@@ -2530,31 +3007,31 @@ class cinventory_store_list extends cinventory_store {
 <?php
 
 // Create page object
-if (!isset($inventory_store_list)) $inventory_store_list = new cinventory_store_list();
+if (!isset($store_reports_list)) $store_reports_list = new cstore_reports_list();
 
 // Page init
-$inventory_store_list->Page_Init();
+$store_reports_list->Page_Init();
 
 // Page main
-$inventory_store_list->Page_Main();
+$store_reports_list->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$inventory_store_list->Page_Render();
+$store_reports_list->Page_Render();
 ?>
 <?php include_once "header.php" ?>
-<?php if ($inventory_store->Export == "") { ?>
+<?php if ($store_reports->Export == "") { ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "list";
-var CurrentForm = finventory_storelist = new ew_Form("finventory_storelist", "list");
-finventory_storelist.FormKeyCountName = '<?php echo $inventory_store_list->FormKeyCountName ?>';
+var CurrentForm = fstore_reportslist = new ew_Form("fstore_reportslist", "list");
+fstore_reportslist.FormKeyCountName = '<?php echo $store_reports_list->FormKeyCountName ?>';
 
 // Form_CustomValidate event
-finventory_storelist.Form_CustomValidate = 
+fstore_reportslist.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid.
@@ -2562,102 +3039,184 @@ finventory_storelist.Form_CustomValidate =
  }
 
 // Use JavaScript validation or not
-finventory_storelist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+fstore_reportslist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-finventory_storelist.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_staffno","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-finventory_storelist.Lists["x_staff_id"].Data = "<?php echo $inventory_store_list->staff_id->LookupFilterQuery(FALSE, "list") ?>";
-finventory_storelist.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_list->staff_id->LookupFilterQuery(TRUE, "list"))) ?>;
-finventory_storelist.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
-finventory_storelist.Lists["x_material_name"].Data = "<?php echo $inventory_store_list->material_name->LookupFilterQuery(FALSE, "list") ?>";
-finventory_storelist.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-finventory_storelist.Lists["x_issued_by"].Data = "<?php echo $inventory_store_list->issued_by->LookupFilterQuery(FALSE, "list") ?>";
-finventory_storelist.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_list->issued_by->LookupFilterQuery(TRUE, "list"))) ?>;
-finventory_storelist.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-finventory_storelist.Lists["x_approved_by"].Data = "<?php echo $inventory_store_list->approved_by->LookupFilterQuery(FALSE, "list") ?>";
-finventory_storelist.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_list->approved_by->LookupFilterQuery(TRUE, "list"))) ?>;
-finventory_storelist.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-finventory_storelist.Lists["x_verified_by"].Data = "<?php echo $inventory_store_list->verified_by->LookupFilterQuery(FALSE, "list") ?>";
-finventory_storelist.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_store_list->verified_by->LookupFilterQuery(TRUE, "list"))) ?>;
-finventory_storelist.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
-finventory_storelist.Lists["x_statuss"].Data = "<?php echo $inventory_store_list->statuss->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportslist.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_staffno","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportslist.Lists["x_staff_id"].Data = "<?php echo $store_reports_list->staff_id->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportslist.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_list->staff_id->LookupFilterQuery(TRUE, "list"))) ?>;
+fstore_reportslist.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
+fstore_reportslist.Lists["x_material_name"].Data = "<?php echo $store_reports_list->material_name->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportslist.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
+fstore_reportslist.Lists["x_statuss"].Data = "<?php echo $store_reports_list->statuss->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportslist.AutoSuggests["x_statuss"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_list->statuss->LookupFilterQuery(TRUE, "list"))) ?>;
+fstore_reportslist.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportslist.Lists["x_issued_by"].Data = "<?php echo $store_reports_list->issued_by->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportslist.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_list->issued_by->LookupFilterQuery(TRUE, "list"))) ?>;
+fstore_reportslist.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportslist.Lists["x_approved_by"].Data = "<?php echo $store_reports_list->approved_by->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportslist.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_list->approved_by->LookupFilterQuery(TRUE, "list"))) ?>;
+fstore_reportslist.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fstore_reportslist.Lists["x_verified_by"].Data = "<?php echo $store_reports_list->verified_by->LookupFilterQuery(FALSE, "list") ?>";
+fstore_reportslist.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $store_reports_list->verified_by->LookupFilterQuery(TRUE, "list"))) ?>;
 
 // Form object for search
-var CurrentSearchForm = finventory_storelistsrch = new ew_Form("finventory_storelistsrch");
+var CurrentSearchForm = fstore_reportslistsrch = new ew_Form("fstore_reportslistsrch");
+
+// Validate function for search
+fstore_reportslistsrch.Validate = function(fobj) {
+	if (!this.ValidateRequired)
+		return true; // Ignore validation
+	fobj = fobj || this.Form;
+	var infix = "";
+
+	// Fire Form_CustomValidate event
+	if (!this.Form_CustomValidate(fobj))
+		return false;
+	return true;
+}
+
+// Form_CustomValidate event
+fstore_reportslistsrch.Form_CustomValidate = 
+ function(fobj) { // DO NOT CHANGE THIS LINE!
+
+ 	// Your custom validation code here, return false if invalid.
+ 	return true;
+ }
+
+// Use JavaScript validation or not
+fstore_reportslistsrch.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+
+// Dynamic selection lists
+fstore_reportslistsrch.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
+fstore_reportslistsrch.Lists["x_material_name"].Data = "<?php echo $store_reports_list->material_name->LookupFilterQuery(FALSE, "extbs") ?>";
 </script>
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
 </script>
 <?php } ?>
-<?php if ($inventory_store->Export == "") { ?>
+<?php if ($store_reports->Export == "") { ?>
 <div class="ewToolbar">
-<?php if ($inventory_store_list->TotalRecs > 0 && $inventory_store_list->ExportOptions->Visible()) { ?>
-<?php $inventory_store_list->ExportOptions->Render("body") ?>
+<?php if ($store_reports_list->TotalRecs > 0 && $store_reports_list->ExportOptions->Visible()) { ?>
+<?php $store_reports_list->ExportOptions->Render("body") ?>
 <?php } ?>
-<?php if ($inventory_store_list->SearchOptions->Visible()) { ?>
-<?php $inventory_store_list->SearchOptions->Render("body") ?>
+<?php if ($store_reports_list->SearchOptions->Visible()) { ?>
+<?php $store_reports_list->SearchOptions->Render("body") ?>
 <?php } ?>
-<?php if ($inventory_store_list->FilterOptions->Visible()) { ?>
-<?php $inventory_store_list->FilterOptions->Render("body") ?>
+<?php if ($store_reports_list->FilterOptions->Visible()) { ?>
+<?php $store_reports_list->FilterOptions->Render("body") ?>
 <?php } ?>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
 <?php
-	$bSelectLimit = $inventory_store_list->UseSelectLimit;
+	$bSelectLimit = $store_reports_list->UseSelectLimit;
 	if ($bSelectLimit) {
-		if ($inventory_store_list->TotalRecs <= 0)
-			$inventory_store_list->TotalRecs = $inventory_store->ListRecordCount();
+		if ($store_reports_list->TotalRecs <= 0)
+			$store_reports_list->TotalRecs = $store_reports->ListRecordCount();
 	} else {
-		if (!$inventory_store_list->Recordset && ($inventory_store_list->Recordset = $inventory_store_list->LoadRecordset()))
-			$inventory_store_list->TotalRecs = $inventory_store_list->Recordset->RecordCount();
+		if (!$store_reports_list->Recordset && ($store_reports_list->Recordset = $store_reports_list->LoadRecordset()))
+			$store_reports_list->TotalRecs = $store_reports_list->Recordset->RecordCount();
 	}
-	$inventory_store_list->StartRec = 1;
-	if ($inventory_store_list->DisplayRecs <= 0 || ($inventory_store->Export <> "" && $inventory_store->ExportAll)) // Display all records
-		$inventory_store_list->DisplayRecs = $inventory_store_list->TotalRecs;
-	if (!($inventory_store->Export <> "" && $inventory_store->ExportAll))
-		$inventory_store_list->SetupStartRec(); // Set up start record position
+	$store_reports_list->StartRec = 1;
+	if ($store_reports_list->DisplayRecs <= 0 || ($store_reports->Export <> "" && $store_reports->ExportAll)) // Display all records
+		$store_reports_list->DisplayRecs = $store_reports_list->TotalRecs;
+	if (!($store_reports->Export <> "" && $store_reports->ExportAll))
+		$store_reports_list->SetupStartRec(); // Set up start record position
 	if ($bSelectLimit)
-		$inventory_store_list->Recordset = $inventory_store_list->LoadRecordset($inventory_store_list->StartRec-1, $inventory_store_list->DisplayRecs);
+		$store_reports_list->Recordset = $store_reports_list->LoadRecordset($store_reports_list->StartRec-1, $store_reports_list->DisplayRecs);
 
 	// Set no record found message
-	if ($inventory_store->CurrentAction == "" && $inventory_store_list->TotalRecs == 0) {
+	if ($store_reports->CurrentAction == "" && $store_reports_list->TotalRecs == 0) {
 		if (!$Security->CanList())
-			$inventory_store_list->setWarningMessage(ew_DeniedMsg());
-		if ($inventory_store_list->SearchWhere == "0=101")
-			$inventory_store_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
+			$store_reports_list->setWarningMessage(ew_DeniedMsg());
+		if ($store_reports_list->SearchWhere == "0=101")
+			$store_reports_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
 		else
-			$inventory_store_list->setWarningMessage($Language->Phrase("NoRecord"));
+			$store_reports_list->setWarningMessage($Language->Phrase("NoRecord"));
 	}
 
 	// Audit trail on search
-	if ($inventory_store_list->AuditTrailOnSearch && $inventory_store_list->Command == "search" && !$inventory_store_list->RestoreSearch) {
+	if ($store_reports_list->AuditTrailOnSearch && $store_reports_list->Command == "search" && !$store_reports_list->RestoreSearch) {
 		$searchparm = ew_ServerVar("QUERY_STRING");
-		$searchsql = $inventory_store_list->getSessionWhere();
-		$inventory_store_list->WriteAuditTrailOnSearch($searchparm, $searchsql);
+		$searchsql = $store_reports_list->getSessionWhere();
+		$store_reports_list->WriteAuditTrailOnSearch($searchparm, $searchsql);
 	}
-$inventory_store_list->RenderOtherOptions();
+$store_reports_list->RenderOtherOptions();
 ?>
 <?php if ($Security->CanSearch()) { ?>
-<?php if ($inventory_store->Export == "" && $inventory_store->CurrentAction == "") { ?>
-<form name="finventory_storelistsrch" id="finventory_storelistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
-<?php $SearchPanelClass = ($inventory_store_list->SearchWhere <> "") ? " in" : " in"; ?>
-<div id="finventory_storelistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
+<?php if ($store_reports->Export == "" && $store_reports->CurrentAction == "") { ?>
+<form name="fstore_reportslistsrch" id="fstore_reportslistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
+<?php $SearchPanelClass = ($store_reports_list->SearchWhere <> "") ? " in" : " in"; ?>
+<div id="fstore_reportslistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
 <input type="hidden" name="cmd" value="search">
-<input type="hidden" name="t" value="inventory_store">
+<input type="hidden" name="t" value="store_reports">
 	<div class="ewBasicSearch">
+<?php
+if ($gsSearchError == "")
+	$store_reports_list->LoadAdvancedSearch(); // Load advanced search
+
+// Render for search
+$store_reports->RowType = EW_ROWTYPE_SEARCH;
+
+// Render row
+$store_reports->ResetAttrs();
+$store_reports_list->RenderRow();
+?>
 <div id="xsr_1" class="ewRow">
+<?php if ($store_reports->date->Visible) { // date ?>
+	<div id="xsc_date" class="ewCell form-group">
+		<label for="x_date" class="ewSearchCaption ewLabel"><?php echo $store_reports->date->FldCaption() ?></label>
+		<span class="ewSearchOperator"><?php echo $Language->Phrase("=") ?><input type="hidden" name="z_date" id="z_date" value="="></span>
+		<span class="ewSearchField">
+<input type="text" data-table="store_reports" data-field="x_date" name="x_date" id="x_date" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($store_reports->date->getPlaceHolder()) ?>" value="<?php echo $store_reports->date->EditValue ?>"<?php echo $store_reports->date->EditAttributes() ?>>
+<?php if (!$store_reports->date->ReadOnly && !$store_reports->date->Disabled && !isset($store_reports->date->EditAttrs["readonly"]) && !isset($store_reports->date->EditAttrs["disabled"])) { ?>
+<script type="text/javascript">
+ew_CreateDateTimePicker("fstore_reportslistsrch", "x_date", {"ignoreReadonly":true,"useCurrent":false,"format":0});
+</script>
+<?php } ?>
+</span>
+	</div>
+<?php } ?>
+</div>
+<div id="xsr_2" class="ewRow">
+<?php if ($store_reports->reference_id->Visible) { // reference_id ?>
+	<div id="xsc_reference_id" class="ewCell form-group">
+		<label for="x_reference_id" class="ewSearchCaption ewLabel"><?php echo $store_reports->reference_id->FldCaption() ?></label>
+		<span class="ewSearchOperator"><?php echo $Language->Phrase("LIKE") ?><input type="hidden" name="z_reference_id" id="z_reference_id" value="LIKE"></span>
+		<span class="ewSearchField">
+<input type="text" data-table="store_reports" data-field="x_reference_id" name="x_reference_id" id="x_reference_id" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($store_reports->reference_id->getPlaceHolder()) ?>" value="<?php echo $store_reports->reference_id->EditValue ?>"<?php echo $store_reports->reference_id->EditAttributes() ?>>
+</span>
+	</div>
+<?php } ?>
+</div>
+<div id="xsr_3" class="ewRow">
+<?php if ($store_reports->material_name->Visible) { // material_name ?>
+	<div id="xsc_material_name" class="ewCell form-group">
+		<label for="x_material_name" class="ewSearchCaption ewLabel"><?php echo $store_reports->material_name->FldCaption() ?></label>
+		<span class="ewSearchOperator"><?php echo $Language->Phrase("LIKE") ?><input type="hidden" name="z_material_name" id="z_material_name" value="LIKE"></span>
+		<span class="ewSearchField">
+<span class="ewLookupList">
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_material_name"><?php echo (strval($store_reports->material_name->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $store_reports->material_name->AdvancedSearch->ViewValue); ?></span>
+</span>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($store_reports->material_name->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_material_name',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($store_reports->material_name->ReadOnly || $store_reports->material_name->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="store_reports" data-field="x_material_name" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $store_reports->material_name->DisplayValueSeparatorAttribute() ?>" name="x_material_name" id="x_material_name" value="<?php echo $store_reports->material_name->AdvancedSearch->SearchValue ?>"<?php echo $store_reports->material_name->EditAttributes() ?>>
+</span>
+	</div>
+<?php } ?>
+</div>
+<div id="xsr_4" class="ewRow">
 	<div class="ewQuickSearch input-group">
-	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($inventory_store_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
-	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($inventory_store_list->BasicSearch->getType()) ?>">
+	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($store_reports_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
+	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($store_reports_list->BasicSearch->getType()) ?>">
 	<div class="input-group-btn">
-		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $inventory_store_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
+		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $store_reports_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
 		<ul class="dropdown-menu pull-right" role="menu">
-			<li<?php if ($inventory_store_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
-			<li<?php if ($inventory_store_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
-			<li<?php if ($inventory_store_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
-			<li<?php if ($inventory_store_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
+			<li<?php if ($store_reports_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
+			<li<?php if ($store_reports_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
+			<li<?php if ($store_reports_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
+			<li<?php if ($store_reports_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
 		</ul>
 	<button class="btn btn-primary ewButton" name="btnsubmit" id="btnsubmit" type="submit"><?php echo $Language->Phrase("SearchBtn") ?></button>
 	</div>
@@ -2668,71 +3227,71 @@ $inventory_store_list->RenderOtherOptions();
 </form>
 <?php } ?>
 <?php } ?>
-<?php $inventory_store_list->ShowPageHeader(); ?>
+<?php $store_reports_list->ShowPageHeader(); ?>
 <?php
-$inventory_store_list->ShowMessage();
+$store_reports_list->ShowMessage();
 ?>
-<?php if ($inventory_store_list->TotalRecs > 0 || $inventory_store->CurrentAction <> "") { ?>
-<div class="box ewBox ewGrid<?php if ($inventory_store_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> inventory_store">
-<?php if ($inventory_store->Export == "") { ?>
+<?php if ($store_reports_list->TotalRecs > 0 || $store_reports->CurrentAction <> "") { ?>
+<div class="box ewBox ewGrid<?php if ($store_reports_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> store_reports">
+<?php if ($store_reports->Export == "") { ?>
 <div class="box-header ewGridUpperPanel">
-<?php if ($inventory_store->CurrentAction <> "gridadd" && $inventory_store->CurrentAction <> "gridedit") { ?>
+<?php if ($store_reports->CurrentAction <> "gridadd" && $store_reports->CurrentAction <> "gridedit") { ?>
 <form name="ewPagerForm" class="form-inline ewForm ewPagerForm" action="<?php echo ew_CurrentPage() ?>">
-<?php if (!isset($inventory_store_list->Pager)) $inventory_store_list->Pager = new cPrevNextPager($inventory_store_list->StartRec, $inventory_store_list->DisplayRecs, $inventory_store_list->TotalRecs, $inventory_store_list->AutoHidePager) ?>
-<?php if ($inventory_store_list->Pager->RecordCount > 0 && $inventory_store_list->Pager->Visible) { ?>
+<?php if (!isset($store_reports_list->Pager)) $store_reports_list->Pager = new cPrevNextPager($store_reports_list->StartRec, $store_reports_list->DisplayRecs, $store_reports_list->TotalRecs, $store_reports_list->AutoHidePager) ?>
+<?php if ($store_reports_list->Pager->RecordCount > 0 && $store_reports_list->Pager->Visible) { ?>
 <div class="ewPager">
 <span><?php echo $Language->Phrase("Page") ?>&nbsp;</span>
 <div class="ewPrevNext"><div class="input-group">
 <div class="input-group-btn">
 <!--first page button-->
-	<?php if ($inventory_store_list->Pager->FirstButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $inventory_store_list->PageUrl() ?>start=<?php echo $inventory_store_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
+	<?php if ($store_reports_list->Pager->FirstButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $store_reports_list->PageUrl() ?>start=<?php echo $store_reports_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerFirst") ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } ?>
 <!--previous page button-->
-	<?php if ($inventory_store_list->Pager->PrevButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $inventory_store_list->PageUrl() ?>start=<?php echo $inventory_store_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php if ($store_reports_list->Pager->PrevButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $store_reports_list->PageUrl() ?>start=<?php echo $store_reports_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerPrevious") ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } ?>
 </div>
 <!--current page number-->
-	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $inventory_store_list->Pager->CurrentPage ?>">
+	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $store_reports_list->Pager->CurrentPage ?>">
 <div class="input-group-btn">
 <!--next page button-->
-	<?php if ($inventory_store_list->Pager->NextButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $inventory_store_list->PageUrl() ?>start=<?php echo $inventory_store_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
+	<?php if ($store_reports_list->Pager->NextButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $store_reports_list->PageUrl() ?>start=<?php echo $store_reports_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerNext") ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } ?>
 <!--last page button-->
-	<?php if ($inventory_store_list->Pager->LastButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $inventory_store_list->PageUrl() ?>start=<?php echo $inventory_store_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
+	<?php if ($store_reports_list->Pager->LastButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $store_reports_list->PageUrl() ?>start=<?php echo $store_reports_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerLast") ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } ?>
 </div>
 </div>
 </div>
-<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $inventory_store_list->Pager->PageCount ?></span>
+<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $store_reports_list->Pager->PageCount ?></span>
 </div>
 <?php } ?>
-<?php if ($inventory_store_list->Pager->RecordCount > 0) { ?>
+<?php if ($store_reports_list->Pager->RecordCount > 0) { ?>
 <div class="ewPager ewRec">
-	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $inventory_store_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $inventory_store_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $inventory_store_list->Pager->RecordCount ?></span>
+	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $store_reports_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $store_reports_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $store_reports_list->Pager->RecordCount ?></span>
 </div>
 <?php } ?>
-<?php if ($inventory_store_list->TotalRecs > 0 && (!$inventory_store_list->AutoHidePageSizeSelector || $inventory_store_list->Pager->Visible)) { ?>
+<?php if ($store_reports_list->TotalRecs > 0 && (!$store_reports_list->AutoHidePageSizeSelector || $store_reports_list->Pager->Visible)) { ?>
 <div class="ewPager">
-<input type="hidden" name="t" value="inventory_store">
+<input type="hidden" name="t" value="store_reports">
 <select name="<?php echo EW_TABLE_REC_PER_PAGE ?>" class="form-control input-sm ewTooltip" title="<?php echo $Language->Phrase("RecordsPerPage") ?>" onchange="this.form.submit();">
-<option value="5"<?php if ($inventory_store_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
-<option value="10"<?php if ($inventory_store_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
-<option value="15"<?php if ($inventory_store_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
-<option value="20"<?php if ($inventory_store_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
-<option value="50"<?php if ($inventory_store_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
-<option value="ALL"<?php if ($inventory_store->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
+<option value="5"<?php if ($store_reports_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
+<option value="10"<?php if ($store_reports_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
+<option value="15"<?php if ($store_reports_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
+<option value="20"<?php if ($store_reports_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
+<option value="50"<?php if ($store_reports_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
+<option value="ALL"<?php if ($store_reports->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
 </select>
 </div>
 <?php } ?>
@@ -2740,387 +3299,353 @@ $inventory_store_list->ShowMessage();
 <?php } ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($inventory_store_list->OtherOptions as &$option)
+	foreach ($store_reports_list->OtherOptions as &$option)
 		$option->Render("body");
 ?>
 </div>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
-<form name="finventory_storelist" id="finventory_storelist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($inventory_store_list->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $inventory_store_list->Token ?>">
+<form name="fstore_reportslist" id="fstore_reportslist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($store_reports_list->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $store_reports_list->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="inventory_store">
-<div id="gmp_inventory_store" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
-<?php if ($inventory_store_list->TotalRecs > 0 || $inventory_store->CurrentAction == "gridedit") { ?>
-<table id="tbl_inventory_storelist" class="table ewTable">
+<input type="hidden" name="t" value="store_reports">
+<div id="gmp_store_reports" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
+<?php if ($store_reports_list->TotalRecs > 0 || $store_reports->CurrentAction == "gridedit") { ?>
+<table id="tbl_store_reportslist" class="table ewTable">
 <thead>
 	<tr class="ewTableHeader">
 <?php
 
 // Header row
-$inventory_store_list->RowType = EW_ROWTYPE_HEADER;
+$store_reports_list->RowType = EW_ROWTYPE_HEADER;
 
 // Render list options
-$inventory_store_list->RenderListOptions();
+$store_reports_list->RenderListOptions();
 
 // Render list options (header, left)
-$inventory_store_list->ListOptions->Render("header", "left");
+$store_reports_list->ListOptions->Render("header", "left");
 ?>
-<?php if ($inventory_store->id->Visible) { // id ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->id) == "") { ?>
-		<th data-name="id" class="<?php echo $inventory_store->id->HeaderCellClass() ?>"><div id="elh_inventory_store_id" class="inventory_store_id"><div class="ewTableHeaderCaption"><?php echo $inventory_store->id->FldCaption() ?></div></div></th>
+<?php if ($store_reports->id->Visible) { // id ?>
+	<?php if ($store_reports->SortUrl($store_reports->id) == "") { ?>
+		<th data-name="id" class="<?php echo $store_reports->id->HeaderCellClass() ?>"><div id="elh_store_reports_id" class="store_reports_id"><div class="ewTableHeaderCaption"><?php echo $store_reports->id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="id" class="<?php echo $inventory_store->id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->id) ?>',1);"><div id="elh_inventory_store_id" class="inventory_store_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="id" class="<?php echo $store_reports->id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->id) ?>',1);"><div id="elh_store_reports_id" class="store_reports_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->date->Visible) { // date ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->date) == "") { ?>
-		<th data-name="date" class="<?php echo $inventory_store->date->HeaderCellClass() ?>"><div id="elh_inventory_store_date" class="inventory_store_date"><div class="ewTableHeaderCaption"><?php echo $inventory_store->date->FldCaption() ?></div></div></th>
+<?php if ($store_reports->date->Visible) { // date ?>
+	<?php if ($store_reports->SortUrl($store_reports->date) == "") { ?>
+		<th data-name="date" class="<?php echo $store_reports->date->HeaderCellClass() ?>"><div id="elh_store_reports_date" class="store_reports_date"><div class="ewTableHeaderCaption"><?php echo $store_reports->date->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="date" class="<?php echo $inventory_store->date->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->date) ?>',1);"><div id="elh_inventory_store_date" class="inventory_store_date">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->date->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->date->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->date->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="date" class="<?php echo $store_reports->date->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->date) ?>',1);"><div id="elh_store_reports_date" class="store_reports_date">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->date->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->date->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->date->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->reference_id->Visible) { // reference_id ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->reference_id) == "") { ?>
-		<th data-name="reference_id" class="<?php echo $inventory_store->reference_id->HeaderCellClass() ?>"><div id="elh_inventory_store_reference_id" class="inventory_store_reference_id"><div class="ewTableHeaderCaption"><?php echo $inventory_store->reference_id->FldCaption() ?></div></div></th>
+<?php if ($store_reports->reference_id->Visible) { // reference_id ?>
+	<?php if ($store_reports->SortUrl($store_reports->reference_id) == "") { ?>
+		<th data-name="reference_id" class="<?php echo $store_reports->reference_id->HeaderCellClass() ?>"><div id="elh_store_reports_reference_id" class="store_reports_reference_id"><div class="ewTableHeaderCaption"><?php echo $store_reports->reference_id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="reference_id" class="<?php echo $inventory_store->reference_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->reference_id) ?>',1);"><div id="elh_inventory_store_reference_id" class="inventory_store_reference_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->reference_id->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->reference_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->reference_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="reference_id" class="<?php echo $store_reports->reference_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->reference_id) ?>',1);"><div id="elh_store_reports_reference_id" class="store_reports_reference_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->reference_id->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->reference_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->reference_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->staff_id->Visible) { // staff_id ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->staff_id) == "") { ?>
-		<th data-name="staff_id" class="<?php echo $inventory_store->staff_id->HeaderCellClass() ?>"><div id="elh_inventory_store_staff_id" class="inventory_store_staff_id"><div class="ewTableHeaderCaption"><?php echo $inventory_store->staff_id->FldCaption() ?></div></div></th>
+<?php if ($store_reports->staff_id->Visible) { // staff_id ?>
+	<?php if ($store_reports->SortUrl($store_reports->staff_id) == "") { ?>
+		<th data-name="staff_id" class="<?php echo $store_reports->staff_id->HeaderCellClass() ?>"><div id="elh_store_reports_staff_id" class="store_reports_staff_id"><div class="ewTableHeaderCaption"><?php echo $store_reports->staff_id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="staff_id" class="<?php echo $inventory_store->staff_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->staff_id) ?>',1);"><div id="elh_inventory_store_staff_id" class="inventory_store_staff_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->staff_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->staff_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->staff_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="staff_id" class="<?php echo $store_reports->staff_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->staff_id) ?>',1);"><div id="elh_store_reports_staff_id" class="store_reports_staff_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->staff_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->staff_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->staff_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->material_name->Visible) { // material_name ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->material_name) == "") { ?>
-		<th data-name="material_name" class="<?php echo $inventory_store->material_name->HeaderCellClass() ?>"><div id="elh_inventory_store_material_name" class="inventory_store_material_name"><div class="ewTableHeaderCaption"><?php echo $inventory_store->material_name->FldCaption() ?></div></div></th>
+<?php if ($store_reports->material_name->Visible) { // material_name ?>
+	<?php if ($store_reports->SortUrl($store_reports->material_name) == "") { ?>
+		<th data-name="material_name" class="<?php echo $store_reports->material_name->HeaderCellClass() ?>"><div id="elh_store_reports_material_name" class="store_reports_material_name"><div class="ewTableHeaderCaption"><?php echo $store_reports->material_name->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="material_name" class="<?php echo $inventory_store->material_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->material_name) ?>',1);"><div id="elh_inventory_store_material_name" class="inventory_store_material_name">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->material_name->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->material_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->material_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="material_name" class="<?php echo $store_reports->material_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->material_name) ?>',1);"><div id="elh_store_reports_material_name" class="store_reports_material_name">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->material_name->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->material_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->material_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->quantity_in->Visible) { // quantity_in ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->quantity_in) == "") { ?>
-		<th data-name="quantity_in" class="<?php echo $inventory_store->quantity_in->HeaderCellClass() ?>"><div id="elh_inventory_store_quantity_in" class="inventory_store_quantity_in"><div class="ewTableHeaderCaption"><?php echo $inventory_store->quantity_in->FldCaption() ?></div></div></th>
+<?php if ($store_reports->quantity_in->Visible) { // quantity_in ?>
+	<?php if ($store_reports->SortUrl($store_reports->quantity_in) == "") { ?>
+		<th data-name="quantity_in" class="<?php echo $store_reports->quantity_in->HeaderCellClass() ?>"><div id="elh_store_reports_quantity_in" class="store_reports_quantity_in"><div class="ewTableHeaderCaption"><?php echo $store_reports->quantity_in->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="quantity_in" class="<?php echo $inventory_store->quantity_in->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->quantity_in) ?>',1);"><div id="elh_inventory_store_quantity_in" class="inventory_store_quantity_in">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->quantity_in->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->quantity_in->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->quantity_in->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="quantity_in" class="<?php echo $store_reports->quantity_in->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->quantity_in) ?>',1);"><div id="elh_store_reports_quantity_in" class="store_reports_quantity_in">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->quantity_in->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->quantity_in->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->quantity_in->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->quantity_type->Visible) { // quantity_type ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->quantity_type) == "") { ?>
-		<th data-name="quantity_type" class="<?php echo $inventory_store->quantity_type->HeaderCellClass() ?>"><div id="elh_inventory_store_quantity_type" class="inventory_store_quantity_type"><div class="ewTableHeaderCaption"><?php echo $inventory_store->quantity_type->FldCaption() ?></div></div></th>
+<?php if ($store_reports->quantity_type->Visible) { // quantity_type ?>
+	<?php if ($store_reports->SortUrl($store_reports->quantity_type) == "") { ?>
+		<th data-name="quantity_type" class="<?php echo $store_reports->quantity_type->HeaderCellClass() ?>"><div id="elh_store_reports_quantity_type" class="store_reports_quantity_type"><div class="ewTableHeaderCaption"><?php echo $store_reports->quantity_type->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="quantity_type" class="<?php echo $inventory_store->quantity_type->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->quantity_type) ?>',1);"><div id="elh_inventory_store_quantity_type" class="inventory_store_quantity_type">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->quantity_type->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->quantity_type->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->quantity_type->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="quantity_type" class="<?php echo $store_reports->quantity_type->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->quantity_type) ?>',1);"><div id="elh_store_reports_quantity_type" class="store_reports_quantity_type">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->quantity_type->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->quantity_type->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->quantity_type->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->quantity_out->Visible) { // quantity_out ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->quantity_out) == "") { ?>
-		<th data-name="quantity_out" class="<?php echo $inventory_store->quantity_out->HeaderCellClass() ?>"><div id="elh_inventory_store_quantity_out" class="inventory_store_quantity_out"><div class="ewTableHeaderCaption"><?php echo $inventory_store->quantity_out->FldCaption() ?></div></div></th>
+<?php if ($store_reports->quantity_out->Visible) { // quantity_out ?>
+	<?php if ($store_reports->SortUrl($store_reports->quantity_out) == "") { ?>
+		<th data-name="quantity_out" class="<?php echo $store_reports->quantity_out->HeaderCellClass() ?>"><div id="elh_store_reports_quantity_out" class="store_reports_quantity_out"><div class="ewTableHeaderCaption"><?php echo $store_reports->quantity_out->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="quantity_out" class="<?php echo $inventory_store->quantity_out->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->quantity_out) ?>',1);"><div id="elh_inventory_store_quantity_out" class="inventory_store_quantity_out">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->quantity_out->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->quantity_out->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->quantity_out->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="quantity_out" class="<?php echo $store_reports->quantity_out->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->quantity_out) ?>',1);"><div id="elh_store_reports_quantity_out" class="store_reports_quantity_out">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->quantity_out->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->quantity_out->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->quantity_out->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->total_quantity->Visible) { // total_quantity ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->total_quantity) == "") { ?>
-		<th data-name="total_quantity" class="<?php echo $inventory_store->total_quantity->HeaderCellClass() ?>"><div id="elh_inventory_store_total_quantity" class="inventory_store_total_quantity"><div class="ewTableHeaderCaption"><?php echo $inventory_store->total_quantity->FldCaption() ?></div></div></th>
+<?php if ($store_reports->total_quantity->Visible) { // total_quantity ?>
+	<?php if ($store_reports->SortUrl($store_reports->total_quantity) == "") { ?>
+		<th data-name="total_quantity" class="<?php echo $store_reports->total_quantity->HeaderCellClass() ?>"><div id="elh_store_reports_total_quantity" class="store_reports_total_quantity"><div class="ewTableHeaderCaption"><?php echo $store_reports->total_quantity->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="total_quantity" class="<?php echo $inventory_store->total_quantity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->total_quantity) ?>',1);"><div id="elh_inventory_store_total_quantity" class="inventory_store_total_quantity">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->total_quantity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->total_quantity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->total_quantity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="total_quantity" class="<?php echo $store_reports->total_quantity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->total_quantity) ?>',1);"><div id="elh_store_reports_total_quantity" class="store_reports_total_quantity">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->total_quantity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->total_quantity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->total_quantity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->issued_comment->Visible) { // issued_comment ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->issued_comment) == "") { ?>
-		<th data-name="issued_comment" class="<?php echo $inventory_store->issued_comment->HeaderCellClass() ?>"><div id="elh_inventory_store_issued_comment" class="inventory_store_issued_comment"><div class="ewTableHeaderCaption"><?php echo $inventory_store->issued_comment->FldCaption() ?></div></div></th>
+<?php if ($store_reports->statuss->Visible) { // statuss ?>
+	<?php if ($store_reports->SortUrl($store_reports->statuss) == "") { ?>
+		<th data-name="statuss" class="<?php echo $store_reports->statuss->HeaderCellClass() ?>"><div id="elh_store_reports_statuss" class="store_reports_statuss"><div class="ewTableHeaderCaption"><?php echo $store_reports->statuss->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="issued_comment" class="<?php echo $inventory_store->issued_comment->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->issued_comment) ?>',1);"><div id="elh_inventory_store_issued_comment" class="inventory_store_issued_comment">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->issued_comment->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->issued_comment->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->issued_comment->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="statuss" class="<?php echo $store_reports->statuss->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->statuss) ?>',1);"><div id="elh_store_reports_statuss" class="store_reports_statuss">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->statuss->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->statuss->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->statuss->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->issued_by->Visible) { // issued_by ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->issued_by) == "") { ?>
-		<th data-name="issued_by" class="<?php echo $inventory_store->issued_by->HeaderCellClass() ?>"><div id="elh_inventory_store_issued_by" class="inventory_store_issued_by"><div class="ewTableHeaderCaption"><?php echo $inventory_store->issued_by->FldCaption() ?></div></div></th>
+<?php if ($store_reports->issued_comment->Visible) { // issued_comment ?>
+	<?php if ($store_reports->SortUrl($store_reports->issued_comment) == "") { ?>
+		<th data-name="issued_comment" class="<?php echo $store_reports->issued_comment->HeaderCellClass() ?>"><div id="elh_store_reports_issued_comment" class="store_reports_issued_comment"><div class="ewTableHeaderCaption"><?php echo $store_reports->issued_comment->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="issued_by" class="<?php echo $inventory_store->issued_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->issued_by) ?>',1);"><div id="elh_inventory_store_issued_by" class="inventory_store_issued_by">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->issued_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->issued_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->issued_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="issued_comment" class="<?php echo $store_reports->issued_comment->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->issued_comment) ?>',1);"><div id="elh_store_reports_issued_comment" class="store_reports_issued_comment">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->issued_comment->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->issued_comment->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->issued_comment->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->approved_comment->Visible) { // approved_comment ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->approved_comment) == "") { ?>
-		<th data-name="approved_comment" class="<?php echo $inventory_store->approved_comment->HeaderCellClass() ?>"><div id="elh_inventory_store_approved_comment" class="inventory_store_approved_comment"><div class="ewTableHeaderCaption"><?php echo $inventory_store->approved_comment->FldCaption() ?></div></div></th>
+<?php if ($store_reports->issued_by->Visible) { // issued_by ?>
+	<?php if ($store_reports->SortUrl($store_reports->issued_by) == "") { ?>
+		<th data-name="issued_by" class="<?php echo $store_reports->issued_by->HeaderCellClass() ?>"><div id="elh_store_reports_issued_by" class="store_reports_issued_by"><div class="ewTableHeaderCaption"><?php echo $store_reports->issued_by->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="approved_comment" class="<?php echo $inventory_store->approved_comment->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->approved_comment) ?>',1);"><div id="elh_inventory_store_approved_comment" class="inventory_store_approved_comment">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->approved_comment->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->approved_comment->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->approved_comment->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="issued_by" class="<?php echo $store_reports->issued_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->issued_by) ?>',1);"><div id="elh_store_reports_issued_by" class="store_reports_issued_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->issued_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->issued_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->issued_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->approved_by->Visible) { // approved_by ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->approved_by) == "") { ?>
-		<th data-name="approved_by" class="<?php echo $inventory_store->approved_by->HeaderCellClass() ?>"><div id="elh_inventory_store_approved_by" class="inventory_store_approved_by"><div class="ewTableHeaderCaption"><?php echo $inventory_store->approved_by->FldCaption() ?></div></div></th>
+<?php if ($store_reports->approved_by->Visible) { // approved_by ?>
+	<?php if ($store_reports->SortUrl($store_reports->approved_by) == "") { ?>
+		<th data-name="approved_by" class="<?php echo $store_reports->approved_by->HeaderCellClass() ?>"><div id="elh_store_reports_approved_by" class="store_reports_approved_by"><div class="ewTableHeaderCaption"><?php echo $store_reports->approved_by->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="approved_by" class="<?php echo $inventory_store->approved_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->approved_by) ?>',1);"><div id="elh_inventory_store_approved_by" class="inventory_store_approved_by">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->approved_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->approved_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->approved_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="approved_by" class="<?php echo $store_reports->approved_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->approved_by) ?>',1);"><div id="elh_store_reports_approved_by" class="store_reports_approved_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->approved_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->approved_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->approved_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($inventory_store->verified_comment->Visible) { // verified_comment ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->verified_comment) == "") { ?>
-		<th data-name="verified_comment" class="<?php echo $inventory_store->verified_comment->HeaderCellClass() ?>"><div id="elh_inventory_store_verified_comment" class="inventory_store_verified_comment"><div class="ewTableHeaderCaption"><?php echo $inventory_store->verified_comment->FldCaption() ?></div></div></th>
+<?php if ($store_reports->verified_by->Visible) { // verified_by ?>
+	<?php if ($store_reports->SortUrl($store_reports->verified_by) == "") { ?>
+		<th data-name="verified_by" class="<?php echo $store_reports->verified_by->HeaderCellClass() ?>"><div id="elh_store_reports_verified_by" class="store_reports_verified_by"><div class="ewTableHeaderCaption"><?php echo $store_reports->verified_by->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="verified_comment" class="<?php echo $inventory_store->verified_comment->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->verified_comment) ?>',1);"><div id="elh_inventory_store_verified_comment" class="inventory_store_verified_comment">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->verified_comment->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->verified_comment->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->verified_comment->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($inventory_store->verified_by->Visible) { // verified_by ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->verified_by) == "") { ?>
-		<th data-name="verified_by" class="<?php echo $inventory_store->verified_by->HeaderCellClass() ?>"><div id="elh_inventory_store_verified_by" class="inventory_store_verified_by"><div class="ewTableHeaderCaption"><?php echo $inventory_store->verified_by->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="verified_by" class="<?php echo $inventory_store->verified_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->verified_by) ?>',1);"><div id="elh_inventory_store_verified_by" class="inventory_store_verified_by">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->verified_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->verified_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->verified_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($inventory_store->statuss->Visible) { // statuss ?>
-	<?php if ($inventory_store->SortUrl($inventory_store->statuss) == "") { ?>
-		<th data-name="statuss" class="<?php echo $inventory_store->statuss->HeaderCellClass() ?>"><div id="elh_inventory_store_statuss" class="inventory_store_statuss"><div class="ewTableHeaderCaption"><?php echo $inventory_store->statuss->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="statuss" class="<?php echo $inventory_store->statuss->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_store->SortUrl($inventory_store->statuss) ?>',1);"><div id="elh_inventory_store_statuss" class="inventory_store_statuss">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_store->statuss->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_store->statuss->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_store->statuss->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="verified_by" class="<?php echo $store_reports->verified_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $store_reports->SortUrl($store_reports->verified_by) ?>',1);"><div id="elh_store_reports_verified_by" class="store_reports_verified_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $store_reports->verified_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($store_reports->verified_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($store_reports->verified_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
 <?php
 
 // Render list options (header, right)
-$inventory_store_list->ListOptions->Render("header", "right");
+$store_reports_list->ListOptions->Render("header", "right");
 ?>
 	</tr>
 </thead>
 <tbody>
 <?php
-if ($inventory_store->ExportAll && $inventory_store->Export <> "") {
-	$inventory_store_list->StopRec = $inventory_store_list->TotalRecs;
+if ($store_reports->ExportAll && $store_reports->Export <> "") {
+	$store_reports_list->StopRec = $store_reports_list->TotalRecs;
 } else {
 
 	// Set the last record to display
-	if ($inventory_store_list->TotalRecs > $inventory_store_list->StartRec + $inventory_store_list->DisplayRecs - 1)
-		$inventory_store_list->StopRec = $inventory_store_list->StartRec + $inventory_store_list->DisplayRecs - 1;
+	if ($store_reports_list->TotalRecs > $store_reports_list->StartRec + $store_reports_list->DisplayRecs - 1)
+		$store_reports_list->StopRec = $store_reports_list->StartRec + $store_reports_list->DisplayRecs - 1;
 	else
-		$inventory_store_list->StopRec = $inventory_store_list->TotalRecs;
+		$store_reports_list->StopRec = $store_reports_list->TotalRecs;
 }
-$inventory_store_list->RecCnt = $inventory_store_list->StartRec - 1;
-if ($inventory_store_list->Recordset && !$inventory_store_list->Recordset->EOF) {
-	$inventory_store_list->Recordset->MoveFirst();
-	$bSelectLimit = $inventory_store_list->UseSelectLimit;
-	if (!$bSelectLimit && $inventory_store_list->StartRec > 1)
-		$inventory_store_list->Recordset->Move($inventory_store_list->StartRec - 1);
-} elseif (!$inventory_store->AllowAddDeleteRow && $inventory_store_list->StopRec == 0) {
-	$inventory_store_list->StopRec = $inventory_store->GridAddRowCount;
+$store_reports_list->RecCnt = $store_reports_list->StartRec - 1;
+if ($store_reports_list->Recordset && !$store_reports_list->Recordset->EOF) {
+	$store_reports_list->Recordset->MoveFirst();
+	$bSelectLimit = $store_reports_list->UseSelectLimit;
+	if (!$bSelectLimit && $store_reports_list->StartRec > 1)
+		$store_reports_list->Recordset->Move($store_reports_list->StartRec - 1);
+} elseif (!$store_reports->AllowAddDeleteRow && $store_reports_list->StopRec == 0) {
+	$store_reports_list->StopRec = $store_reports->GridAddRowCount;
 }
 
 // Initialize aggregate
-$inventory_store->RowType = EW_ROWTYPE_AGGREGATEINIT;
-$inventory_store->ResetAttrs();
-$inventory_store_list->RenderRow();
-while ($inventory_store_list->RecCnt < $inventory_store_list->StopRec) {
-	$inventory_store_list->RecCnt++;
-	if (intval($inventory_store_list->RecCnt) >= intval($inventory_store_list->StartRec)) {
-		$inventory_store_list->RowCnt++;
+$store_reports->RowType = EW_ROWTYPE_AGGREGATEINIT;
+$store_reports->ResetAttrs();
+$store_reports_list->RenderRow();
+while ($store_reports_list->RecCnt < $store_reports_list->StopRec) {
+	$store_reports_list->RecCnt++;
+	if (intval($store_reports_list->RecCnt) >= intval($store_reports_list->StartRec)) {
+		$store_reports_list->RowCnt++;
 
 		// Set up key count
-		$inventory_store_list->KeyCount = $inventory_store_list->RowIndex;
+		$store_reports_list->KeyCount = $store_reports_list->RowIndex;
 
 		// Init row class and style
-		$inventory_store->ResetAttrs();
-		$inventory_store->CssClass = "";
-		if ($inventory_store->CurrentAction == "gridadd") {
+		$store_reports->ResetAttrs();
+		$store_reports->CssClass = "";
+		if ($store_reports->CurrentAction == "gridadd") {
 		} else {
-			$inventory_store_list->LoadRowValues($inventory_store_list->Recordset); // Load row values
+			$store_reports_list->LoadRowValues($store_reports_list->Recordset); // Load row values
 		}
-		$inventory_store->RowType = EW_ROWTYPE_VIEW; // Render view
+		$store_reports->RowType = EW_ROWTYPE_VIEW; // Render view
 
 		// Set up row id / data-rowindex
-		$inventory_store->RowAttrs = array_merge($inventory_store->RowAttrs, array('data-rowindex'=>$inventory_store_list->RowCnt, 'id'=>'r' . $inventory_store_list->RowCnt . '_inventory_store', 'data-rowtype'=>$inventory_store->RowType));
+		$store_reports->RowAttrs = array_merge($store_reports->RowAttrs, array('data-rowindex'=>$store_reports_list->RowCnt, 'id'=>'r' . $store_reports_list->RowCnt . '_store_reports', 'data-rowtype'=>$store_reports->RowType));
 
 		// Render row
-		$inventory_store_list->RenderRow();
+		$store_reports_list->RenderRow();
 
 		// Render list options
-		$inventory_store_list->RenderListOptions();
+		$store_reports_list->RenderListOptions();
 ?>
-	<tr<?php echo $inventory_store->RowAttributes() ?>>
+	<tr<?php echo $store_reports->RowAttributes() ?>>
 <?php
 
 // Render list options (body, left)
-$inventory_store_list->ListOptions->Render("body", "left", $inventory_store_list->RowCnt);
+$store_reports_list->ListOptions->Render("body", "left", $store_reports_list->RowCnt);
 ?>
-	<?php if ($inventory_store->id->Visible) { // id ?>
-		<td data-name="id"<?php echo $inventory_store->id->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_id" class="inventory_store_id">
-<span<?php echo $inventory_store->id->ViewAttributes() ?>>
-<?php echo $inventory_store->id->ListViewValue() ?></span>
+	<?php if ($store_reports->id->Visible) { // id ?>
+		<td data-name="id"<?php echo $store_reports->id->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_id" class="store_reports_id">
+<span<?php echo $store_reports->id->ViewAttributes() ?>>
+<?php echo $store_reports->id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->date->Visible) { // date ?>
-		<td data-name="date"<?php echo $inventory_store->date->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_date" class="inventory_store_date">
-<span<?php echo $inventory_store->date->ViewAttributes() ?>>
-<?php echo $inventory_store->date->ListViewValue() ?></span>
+	<?php if ($store_reports->date->Visible) { // date ?>
+		<td data-name="date"<?php echo $store_reports->date->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_date" class="store_reports_date">
+<span<?php echo $store_reports->date->ViewAttributes() ?>>
+<?php echo $store_reports->date->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->reference_id->Visible) { // reference_id ?>
-		<td data-name="reference_id"<?php echo $inventory_store->reference_id->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_reference_id" class="inventory_store_reference_id">
-<span<?php echo $inventory_store->reference_id->ViewAttributes() ?>>
-<?php echo $inventory_store->reference_id->ListViewValue() ?></span>
+	<?php if ($store_reports->reference_id->Visible) { // reference_id ?>
+		<td data-name="reference_id"<?php echo $store_reports->reference_id->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_reference_id" class="store_reports_reference_id">
+<span<?php echo $store_reports->reference_id->ViewAttributes() ?>>
+<?php echo $store_reports->reference_id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->staff_id->Visible) { // staff_id ?>
-		<td data-name="staff_id"<?php echo $inventory_store->staff_id->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_staff_id" class="inventory_store_staff_id">
-<span<?php echo $inventory_store->staff_id->ViewAttributes() ?>>
-<?php echo $inventory_store->staff_id->ListViewValue() ?></span>
+	<?php if ($store_reports->staff_id->Visible) { // staff_id ?>
+		<td data-name="staff_id"<?php echo $store_reports->staff_id->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_staff_id" class="store_reports_staff_id">
+<span<?php echo $store_reports->staff_id->ViewAttributes() ?>>
+<?php echo $store_reports->staff_id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->material_name->Visible) { // material_name ?>
-		<td data-name="material_name"<?php echo $inventory_store->material_name->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_material_name" class="inventory_store_material_name">
-<span<?php echo $inventory_store->material_name->ViewAttributes() ?>>
-<?php echo $inventory_store->material_name->ListViewValue() ?></span>
+	<?php if ($store_reports->material_name->Visible) { // material_name ?>
+		<td data-name="material_name"<?php echo $store_reports->material_name->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_material_name" class="store_reports_material_name">
+<span<?php echo $store_reports->material_name->ViewAttributes() ?>>
+<?php echo $store_reports->material_name->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->quantity_in->Visible) { // quantity_in ?>
-		<td data-name="quantity_in"<?php echo $inventory_store->quantity_in->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_quantity_in" class="inventory_store_quantity_in">
-<span<?php echo $inventory_store->quantity_in->ViewAttributes() ?>>
-<?php echo $inventory_store->quantity_in->ListViewValue() ?></span>
+	<?php if ($store_reports->quantity_in->Visible) { // quantity_in ?>
+		<td data-name="quantity_in"<?php echo $store_reports->quantity_in->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_quantity_in" class="store_reports_quantity_in">
+<span<?php echo $store_reports->quantity_in->ViewAttributes() ?>>
+<?php echo $store_reports->quantity_in->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->quantity_type->Visible) { // quantity_type ?>
-		<td data-name="quantity_type"<?php echo $inventory_store->quantity_type->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_quantity_type" class="inventory_store_quantity_type">
-<span<?php echo $inventory_store->quantity_type->ViewAttributes() ?>>
-<?php echo $inventory_store->quantity_type->ListViewValue() ?></span>
+	<?php if ($store_reports->quantity_type->Visible) { // quantity_type ?>
+		<td data-name="quantity_type"<?php echo $store_reports->quantity_type->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_quantity_type" class="store_reports_quantity_type">
+<span<?php echo $store_reports->quantity_type->ViewAttributes() ?>>
+<?php echo $store_reports->quantity_type->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->quantity_out->Visible) { // quantity_out ?>
-		<td data-name="quantity_out"<?php echo $inventory_store->quantity_out->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_quantity_out" class="inventory_store_quantity_out">
-<span<?php echo $inventory_store->quantity_out->ViewAttributes() ?>>
-<?php echo $inventory_store->quantity_out->ListViewValue() ?></span>
+	<?php if ($store_reports->quantity_out->Visible) { // quantity_out ?>
+		<td data-name="quantity_out"<?php echo $store_reports->quantity_out->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_quantity_out" class="store_reports_quantity_out">
+<span<?php echo $store_reports->quantity_out->ViewAttributes() ?>>
+<?php echo $store_reports->quantity_out->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->total_quantity->Visible) { // total_quantity ?>
-		<td data-name="total_quantity"<?php echo $inventory_store->total_quantity->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_total_quantity" class="inventory_store_total_quantity">
-<span<?php echo $inventory_store->total_quantity->ViewAttributes() ?>>
-<?php echo $inventory_store->total_quantity->ListViewValue() ?></span>
+	<?php if ($store_reports->total_quantity->Visible) { // total_quantity ?>
+		<td data-name="total_quantity"<?php echo $store_reports->total_quantity->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_total_quantity" class="store_reports_total_quantity">
+<span<?php echo $store_reports->total_quantity->ViewAttributes() ?>>
+<?php echo $store_reports->total_quantity->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->issued_comment->Visible) { // issued_comment ?>
-		<td data-name="issued_comment"<?php echo $inventory_store->issued_comment->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_issued_comment" class="inventory_store_issued_comment">
-<span<?php echo $inventory_store->issued_comment->ViewAttributes() ?>>
-<?php echo $inventory_store->issued_comment->ListViewValue() ?></span>
+	<?php if ($store_reports->statuss->Visible) { // statuss ?>
+		<td data-name="statuss"<?php echo $store_reports->statuss->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_statuss" class="store_reports_statuss">
+<span<?php echo $store_reports->statuss->ViewAttributes() ?>>
+<?php echo $store_reports->statuss->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->issued_by->Visible) { // issued_by ?>
-		<td data-name="issued_by"<?php echo $inventory_store->issued_by->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_issued_by" class="inventory_store_issued_by">
-<span<?php echo $inventory_store->issued_by->ViewAttributes() ?>>
-<?php echo $inventory_store->issued_by->ListViewValue() ?></span>
+	<?php if ($store_reports->issued_comment->Visible) { // issued_comment ?>
+		<td data-name="issued_comment"<?php echo $store_reports->issued_comment->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_issued_comment" class="store_reports_issued_comment">
+<span<?php echo $store_reports->issued_comment->ViewAttributes() ?>>
+<?php echo $store_reports->issued_comment->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->approved_comment->Visible) { // approved_comment ?>
-		<td data-name="approved_comment"<?php echo $inventory_store->approved_comment->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_approved_comment" class="inventory_store_approved_comment">
-<span<?php echo $inventory_store->approved_comment->ViewAttributes() ?>>
-<?php echo $inventory_store->approved_comment->ListViewValue() ?></span>
+	<?php if ($store_reports->issued_by->Visible) { // issued_by ?>
+		<td data-name="issued_by"<?php echo $store_reports->issued_by->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_issued_by" class="store_reports_issued_by">
+<span<?php echo $store_reports->issued_by->ViewAttributes() ?>>
+<?php echo $store_reports->issued_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->approved_by->Visible) { // approved_by ?>
-		<td data-name="approved_by"<?php echo $inventory_store->approved_by->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_approved_by" class="inventory_store_approved_by">
-<span<?php echo $inventory_store->approved_by->ViewAttributes() ?>>
-<?php echo $inventory_store->approved_by->ListViewValue() ?></span>
+	<?php if ($store_reports->approved_by->Visible) { // approved_by ?>
+		<td data-name="approved_by"<?php echo $store_reports->approved_by->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_approved_by" class="store_reports_approved_by">
+<span<?php echo $store_reports->approved_by->ViewAttributes() ?>>
+<?php echo $store_reports->approved_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($inventory_store->verified_comment->Visible) { // verified_comment ?>
-		<td data-name="verified_comment"<?php echo $inventory_store->verified_comment->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_verified_comment" class="inventory_store_verified_comment">
-<span<?php echo $inventory_store->verified_comment->ViewAttributes() ?>>
-<?php echo $inventory_store->verified_comment->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($inventory_store->verified_by->Visible) { // verified_by ?>
-		<td data-name="verified_by"<?php echo $inventory_store->verified_by->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_verified_by" class="inventory_store_verified_by">
-<span<?php echo $inventory_store->verified_by->ViewAttributes() ?>>
-<?php echo $inventory_store->verified_by->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($inventory_store->statuss->Visible) { // statuss ?>
-		<td data-name="statuss"<?php echo $inventory_store->statuss->CellAttributes() ?>>
-<span id="el<?php echo $inventory_store_list->RowCnt ?>_inventory_store_statuss" class="inventory_store_statuss">
-<span<?php echo $inventory_store->statuss->ViewAttributes() ?>>
-<?php echo $inventory_store->statuss->ListViewValue() ?></span>
+	<?php if ($store_reports->verified_by->Visible) { // verified_by ?>
+		<td data-name="verified_by"<?php echo $store_reports->verified_by->CellAttributes() ?>>
+<span id="el<?php echo $store_reports_list->RowCnt ?>_store_reports_verified_by" class="store_reports_verified_by">
+<span<?php echo $store_reports->verified_by->ViewAttributes() ?>>
+<?php echo $store_reports->verified_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
 <?php
 
 // Render list options (body, right)
-$inventory_store_list->ListOptions->Render("body", "right", $inventory_store_list->RowCnt);
+$store_reports_list->ListOptions->Render("body", "right", $store_reports_list->RowCnt);
 ?>
 	</tr>
 <?php
 	}
-	if ($inventory_store->CurrentAction <> "gridadd")
-		$inventory_store_list->Recordset->MoveNext();
+	if ($store_reports->CurrentAction <> "gridadd")
+		$store_reports_list->Recordset->MoveNext();
 }
 ?>
 </tbody>
 </table>
 <?php } ?>
-<?php if ($inventory_store->CurrentAction == "") { ?>
+<?php if ($store_reports->CurrentAction == "") { ?>
 <input type="hidden" name="a_list" id="a_list" value="">
 <?php } ?>
 </div>
@@ -3128,15 +3653,15 @@ $inventory_store_list->ListOptions->Render("body", "right", $inventory_store_lis
 <?php
 
 // Close recordset
-if ($inventory_store_list->Recordset)
-	$inventory_store_list->Recordset->Close();
+if ($store_reports_list->Recordset)
+	$store_reports_list->Recordset->Close();
 ?>
 </div>
 <?php } ?>
-<?php if ($inventory_store_list->TotalRecs == 0 && $inventory_store->CurrentAction == "") { // Show other options ?>
+<?php if ($store_reports_list->TotalRecs == 0 && $store_reports->CurrentAction == "") { // Show other options ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($inventory_store_list->OtherOptions as &$option) {
+	foreach ($store_reports_list->OtherOptions as &$option) {
 		$option->ButtonClass = "";
 		$option->Render("body", "");
 	}
@@ -3144,19 +3669,19 @@ if ($inventory_store_list->Recordset)
 </div>
 <div class="clearfix"></div>
 <?php } ?>
-<?php if ($inventory_store->Export == "") { ?>
+<?php if ($store_reports->Export == "") { ?>
 <script type="text/javascript">
-finventory_storelistsrch.FilterList = <?php echo $inventory_store_list->GetFilterList() ?>;
-finventory_storelistsrch.Init();
-finventory_storelist.Init();
+fstore_reportslistsrch.FilterList = <?php echo $store_reports_list->GetFilterList() ?>;
+fstore_reportslistsrch.Init();
+fstore_reportslist.Init();
 </script>
 <?php } ?>
 <?php
-$inventory_store_list->ShowPageFooter();
+$store_reports_list->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
-<?php if ($inventory_store->Export == "") { ?>
+<?php if ($store_reports->Export == "") { ?>
 <script type="text/javascript">
 
 // Write your table-specific startup script here
@@ -3166,5 +3691,5 @@ if (EW_DEBUG_ENABLED)
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php
-$inventory_store_list->Page_Terminate();
+$store_reports_list->Page_Terminate();
 ?>
