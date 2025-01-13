@@ -2640,7 +2640,7 @@
       </field>
     </table>
     <table id="issuance_records">
-      <phrase id="tblcaption" value="Issuance Records" />
+      <phrase id="tblcaption" value="Issuance Tracking Records" />
       <field id="id">
         <phrase id="fldcaption" value="ID" />
       </field>

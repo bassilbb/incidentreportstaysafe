@@ -1704,9 +1704,6 @@ class cinventory_store_edit extends cinventory_store {
 		if (!$this->treated_by->FldIsDetailKey && !is_null($this->treated_by->FormValue) && $this->treated_by->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->treated_by->FldCaption(), $this->treated_by->ReqErrMsg));
 		}
-		if (!ew_CheckInteger($this->treated_by->FormValue)) {
-			ew_AddMessage($gsFormError, $this->treated_by->FldErrMsg());
-		}
 		if ($this->issued_action->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->issued_action->FldCaption(), $this->issued_action->ReqErrMsg));
 		}
@@ -1722,9 +1719,6 @@ class cinventory_store_edit extends cinventory_store {
 		if (!$this->approved_comment->FldIsDetailKey && !is_null($this->approved_comment->FormValue) && $this->approved_comment->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->approved_comment->FldCaption(), $this->approved_comment->ReqErrMsg));
 		}
-		if (!ew_CheckInteger($this->approved_by->FormValue)) {
-			ew_AddMessage($gsFormError, $this->approved_by->FldErrMsg());
-		}
 		if (!ew_CheckDateDef($this->verified_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->verified_date->FldErrMsg());
 		}
@@ -1733,9 +1727,6 @@ class cinventory_store_edit extends cinventory_store {
 		}
 		if (!$this->verified_comment->FldIsDetailKey && !is_null($this->verified_comment->FormValue) && $this->verified_comment->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->verified_comment->FldCaption(), $this->verified_comment->ReqErrMsg));
-		}
-		if (!ew_CheckInteger($this->verified_by->FormValue)) {
-			ew_AddMessage($gsFormError, $this->verified_by->FldErrMsg());
 		}
 
 		// Return validate result
@@ -2179,9 +2170,6 @@ finventory_storeedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_treated_by");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->treated_by->FldCaption(), $inventory_store->treated_by->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_treated_by");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory_store->treated_by->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_issued_action");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->issued_action->FldCaption(), $inventory_store->issued_action->ReqErrMsg)) ?>");
@@ -2197,9 +2185,6 @@ finventory_storeedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_approved_comment");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->approved_comment->FldCaption(), $inventory_store->approved_comment->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_approved_by");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory_store->approved_by->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_verified_date");
 			if (elm && !ew_CheckDateDef(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory_store->verified_date->FldErrMsg()) ?>");
@@ -2209,9 +2194,6 @@ finventory_storeedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_verified_comment");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_store->verified_comment->FldCaption(), $inventory_store->verified_comment->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_verified_by");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($inventory_store->verified_by->FldErrMsg()) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))

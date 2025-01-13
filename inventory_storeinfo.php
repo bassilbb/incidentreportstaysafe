@@ -121,7 +121,6 @@ class cinventory_store extends cTable {
 		// treated_by
 		$this->treated_by = new cField('inventory_store', 'inventory_store', 'x_treated_by', 'treated_by', '`treated_by`', '`treated_by`', 3, -1, FALSE, '`treated_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->treated_by->Sortable = TRUE; // Allow sort
-		$this->treated_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['treated_by'] = &$this->treated_by;
 
 		// issued_action
@@ -162,7 +161,6 @@ class cinventory_store extends cTable {
 		// approved_by
 		$this->approved_by = new cField('inventory_store', 'inventory_store', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->approved_by->Sortable = TRUE; // Allow sort
-		$this->approved_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['approved_by'] = &$this->approved_by;
 
 		// verified_date
@@ -186,7 +184,6 @@ class cinventory_store extends cTable {
 		// verified_by
 		$this->verified_by = new cField('inventory_store', 'inventory_store', 'x_verified_by', 'verified_by', '`verified_by`', '`verified_by`', 3, -1, FALSE, '`verified_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->verified_by->Sortable = TRUE; // Allow sort
-		$this->verified_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['verified_by'] = &$this->verified_by;
 
 		// statuss
@@ -1753,8 +1750,8 @@ class cinventory_store extends cTable {
 
 			date_default_timezone_set('Africa/Lagos');
 		$now = new DateTime();
-		$this->date_approved->CurrentValue = $now->Format('Y-m-d H:i:s');
-		$this->date_approved->EditValue = $this->date_approved->CurrentValue;
+		$this->date->CurrentValue = $now->Format('Y-m-d H:i:s');
+		$this->date->EditValue = $this->date_approved->CurrentValue;
 		$this->verified_date->CurrentValue = $now->Format('Y-m-d H:i:s');
 		$this->verified_date->EditValue = $this->verified_date->CurrentValue;
 			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 1) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
@@ -1786,7 +1783,7 @@ class cinventory_store extends cTable {
 		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
-			$rsnew["date_approved"] = $now->format('Y-m-d H:i:s');
+			$rsnew["date"] = $now->format('Y-m-d H:i:s');
 			$rsnew["approved_by"] = $_SESSION['Staff_ID'];
 		}
 
@@ -1801,13 +1798,9 @@ class cinventory_store extends cTable {
 			$rsnew["quantity_type"] = $rsold["quantity_type"];
 			$rsnew["quantity_out"] = $rsold["quantity_out"];
 			$rsnew["treated_by"] = $rsold["treated_by"];
+			$rsnew["issued_by"] = $rsold["issued_by"];
 
-			//$rsnew["priority"] = $rsold["priority"];
-			//$rsnew["description"] = $rsold["description"];
-			//$rsnew["maintained_by"] = $rsold["maintained_by"];
-			//$rsnew["date_maintained"] = $rsold["date_maintained"];
 			//$rsnew["status"] = $rsold["status"];
-
 			$rsnew["issued_action"] = $rsold["issued_action"];
 			$rsnew["issued_comment"] = $rsold["issued_comment"];
 
@@ -1835,17 +1828,19 @@ class cinventory_store extends cTable {
 			$rsnew["quantity_type"] = $rsold["quantity_type"];
 			$rsnew["quantity_out"] = $rsold["quantity_out"];
 			$rsnew["treated_by"] = $rsold["treated_by"];
+			$rsnew["issued_by"] = $rsold["issued_by"];
 
 			//$rsnew["status"] = $rsold["status"];
 			$rsnew["issued_action"] = $rsold["issued_action"];
 			$rsnew["issued_comment"] = $rsold["issued_comment"];
 			$rsnew["approver_action"] = $rsold["approver_action"];
 			$rsnew["approved_comment"] = $rsold["approved_comment"];
+			$rsnew["approved_by"] = $rsold["approved_by"];
 		}
 
 			// Approved by Administrators
 			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
-				$rsnew["date_approved"] = $now->format('Y-m-d H:i:s');
+				$rsnew["date"] = $now->format('Y-m-d H:i:s');
 				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
 			  }
 
@@ -2189,11 +2184,11 @@ class cinventory_store extends cTable {
 			}
 			if ($this->statuss->CurrentValue == 3) {
 				$this->id->CellCssStyle = "color: blue; text-align: left;";
-				$this->date_recieved->CellCssStyle = "color: blue; text-align: left;";
+				$this->date->CellCssStyle = "color: blue; text-align: left;";
 				$this->staff_id->CellCssStyle = "color: blue; text-align: left;";
 				$this->material_name->CellCssStyle = "color: blue; text-align: left;";
 				$this->issued_by->CellCssStyle = "color: blue; text-align: left;";
-				$this->quantity->CellCssStyle = "color: blue; text-align: left;";
+				$this->quantity_in->CellCssStyle = "color: blue; text-align: left;";
 				$this->quantity_type->CellCssStyle = "color: blue; text-align: left;";
 				$this->quantity_out->CellCssStyle = "color: blue; text-align: left;";
 				$this->reference_id->CellCssStyle = "color: blue; text-align: left;";
