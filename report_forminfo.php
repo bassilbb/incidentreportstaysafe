@@ -2890,531 +2890,531 @@ class creport_form extends cTable {
 		// Enter your code here
 		// To cancel, set return value to FALSE
 
-	date_default_timezone_set('Africa/Lagos');
-	$now = new DateTime();
-
-	// last Updated User/Date Value
-	$rsnew["last_updated_date"] = ew_CurrentDateTime();
-	$rsnew["last_updated_by"] = $_SESSION['Staff_ID'];
-	$rsnew["verified_datetime"] = ew_CurrentDateTime();
-	$rsnew["verified_by"] = $_SESSION['Staff_ID'];
-	$rsnew["report_by"] = $_SESSION['Staff_ID'];
-
-	//$rsnew["resolved_by"] = $_SESSION['Staff_ID'];
-	// Officer Only
-
-	if ((CurrentPageID() == "edit" && CurrentUserLevel() == 1) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 4) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
-		$rsnew["datetime_initiated"] = $now->format('Y-m-d H:i:s');
-		$rsnew["datetime_resolved"] = $now->format('Y-m-d H:i:s');
-		$rsnew["datetime_approved"] = $now->format('Y-m-d H:i:s');
-		$rsnew["report_by"] = $_SESSION['Staff_ID'];
-	}	
-
-	// Officer Only
-	if ((CurrentPageID() == "edit" && CurrentUserLevel() == 1) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
-
-		// Save and forward
-		if ($this->initiator_action->CurrentValue == 1 && $this->status->CurrentValue == 3 || $this->status->CurrentValue == 0) {
-
-		//if ($this->initiator_action->CurrentValue == 1 && $this->status->CurrentValue == 3) {
-			$rsnew["status"] = 3;
-			$rsnew["initiator_action"] = 1;
-			$rsnew["resolved_action"] = NULL;
-			$rsnew["resolved_comment"] = NULL;
-			$rsnew["approval_action"] = NULL;
-			$rsnew["approval_comment"] = NULL;
-			$this->setSuccessMessage("&#x25C9; Issue sent for Investigation And Resolution &#x2714;"); 					
-		}
-
-		// Saved only
-		if ($this->initiator_action->CurrentValue == 0 && $this->status->CurrentValue == 0) {
-			$rsnew["status"] = 0;			
-			$rsnew["initiator_action"] = 0; 
-			$this->setSuccessMessage("&#x25C9; Issue has been saved &#x2714;");
-		}
-	}
-
-	// Supervisor
-	if ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
-
-			// Save and forward
-		if ($this->initiator_action->CurrentValue == 1) {
-			$rsnew["status"] = 3;
-			$rsnew["initiator_action"] = 1;
-			$rsnew["resolved_action"] = NULL;
-			$rsnew["resolved_comment"] = NULL;
-			$rsnew["approval_action"] = NULL;
-			$rsnew["approval_comment"] = NULL;
-			$this->setSuccessMessage("&#x25C9; Issue sent for Review &#x2714;"); 					
-		}
-
-		// Saved only
-		if ($this->initiator_action->CurrentValue == 0 && $this->status->CurrentValue == 0) {
-			$rsnew["status"] = 0;			
-			$rsnew["initiator_action"] = 0; 
-			$this->setSuccessMessage("&#x25C9; Issue has been saved &#x2714;");
-		}			
-	}
-
-	// Manager
-	if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4 ) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
-
-		// Save and forward
-		if ($this->initiator_action->CurrentValue == 1 && ($this->status->CurrentValue == 0 || $this->status->CurrentValue == 1 || $this->status->CurrentValue == 3 )) {
-			$rsnew["status"] = 4;
-			$rsnew["initiator_action"] = 1;
-			$rsnew["resolved_action"] = NULL;
-			$rsnew["resolved_comment"] = NULL;
-			$rsnew["approval_action"] = NULL;
-			$rsnew["approval_comment"] = NULL;
-			$this->setSuccessMessage("&#x25C9; Issue was Raised and Assigned to the Responsible Personnel to Resolved &#x2714;"); 					
-		}
-
-		// Saved only
-		if ($this->initiator_action->CurrentValue == 0 && $this->status->CurrentValue == 0) {
-			$rsnew["status"] = 0;			
-			$rsnew["initiator_action"] = 0; 
-			$this->setSuccessMessage("&#x25C9; Issue has been saved &#x2714;");
-		}			
-	}
-
-	// Supervisor
-	if ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
 		date_default_timezone_set('Africa/Lagos');
 		$now = new DateTime();
-		$rsnew["datetime_resolved"] = $now->format('Y-m-d H:i:s');
-		$rsnew["resolved_by"] = $_SESSION['Staff_ID'];
-	}
 
-	// Supervisor - Don't change field values captured by Officer
-	if (CurrentPageID() == "edit" && CurrentUserLevel() == 2  && $this->status->CurrentValue == 4) {
-		$rsnew["id"] = $rsold["id"];
-		$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
-		$rsnew["staff_id"] = $rsold["staff_id"];
-		$rsnew["branch"] = $rsold["branch"];
-		$rsnew["department"] = $rsold["department"];
-		$rsnew["departments"] = $rsold["departments"];
-		$rsnew["start_date"] = $rsold["start_date"];
-		$rsnew["end_date"] = $rsold["end_date"];
-		$rsnew["duration"] = $rsold["duration"];
-		$rsnew["amount_paid"] = $rsold["amount_paid"];
-		$rsnew["report_by"] = $rsold["report_by"];
-		$rsnew["incident_type"] = $rsold["incident_type"];
-		$rsnew["incident_id"] = $rsold["incident_id"];
-		$rsnew["incident_location"] = $rsold["incident_location"];
-		$rsnew["no_of_people_involved"] = $rsold["no_of_people_involved"];
-		$rsnew["category"] = $rsold["category"];
-		$rsnew["sub_category"] = $rsold["sub_category"];
-		$rsnew["incident-category"] = $rsold["incident-category"];
-		$rsnew["incident_venue"] = $rsold["incident_venue"];
-		$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
-		$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
+		// last Updated User/Date Value
+		$rsnew["last_updated_date"] = ew_CurrentDateTime();
+		$rsnew["last_updated_by"] = $_SESSION['Staff_ID'];
+		$rsnew["verified_datetime"] = ew_CurrentDateTime();
+		$rsnew["verified_by"] = $_SESSION['Staff_ID'];
+		$rsnew["report_by"] = $_SESSION['Staff_ID'];
 
-		//$rsnew["closed_by"] = $rsold["closed_by"];
-		//$rsnew["status"] = $rsold["status"];
+		//$rsnew["resolved_by"] = $_SESSION['Staff_ID'];
+		// Officer Only
 
-		$rsnew["initiator_action"] = $rsold["initiator_action"];
-		$rsnew["initiator_comment"] = $rsold["initiator_comment"];
-
-		//$rsnew["resolved_action"] = $rsold["resolved_action"];
-		//$rsnew["resolved_comment"] = $rsold["resolved_comment"];
-
-		$rsnew["approval_action"] = $rsold["approval_action"];
-		$rsnew["approval_comment"] = $rsold["approval_comment"];
-	}
-
-	// Supervisor - Don't change field values captured by Officer
-	/*if (CurrentUserLevel() == 2 && $this->status->CurrentValue == 6 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
-		$rsnew["id"] = $rsold["id"];
-		$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
-		$rsnew["staff_id"] = $rsold["staff_id"];
-		$rsnew["branch"] = $rsold["branch"];
-		$rsnew["department"] = $rsold["department"];
-		$rsnew["departments"] = $rsold["departments"];
-		$rsnew["start_date"] = $rsold["start_date"];
-		$rsnew["end_date"] = $rsold["end_date"];
-		$rsnew["duration"] = $rsold["duration"];
-		$rsnew["amount_paid"] = $rsold["amount_paid"];
-		$rsnew["report_by"] = $rsold["report_by"];
-		$rsnew["incident_type"] = $rsold["incident_type"];
-		$rsnew["incident_id"] = $rsold["incident_id"];
-		$rsnew["incident_location"] = $rsold["incident_location"];
-		$rsnew["no_of_people_involved"] = $rsold["no_of_people_involved"];
-		$rsnew["category"] = $rsold["category"];
-		$rsnew["sub_category"] = $rsold["sub_category"];
-		$rsnew["incident-category"] = $rsold["incident-category"];
-		$rsnew["incident_venue"] = $rsold["incident_venue"];
-		$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
-		$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
-		$rsnew["assign_task"] = $rsold["assign_task"];
-
-		//$rsnew["status"] = $rsold["status"];
-		$rsnew["initiator_action"] = $rsold["initiator_action"];
-		$rsnew["initiator_comment"] = $rsold["initiator_comment"];
-		$rsnew["resolved_action"] = $rsold["resolved_action"];
-		$rsnew["resolved_comment"] = $rsold["resolved_comment"];
-		$rsnew["approval_action"] = $rsold["approval_action"];
-		$rsnew["approval_comment"] = $rsold["approval_comment"];
-	}*/
-
-	// Supervisor - Don't change field values captured by Officer
-	if (CurrentUserLevel() == 2 && $this->status->CurrentValue == 3) {
-		$rsnew["id"] = $rsold["id"];
-		$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
-		$rsnew["staff_id"] = $rsold["staff_id"];
-		$rsnew["branch"] = $rsold["branch"];
-		$rsnew["department"] = $rsold["department"];
-		$rsnew["departments"] = $rsold["departments"];
-		$rsnew["start_date"] = $rsold["start_date"];
-		$rsnew["end_date"] = $rsold["end_date"];
-		$rsnew["duration"] = $rsold["duration"];
-		$rsnew["amount_paid"] = $rsold["amount_paid"];
-		$rsnew["report_by"] = $rsold["report_by"];
-		$rsnew["incident_type"] = $rsold["incident_type"];
-		$rsnew["incident_id"] = $rsold["incident_id"];
-		$rsnew["incident_location"] = $rsold["incident_location"];
-		$rsnew["no_of_people_involved"] = $rsold["no_of_people_involved"];
-		$rsnew["category"] = $rsold["category"];
-		$rsnew["sub_category"] = $rsold["sub_category"];
-		$rsnew["incident-category"] = $rsold["incident-category"];
-		$rsnew["incident_venue"] = $rsold["incident_venue"];
-		$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
-		$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
-		$rsnew["assign_task"] = $rsold["assign_task"];
-		$rsnew["reason"] = $rsold["reason"];
-
-		//$rsnew["status"] = $rsold["status"];
-		$rsnew["initiator_action"] = $rsold["initiator_action"];
-		$rsnew["initiator_comment"] = $rsold["initiator_comment"];
-
-		//$rsnew["resolved_action"] = $rsold["resolved_action"];
-		//$rsnew["resolved_comment"] = $rsold["resolved_comment"];
-
-		$rsnew["approval_action"] = $rsold["approval_action"];
-		$rsnew["approval_comment"] = $rsold["approval_comment"];
-	}
-
-	// Manager - Don't change field values captured by Officer
-	if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 3) {
-		$rsnew["id"] = $rsold["id"];
-		$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
-		$rsnew["staff_id"] = $rsold["staff_id"];
-		$rsnew["staffid"] = $rsold["staffid"];
-		$rsnew["incident_id"] = $rsold["incident_id"];
-		$rsnew["branch"] = $rsold["branch"];
-		$rsnew["department"] = $rsold["department"];
-		$rsnew["departments"] = $rsold["departments"];
-		$rsnew["start_date"] = $rsold["start_date"];
-		$rsnew["end_date"] = $rsold["end_date"];
-		$rsnew["duration"] = $rsold["duration"];
-		$rsnew["amount_paid"] = $rsold["amount_paid"];
-		$rsnew["report_by"] = $rsold["report_by"];
-		$rsnew["incident_type"] = $rsold["incident_type"];
-		$rsnew["incident_id"] = $rsold["incident_id"];
-		$rsnew["incident_location"] = $rsold["incident_location"];
-		$rsnew["no_of_people_involved"] = $rsold["no_of_people_involved"];
-		$rsnew["category"] = $rsold["category"];
-		$rsnew["sub_category"] = $rsold["sub_category"];
-		$rsnew["incident-category"] = $rsold["incident-category"];
-		$rsnew["incident_description"] = $rsold["incident_description"];
-		$rsnew["incident_venue"] = $rsold["incident_venue"];
-		$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
-		$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
-		$rsnew["initiator_action"] = $rsold["initiator_action"];
-		$rsnew["initiator_comment"] = $rsold["initiator_comment"];
-		$rsnew["reason"] = $rsold["reason"];
-
-	//	$rsnew["closed_by"] = $rsold["closed_by"];
-		//$rsnew["status"] = $rsold["status"];
-
-		$rsnew["initiator_action"] = $rsold["initiator_action"];
-		$rsnew["initiator_comment"] = $rsold["initiator_comment"];
-		$rsnew["resolved_action"] = $rsold["resolved_action"];
-		$rsnew["resolved_comment"] = $rsold["resolved_comment"];
-	}
-
-	// Manager - Don't change field values captured by Officer
-	if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 6) {
-		$rsnew["id"] = $rsold["id"];
-		$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
-		$rsnew["staff_id"] = $rsold["staff_id"];
-		$rsnew["branch"] = $rsold["branch"];
-		$rsnew["department"] = $rsold["department"];
-		$rsnew["departments"] = $rsold["departments"];
-		$rsnew["start_date"] = $rsold["start_date"];
-		$rsnew["end_date"] = $rsold["end_date"];
-		$rsnew["duration"] = $rsold["duration"];
-		$rsnew["amount_paid"] = $rsold["amount_paid"];
-		$rsnew["report_by"] = $rsold["report_by"];
-		$rsnew["incident_type"] = $rsold["incident_type"];
-		$rsnew["incident_id"] = $rsold["incident_id"];
-		$rsnew["incident_location"] = $rsold["incident_location"];
-		$rsnew["no_of_people_involved"] = $rsold["no_of_people_involved"];
-		$rsnew["category"] = $rsold["category"];
-		$rsnew["sub_category"] = $rsold["sub_category"];
-		$rsnew["incident-category"] = $rsold["incident-category"];
-		$rsnew["incident_venue"] = $rsold["incident_venue"];
-		$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
-		$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
-		$rsnew["assign_task"] = $rsold["assign_task"];
-		$rsnew["reason"] = $rsold["reason"];
-
-		//$rsnew["status"] = $rsold["status"];
-		$rsnew["initiator_action"] = $rsold["initiator_action"];
-		$rsnew["initiator_comment"] = $rsold["initiator_comment"];
-		$rsnew["resolved_action"] = $rsold["resolved_action"];
-		$rsnew["resolved_comment"] = $rsold["resolved_comment"];
-		$rsnew["approval_action"] = $rsold["approval_action"];
-		$rsnew["approval_comment"] = $rsold["approval_comment"];
-	}
-
-	// Manager & HOD - Don't change field values captured by Officer
-	if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4  && $this->status->CurrentValue == 4) {
-		$rsnew["id"] = $rsold["id"];
-		$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
-		$rsnew["staff_id"] = $rsold["staff_id"];
-		$rsnew["branch"] = $rsold["branch"];
-		$rsnew["department"] = $rsold["department"];
-		$rsnew["departments"] = $rsold["departments"];
-		$rsnew["start_date"] = $rsold["start_date"];
-		$rsnew["end_date"] = $rsold["end_date"];
-		$rsnew["duration"] = $rsold["duration"];
-		$rsnew["amount_paid"] = $rsold["amount_paid"];
-		$rsnew["report_by"] = $rsold["report_by"];
-		$rsnew["incident_type"] = $rsold["incident_type"];
-		$rsnew["incident_id"] = $rsold["incident_id"];
-		$rsnew["incident_location"] = $rsold["incident_location"];
-		$rsnew["no_of_people_involved"] = $rsold["no_of_people_involved"];
-		$rsnew["category"] = $rsold["category"];
-		$rsnew["sub_category"] = $rsold["sub_category"];
-		$rsnew["incident-category"] = $rsold["incident-category"];
-		$rsnew["incident_venue"] = $rsold["incident_venue"];
-		$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
-		$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
-		$rsnew["assign_task"] = $rsold["assign_task"];
-
-		//$rsnew["closed_by"] = $rsold["closed_by"];
-		//$rsnew["status"] = $rsold["status"];
-
-		$rsnew["initiator_action"] = $rsold["initiator_action"];
-		$rsnew["initiator_comment"] = $rsold["initiator_comment"];
-
-		//$rsnew["resolved_action"] = $rsold["resolved_action"];
-		//$rsnew["resolved_comment"] = $rsold["resolved_comment"];
-
-		$rsnew["approval_action"] = $rsold["approval_action"];
-		$rsnew["approval_comment"] = $rsold["approval_comment"];
-	}
-
-	// Supervisor
-	if ((CurrentPageID() == "edit" && (CurrentUserLevel() == 2 || CurrentUserLevel() == 1) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']|| $this->staff_id->CurrentValue = $_SESSION['Staff_ID'])) {
-		$rsnew["datetime_resolved"] = $now->format('Y-m-d H:i:s');
-		$rsnew["resolved_by"] = $_SESSION['Staff_ID'];
-		if ($this->resolved_action->CurrentValue == 0 && $this->status->CurrentValue == 4) {
-			$rsnew["status"] = 4;			
-			$rsnew["resolved_action"] = 0;
-
-			//$rsnew["resolved_comment"] = NULL;
-			//$rsnew["approval_action"] = NULL;
-			//$rsnew["approval_comment"] = NULL;
-
-			$this->setSuccessMessage("&#x25C9; Issue has been saved &#x2714;");
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 1) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 4) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
+			$rsnew["datetime_initiated"] = $now->format('Y-m-d H:i:s');
+			$rsnew["datetime_resolved"] = $now->format('Y-m-d H:i:s');
+			$rsnew["datetime_approved"] = $now->format('Y-m-d H:i:s');
+			$rsnew["report_by"] = $_SESSION['Staff_ID'];
 		}	
 
-		// Issue Resolved by Supervisor/officer
-		if ($this->resolved_action->CurrentValue == 1 && $this->status->CurrentValue == 4) {
+		// Officer Only
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 1) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
 
-			// New
-			if ($this->status->CurrentValue == 4) {
-				$rsnew["status"] = 6;					
-				$rsnew["resolved_action"] = 1;
+			// Save and forward
+			if ($this->initiator_action->CurrentValue == 1 && $this->status->CurrentValue == 3 || $this->status->CurrentValue == 0) {
 
-				//$rsnew["resolved_comment"] = NULL;
-				// $rsnew["approval_action"] = NULL;
-				//$rsnew["approval_comment"] = NULL;
-
+			//if ($this->initiator_action->CurrentValue == 1 && $this->status->CurrentValue == 3) {
+				$rsnew["status"] = 3;
+				$rsnew["initiator_action"] = 1;
+				$rsnew["resolved_action"] = NULL;
+				$rsnew["resolved_comment"] = NULL;
+				$rsnew["approval_action"] = NULL;
+				$rsnew["approval_comment"] = NULL;
+				$this->setSuccessMessage("&#x25C9; Issue sent for Investigation And Resolution &#x2714;"); 					
 			}
-			$this->setSuccessMessage("&#x25C9; Issue was successfully Resolved and sent for Verification &#x2714;");
+
+			// Saved only
+			if ($this->initiator_action->CurrentValue == 0 && $this->status->CurrentValue == 0) {
+				$rsnew["status"] = 0;			
+				$rsnew["initiator_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Issue has been saved &#x2714;");
+			}
 		}
 
-		// Issue Not Resolved by Supervisor/officer
-		if ($this->resolved_action->CurrentValue == 2 && $this->status->CurrentValue == 4) {
+		// Supervisor
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
 
-			// New
-			if ($this->status->CurrentValue == 4 && $this->resolved_action->CurrentValue == 2) {
-				$rsnew["status"] = 7;					
-				$rsnew["resolved_action"] = 2;
-
-				//$rsnew["resolved_comment"] = NULL;
-				// $rsnew["approval_action"] = NULL;
-				//$rsnew["approval_comment"] = NULL;
-
+				// Save and forward
+			if ($this->initiator_action->CurrentValue == 1) {
+				$rsnew["status"] = 3;
+				$rsnew["initiator_action"] = 1;
+				$rsnew["resolved_action"] = NULL;
+				$rsnew["resolved_comment"] = NULL;
+				$rsnew["approval_action"] = NULL;
+				$rsnew["approval_comment"] = NULL;
+				$this->setSuccessMessage("&#x25C9; Issue sent for Review &#x2714;"); 					
 			}
-			$this->setSuccessMessage("&#x25C9; Issue was Not Resolved and sent for Re-Asigned &#x2714;");
+
+			// Saved only
+			if ($this->initiator_action->CurrentValue == 0 && $this->status->CurrentValue == 0) {
+				$rsnew["status"] = 0;			
+				$rsnew["initiator_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Issue has been saved &#x2714;");
+			}			
 		}
 
-			//issue saved only by Verifire===================================
+		// Manager
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4 ) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
 
-			/*	if ($this->verified_action->CurrentValue == 7 && $this->status->CurrentValue == 6) {
-				$rsnew["status"] = 6;			
-				$rsnew["verified_action"] = 7;
+			// Save and forward
+			if ($this->initiator_action->CurrentValue == 1 && ($this->status->CurrentValue == 0 || $this->status->CurrentValue == 1 || $this->status->CurrentValue == 3 )) {
+				$rsnew["status"] = 4;
+				$rsnew["initiator_action"] = 1;
+				$rsnew["resolved_action"] = NULL;
+				$rsnew["resolved_comment"] = NULL;
+				$rsnew["approval_action"] = NULL;
+				$rsnew["approval_comment"] = NULL;
+				$this->setSuccessMessage("&#x25C9; Issue was Raised and Assigned to the Responsible Personnel to Resolved &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->initiator_action->CurrentValue == 0 && $this->status->CurrentValue == 0) {
+				$rsnew["status"] = 0;			
+				$rsnew["initiator_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Issue has been saved &#x2714;");
+			}			
+		}
+
+		// Supervisor
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$rsnew["datetime_resolved"] = $now->format('Y-m-d H:i:s');
+			$rsnew["resolved_by"] = $_SESSION['Staff_ID'];
+		}
+
+		// Supervisor - Don't change field values captured by Officer
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 2  && $this->status->CurrentValue == 4) {
+			$rsnew["id"] = $rsold["id"];
+			$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
+			$rsnew["staff_id"] = $rsold["staff_id"];
+			$rsnew["branch"] = $rsold["branch"];
+			$rsnew["department"] = $rsold["department"];
+			$rsnew["departments"] = $rsold["departments"];
+			$rsnew["start_date"] = $rsold["start_date"];
+			$rsnew["end_date"] = $rsold["end_date"];
+			$rsnew["duration"] = $rsold["duration"];
+			$rsnew["amount_paid"] = $rsold["amount_paid"];
+			$rsnew["report_by"] = $rsold["report_by"];
+			$rsnew["incident_type"] = $rsold["incident_type"];
+			$rsnew["incident_id"] = $rsold["incident_id"];
+			$rsnew["incident_location"] = $rsold["incident_location"];
+			$rsnew["no_of_people_involved"] = $rsold["no_of_people_involved"];
+			$rsnew["category"] = $rsold["category"];
+			$rsnew["sub_category"] = $rsold["sub_category"];
+			$rsnew["incident-category"] = $rsold["incident-category"];
+			$rsnew["incident_venue"] = $rsold["incident_venue"];
+			$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
+			$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
+
+			//$rsnew["closed_by"] = $rsold["closed_by"];
+			//$rsnew["status"] = $rsold["status"];
+
+			$rsnew["initiator_action"] = $rsold["initiator_action"];
+			$rsnew["initiator_comment"] = $rsold["initiator_comment"];
+
+			//$rsnew["resolved_action"] = $rsold["resolved_action"];
+			//$rsnew["resolved_comment"] = $rsold["resolved_comment"];
+
+			$rsnew["approval_action"] = $rsold["approval_action"];
+			$rsnew["approval_comment"] = $rsold["approval_comment"];
+		}
+
+		// Supervisor - Don't change field values captured by Officer
+		/*if (CurrentUserLevel() == 2 && $this->status->CurrentValue == 6 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+			$rsnew["id"] = $rsold["id"];
+			$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
+			$rsnew["staff_id"] = $rsold["staff_id"];
+			$rsnew["branch"] = $rsold["branch"];
+			$rsnew["department"] = $rsold["department"];
+			$rsnew["departments"] = $rsold["departments"];
+			$rsnew["start_date"] = $rsold["start_date"];
+			$rsnew["end_date"] = $rsold["end_date"];
+			$rsnew["duration"] = $rsold["duration"];
+			$rsnew["amount_paid"] = $rsold["amount_paid"];
+			$rsnew["report_by"] = $rsold["report_by"];
+			$rsnew["incident_type"] = $rsold["incident_type"];
+			$rsnew["incident_id"] = $rsold["incident_id"];
+			$rsnew["incident_location"] = $rsold["incident_location"];
+			$rsnew["no_of_people_involved"] = $rsold["no_of_people_involved"];
+			$rsnew["category"] = $rsold["category"];
+			$rsnew["sub_category"] = $rsold["sub_category"];
+			$rsnew["incident-category"] = $rsold["incident-category"];
+			$rsnew["incident_venue"] = $rsold["incident_venue"];
+			$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
+			$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
+			$rsnew["assign_task"] = $rsold["assign_task"];
+
+			//$rsnew["status"] = $rsold["status"];
+			$rsnew["initiator_action"] = $rsold["initiator_action"];
+			$rsnew["initiator_comment"] = $rsold["initiator_comment"];
+			$rsnew["resolved_action"] = $rsold["resolved_action"];
+			$rsnew["resolved_comment"] = $rsold["resolved_comment"];
+			$rsnew["approval_action"] = $rsold["approval_action"];
+			$rsnew["approval_comment"] = $rsold["approval_comment"];
+		}*/
+
+		// Supervisor - Don't change field values captured by Officer
+		if (CurrentUserLevel() == 2 && $this->status->CurrentValue == 3) {
+			$rsnew["id"] = $rsold["id"];
+			$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
+			$rsnew["staff_id"] = $rsold["staff_id"];
+			$rsnew["branch"] = $rsold["branch"];
+			$rsnew["department"] = $rsold["department"];
+			$rsnew["departments"] = $rsold["departments"];
+			$rsnew["start_date"] = $rsold["start_date"];
+			$rsnew["end_date"] = $rsold["end_date"];
+			$rsnew["duration"] = $rsold["duration"];
+			$rsnew["amount_paid"] = $rsold["amount_paid"];
+			$rsnew["report_by"] = $rsold["report_by"];
+			$rsnew["incident_type"] = $rsold["incident_type"];
+			$rsnew["incident_id"] = $rsold["incident_id"];
+			$rsnew["incident_location"] = $rsold["incident_location"];
+			$rsnew["no_of_people_involved"] = $rsold["no_of_people_involved"];
+			$rsnew["category"] = $rsold["category"];
+			$rsnew["sub_category"] = $rsold["sub_category"];
+			$rsnew["incident-category"] = $rsold["incident-category"];
+			$rsnew["incident_venue"] = $rsold["incident_venue"];
+			$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
+			$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
+			$rsnew["assign_task"] = $rsold["assign_task"];
+			$rsnew["reason"] = $rsold["reason"];
+
+			//$rsnew["status"] = $rsold["status"];
+			$rsnew["initiator_action"] = $rsold["initiator_action"];
+			$rsnew["initiator_comment"] = $rsold["initiator_comment"];
+
+			//$rsnew["resolved_action"] = $rsold["resolved_action"];
+			//$rsnew["resolved_comment"] = $rsold["resolved_comment"];
+
+			$rsnew["approval_action"] = $rsold["approval_action"];
+			$rsnew["approval_comment"] = $rsold["approval_comment"];
+		}
+
+		// Manager - Don't change field values captured by Officer
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 3) {
+			$rsnew["id"] = $rsold["id"];
+			$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
+			$rsnew["staff_id"] = $rsold["staff_id"];
+			$rsnew["staffid"] = $rsold["staffid"];
+			$rsnew["incident_id"] = $rsold["incident_id"];
+			$rsnew["branch"] = $rsold["branch"];
+			$rsnew["department"] = $rsold["department"];
+			$rsnew["departments"] = $rsold["departments"];
+			$rsnew["start_date"] = $rsold["start_date"];
+			$rsnew["end_date"] = $rsold["end_date"];
+			$rsnew["duration"] = $rsold["duration"];
+			$rsnew["amount_paid"] = $rsold["amount_paid"];
+			$rsnew["report_by"] = $rsold["report_by"];
+			$rsnew["incident_type"] = $rsold["incident_type"];
+			$rsnew["incident_id"] = $rsold["incident_id"];
+			$rsnew["incident_location"] = $rsold["incident_location"];
+			$rsnew["no_of_people_involved"] = $rsold["no_of_people_involved"];
+			$rsnew["category"] = $rsold["category"];
+			$rsnew["sub_category"] = $rsold["sub_category"];
+			$rsnew["incident-category"] = $rsold["incident-category"];
+			$rsnew["incident_description"] = $rsold["incident_description"];
+			$rsnew["incident_venue"] = $rsold["incident_venue"];
+			$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
+			$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
+			$rsnew["initiator_action"] = $rsold["initiator_action"];
+			$rsnew["initiator_comment"] = $rsold["initiator_comment"];
+			$rsnew["reason"] = $rsold["reason"];
+
+		//	$rsnew["closed_by"] = $rsold["closed_by"];
+			//$rsnew["status"] = $rsold["status"];
+
+			$rsnew["initiator_action"] = $rsold["initiator_action"];
+			$rsnew["initiator_comment"] = $rsold["initiator_comment"];
+			$rsnew["resolved_action"] = $rsold["resolved_action"];
+			$rsnew["resolved_comment"] = $rsold["resolved_comment"];
+		}
+
+		// Manager - Don't change field values captured by Officer
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 6) {
+			$rsnew["id"] = $rsold["id"];
+			$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
+			$rsnew["staff_id"] = $rsold["staff_id"];
+			$rsnew["branch"] = $rsold["branch"];
+			$rsnew["department"] = $rsold["department"];
+			$rsnew["departments"] = $rsold["departments"];
+			$rsnew["start_date"] = $rsold["start_date"];
+			$rsnew["end_date"] = $rsold["end_date"];
+			$rsnew["duration"] = $rsold["duration"];
+			$rsnew["amount_paid"] = $rsold["amount_paid"];
+			$rsnew["report_by"] = $rsold["report_by"];
+			$rsnew["incident_type"] = $rsold["incident_type"];
+			$rsnew["incident_id"] = $rsold["incident_id"];
+			$rsnew["incident_location"] = $rsold["incident_location"];
+			$rsnew["no_of_people_involved"] = $rsold["no_of_people_involved"];
+			$rsnew["category"] = $rsold["category"];
+			$rsnew["sub_category"] = $rsold["sub_category"];
+			$rsnew["incident-category"] = $rsold["incident-category"];
+			$rsnew["incident_venue"] = $rsold["incident_venue"];
+			$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
+			$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
+			$rsnew["assign_task"] = $rsold["assign_task"];
+			$rsnew["reason"] = $rsold["reason"];
+
+			//$rsnew["status"] = $rsold["status"];
+			$rsnew["initiator_action"] = $rsold["initiator_action"];
+			$rsnew["initiator_comment"] = $rsold["initiator_comment"];
+			$rsnew["resolved_action"] = $rsold["resolved_action"];
+			$rsnew["resolved_comment"] = $rsold["resolved_comment"];
+			$rsnew["approval_action"] = $rsold["approval_action"];
+			$rsnew["approval_comment"] = $rsold["approval_comment"];
+		}
+
+		// Manager & HOD - Don't change field values captured by Officer
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4  && $this->status->CurrentValue == 4) {
+			$rsnew["id"] = $rsold["id"];
+			$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
+			$rsnew["staff_id"] = $rsold["staff_id"];
+			$rsnew["branch"] = $rsold["branch"];
+			$rsnew["department"] = $rsold["department"];
+			$rsnew["departments"] = $rsold["departments"];
+			$rsnew["start_date"] = $rsold["start_date"];
+			$rsnew["end_date"] = $rsold["end_date"];
+			$rsnew["duration"] = $rsold["duration"];
+			$rsnew["amount_paid"] = $rsold["amount_paid"];
+			$rsnew["report_by"] = $rsold["report_by"];
+			$rsnew["incident_type"] = $rsold["incident_type"];
+			$rsnew["incident_id"] = $rsold["incident_id"];
+			$rsnew["incident_location"] = $rsold["incident_location"];
+			$rsnew["no_of_people_involved"] = $rsold["no_of_people_involved"];
+			$rsnew["category"] = $rsold["category"];
+			$rsnew["sub_category"] = $rsold["sub_category"];
+			$rsnew["incident-category"] = $rsold["incident-category"];
+			$rsnew["incident_venue"] = $rsold["incident_venue"];
+			$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
+			$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
+			$rsnew["assign_task"] = $rsold["assign_task"];
+
+			//$rsnew["closed_by"] = $rsold["closed_by"];
+			//$rsnew["status"] = $rsold["status"];
+
+			$rsnew["initiator_action"] = $rsold["initiator_action"];
+			$rsnew["initiator_comment"] = $rsold["initiator_comment"];
+
+			//$rsnew["resolved_action"] = $rsold["resolved_action"];
+			//$rsnew["resolved_comment"] = $rsold["resolved_comment"];
+
+			$rsnew["approval_action"] = $rsold["approval_action"];
+			$rsnew["approval_comment"] = $rsold["approval_comment"];
+		}
+
+		// Supervisor
+		if ((CurrentPageID() == "edit" && (CurrentUserLevel() == 2 || CurrentUserLevel() == 1) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']|| $this->staff_id->CurrentValue = $_SESSION['Staff_ID'])) {
+			$rsnew["datetime_resolved"] = $now->format('Y-m-d H:i:s');
+			$rsnew["resolved_by"] = $_SESSION['Staff_ID'];
+			if ($this->resolved_action->CurrentValue == 0 && $this->status->CurrentValue == 4) {
+				$rsnew["status"] = 4;			
+				$rsnew["resolved_action"] = 0;
 
 				//$rsnew["resolved_comment"] = NULL;
 				//$rsnew["approval_action"] = NULL;
-			//	$rsnew["approval_comment"] = NULL;
+				//$rsnew["approval_comment"] = NULL;
 
 				$this->setSuccessMessage("&#x25C9; Issue has been saved &#x2714;");
 			}	
 
-				// Issue verified by Supervisor/Officer
-			if ($this->verified_action->CurrentValue == 8 && $this->status->CurrentValue == 6) {
+			// Issue Resolved by Supervisor/officer
+			if ($this->resolved_action->CurrentValue == 1 && $this->status->CurrentValue == 4) {
 
 				// New
-				if ($this->status->CurrentValue == 6) {
-					$rsnew["status"] = 5;					
-					$rsnew["verified_action"] = 8;
+				if ($this->status->CurrentValue == 4) {
+					$rsnew["status"] = 6;					
+					$rsnew["resolved_action"] = 1;
 
 					//$rsnew["resolved_comment"] = NULL;
 					// $rsnew["approval_action"] = NULL;
 					//$rsnew["approval_comment"] = NULL;
 
 				}
-				$this->setSuccessMessage("&#x25C9; Issue has been verified and Closed &#x2714;");
-			}*/	
-	}
+				$this->setSuccessMessage("&#x25C9; Issue was successfully Resolved and sent for Verification &#x2714;");
+			}
 
-	// Manager===========================================================================
-	if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) {
-		$rsnew["datetime_approved"] = $now->format('Y-m-d H:i:s');
-		$rsnew["approved_by"] = $_SESSION['Staff_ID'];
-	}
+			// Issue Not Resolved by Supervisor/officer
+			if ($this->resolved_action->CurrentValue == 2 && $this->status->CurrentValue == 4) {
 
-	// Checked only By Manager
-	if ($this->approval_action->CurrentValue == 1 && $this->status->CurrentValue == 3) {
+				// New
+				if ($this->status->CurrentValue == 4 && $this->resolved_action->CurrentValue == 2) {
+					$rsnew["status"] = 7;					
+					$rsnew["resolved_action"] = 2;
 
-		// New
-		if ($this->status->CurrentValue == 3) {
-			$rsnew["status"] = 1;					
-			$rsnew["approval_action"] = 1;
-			$rsnew["rejection_reasons"] = $this->approval_comment->CurrentValue;
+					//$rsnew["resolved_comment"] = NULL;
+					// $rsnew["approval_action"] = NULL;
+					//$rsnew["approval_comment"] = NULL;
+
+				}
+				$this->setSuccessMessage("&#x25C9; Issue was Not Resolved and sent for Re-Asigned &#x2714;");
+			}
+
+				//issue saved only by Verifire===================================
+
+				/*	if ($this->verified_action->CurrentValue == 7 && $this->status->CurrentValue == 6) {
+					$rsnew["status"] = 6;			
+					$rsnew["verified_action"] = 7;
+
+					//$rsnew["resolved_comment"] = NULL;
+					//$rsnew["approval_action"] = NULL;
+				//	$rsnew["approval_comment"] = NULL;
+
+					$this->setSuccessMessage("&#x25C9; Issue has been saved &#x2714;");
+				}	
+
+					// Issue verified by Supervisor/Officer
+				if ($this->verified_action->CurrentValue == 8 && $this->status->CurrentValue == 6) {
+
+					// New
+					if ($this->status->CurrentValue == 6) {
+						$rsnew["status"] = 5;					
+						$rsnew["verified_action"] = 8;
+
+						//$rsnew["resolved_comment"] = NULL;
+						// $rsnew["approval_action"] = NULL;
+						//$rsnew["approval_comment"] = NULL;
+
+					}
+					$this->setSuccessMessage("&#x25C9; Issue has been verified and Closed &#x2714;");
+				}*/	
 		}
-		$this->setSuccessMessage("&#x25C9; Issue was Return for Rework &#x2714;");
-	}	
 
-	// Approved by Manager
-	if ($this->approval_action->CurrentValue == 2 && $this->status->CurrentValue == 3) {
+		// Manager===========================================================================
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) {
+			$rsnew["datetime_approved"] = $now->format('Y-m-d H:i:s');
+			$rsnew["approved_by"] = $_SESSION['Staff_ID'];
+		}
 
-		// New
-		if ($this->status->CurrentValue == 3) {
-			$rsnew["status"] = 4;					
-			$rsnew["approval_action"] = 2;
+		// Checked only By Manager
+		if ($this->approval_action->CurrentValue == 1 && $this->status->CurrentValue == 3) {
 
+			// New
+			if ($this->status->CurrentValue == 3) {
+				$rsnew["status"] = 1;					
+				$rsnew["approval_action"] = 1;
+				$rsnew["rejection_reasons"] = $this->approval_comment->CurrentValue;
+			}
+			$this->setSuccessMessage("&#x25C9; Issue was Return for Rework &#x2714;");
+		}	
+
+		// Approved by Manager
+		if ($this->approval_action->CurrentValue == 2 && $this->status->CurrentValue == 3) {
+
+			// New
+			if ($this->status->CurrentValue == 3) {
+				$rsnew["status"] = 4;					
+				$rsnew["approval_action"] = 2;
+
+				//$rsnew["approval_comment"] = NULL;
+			}
+			$this->setSuccessMessage("&#x25C9; Issue was successfully Assigned to the Reponsible Personnel &#x2714;");
+		}
+
+		// Approved by Manager
+		if ($this->approval_action->CurrentValue == 3 && $this->status->CurrentValue == 3) {
+
+			// New
+			if ($this->status->CurrentValue == 3) {
+				$rsnew["status"] = 5;					
+				$rsnew["approval_action"] = 3;
+
+				//$rsnew["approval_comment"] = NULL;
+			}
+			$this->setSuccessMessage("&#x25C9; Issue was successfully Resolved and Closed &#x2714;");
+		}
+
+		// Approved Checks by Manager======================
+		if ($this->verified_action->CurrentValue == 7 && $this->status->CurrentValue == 6) {
+			$rsnew["status"] = 6;			
+			$rsnew["verified_action"] = 7;
+
+			//$rsnew["resolved_comment"] = NULL;
+			//$rsnew["approval_action"] = NULL;
 			//$rsnew["approval_comment"] = NULL;
+
+			$this->setSuccessMessage("&#x25C9; Issue has been saved &#x2714;");
 		}
-		$this->setSuccessMessage("&#x25C9; Issue was successfully Assigned to the Reponsible Personnel &#x2714;");
-	}
 
-	// Approved by Manager
-	if ($this->approval_action->CurrentValue == 3 && $this->status->CurrentValue == 3) {
+		// Approval Checks by Manager
+		if ($this->verified_action->CurrentValue == 8 && $this->status->CurrentValue == 6) {
 
-		// New
-		if ($this->status->CurrentValue == 3) {
-			$rsnew["status"] = 5;					
-			$rsnew["approval_action"] = 3;
+			// New
+			if ($this->status->CurrentValue == 6) {
+				$rsnew["status"] = 5;					
+				$rsnew["verified_action"] = 8;
 
-			//$rsnew["approval_comment"] = NULL;
+				//$rsnew["verified_action"] = NULL;
+			}
+			$this->setSuccessMessage("&#x25C9; Issue verified successfully and Closed &#x2714;");
 		}
-		$this->setSuccessMessage("&#x25C9; Issue was successfully Resolved and Closed &#x2714;");
-	}
 
-	// Approved Checks by Manager======================
-	if ($this->verified_action->CurrentValue == 7 && $this->status->CurrentValue == 6) {
-		$rsnew["status"] = 6;			
-		$rsnew["verified_action"] = 7;
+		// Checked only By Manager
+		/*if ($this->verified_action->CurrentValue == 1 && $this->status->CurrentValue == 6) {
 
-		//$rsnew["resolved_comment"] = NULL;
-		//$rsnew["approval_action"] = NULL;
-		//$rsnew["approval_comment"] = NULL;
+			// New
+			if ($this->status->CurrentValue == 6) {
+				$rsnew["status"] = 3;					
+				$rsnew["verified_action"] = 1;
+			}
+			$this->setSuccessMessage("&#x25C9; Ticket was Return for Re-Assigned &#x2714;");
+		}*/
 
-		$this->setSuccessMessage("&#x25C9; Issue has been saved &#x2714;");
-	}
+		// Task Re-Asigned only By Manager
+		if ($this->verified_action->CurrentValue == 1 && $this->status->CurrentValue == 7) {
 
-	// Approval Checks by Manager
-	if ($this->verified_action->CurrentValue == 8 && $this->status->CurrentValue == 6) {
+			// New
+			if ($this->status->CurrentValue == 7) {
+				$rsnew["status"] = 4;					
+				$rsnew["verified_action"] = 1;
+			}
+			$this->setSuccessMessage("&#x25C9; Issue Was Successfully Re-Assigned &#x2714;");
+		}	
 
-		// New
-		if ($this->status->CurrentValue == 6) {
-			$rsnew["status"] = 5;					
-			$rsnew["verified_action"] = 8;
+		// Approval Checks by Manager
 
-			//$rsnew["verified_action"] = NULL;
-		}
-		$this->setSuccessMessage("&#x25C9; Issue verified successfully and Closed &#x2714;");
-	}
+		/*	if ($this->verified_action->CurrentValue == 9 && $this->status->CurrentValue == 6) {
 
-	// Checked only By Manager
-	/*if ($this->verified_action->CurrentValue == 1 && $this->status->CurrentValue == 6) {
+			// New
+			if ($this->status->CurrentValue == 6) {
+				$rsnew["status"] = 5;					
+				$rsnew["verified_action"] = 9;
 
-		// New
-		if ($this->status->CurrentValue == 6) {
-			$rsnew["status"] = 3;					
-			$rsnew["verified_action"] = 1;
-		}
-		$this->setSuccessMessage("&#x25C9; Ticket was Return for Re-Assigned &#x2714;");
-	}*/
+				//$rsnew["verified_action"] = NULL;
+			}
+			$this->setSuccessMessage("&#x25C9; Issue Resolved Very Good and Closed &#x2714;");
+		}*/
 
-	// Task Re-Asigned only By Manager
-	if ($this->verified_action->CurrentValue == 1 && $this->status->CurrentValue == 7) {
+		// Approval Checks by Manager
 
-		// New
-		if ($this->status->CurrentValue == 7) {
-			$rsnew["status"] = 4;					
-			$rsnew["verified_action"] = 1;
-		}
-		$this->setSuccessMessage("&#x25C9; Issue Was Successfully Re-Assigned &#x2714;");
-	}	
+		/*	if ($this->verified_action->CurrentValue == 10 && $this->status->CurrentValue == 6) {
 
-	// Approval Checks by Manager
+			// New
+			if ($this->status->CurrentValue == 6) {
+				$rsnew["status"] = 5;					
+				$rsnew["verified_action"] = 10;
 
-	/*	if ($this->verified_action->CurrentValue == 9 && $this->status->CurrentValue == 6) {
+				//$rsnew["verified_action"] = NULL;
+			}
+			$this->setSuccessMessage("&#x25C9; Issue Resolved Excellent and Closed &#x2714;");
+		}*/
 
-		// New
-		if ($this->status->CurrentValue == 6) {
-			$rsnew["status"] = 5;					
-			$rsnew["verified_action"] = 9;
+		// Approval Checks by Manager
 
-			//$rsnew["verified_action"] = NULL;
-		}
-		$this->setSuccessMessage("&#x25C9; Issue Resolved Very Good and Closed &#x2714;");
-	}*/
+		/*	if ($this->verified_action->CurrentValue == 11 && $this->status->CurrentValue == 6) {
 
-	// Approval Checks by Manager
+			// New
+			if ($this->status->CurrentValue == 6) {
+				$rsnew["status"] = 5;					
+				$rsnew["verified_action"] = 11;
 
-	/*	if ($this->verified_action->CurrentValue == 10 && $this->status->CurrentValue == 6) {
-
-		// New
-		if ($this->status->CurrentValue == 6) {
-			$rsnew["status"] = 5;					
-			$rsnew["verified_action"] = 10;
-
-			//$rsnew["verified_action"] = NULL;
-		}
-		$this->setSuccessMessage("&#x25C9; Issue Resolved Excellent and Closed &#x2714;");
-	}*/
-
-	// Approval Checks by Manager
-
-	/*	if ($this->verified_action->CurrentValue == 11 && $this->status->CurrentValue == 6) {
-
-		// New
-		if ($this->status->CurrentValue == 6) {
-			$rsnew["status"] = 5;					
-			$rsnew["verified_action"] = 11;
-
-			//$rsnew["verified_action"] = NULL;
-		}
-		$this->setSuccessMessage("&#x25C9; Issue Assessed Satisfactory and Closed &#x2714;");
-	}*/	
+				//$rsnew["verified_action"] = NULL;
+			}
+			$this->setSuccessMessage("&#x25C9; Issue Assessed Satisfactory and Closed &#x2714;");
+		}*/	
 		return TRUE;
 	}
 
@@ -3425,6 +3425,7 @@ class creport_form extends cTable {
 	//	if($this->status->CurrentValue == 4 && CurrentPageID()=="edit"){
 
 		   ew_Execute("UPDATE inventory SET quantity=".$rsnew["remainder"]." WHERE id=".$rsnew["item_name"]."");
+
 	   //}
 	}
 
@@ -3544,12 +3545,6 @@ class creport_form extends cTable {
 		if (CurrentPageID() == "add")  {
 			$this->incident_id->CurrentValue = $_SESSION['Inc_ID'];
 			$this->incident_id->EditValue = $this->incident_id->CurrentValue;
-
-		//	$this->staffid->CurrentValue = $_SESSION['StfID'];
-		//	$this->staffid->EditValue = $this->staffid->CurrentValue;
-		//	$this->staffno->CurrentValue = $_SESSION['StffNO'];
-		//	$this->staffno->EditValue = $this->staffno->CurrentValue;
-
 		}
 	}
 
@@ -3559,6 +3554,943 @@ class creport_form extends cTable {
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
 
+		if (CurrentPageID() == "add") {
+				if (CurrentUserLevel() == 1) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->report_by->Visible = FALSE;
+					$this->department->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->Visible = FALSE;
+					$this->no_of_people_involved->Visible = TRUE;
+					$this->category->Visible = TRUE;
+					$this->incident_category->Visible = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->incident_location->Visible = TRUE;
+					$this->incident_type->Visible = TRUE;
+					$this->sub_category->Visible = TRUE;
+					$this->sub_sub_category->Visible = TRUE;
+					$this->initiator_action->Visible = TRUE;
+					$this->initiator_comment->Visible = TRUE;
+					$this->datetime_resolved->Visible = FALSE;
+					$this->resolved_action->Visible = FALSE;
+					$this->resolved_comment->Visible = FALSE;
+					$this->resolved_by->Visible = FALSE;
+					$this->datetime_approved->Visible = FALSE;
+					$this->approval_action->Visible = FALSE;
+					$this->approval_comment->Visible = FALSE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->Visible = FALSE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+					$this->job_assessment->Visible = FALSE;
+					$this->reason->Visible = FALSE;
+					$this->item_name->Visible = FALSE;
+					$this->quantity_issued->Visible = FALSE;
+				}
+				if ((CurrentUserLevel() == 2 || CurrentUserLevel() == 1) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->report_by->Visible = FALSE; 
+					$this->department->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->Visible = FALSE;
+					$this->no_of_people_involved->Visible = TRUE;
+					$this->category->Visible = TRUE;
+					$this->incident_category->ReadOnly = FALSE;
+					$this->incident_location->Visible = TRUE;
+					$this->incident_type->Visible = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->sub_category->Visible = TRUE;
+					$this->sub_sub_category->Visible = TRUE;
+					$this->initiator_action->Visible = TRUE;
+					$this->initiator_comment->Visible = TRUE;
+					$this->datetime_resolved->Visible = FALSE;
+					$this->resolved_action->Visible = FALSE;
+					$this->resolved_comment->Visible = FALSE;
+					$this->resolved_by->Visible = FALSE;
+					$this->datetime_approved->Visible = FALSE;
+					$this->approval_action->Visible = FALSE;
+					$this->approval_comment->Visible = FALSE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->Visible = FALSE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+					$this->job_assessment->Visible = FALSE;
+					$this->reason->Visible = FALSE;
+					$this->item_name->Visible = FALSE;
+					$this->quantity_issued->Visible = FALSE;
+				}
+				if (CurrentUserLevel() == 3 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->report_by->Visible = FALSE;
+					$this->department->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->Visible = TRUE;
+					$this->no_of_people_involved->Visible = TRUE;
+					$this->category->ReadOnly = FALSE;
+					$this->incident_category->ReadOnly = FALSE;
+					$this->incident_location->Visible = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->incident_type->Visible = TRUE;
+					$this->sub_category->Visible = TRUE;
+					$this->sub_sub_category->Visible = TRUE;
+					$this->initiator_action->Visible = TRUE;
+					$this->initiator_comment->Visible = TRUE;
+					$this->datetime_resolved->Visible = FALSE;
+					$this->resolved_action->Visible = FALSE;
+					$this->resolved_comment->Visible = FALSE;
+					$this->resolved_by->Visible = FALSE;
+					$this->datetime_approved->Visible = FALSE;
+					$this->approval_action->Visible = FALSE;
+					$this->approval_comment->Visible = FALSE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->Visible = TRUE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+					$this->job_assessment->Visible = FALSE;
+					$this->reason->Visible = FALSE;
+					$this->item_name->Visible = FALSE;
+					$this->quantity_issued->Visible = FALSE;
+				}
+				if (CurrentUserLevel() == 4 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->report_by->Visible = FALSE;
+					$this->department->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->Visible = TRUE;
+					$this->no_of_people_involved->Visible = TRUE;
+					$this->category->ReadOnly = FALSE;
+					$this->incident_category->ReadOnly = FALSE;
+					$this->incident_location->Visible = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->incident_type->Visible = TRUE;
+					$this->sub_category->Visible = TRUE;
+					$this->sub_sub_category->Visible = TRUE;
+					$this->initiator_action->Visible = TRUE;
+					$this->initiator_comment->Visible = TRUE;
+					$this->datetime_resolved->Visible = FALSE;
+					$this->resolved_action->Visible = FALSE;
+					$this->resolved_comment->Visible = FALSE;
+					$this->resolved_by->Visible = FALSE;
+					$this->datetime_approved->Visible = FALSE;
+					$this->approval_action->Visible = FALSE;
+					$this->approval_comment->Visible = FALSE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->Visible = TRUE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+					$this->job_assessment->Visible = FALSE;
+					$this->reason->Visible = FALSE;
+					$this->item_name->Visible = FALSE;
+					$this->quantity_issued->Visible = FALSE;
+				}
+			}
+
+			   // Edit Page
+			   if (CurrentPageID() == "edit") {
+					if (CurrentUserLevel() == 1 && ($this->status->CurrentValue == 0 || $this->status->CurrentValue == 1) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->report_by->Visible = FALSE;
+					$this->department->ReadOnly = TRUE;
+					$this->departments->Visible = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->ReadOnly = TRUE;
+					$this->no_of_people_involved->Visible = TRUE;
+					$this->category->Visible = TRUE;
+					$this->incident_location->Visible = TRUE;
+					$this->incident_category->ReadOnly = FALSE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->incident_type->Visible = TRUE;
+					$this->start_date->Visible = TRUE;
+					$this->end_date->Visible = TRUE;
+					$this->duration->Visible = TRUE;
+					$this->sub_category->Visible = TRUE;
+					$this->sub_sub_category->Visible = TRUE;
+					$this->selection_sub_category->Visible = TRUE;
+					$this->initiator_action->Visible = TRUE;
+					$this->initiator_comment->Visible = TRUE;
+					$this->report_by->Visible = FALSE;
+					$this->datetime_resolved->Visible = FALSE;
+					$this->resolved_action->Visible = FALSE;
+					$this->resolved_comment->Visible = FALSE;
+					$this->resolved_by->Visible = FALSE;
+					$this->datetime_approved->Visible = FALSE;
+					$this->approval_action->Visible = FALSE;
+					$this->approval_comment->Visible = FALSE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->Visible = FALSE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+					$this->job_assessment->Visible = FALSE;
+					$this->reason->Visible = FALSE;
+					$this->item_name->Visible = FALSE;
+					$this->quantity_issued->Visible = FALSE;
+				}
+				if ((CurrentUserLevel() == 1) && $this->status->CurrentValue == 4 && $this->assign_task->CurrentValue == $_SESSION['Staff_ID']) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->report_by->ReadOnly = TRUE;
+					$this->department->ReadOnly = TRUE;
+					$this->departments->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->ReadOnly = TRUE;
+					$this->no_of_people_involved->ReadOnly = TRUE;
+					$this->category->ReadOnly = TRUE;
+					$this->incident_category->ReadOnly = TRUE;
+					$this->incident_location->ReadOnly = TRUE;
+					$this->incident_type->ReadOnly = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->incident_description->ReadOnly = TRUE;
+					$this->sub_category->ReadOnly = TRUE;
+					$this->sub_sub_category->ReadOnly = TRUE;
+					$this->selection_sub_category->ReadOnly = TRUE;
+					$this->start_date->ReadOnly = TRUE;
+					$this->end_date->ReadOnly = TRUE;
+					$this->duration->ReadOnly = TRUE;
+					$this->amount_paid->ReadOnly = TRUE;
+					$this->initiator_action->ReadOnly = TRUE;
+					$this->initiator_comment->ReadOnly = TRUE;
+					$this->report_by->Visible = TRUE;
+					$this->datetime_resolved->Visible = FALSE;
+					$this->resolved_action->Visible = TRUE;
+					$this->resolved_comment->Visible = TRUE;
+					$this->resolved_by->Visible = FALSE;
+					$this->datetime_approved->Visible = FALSE;
+					$this->incident_sub_location->ReadOnly = TRUE;
+					$this->incident_venue->ReadOnly = TRUE;
+					$this->approval_action->ReadOnly = TRUE;
+					$this->approval_comment->ReadOnly = TRUE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->ReadOnly = TRUE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+					$this->job_assessment->Visible = FALSE;
+					$this->reason->Visible = TRUE;
+					$this->item_name->Visible = TRUE;
+					$this->quantity_issued->Visible = TRUE;
+						if ($this->status->CurrentValue == 4) {
+						$this->assign_task->ReadOnly = TRUE;
+						$this->remainder->Visible = FALSE;
+						$this->item_name->Visible = TRUE;
+						$this->quantity_issued->Visible = TRUE;
+					} else {
+						$this->approval_action->Visible = FALSE;
+						$this->approval_comment->Visible = FALSE;
+					}
+				}
+				if (CurrentUserLevel() == 2 && ($this->status->CurrentValue == 0 || $this->status->CurrentValue == 1) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->report_by->Visible = FALSE;
+					$this->department->ReadOnly = TRUE;
+					$this->departments->Visible = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->ReadOnly = TRUE;
+					$this->no_of_people_involved->Visible = TRUE;
+					$this->incident_location->Visible = TRUE;
+					$this->incident_type->Visible = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->category->Visible = TRUE;
+					$this->incident_category->Visible = TRUE;
+					$this->sub_category->Visible = TRUE;
+					$this->sub_sub_category->Visible = TRUE;
+					$this->selection_sub_category->Visible = TRUE;
+					$this->start_date->Visible = TRUE;
+					$this->end_date->Visible = TRUE;
+					$this->duration->Visible = TRUE;
+					$this->initiator_action->Visible = TRUE;
+					$this->initiator_comment->Visible = TRUE;
+					$this->datetime_resolved->Visible = FALSE;
+					$this->resolved_action->Visible = FALSE;
+					$this->resolved_comment->Visible = FALSE;
+					$this->resolved_by->Visible = FALSE;
+					$this->datetime_approved->Visible = FALSE;
+					$this->approval_action->Visible = FALSE;
+					$this->approval_comment->Visible = FALSE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->Visible = FALSE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+					$this->job_assessment->Visible = FALSE;
+					$this->reason->Visible = FALSE;
+					$this->item_name->Visible = FALSE;
+					$this->quantity_issued->Visible = FALSE;
+				}
+				if ((CurrentUserLevel() == 2 || CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && $this->status->CurrentValue == 4 && $this->assign_task->CurrentValue == $_SESSION['Staff_ID']) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->report_by->ReadOnly = TRUE;
+					$this->department->ReadOnly = TRUE;
+					$this->departments->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->ReadOnly = TRUE;
+					$this->no_of_people_involved->ReadOnly = TRUE;
+					$this->category->ReadOnly = TRUE;
+					$this->incident_category->ReadOnly = TRUE;
+					$this->incident_location->ReadOnly = TRUE;
+					$this->incident_type->ReadOnly = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->incident_description->ReadOnly = TRUE;
+					$this->sub_category->ReadOnly = TRUE;
+					$this->sub_sub_category->ReadOnly = TRUE;
+					$this->selection_sub_category->ReadOnly = TRUE;
+					$this->start_date->ReadOnly = TRUE;
+					$this->end_date->ReadOnly = TRUE;
+					$this->duration->ReadOnly = TRUE;
+					$this->amount_paid->ReadOnly = TRUE;
+					$this->initiator_action->ReadOnly = TRUE;
+					$this->initiator_comment->ReadOnly = TRUE;
+					$this->report_by->Visible = TRUE;
+					$this->datetime_resolved->Visible = FALSE;
+					$this->resolved_action->Visible = TRUE;
+					$this->resolved_comment->Visible = TRUE;
+					$this->resolved_by->Visible = FALSE;
+					$this->datetime_approved->Visible = FALSE;
+					$this->incident_sub_location->ReadOnly = TRUE;
+					$this->incident_venue->ReadOnly = TRUE;
+					$this->approval_action->ReadOnly = TRUE;
+					$this->approval_comment->ReadOnly = TRUE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->ReadOnly = TRUE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+					$this->job_assessment->Visible = FALSE;
+					$this->reason->Visible = TRUE;
+					$this->item_name->Visible = TRUE;
+					$this->quantity_issued->Visible = TRUE;
+						/*if ($this->status->CurrentValue == 4) {
+						$this->datetime_resolved->ReadOnly = FALSE;
+						$this->approval_action->ReadOnly = TRUE;
+						$this->approval_comment->ReadOnly = TRUE;
+						$this->resolved_by->Visible = FALSE;
+						$this->assign_task->ReadOnly = TRUE;
+						$this->resolved_action->ReadOnly = TRUE;
+						$this->resolved_comment->ReadOnly = TRUE;
+					} else {
+						$this->approval_action->Visible = FALSE;
+						$this->approval_comment->Visible = FALSE;
+					}*/
+				}
+				if (CurrentUserLevel() == 2 && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->report_by->ReadOnly = TRUE;
+					$this->department->ReadOnly = TRUE;
+					$this->departments->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->ReadOnly = TRUE;
+					$this->no_of_people_involved->ReadOnly = TRUE;
+					$this->category->ReadOnly = TRUE;
+					$this->incident_category->ReadOnly = TRUE;
+					$this->incident_location->ReadOnly = TRUE;
+					$this->incident_type->ReadOnly = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->incident_description->ReadOnly = TRUE;
+					$this->sub_category->ReadOnly = TRUE;
+					$this->sub_sub_category->ReadOnly = TRUE;
+					$this->selection_sub_category->ReadOnly = TRUE;
+					$this->start_date->ReadOnly = TRUE;
+					$this->end_date->ReadOnly = TRUE;
+					$this->duration->ReadOnly = TRUE;
+					$this->amount_paid->ReadOnly = TRUE;
+					$this->initiator_action->ReadOnly = TRUE;
+					$this->initiator_comment->ReadOnly = TRUE;
+					$this->report_by->Visible = TRUE;
+					$this->datetime_resolved->Visible = FALSE;
+					$this->resolved_action->Visible = TRUE;
+					$this->resolved_comment->Visible = TRUE;
+					$this->resolved_by->Visible = FALSE;
+					$this->datetime_approved->Visible = FALSE;
+					$this->incident_sub_location->ReadOnly = TRUE;
+					$this->incident_venue->ReadOnly = TRUE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->ReadOnly = TRUE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+
+					//$this->item_name->Visible = FALSE;
+					//$this->quantity_issued->Visible = FALSE;
+
+					$this->job_assessment->Visible = FALSE;
+						if ($this->status->CurrentValue == 4) {
+						$this->datetime_resolved->ReadOnly = FALSE;
+						$this->approval_action->ReadOnly = TRUE;
+						$this->approval_comment->ReadOnly = TRUE;
+						$this->resolved_by->Visible = FALSE;
+						$this->assign_task->ReadOnly = TRUE;
+						$this->reason->Visible = TRUE;
+					} else {
+						$this->approval_action->Visible = FALSE;
+						$this->approval_comment->Visible = FALSE;
+					}
+				}
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->report_by->Visible = FALSE;
+					$this->department->ReadOnly = TRUE;
+					$this->departments->Visible = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->ReadOnly = TRUE;
+					$this->no_of_people_involved->ReadOnly = TRUE;
+					$this->incident_location->Visible = TRUE;
+					$this->incident_type->ReadOnly = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->category->Visible = TRUE;
+					$this->incident_category->Visible = TRUE;
+					$this->sub_category->Visible = TRUE;
+					$this->sub_sub_category->Visible = TRUE;
+					$this->selection_sub_category->Visible = TRUE;
+					$this->start_date->Visible = TRUE;
+					$this->end_date->Visible = TRUE;
+					$this->duration->Visible = TRUE;
+					$this->initiator_action->Visible = TRUE;
+					$this->initiator_comment->Visible = TRUE;
+					$this->datetime_resolved->Visible = FALSE;
+					$this->resolved_action->Visible = FALSE;
+					$this->resolved_comment->Visible = FALSE;
+					$this->resolved_by->Visible = FALSE;
+					$this->datetime_approved->Visible = FALSE;
+					$this->approval_action->Visible = FALSE;
+					$this->approval_comment->Visible = FALSE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->Visible = TRUE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+					$this->job_assessment->Visible = FALSE;
+					$this->item_name->Visible = FALSE;
+					$this->quantity_issued->Visible = FALSE;
+					if ($this->status->CurrentValue == 0) {
+							$this->datetime_approved->Visible = FALSE;
+							$this->reason->Visible = FALSE;
+						} else {
+							$this->last_updated_date->Visible = FALSE;
+						}
+				}
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 4 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->report_by->Visible = FALSE;
+					$this->department->ReadOnly = TRUE;
+					$this->departments->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->ReadOnly = TRUE;
+					$this->no_of_people_involved->ReadOnly = TRUE;
+					$this->incident_location->ReadOnly = TRUE;
+					$this->incident_sub_location->ReadOnly = TRUE;
+					$this->incident_venue->ReadOnly = TRUE;
+					$this->incident_description->ReadOnly = TRUE;
+					$this->incident_type->ReadOnly = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->category->ReadOnly = TRUE;
+					$this->incident_category->ReadOnly = TRUE;
+					$this->sub_category->ReadOnly = TRUE;
+					$this->sub_sub_category->ReadOnly = TRUE;
+					$this->selection_sub_category->ReadOnly = TRUE;
+					$this->start_date->ReadOnly = TRUE;
+					$this->end_date->ReadOnly = TRUE;
+					$this->duration->ReadOnly = TRUE;
+					$this->initiator_action->ReadOnly = TRUE;
+					$this->initiator_comment->ReadOnly = TRUE;
+					$this->datetime_resolved->ReadOnly = FALSE;
+					$this->resolved_action->Visible = TRUE;
+					$this->resolved_comment->Visible = TRUE;
+					$this->resolved_by->ReadOnly = TRUE;
+					$this->datetime_approved->ReadOnly = FALSE;
+					$this->approval_action->ReadOnly = TRUE;
+					$this->approval_comment->ReadOnly = TRUE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->ReadOnly = TRUE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+					$this->job_assessment->Visible = FALSE;
+					$this->reason->Visible = TRUE;
+					$this->item_name->ReadOnly = TRUE;
+					$this->quantity_issued->ReadOnly = TRUE;
+				  }
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 6) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->report_by->Visible = FALSE;
+					$this->department->ReadOnly = TRUE;
+					$this->departments->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->ReadOnly = TRUE;
+					$this->no_of_people_involved->ReadOnly = TRUE;
+					$this->incident_location->ReadOnly = TRUE;
+					$this->incident_sub_location->ReadOnly = TRUE;
+					$this->incident_venue->ReadOnly = TRUE;
+					$this->incident_description->ReadOnly = TRUE;
+					$this->incident_type->ReadOnly = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->category->ReadOnly = TRUE;
+					$this->incident_category->ReadOnly = TRUE;
+					$this->sub_category->ReadOnly = TRUE;
+					$this->sub_sub_category->ReadOnly = TRUE;
+					$this->selection_sub_category->ReadOnly = TRUE;
+					$this->start_date->ReadOnly = TRUE;
+					$this->end_date->ReadOnly = TRUE;
+					$this->duration->ReadOnly = TRUE;
+					$this->initiator_action->ReadOnly = TRUE;
+					$this->initiator_comment->ReadOnly = TRUE;
+					$this->datetime_resolved->ReadOnly = FALSE;
+
+					//$this->resolved_action->Visible = TRUE;
+					//$this->resolved_comment->Visible = TRUE;
+
+					$this->resolved_by->ReadOnly = TRUE;
+					$this->datetime_approved->ReadOnly = FALSE;
+					$this->approval_action->ReadOnly = TRUE;
+					$this->approval_comment->ReadOnly = TRUE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->ReadOnly = TRUE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = TRUE;
+					$this->verified_comment->Visible = TRUE;
+					$this->verified_by->Visible = FALSE;
+					$this->job_assessment->Visible = TRUE;
+					$this->item_name->ReadOnly = TRUE;
+					$this->quantity_issued->ReadOnly = TRUE;
+					$this->reason->ReadOnly = TRUE;
+
+					//=============================
+					$this->resolved_action->Visible = TRUE;
+					$this->resolved_comment->Visible = TRUE;
+					$this->resolved_action->ReadOnly = TRUE;
+					$this->resolved_comment->ReadOnly = TRUE;
+				}
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 7 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->report_by->Visible = FALSE;
+					$this->department->ReadOnly = TRUE;
+					$this->departments->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->ReadOnly = TRUE;
+					$this->no_of_people_involved->ReadOnly = TRUE;
+					$this->incident_location->ReadOnly = TRUE;
+					$this->incident_sub_location->ReadOnly = TRUE;
+					$this->incident_venue->ReadOnly = TRUE;
+					$this->incident_description->ReadOnly = TRUE;
+					$this->incident_type->ReadOnly = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->category->ReadOnly = TRUE;
+					$this->incident_category->ReadOnly = TRUE;
+					$this->sub_category->ReadOnly = TRUE;
+					$this->sub_sub_category->ReadOnly = TRUE;
+					$this->selection_sub_category->ReadOnly = TRUE;
+					$this->start_date->ReadOnly = TRUE;
+					$this->end_date->ReadOnly = TRUE;
+					$this->duration->ReadOnly = TRUE;
+					$this->initiator_action->ReadOnly = TRUE;
+					$this->initiator_comment->ReadOnly = TRUE;
+					$this->datetime_resolved->ReadOnly = FALSE;
+					$this->resolved_action->Visible = TRUE;
+					$this->resolved_comment->Visible = TRUE;
+					$this->resolved_by->ReadOnly = TRUE;
+					$this->datetime_approved->ReadOnly = FALSE;
+					$this->approval_action->ReadOnly = TRUE;
+					$this->approval_comment->ReadOnly = TRUE;
+					$this->approved_by->Visible = FALSE;
+					$this->assign_task->Visible = TRUE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = TRUE;
+					$this->verified_comment->Visible = TRUE;
+					$this->verified_by->Visible = FALSE;
+					$this->job_assessment->Visible = FALSE;
+					$this->reason->ReadOnly = TRUE;
+					$this->item_name->ReadOnly = TRUE;
+					$this->quantity_issued->ReadOnly = TRUE;
+					}
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && ($this->status->CurrentValue == 3 || $this->status->CurrentValue == 6 || $this->status->CurrentValue == 7) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+					$this->datetime_initiated->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->staffid->ReadOnly = TRUE;
+					$this->report_by->ReadOnly = TRUE;
+					$this->department->ReadOnly = TRUE;
+					$this->departments->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->status->ReadOnly = TRUE;
+					$this->no_of_people_involved->ReadOnly = TRUE;
+					$this->incident_location->ReadOnly = TRUE;
+					$this->incident_venue->ReadOnly = TRUE;
+					$this->incident_sub_location->ReadOnly = TRUE;
+					$this->incident_id->ReadOnly = TRUE;
+					$this->incident_type->ReadOnly = TRUE;
+					$this->category->ReadOnly = TRUE;
+					$this->incident_category->ReadOnly = TRUE;
+					$this->incident_description->ReadOnly = TRUE;
+					$this->sub_category->ReadOnly = TRUE;
+					$this->sub_sub_category->ReadOnly = TRUE;
+					$this->selection_sub_category->ReadOnly = TRUE;
+					$this->start_date->ReadOnly = TRUE;
+					$this->end_date->ReadOnly = TRUE;
+					$this->duration->ReadOnly = TRUE;
+					$this->amount_paid->ReadOnly = TRUE;
+					$this->initiator_action->ReadOnly = TRUE;
+					$this->initiator_comment->ReadOnly = TRUE;
+					$this->report_by->Visible = FALSE;
+
+					//$this->resolved_action->Visible = FALSE;
+					//$this->resolved_comment->Visible = FALSE;
+
+					$this->datetime_resolved->Visible = FALSE;
+					$this->datetime_approved->Visible = FALSE;
+					$this->assign_task->Visible = TRUE;
+					$this->last_updated_date->Visible = FALSE;
+					$this->last_updated_by->Visible = FALSE;
+					$this->verified_datetime->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+					$this->resolved_by->Visible = FALSE;
+					$this->job_assessment->Visible = FALSE;
+					$this->item_name->ReadOnly = TRUE;
+					$this->quantity_issued->ReadOnly = TRUE;
+					if ($this->status->CurrentValue == 6) {
+							$this->datetime_resolved->ReadOnly = FALSE;
+							$this->resolved_action->ReadOnly = TRUE;
+							$this->resolved_comment->ReadOnly = TRUE;
+							$this->approval_action->ReadOnly = TRUE;
+							$this->approval_comment->ReadOnly = TRUE;
+							$this->assign_task->ReadOnly = TRUE;
+							$this->verified_action->Visible = TRUE;
+							$this->verified_comment->Visible = TRUE;
+							$this->resolved_by->Visible = FALSE;
+							$this->last_updated_date->Visible = FALSE;
+							$this->approved_by->Visible = FALSE;
+							$this->job_assessment->Visible = TRUE;
+							$this->reason->ReadOnly = TRUE;
+						} else {
+							$this->datetime_resolved->ReadOnly = TRUE;
+							$this->resolved_action->Visible = FALSE;
+							$this->resolved_comment->Visible = FALSE;
+							$this->resolved_by->Visible = FALSE;
+							$this->report_by->Visible = FALSE;
+							$this->approval_action->Visible = TRUE;
+							$this->approval_comment->Visible = TRUE;
+							$this->approved_by->Visible = FALSE;
+							$this->reason->Visible = FALSE;
+						}
+						if($this->status->CurrentValue == 7){
+								$this->datetime_resolved->ReadOnly = FALSE;
+								$this->resolved_action->Visible = TRUE;
+								$this->resolved_comment->Visible = TRUE;
+								$this->approval_action->ReadOnly = TRUE;
+								$this->approval_comment->ReadOnly = TRUE;
+								$this->assign_task->Visible = TRUE;
+								$this->verified_action->Visible = TRUE;
+								$this->verified_comment->Visible = TRUE;
+								$this->resolved_by->Visible = FALSE;
+								$this->last_updated_date->Visible = FALSE;
+								$this->approved_by->Visible = FALSE;
+								$this->job_assessment->Visible = FALSE;
+								$this->reason->ReadOnly = TRUE;
+							}else{
+								$this->datetime_resolved->ReadOnly = TRUE;
+								$this->resolved_action->ReadOnly = TRUE;
+								$this->resolved_comment->ReadOnly = TRUE;
+								$this->resolved_by->Visible = FALSE;
+								$this->report_by->Visible = FALSE;
+								$this->approval_action->Visible = TRUE;
+								$this->approval_comment->Visible = TRUE;
+								$this->approved_by->Visible = FALSE;
+
+								//$this->reason->Visible = FALSE;
+					}
+			}
+		}
+
+		// Highligh rows in color based on the status
+		if (CurrentPageID() == "list") {
+			if ($this->status->CurrentValue == 1) {
+				$this->id->CellCssStyle = "color: orange; text-align: left;";
+				$this->datetime_initiated->CellCssStyle = "color: orange; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: orange; text-align: left;";
+				$this->staffid->CellCssStyle = "color: orange; text-align: left;";
+				$this->report_by->CellCssStyle = "color: orange; text-align: left;";
+				$this->departments->CellCssStyle = "color: orange; text-align: left;";
+				$this->department->CellCssStyle = "color: orange; text-align: left;";
+				$this->branch->CellCssStyle = "color: orange; text-align: left;";
+				$this->incident_id->CellCssStyle = "color: orange; text-align: left;";
+				$this->category->CellCssStyle = "color: orange; text-align: left;";
+				$this->incident_type->CellCssStyle = "color: orange; text-align: left;";
+				$this->incident_location->CellCssStyle = "color: orange; text-align: left;";
+				$this->no_of_people_involved->CellCssStyle = "color: orange; text-align: left;";
+				$this->incident_category->CellCssStyle = "color: orange; text-align: left;";
+				$this->incident_description->CellCssStyle = "color: orange; text-align: left;";
+				$this->sub_category->CellCssStyle = "color: orange; text-align: left;";
+				$this->status->CellCssStyle = "color: orange; text-align: left;";
+				$this->start_date->CellCssStyle = "color: orange; text-align: left;";
+				$this->end_date->CellCssStyle = "color: orange; text-align: left;";
+				$this->duration->CellCssStyle = "color: orange; text-align: left;";
+				$this->amount_paid->CellCssStyle = "color: orange; text-align: left;";
+				$this->incident_sub_location->CellCssStyle = "color: orange; text-align: left;";
+				$this->assign_task->CellCssStyle = "color: orange; text-align: left;";
+				$this->last_updated_date->CellCssStyle = "color: orange; text-align: left;";
+				$this->last_updated_by->CellCssStyle = "color: orange; text-align: left;";
+			}
+			if ($this->status->CurrentValue == 2) {
+				$this->id->CellCssStyle = "color: red; text-align: left;";
+				$this->datetime_initiated->CellCssStyle = "color: red; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: red; text-align: left;";
+				$this->staffid->CellCssStyle = "color: red; text-align: left;";
+				$this->report_by->CellCssStyle = "color: red; text-align: left;";
+				$this->departments->CellCssStyle = "color: red; text-align: left;";
+				$this->department->CellCssStyle = "color: red; text-align: left;";
+				$this->branch->CellCssStyle = "color: red; text-align: left;";
+				$this->incident_id->CellCssStyle = "color: red; text-align: left;";
+				$this->incident_type->CellCssStyle = "color: red; text-align: left;";
+				$this->incident_location->CellCssStyle = "color: red; text-align: left;";
+				$this->no_of_people_involved->CellCssStyle = "color: red; text-align: left;";
+				$this->category->CellCssStyle = "color: red; text-align: left;";
+				$this->incident_category->CellCssStyle = "color: red; text-align: left;";
+				$this->incident_description->CellCssStyle = "color: red; text-align: left;";
+				$this->sub_category->CellCssStyle = "color: red; text-align: left;";
+				$this->status->CellCssStyle = "color: red; text-align: left;";
+				$this->start_date->CellCssStyle = "color: red; text-align: left;";
+				$this->end_date->CellCssStyle = "color: red; text-align: left;";
+				$this->duration->CellCssStyle = "color: red; text-align: left;";
+				$this->amount_paid->CellCssStyle = "color: red; text-align: left;";
+				$this->incident_sub_location->CellCssStyle = "color: red; text-align: left;";
+				$this->assign_task->CellCssStyle = "color: red; text-align: left;";
+				$this->last_updated_date->CellCssStyle = "color: red; text-align: left;";
+				$this->last_updated_by->CellCssStyle = "color: red; text-align: left;";
+			}
+			if ($this->status->CurrentValue == 3) {
+				$this->id->CellCssStyle = "color: blue; text-align: left;";
+				$this->datetime_initiated->CellCssStyle = "color: blue; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: blue; text-align: left;";
+				$this->staffid->CellCssStyle = "color: blue; text-align: left;";
+				$this->report_by->CellCssStyle = "color: blue; text-align: left;";
+				$this->departments->CellCssStyle = "color: blue; text-align: left;";
+				$this->department->CellCssStyle = "color: blue; text-align: left;";
+				$this->branch->CellCssStyle = "color: blue; text-align: left;";
+				$this->incident_id->CellCssStyle = "color: blue; text-align: left;";
+				$this->incident_type->CellCssStyle = "color: blue; text-align: left;";
+				$this->incident_location->CellCssStyle = "color: blue; text-align: left;";
+				$this->no_of_people_involved->CellCssStyle = "color: blue; text-align: left;";
+				$this->category->CellCssStyle = "color: blue; text-align: left;";
+				$this->incident_category->CellCssStyle = "color: blue; text-align: left;";
+				$this->incident_description->CellCssStyle = "color: blue; text-align: left;";
+				$this->sub_category->CellCssStyle = "color: blue; text-align: left;";
+				$this->status->CellCssStyle = "color: blue; text-align: left;";
+				$this->start_date->CellCssStyle = "color: blue; text-align: left;";
+				$this->end_date->CellCssStyle = "color: blue; text-align: left;";
+				$this->duration->CellCssStyle = "color: blue; text-align: left;";
+				$this->amount_paid->CellCssStyle = "color: blue; text-align: left;";
+				$this->incident_sub_location->CellCssStyle = "color: blue; text-align: left;";
+				$this->assign_task->CellCssStyle = "color: blue; text-align: left;";
+				$this->last_updated_date->CellCssStyle = "color: blue; text-align: left;";
+				$this->last_updated_by->CellCssStyle = "color: blue; text-align: left;";
+			}
+			if ($this->status->CurrentValue == 0) {
+				$this->id->CellCssStyle = "color: teal; text-align: left;";
+				$this->datetime_initiated->CellCssStyle = "color: teal; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: teal; text-align: left;";
+				$this->staffid->CellCssStyle = "color: teal; text-align: left;";
+				$this->report_by->CellCssStyle = "color: teal; text-align: left;";
+				$this->departments->CellCssStyle = "color: teal; text-align: left;";
+				$this->department->CellCssStyle = "color: teal; text-align: left;";
+				$this->branch->CellCssStyle = "color: teal; text-align: left;";
+				$this->incident_id->CellCssStyle = "color: teal; text-align: left;";
+				$this->incident_type->CellCssStyle = "color: teal; text-align: left;";
+				$this->incident_location->CellCssStyle = "color: teal; text-align: left;";
+				$this->no_of_people_involved->CellCssStyle = "color: teal; text-align: left;";
+				$this->category->CellCssStyle = "color: teal; text-align: left;";
+				$this->incident_category->CellCssStyle = "color: teal; text-align: left;";
+				$this->incident_description->CellCssStyle = "color: teal; text-align: left;";
+				$this->sub_category->CellCssStyle = "color: teal; text-align: left;";
+				$this->status->CellCssStyle = "color: teal; text-align: left;";
+				$this->start_date->CellCssStyle = "color: teal; text-align: left;";
+				$this->end_date->CellCssStyle = "color: teal; text-align: left;";
+				$this->duration->CellCssStyle = "color: teal; text-align: left;";
+				$this->amount_paid->CellCssStyle = "color: teal; text-align: left;";
+				$this->incident_sub_location->CellCssStyle = "color: teal; text-align: left;";
+				$this->assign_task->CellCssStyle = "color: teal; text-align: left;";
+				$this->last_updated_date->CellCssStyle = "color: teal; text-align: left;";
+				$this->last_updated_by->CellCssStyle = "color: teal; text-align: left;";
+			}
+			if ($this->status->CurrentValue == 4) {
+				$this->id->CellCssStyle = "color: purple; text-align: left;";
+				$this->datetime_initiated->CellCssStyle = "color: purple; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: purple; text-align: left;";
+				$this->staffid->CellCssStyle = "color: purple; text-align: left;";
+				$this->report_by->CellCssStyle = "color: purple; text-align: left;";
+				$this->departments->CellCssStyle = "color: purple; text-align: left;";
+				$this->department->CellCssStyle = "color: purple; text-align: left;";
+				$this->branch->CellCssStyle = "color: purple; text-align: left;";
+				$this->incident_id->CellCssStyle = "color: purple; text-align: left;";
+				$this->incident_type->CellCssStyle = "color: purple; text-align: left;";
+				$this->incident_location->CellCssStyle = "color: purple; text-align: left;";
+				$this->no_of_people_involved->CellCssStyle = "color: purple; text-align: left;";
+				$this->category->CellCssStyle = "color: purple; text-align: left;";
+				$this->incident_description->CellCssStyle = "color: purple; text-align: left;";
+				$this->incident_category->CellCssStyle = "color: purple; text-align: left;";
+				$this->sub_category->CellCssStyle = "color: purple; text-align: left;";
+				$this->status->CellCssStyle = "color: purple; text-align: left;";
+				$this->start_date->CellCssStyle = "color: purple; text-align: left;";
+				$this->end_date->CellCssStyle = "color: purple; text-align: left;";
+				$this->duration->CellCssStyle = "color: purple; text-align: left;";
+				$this->amount_paid->CellCssStyle = "color: purple; text-align: left;";
+				$this->incident_sub_location->CellCssStyle = "color: purple; text-align: left;";
+				$this->assign_task->CellCssStyle = "color: purple; text-align: left;";
+				$this->last_updated_date->CellCssStyle = "color: purple; text-align: left;";
+				$this->last_updated_by->CellCssStyle = "color: purple; text-align: left;";
+				$this->reason->CellCssStyle = "color: purple; text-align: left;";
+			}
+				if ($this->status->CurrentValue == 6) {
+				$this->id->CellCssStyle = "color: coral; text-align: left;";
+				$this->datetime_initiated->CellCssStyle = "color: coral; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: coral; text-align: left;";
+				$this->staffid->CellCssStyle = "color: coral; text-align: left;";
+				$this->report_by->CellCssStyle = "color: coral; text-align: left;";
+				$this->departments->CellCssStyle = "color: coral; text-align: left;";
+				$this->department->CellCssStyle = "color: coral; text-align: left;";
+				$this->branch->CellCssStyle = "color: coral; text-align: left;";
+				$this->incident_id->CellCssStyle = "color: coral; text-align: left;";
+				$this->incident_type->CellCssStyle = "color: coral; text-align: left;";
+				$this->incident_location->CellCssStyle = "color: coral; text-align: left;";
+				$this->no_of_people_involved->CellCssStyle = "color: coral; text-align: left;";
+				$this->category->CellCssStyle = "color: coral; text-align: left;";
+				$this->incident_description->CellCssStyle = "color: coral; text-align: left;";
+				$this->incident_category->CellCssStyle = "color: coral; text-align: left;";
+				$this->sub_category->CellCssStyle = "color: coral; text-align: left;";
+				$this->status->CellCssStyle = "color: coral; text-align: left;";
+				$this->start_date->CellCssStyle = "color: coral; text-align: left;";
+				$this->end_date->CellCssStyle = "color: coral; text-align: left;";
+				$this->duration->CellCssStyle = "color: coral; text-align: left;";
+				$this->amount_paid->CellCssStyle = "color: coral; text-align: left;";
+				$this->incident_sub_location->CellCssStyle = "color: coral; text-align: left;";
+				$this->assign_task->CellCssStyle = "color: coral; text-align: left;";
+				$this->last_updated_date->CellCssStyle = "color: coral; text-align: left;";
+				$this->last_updated_by->CellCssStyle = "color: coral; text-align: left;";
+				$this->reason->CellCssStyle = "color: coral; text-align: left;";
+			}
+			if ($this->status->CurrentValue == 7) {
+				$this->id->CellCssStyle = "color: red; text-align: left;";
+				$this->datetime_initiated->CellCssStyle = "color: red; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: red; text-align: left;";
+				$this->staffid->CellCssStyle = "color: red; text-align: left;";
+				$this->report_by->CellCssStyle = "color: red; text-align: left;";
+				$this->departments->CellCssStyle = "color: red; text-align: left;";
+				$this->department->CellCssStyle = "color: red; text-align: left;";
+				$this->branch->CellCssStyle = "color: red; text-align: left;";
+				$this->incident_id->CellCssStyle = "color: red; text-align: left;";
+				$this->incident_type->CellCssStyle = "color: red; text-align: left;";
+				$this->incident_location->CellCssStyle = "color: red; text-align: left;";
+				$this->no_of_people_involved->CellCssStyle = "color: red; text-align: left;";
+				$this->category->CellCssStyle = "color: red; text-align: left;";
+				$this->incident_description->CellCssStyle = "color: red; text-align: left;";
+				$this->incident_category->CellCssStyle = "color: red; text-align: left;";
+				$this->sub_category->CellCssStyle = "color: red; text-align: left;";
+				$this->status->CellCssStyle = "color: red; text-align: left;";
+				$this->start_date->CellCssStyle = "color: red; text-align: left;";
+				$this->end_date->CellCssStyle = "color: red; text-align: left;";
+				$this->duration->CellCssStyle = "color: red; text-align: left;";
+				$this->amount_paid->CellCssStyle = "color: red; text-align: left;";
+				$this->incident_sub_location->CellCssStyle = "color: red; text-align: left;";
+				$this->assign_task->CellCssStyle = "color: red; text-align: left;";
+				$this->last_updated_date->CellCssStyle = "color: red; text-align: left;";
+				$this->last_updated_by->CellCssStyle = "color: red; text-align: left;";
+				$this->reason->CellCssStyle = "color: red; text-align: left;";
+				$this->job_assessment->CellCssStyle = "color: red; text-align: left;";
+			}
+			if ($this->status->CurrentValue == 5) {
+				$this->id->CellCssStyle = "color: green; text-align: left;";
+				$this->datetime_initiated->CellCssStyle = "color: green; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: green; text-align: left;";
+				$this->staffid->CellCssStyle = "color: green; text-align: left;";
+				$this->report_by->CellCssStyle = "color: green; text-align: left;";
+				$this->departments->CellCssStyle = "color: green; text-align: left;";
+				$this->department->CellCssStyle = "color: green; text-align: left;";
+				$this->branch->CellCssStyle = "color: green; text-align: left;";
+				$this->incident_id->CellCssStyle = "color: green; text-align: left;";
+				$this->incident_type->CellCssStyle = "color: green; text-align: left;";
+				$this->incident_location->CellCssStyle = "color: green; text-align: left;";
+				$this->no_of_people_involved->CellCssStyle = "color: green; text-align: left;";
+				$this->category->CellCssStyle = "color: green; text-align: left;";
+				$this->incident_category->CellCssStyle = "color: green; text-align: left;";
+				$this->incident_description->CellCssStyle = "color: green; text-align: left;";
+				$this->sub_category->CellCssStyle = "color: green; text-align: left;";
+				$this->status->CellCssStyle = "color: green; text-align: left;";
+				$this->start_date->CellCssStyle = "color: green; text-align: left;";
+				$this->end_date->CellCssStyle = "color: green; text-align: left;";
+				$this->duration->CellCssStyle = "color: green; text-align: left;";
+				$this->amount_paid->CellCssStyle = "color: green; text-align: left;";
+				$this->incident_sub_location->CellCssStyle = "color: green; text-align: left;";
+				$this->assign_task->CellCssStyle = "color: green; text-align: left;";
+				$this->last_updated_date->CellCssStyle = "color: green; text-align: left;";
+				$this->last_updated_by->CellCssStyle = "color: green; text-align: left;";
+				$this->job_assessment->CellCssStyle = "color: green; text-align: left;";
+				$this->reason->CellCssStyle = "color: green; text-align: left;";
+			}
+		}
 	}
 
 	// User ID Filtering event

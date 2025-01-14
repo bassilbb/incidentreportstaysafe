@@ -5115,7 +5115,7 @@ ew_CreateDateTimePicker("freport_formadd", "x_end_date", {"ignoreReadonly":true,
 		<div class="<?php echo $report_form_add->RightColumnClass ?>"><div<?php echo $report_form->_upload->CellAttributes() ?>>
 <span id="el_report_form__upload">
 <div id="fd_x__upload">
-<span title="<?php echo $report_form->_upload->FldTitle() ? $report_form->_upload->FldTitle() : $Language->Phrase("ChooseFiles") ?>" class="btn btn-default btn-sm fileinput-button ewTooltip<?php if ($report_form->_upload->ReadOnly || $report_form->_upload->Disabled) echo " hide"; ?>">
+<span title="<?php echo $report_form->_upload->FldTitle() ? $report_form->_upload->FldTitle() : $Language->Phrase("ChooseFiles") ?>" class="btn btn-default btn-sm fileinput-button ewTooltip<?php if ($report_form->_upload->ReadOnly || $report_form->_upload->Disabled) echo " hide"; ?>" data-trigger="hover">
 	<span><?php echo $Language->Phrase("ChooseFileBtn") ?></span>
 	<input type="file" title=" " data-table="report_form" data-field="x__upload" data-page="1" name="x__upload" id="x__upload" multiple="multiple"<?php echo $report_form->_upload->EditAttributes() ?>>
 </span>

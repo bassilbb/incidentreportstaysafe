@@ -1885,7 +1885,7 @@ class cmaintenance extends cTable {
 					$this->items->Visible = TRUE;
 					$this->description->Visible = TRUE;
 					$this->date_maintained->Visible = FALSE;
-					$this->initiator_action->Visible = TRUE;
+					$this->maintenance_action->Visible = TRUE;
 					$this->maintenance_comment->Visible = TRUE;
 					$this->maintained_by->Visible = FALSE;
 					$this->reviewed_date->Visible = FALSE;

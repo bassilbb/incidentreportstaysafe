@@ -2659,7 +2659,7 @@ fmaintenanceedit.CreateAutoSuggest({"id":"x_branch","forceSelect":false});
 <span id="el_maintenance_buildings">
 <?php $maintenance->buildings->EditAttrs["onchange"] = "ew_UpdateOpt.call(this); " . @$maintenance->buildings->EditAttrs["onchange"]; ?>
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next().click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_buildings"><?php echo (strval($maintenance->buildings->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance->buildings->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_buildings"><?php echo (strval($maintenance->buildings->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance->buildings->ViewValue); ?></span>
 </span>
 <button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($maintenance->buildings->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_buildings',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($maintenance->buildings->ReadOnly || $maintenance->buildings->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
 <input type="hidden" data-table="maintenance" data-field="x_buildings" data-page="1" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $maintenance->buildings->DisplayValueSeparatorAttribute() ?>" name="x_buildings" id="x_buildings" value="<?php echo $maintenance->buildings->CurrentValue ?>"<?php echo $maintenance->buildings->EditAttributes() ?>>
@@ -2674,7 +2674,7 @@ fmaintenanceedit.CreateAutoSuggest({"id":"x_branch","forceSelect":false});
 <span id="el_maintenance_floors">
 <?php $maintenance->floors->EditAttrs["onchange"] = "ew_UpdateOpt.call(this); " . @$maintenance->floors->EditAttrs["onchange"]; ?>
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next().click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_floors"><?php echo (strval($maintenance->floors->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance->floors->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_floors"><?php echo (strval($maintenance->floors->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance->floors->ViewValue); ?></span>
 </span>
 <button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($maintenance->floors->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_floors',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($maintenance->floors->ReadOnly || $maintenance->floors->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
 <input type="hidden" data-table="maintenance" data-field="x_floors" data-page="1" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $maintenance->floors->DisplayValueSeparatorAttribute() ?>" name="x_floors" id="x_floors" value="<?php echo $maintenance->floors->CurrentValue ?>"<?php echo $maintenance->floors->EditAttributes() ?>>
@@ -2688,7 +2688,7 @@ fmaintenanceedit.CreateAutoSuggest({"id":"x_branch","forceSelect":false});
 		<div class="<?php echo $maintenance_edit->RightColumnClass ?>"><div<?php echo $maintenance->items->CellAttributes() ?>>
 <span id="el_maintenance_items">
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next().click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_items"><?php echo (strval($maintenance->items->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance->items->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_items"><?php echo (strval($maintenance->items->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance->items->ViewValue); ?></span>
 </span>
 <button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($maintenance->items->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_items[]',m:1,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($maintenance->items->ReadOnly || $maintenance->items->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
 <input type="hidden" data-table="maintenance" data-field="x_items" data-page="1" data-multiple="1" data-lookup="1" data-value-separator="<?php echo $maintenance->items->DisplayValueSeparatorAttribute() ?>" name="x_items[]" id="x_items[]" value="<?php echo $maintenance->items->CurrentValue ?>"<?php echo $maintenance->items->EditAttributes() ?>>
@@ -2702,7 +2702,7 @@ fmaintenanceedit.CreateAutoSuggest({"id":"x_branch","forceSelect":false});
 		<div class="<?php echo $maintenance_edit->RightColumnClass ?>"><div<?php echo $maintenance->priority->CellAttributes() ?>>
 <span id="el_maintenance_priority">
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next().click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_priority"><?php echo (strval($maintenance->priority->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance->priority->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_priority"><?php echo (strval($maintenance->priority->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $maintenance->priority->ViewValue); ?></span>
 </span>
 <button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($maintenance->priority->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_priority',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($maintenance->priority->ReadOnly || $maintenance->priority->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
 <input type="hidden" data-table="maintenance" data-field="x_priority" data-page="1" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $maintenance->priority->DisplayValueSeparatorAttribute() ?>" name="x_priority" id="x_priority" value="<?php echo $maintenance->priority->CurrentValue ?>"<?php echo $maintenance->priority->EditAttributes() ?>>
