@@ -3423,10 +3423,9 @@ class creport_form extends cTable {
 
 		//echo "Row Updated";
 	//	if($this->status->CurrentValue == 4 && CurrentPageID()=="edit"){
-
-		   ew_Execute("UPDATE inventory SET quantity=".$rsnew["remainder"]." WHERE id=".$rsnew["item_name"]."");
-
+		   //ew_Execute("UPDATE inventory SET quantity=".$rsnew["remainder"]." WHERE id=".$rsnew["item_name"]."");
 	   //}
+
 	}
 
 	// Row Update Conflict event
@@ -4021,7 +4020,7 @@ class creport_form extends cTable {
 							$this->last_updated_date->Visible = FALSE;
 						}
 				}
-				/*if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 4 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 4 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
 					$this->staffid->ReadOnly = TRUE;
@@ -4066,7 +4065,7 @@ class creport_form extends cTable {
 					$this->reason->Visible = TRUE;
 					$this->item_name->ReadOnly = TRUE;
 					$this->quantity_issued->ReadOnly = TRUE;
-				  }*/
+				  }
 				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 6) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
@@ -4167,7 +4166,7 @@ class creport_form extends cTable {
 						$this->item_name->ReadOnly = TRUE;
 						$this->quantity_issued->ReadOnly = TRUE;
 					}
-				/*if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 7 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 7 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
 					$this->staffid->ReadOnly = TRUE;
@@ -4212,7 +4211,7 @@ class creport_form extends cTable {
 					$this->reason->ReadOnly = TRUE;
 					$this->item_name->ReadOnly = TRUE;
 					$this->quantity_issued->ReadOnly = TRUE;
-				}*/
+				}
 				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && ($this->status->CurrentValue == 3 || $this->status->CurrentValue == 6 || $this->status->CurrentValue == 7) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
