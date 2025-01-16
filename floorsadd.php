@@ -1046,7 +1046,7 @@ $floors_add->ShowMessage();
 <?php if ($floors->CurrentAction <> "F") { ?>
 <span id="el_floors_buildings_id">
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next().click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_buildings_id"><?php echo (strval($floors->buildings_id->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $floors->buildings_id->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_buildings_id"><?php echo (strval($floors->buildings_id->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $floors->buildings_id->ViewValue); ?></span>
 </span>
 <button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($floors->buildings_id->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_buildings_id',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($floors->buildings_id->ReadOnly || $floors->buildings_id->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
 <input type="hidden" data-table="floors" data-field="x_buildings_id" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $floors->buildings_id->DisplayValueSeparatorAttribute() ?>" name="x_buildings_id" id="x_buildings_id" value="<?php echo $floors->buildings_id->CurrentValue ?>"<?php echo $floors->buildings_id->EditAttributes() ?>>
