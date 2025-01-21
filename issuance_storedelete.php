@@ -748,7 +748,6 @@ class cissuance_store_delete extends cissuance_store {
 		$this->issued_comment->ViewCustomAttributes = "";
 
 		// issued_by
-		$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
 		if (strval($this->issued_by->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
@@ -1180,7 +1179,6 @@ fissuance_storedelete.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true
 fissuance_storedelete.Lists["x_material_name"].Data = "<?php echo $issuance_store_delete->material_name->LookupFilterQuery(FALSE, "delete") ?>";
 fissuance_storedelete.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fissuance_storedelete.Lists["x_issued_by"].Data = "<?php echo $issuance_store_delete->issued_by->LookupFilterQuery(FALSE, "delete") ?>";
-fissuance_storedelete.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_delete->issued_by->LookupFilterQuery(TRUE, "delete"))) ?>;
 fissuance_storedelete.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fissuance_storedelete.Lists["x_approved_by"].Data = "<?php echo $issuance_store_delete->approved_by->LookupFilterQuery(FALSE, "delete") ?>";
 fissuance_storedelete.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_delete->approved_by->LookupFilterQuery(TRUE, "delete"))) ?>;

@@ -1052,7 +1052,6 @@ class cissuance_store_edit extends cissuance_store {
 		$this->issued_comment->ViewCustomAttributes = "";
 
 		// issued_by
-		$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
 		if (strval($this->issued_by->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
@@ -1431,30 +1430,21 @@ class cissuance_store_edit extends cissuance_store {
 			// issued_by
 			$this->issued_by->EditAttrs["class"] = "form-control";
 			$this->issued_by->EditCustomAttributes = "";
-			$this->issued_by->EditValue = ew_HtmlEncode($this->issued_by->CurrentValue);
-			if (strval($this->issued_by->CurrentValue) <> "") {
+			if (trim(strval($this->issued_by->CurrentValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
 				$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			}
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
 			$sWhereWrk = "";
 			$this->issued_by->LookupFilters = array();
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
 			$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-				$rswrk = Conn()->Execute($sSqlWrk);
-				if ($rswrk && !$rswrk->EOF) { // Lookup values found
-					$arwrk = array();
-					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
-					$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
-					$arwrk[3] = ew_HtmlEncode($rswrk->fields('Disp3Fld'));
-					$this->issued_by->EditValue = $this->issued_by->DisplayValue($arwrk);
-					$rswrk->Close();
-				} else {
-					$this->issued_by->EditValue = ew_HtmlEncode($this->issued_by->CurrentValue);
-				}
-			} else {
-				$this->issued_by->EditValue = NULL;
-			}
-			$this->issued_by->PlaceHolder = ew_RemoveHtml($this->issued_by->FldCaption());
+			$rswrk = Conn()->Execute($sSqlWrk);
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->issued_by->EditValue = $arwrk;
 
 			// approver_date
 			$this->approver_date->EditAttrs["class"] = "form-control";
@@ -1913,7 +1903,7 @@ class cissuance_store_edit extends cissuance_store {
 		case "x_issued_by":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-			$sWhereWrk = "{filter}";
+			$sWhereWrk = "";
 			$fld->LookupFilters = array();
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
@@ -1986,18 +1976,6 @@ class cissuance_store_edit extends cissuance_store {
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->treated_by, $sWhereWrk); // Call Lookup Selecting
-			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			if ($sSqlWrk <> "")
-				$fld->LookupFilters["s"] .= $sSqlWrk;
-			break;
-		case "x_issued_by":
-			$sSqlWrk = "";
-			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld` FROM `users`";
-			$sWhereWrk = "`firstname` LIKE '{query_value}%' OR CONCAT(COALESCE(`firstname`, ''),'" . ew_ValueSeparator(1, $this->issued_by) . "',COALESCE(`lastname`,''),'" . ew_ValueSeparator(2, $this->issued_by) . "',COALESCE(`staffno`,'')) LIKE '{query_value}%'";
-			$fld->LookupFilters = array();
-			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
-			$sSqlWrk = "";
-			$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
@@ -2235,7 +2213,6 @@ fissuance_storeedit.Lists["x_issued_action"] = {"LinkField":"","Ajax":null,"Auto
 fissuance_storeedit.Lists["x_issued_action"].Options = <?php echo json_encode($issuance_store_edit->issued_action->Options()) ?>;
 fissuance_storeedit.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fissuance_storeedit.Lists["x_issued_by"].Data = "<?php echo $issuance_store_edit->issued_by->LookupFilterQuery(FALSE, "edit") ?>";
-fissuance_storeedit.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_edit->issued_by->LookupFilterQuery(TRUE, "edit"))) ?>;
 fissuance_storeedit.Lists["x_approver_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 fissuance_storeedit.Lists["x_approver_action"].Options = <?php echo json_encode($issuance_store_edit->approver_action->Options()) ?>;
 fissuance_storeedit.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
@@ -2568,22 +2545,13 @@ fissuance_storeedit.CreateAutoSuggest({"id":"x_treated_by","forceSelect":false})
 <?php } ?>
 <?php if ($issuance_store->issued_by->Visible) { // issued_by ?>
 	<div id="r_issued_by" class="form-group">
-		<label id="elh_issuance_store_issued_by" class="<?php echo $issuance_store_edit->LeftColumnClass ?>"><?php echo $issuance_store->issued_by->FldCaption() ?></label>
+		<label id="elh_issuance_store_issued_by" for="x_issued_by" class="<?php echo $issuance_store_edit->LeftColumnClass ?>"><?php echo $issuance_store->issued_by->FldCaption() ?></label>
 		<div class="<?php echo $issuance_store_edit->RightColumnClass ?>"><div<?php echo $issuance_store->issued_by->CellAttributes() ?>>
 <?php if ($issuance_store->CurrentAction <> "F") { ?>
 <span id="el_issuance_store_issued_by">
-<?php
-$wrkonchange = trim(" " . @$issuance_store->issued_by->EditAttrs["onchange"]);
-if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
-$issuance_store->issued_by->EditAttrs["onchange"] = "";
-?>
-<span id="as_x_issued_by" style="white-space: nowrap; z-index: 8870">
-	<input type="text" name="sv_x_issued_by" id="sv_x_issued_by" value="<?php echo $issuance_store->issued_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($issuance_store->issued_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($issuance_store->issued_by->getPlaceHolder()) ?>"<?php echo $issuance_store->issued_by->EditAttributes() ?>>
-</span>
-<input type="hidden" data-table="issuance_store" data-field="x_issued_by" data-page="1" data-value-separator="<?php echo $issuance_store->issued_by->DisplayValueSeparatorAttribute() ?>" name="x_issued_by" id="x_issued_by" value="<?php echo ew_HtmlEncode($issuance_store->issued_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
-<script type="text/javascript">
-fissuance_storeedit.CreateAutoSuggest({"id":"x_issued_by","forceSelect":false});
-</script>
+<select data-table="issuance_store" data-field="x_issued_by" data-page="1" data-value-separator="<?php echo $issuance_store->issued_by->DisplayValueSeparatorAttribute() ?>" id="x_issued_by" name="x_issued_by"<?php echo $issuance_store->issued_by->EditAttributes() ?>>
+<?php echo $issuance_store->issued_by->SelectOptionListHtml("x_issued_by") ?>
+</select>
 </span>
 <?php } else { ?>
 <span id="el_issuance_store_issued_by">

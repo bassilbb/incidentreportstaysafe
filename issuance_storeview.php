@@ -1018,7 +1018,6 @@ class cissuance_store_view extends cissuance_store {
 		$this->issued_comment->ViewCustomAttributes = "";
 
 		// issued_by
-		$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
 		if (strval($this->issued_by->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
@@ -1568,7 +1567,6 @@ fissuance_storeview.Lists["x_issued_action"] = {"LinkField":"","Ajax":null,"Auto
 fissuance_storeview.Lists["x_issued_action"].Options = <?php echo json_encode($issuance_store_view->issued_action->Options()) ?>;
 fissuance_storeview.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fissuance_storeview.Lists["x_issued_by"].Data = "<?php echo $issuance_store_view->issued_by->LookupFilterQuery(FALSE, "view") ?>";
-fissuance_storeview.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_view->issued_by->LookupFilterQuery(TRUE, "view"))) ?>;
 fissuance_storeview.Lists["x_approver_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 fissuance_storeview.Lists["x_approver_action"].Options = <?php echo json_encode($issuance_store_view->approver_action->Options()) ?>;
 fissuance_storeview.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
