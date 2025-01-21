@@ -922,6 +922,68 @@ if (IsLoggedIn()) {
 			}
 		}
 	}
+
+	//----------INVENTORY STORE-----------------------------------
+	if (IsLoggedIn()) {
+		$MyInventoryCount = 0;
+			if (CurrentUserLevel() == IsAdmin()) {
+			$_SESSION['MyInventoryCount'] = NULL;
+		 	}
+			if (CurrentUserLevel() == 1) {
+				$_SESSION['MyInventoryCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `inventory` WHERE `statuss` in (0,2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
+			}
+			if (CurrentUserLevel() == 2) {
+				$_SESSION['MyInventoryCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `inventory` WHERE `statuss` in (0,2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
+			}
+			if (CurrentUserLevel() == 3) {
+				$_SESSION['MyInventoryCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `inventory` WHERE `statuss` in (1)");
+			}
+
+		//	if (CurrentUserLevel() == 3) {
+				//$_SESSION['MyInventoryCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `inventory` WHERE `statuss` in (1)OR (`status` in (0,2) AND `staff_id` = '".$_SESSION['Staff_ID']."')");
+			//}
+
+			if (CurrentUserLevel() == 5) {
+				$_SESSION['MyInventoryCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `inventory` WHERE `statuss` in (3)");
+			}
+		if ($Item->Text == "Inventory Store") {
+			$MyInventoryCount = $_SESSION['MyInventoryCount'];
+			if ($MyInventoryCount > 0) {
+				$Item->Text.= "&nbsp;<span class='badge'>$MyInventoryCount </span>";
+			}
+		}
+	}
+
+	//----------INVENTORY ISSUANCE-----------------------------------
+	if (IsLoggedIn()) {
+		$MyIssuanceCount = 0;
+			if (CurrentUserLevel() == IsAdmin()) {
+			$_SESSION['MyIssuanceCount'] = NULL;
+		 	}
+			if (CurrentUserLevel() == 1) {
+				$_SESSION['MyIssuanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `issuance_store` WHERE `statuss` in (0,2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
+			}
+			if (CurrentUserLevel() == 2) {
+				$_SESSION['MyIssuanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `issuance_store` WHERE `statuss` in (0,2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
+			}
+			if (CurrentUserLevel() == 3) {
+				$_SESSION['MyIssuanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `issuance_store` WHERE `statuss` in (1)");
+			}
+
+		//	if (CurrentUserLevel() == 3) {
+				//$_SESSION['MyInventoryCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `inventory` WHERE `statuss` in (1)OR (`status` in (0,2) AND `staff_id` = '".$_SESSION['Staff_ID']."')");
+			//}
+
+			if (CurrentUserLevel() == 5) {
+				$_SESSION['MyIssuanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `issuance_store` WHERE `statuss` in (3)");
+			}
+		if ($Item->Text == "Inventory Issuance") {
+			$MyIssuanceCount = $_SESSION['MyIssuanceCount'];
+			if ($MyIssuanceCount > 0) {
+				$Item->Text.= "&nbsp;<span class='badge'>$MyIssuanceCount </span>";
+			}
+		}
+	}
 	return TRUE;
 }
 

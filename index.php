@@ -375,8 +375,8 @@ class cdefault {
 			$this->Page_Terminate("assign_tasklist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'inventory'))
 			$this->Page_Terminate("inventorylist.php");
-		if ($Security->AllowList(CurrentProjectID() . 'inventory_store'))
-			$this->Page_Terminate("inventory_storelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'issuance_store'))
+			$this->Page_Terminate("issuance_storelist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'dispenser'))
 			$this->Page_Terminate("dispenserlist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'dispenser_status'))
@@ -399,12 +399,12 @@ class cdefault {
 			$this->Page_Terminate("tablet_issueslist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'tablet_status'))
 			$this->Page_Terminate("tablet_statuslist.php");
-		if ($Security->AllowList(CurrentProjectID() . 'store_reports'))
-			$this->Page_Terminate("store_reportslist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'pc_issuance'))
 			$this->Page_Terminate("pc_issuancelist.php");
-		if ($Security->AllowList(CurrentProjectID() . 'issuance_records'))
-			$this->Page_Terminate("issuance_recordslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'issuance_history'))
+			$this->Page_Terminate("issuance_historylist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'issuance_tracking'))
+			$this->Page_Terminate("issuance_trackinglist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

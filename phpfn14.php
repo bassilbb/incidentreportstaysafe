@@ -5111,10 +5111,10 @@ class cAdvancedSecurity {
 		//$_SESSION['STAffNO'] = "";
 		$_SESSION['MyReportCount'] = 0;
 		$_SESSION['MyMaintenanceCount'] = 0;
+		$_SESSION['$MyInventoryCount'] = 0;
+		$_SESSION['$MyIssuanceCount'] = 0;
 
-		//$_SESSION['$MyReporthistoryCount'] = 0;
 		//FetchMenuBadges("ALL");
-
 	}
 
 	// User PasswordExpired event

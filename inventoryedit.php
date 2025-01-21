@@ -2055,7 +2055,8 @@ finventoryedit.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("dat
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
-$('#r_statuss').hide();
+//$('#r_statuss').hide();
+
 </script>
 <?php $inventory_edit->ShowPageHeader(); ?>
 <?php
@@ -2570,11 +2571,11 @@ $("#r_staff_id").hide();
 $("#r_recieved_by").hide();
 $("#r_approved_by").hide();
 $("#r_verified_by").hide();
-$('#r_statuss').hide();
+
+//$('#r_statuss').hide();
 $('#r_date_approved').hide();
 $('#r_verified_date').hide();
-
-//$('#x_statuss').attr('readonly',true);
+$('#x_statuss').attr('readonly',true);
 </script>
 <?php include_once "footer.php" ?>
 <?php

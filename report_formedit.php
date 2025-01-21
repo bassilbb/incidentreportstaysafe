@@ -1677,7 +1677,7 @@ class creport_form_edit extends creport_form {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_task->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->assign_task->LookupFilters = array();
+		$this->assign_task->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->assign_task, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -2664,7 +2664,6 @@ class creport_form_edit extends creport_form {
 			$this->datetime_resolved->PlaceHolder = ew_RemoveHtml($this->datetime_resolved->FldCaption());
 
 			// assign_task
-			$this->assign_task->EditAttrs["class"] = "form-control";
 			$this->assign_task->EditCustomAttributes = "";
 			if (trim(strval($this->assign_task->CurrentValue)) == "") {
 				$sFilterWrk = "0=1";
@@ -2673,11 +2672,20 @@ class creport_form_edit extends creport_form {
 			}
 			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
 			$sWhereWrk = "";
-			$this->assign_task->LookupFilters = array();
+			$this->assign_task->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
 			$this->Lookup_Selecting($this->assign_task, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+				$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
+				$arwrk[3] = ew_HtmlEncode($rswrk->fields('Disp3Fld'));
+				$this->assign_task->ViewValue = $this->assign_task->DisplayValue($arwrk);
+			} else {
+				$this->assign_task->ViewValue = $Language->Phrase("PleaseSelect");
+			}
 			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
 			if ($rswrk) $rswrk->Close();
 			$this->assign_task->EditValue = $arwrk;
@@ -3772,8 +3780,8 @@ class creport_form_edit extends creport_form {
 		case "x_assign_task":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-			$sWhereWrk = "";
-			$fld->LookupFilters = array();
+			$sWhereWrk = "{filter}";
+			$fld->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->assign_task, $sWhereWrk); // Call Lookup Selecting
@@ -5438,9 +5446,11 @@ freport_formedit.CreateAutoSuggest({"id":"x_report_by","forceSelect":false});
 		<div class="<?php echo $report_form_edit->RightColumnClass ?>"><div<?php echo $report_form->assign_task->CellAttributes() ?>>
 <?php if ($report_form->CurrentAction <> "F") { ?>
 <span id="el_report_form_assign_task">
-<select data-table="report_form" data-field="x_assign_task" data-page="2" data-value-separator="<?php echo $report_form->assign_task->DisplayValueSeparatorAttribute() ?>" id="x_assign_task" name="x_assign_task"<?php echo $report_form->assign_task->EditAttributes() ?>>
-<?php echo $report_form->assign_task->SelectOptionListHtml("x_assign_task") ?>
-</select>
+<span class="ewLookupList">
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_assign_task"><?php echo (strval($report_form->assign_task->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $report_form->assign_task->ViewValue); ?></span>
+</span>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($report_form->assign_task->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_assign_task',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($report_form->assign_task->ReadOnly || $report_form->assign_task->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="report_form" data-field="x_assign_task" data-page="2" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $report_form->assign_task->DisplayValueSeparatorAttribute() ?>" name="x_assign_task" id="x_assign_task" value="<?php echo $report_form->assign_task->CurrentValue ?>"<?php echo $report_form->assign_task->EditAttributes() ?>>
 </span>
 <?php } else { ?>
 <span id="el_report_form_assign_task">
@@ -5895,6 +5905,7 @@ if(currlevel == 2 && departments == 6){
 //	$("#x_resolved_action_2").attr('disabled',true);
 }
 $('#x_status').attr('readonly',true);
+$("#r_remainder").hide();
 </script>
 <?php include_once "footer.php" ?>
 <?php

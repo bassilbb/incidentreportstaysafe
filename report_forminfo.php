@@ -1539,7 +1539,7 @@ class creport_form extends cTable {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_task->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->assign_task->LookupFilters = array();
+		$this->assign_task->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->assign_task, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -3753,6 +3753,7 @@ class creport_form extends cTable {
 					$this->reason->Visible = FALSE;
 					$this->item_name->Visible = FALSE;
 					$this->quantity_issued->Visible = FALSE;
+					$this->remainder-> Visible= FALSE;
 				}
 				if ((CurrentUserLevel() == 1) && $this->status->CurrentValue == 4 && $this->assign_task->CurrentValue == $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
@@ -3787,10 +3788,13 @@ class creport_form extends cTable {
 					$this->datetime_approved->Visible = FALSE;
 					$this->incident_sub_location->ReadOnly = TRUE;
 					$this->incident_venue->ReadOnly = TRUE;
-					$this->approval_action->ReadOnly = TRUE;
-					$this->approval_comment->ReadOnly = TRUE;
+
+					//$this->approval_action->ReadOnly = TRUE;
+					//$this->approval_comment->ReadOnly = TRUE;
+
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->ReadOnly = TRUE;
+
+					//$this->assign_task->ReadOnly = TRUE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -3801,14 +3805,17 @@ class creport_form extends cTable {
 					$this->reason->Visible = TRUE;
 					$this->item_name->Visible = TRUE;
 					$this->quantity_issued->Visible = TRUE;
+					$this->remainder-> Visible= FALSE;
 						if ($this->status->CurrentValue == 4) {
 						$this->assign_task->ReadOnly = TRUE;
 						$this->remainder->Visible = FALSE;
 						$this->item_name->Visible = TRUE;
 						$this->quantity_issued->Visible = TRUE;
+						$this->remainder-> Visible= FALSE;
 					} else {
 						$this->approval_action->Visible = FALSE;
 						$this->approval_comment->Visible = FALSE;
+						$this->remainder-> Visible= FALSE;
 					}
 				}
 				if (CurrentUserLevel() == 2 && ($this->status->CurrentValue == 0 || $this->status->CurrentValue == 1) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
@@ -3853,6 +3860,7 @@ class creport_form extends cTable {
 					$this->reason->Visible = FALSE;
 					$this->item_name->Visible = FALSE;
 					$this->quantity_issued->Visible = FALSE;
+					$this->remainder-> Visible= FALSE;
 				}
 				if ((CurrentUserLevel() == 2 || CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && $this->status->CurrentValue == 4 && $this->assign_task->CurrentValue == $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
@@ -3901,6 +3909,7 @@ class creport_form extends cTable {
 					$this->reason->Visible = TRUE;
 					$this->item_name->Visible = TRUE;
 					$this->quantity_issued->Visible = TRUE;
+					$this->remainder-> Visible= FALSE;
 						/*if ($this->status->CurrentValue == 4) {
 						$this->datetime_resolved->ReadOnly = FALSE;
 						$this->approval_action->ReadOnly = TRUE;
@@ -3955,6 +3964,7 @@ class creport_form extends cTable {
 					$this->verified_action->Visible = FALSE;
 					$this->verified_comment->Visible = FALSE;
 					$this->verified_by->Visible = FALSE;
+					$this->remainder-> Visible= FALSE;
 
 					//$this->item_name->Visible = FALSE;
 					//$this->quantity_issued->Visible = FALSE;
@@ -3967,9 +3977,11 @@ class creport_form extends cTable {
 						$this->resolved_by->Visible = FALSE;
 						$this->assign_task->ReadOnly = TRUE;
 						$this->reason->Visible = TRUE;
+						$this->remainder-> Visible= FALSE;
 					} else {
 						$this->approval_action->Visible = FALSE;
 						$this->approval_comment->Visible = FALSE;
+						$this->remainder-> Visible= FALSE;
 					}
 				}
 				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
@@ -4013,11 +4025,14 @@ class creport_form extends cTable {
 					$this->job_assessment->Visible = FALSE;
 					$this->item_name->Visible = FALSE;
 					$this->quantity_issued->Visible = FALSE;
+					$this->remainder-> Visible= FALSE;
 					if ($this->status->CurrentValue == 0) {
 							$this->datetime_approved->Visible = FALSE;
 							$this->reason->Visible = FALSE;
+							$this->remainder-> Visible= FALSE;
 						} else {
 							$this->last_updated_date->Visible = FALSE;
+							$this->remainder-> Visible= FALSE;
 						}
 				}
 				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 4 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
@@ -4051,10 +4066,13 @@ class creport_form extends cTable {
 					$this->resolved_comment->Visible = TRUE;
 					$this->resolved_by->ReadOnly = TRUE;
 					$this->datetime_approved->ReadOnly = FALSE;
-					$this->approval_action->ReadOnly = TRUE;
-					$this->approval_comment->ReadOnly = TRUE;
+
+					//$this->approval_action->ReadOnly = TRUE;
+					//$this->approval_comment->ReadOnly = TRUE;
+
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->ReadOnly = TRUE;
+
+					//$this->assign_task->ReadOnly = TRUE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -4065,6 +4083,17 @@ class creport_form extends cTable {
 					$this->reason->Visible = TRUE;
 					$this->item_name->ReadOnly = TRUE;
 					$this->quantity_issued->ReadOnly = TRUE;
+					if ($this->status->CurrentValue == 4) {
+							$this->approval_action->ReadOnly = TRUE;
+							$this->approval_comment->ReadOnly = TRUE;
+							$this->assign_task->ReadOnly = TRUE;
+							$this->remainder-> Visible= FALSE;
+						} else {
+							$this->approval_action->Visible = TRUE;
+							$this->approval_comment->Visible = TRUE;
+							$this->assign_task->Visible = TRUE;
+							$this->remainder-> Visible= FALSE;
+						}
 				  }
 				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 6) {
 					$this->datetime_initiated->ReadOnly = TRUE;
@@ -4099,10 +4128,13 @@ class creport_form extends cTable {
 
 					$this->resolved_by->ReadOnly = TRUE;
 					$this->datetime_approved->ReadOnly = FALSE;
-					$this->approval_action->ReadOnly = TRUE;
-					$this->approval_comment->ReadOnly = TRUE;
+
+					//$this->approval_action->ReadOnly = TRUE;
+					//$this->approval_comment->ReadOnly = TRUE;
+
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->ReadOnly = TRUE;
+
+					//$this->assign_task->ReadOnly = TRUE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -4119,6 +4151,17 @@ class creport_form extends cTable {
 					$this->resolved_comment->Visible = TRUE;
 					$this->resolved_action->ReadOnly = TRUE;
 					$this->resolved_comment->ReadOnly = TRUE;
+					if ($this->status->CurrentValue == 6) {
+							$this->approval_action->ReadOnly = TRUE;
+							$this->approval_comment->ReadOnly = TRUE;
+							$this->assign_task->ReadOnly = TRUE;
+							$this->remainder-> Visible= FALSE;
+						} else {
+							$this->approval_action->Visible = TRUE;
+							$this->approval_comment->Visible = TRUE;
+							$this->assign_task->Visible = TRUE;
+							$this->remainder-> Visible= FALSE;
+						}
 				}
 				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 3 && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
 						$this->datetime_initiated->ReadOnly = TRUE;
@@ -4165,6 +4208,7 @@ class creport_form extends cTable {
 						$this->reason->ReadOnly = TRUE;
 						$this->item_name->ReadOnly = TRUE;
 						$this->quantity_issued->ReadOnly = TRUE;
+						$this->remainder-> Visible= FALSE;
 					}
 				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 7 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
@@ -4197,8 +4241,10 @@ class creport_form extends cTable {
 					$this->resolved_comment->Visible = TRUE;
 					$this->resolved_by->ReadOnly = TRUE;
 					$this->datetime_approved->ReadOnly = FALSE;
-					$this->approval_action->ReadOnly = TRUE;
-					$this->approval_comment->ReadOnly = TRUE;
+
+					//$this->approval_action->ReadOnly = TRUE;
+					//$this->approval_comment->ReadOnly = TRUE;
+
 					$this->approved_by->Visible = FALSE;
 					$this->assign_task->Visible = TRUE;
 					$this->last_updated_date->Visible = FALSE;
@@ -4211,6 +4257,17 @@ class creport_form extends cTable {
 					$this->reason->ReadOnly = TRUE;
 					$this->item_name->ReadOnly = TRUE;
 					$this->quantity_issued->ReadOnly = TRUE;
+					if ($this->status->CurrentValue == 7) {
+							$this->approval_action->ReadOnly = TRUE;
+							$this->approval_comment->ReadOnly = TRUE;
+							$this->assign_task->ReadOnly = TRUE;
+							$this->remainder-> Visible= FALSE;
+					} else {
+							$this->approval_action->Visible = TRUE;
+							$this->approval_comment->Visible = TRUE;
+							$this->assign_task->Visible = TRUE;
+							$this->remainder-> Visible= FALSE;
+							}
 				}
 				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && ($this->status->CurrentValue == 3 || $this->status->CurrentValue == 6 || $this->status->CurrentValue == 7) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
@@ -4271,6 +4328,7 @@ class creport_form extends cTable {
 							$this->approved_by->Visible = FALSE;
 							$this->job_assessment->Visible = TRUE;
 							$this->reason->ReadOnly = TRUE;
+							$this->remainder-> Visible= FALSE;
 						} else {
 							$this->datetime_resolved->ReadOnly = TRUE;
 							$this->resolved_action->Visible = FALSE;
@@ -4281,6 +4339,7 @@ class creport_form extends cTable {
 							$this->approval_comment->Visible = TRUE;
 							$this->approved_by->Visible = FALSE;
 							$this->reason->Visible = FALSE;
+							$this->remainder-> Visible= FALSE;
 						}
 						if($this->status->CurrentValue == 7){
 								$this->datetime_resolved->ReadOnly = FALSE;
@@ -4296,6 +4355,7 @@ class creport_form extends cTable {
 								$this->approved_by->Visible = FALSE;
 								$this->job_assessment->Visible = FALSE;
 								$this->reason->ReadOnly = TRUE;
+								$this->remainder-> Visible= FALSE;
 							}else{
 								$this->datetime_resolved->ReadOnly = TRUE;
 								$this->resolved_action->ReadOnly = TRUE;
@@ -4307,6 +4367,7 @@ class creport_form extends cTable {
 								$this->approved_by->Visible = FALSE;
 
 								//$this->reason->Visible = FALSE;
+								$this->remainder-> Visible= FALSE;
 					}
 			}
 		}
