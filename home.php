@@ -213,11 +213,11 @@ class chome_php {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'custom');
+			define("EW_PAGE_ID", 'custom', TRUE);
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'home.php');
+			define("EW_TABLE_NAME", 'home.php', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -476,13 +476,13 @@ Page_Rendering();
 		</div>
 		</a>
 
-	<a href="assign_tasklist.php" class="small-box-footer">
+	<a href="assignlist.php" class="small-box-footer">
 		<div class="col-md-3 col-sm-6 col-xs-12">
 			<div class="info-box bg-blue-gradient">
 				<span class="info-box-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
 				<div class="info-box-content">
 					<span class="info-box-text">Task Assign</span>
-					<span class="info-box-number"><?php echo $_SESSION['MyAssigntaskCount'] ?></span>
+					<span class="info-box-number"><?php echo $_SESSION['MyAssignCount'] ?></span>
 
 				</div><!-- /.info-box-content -->
 			</div><!-- /.info-box -->

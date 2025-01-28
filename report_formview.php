@@ -457,7 +457,7 @@ class creport_form_view extends creport_form {
 		$this->initiator_comment->SetVisibility();
 		$this->report_by->SetVisibility();
 		$this->datetime_resolved->SetVisibility();
-		$this->assign_task->SetVisibility();
+		$this->assign->SetVisibility();
 		$this->approval_action->SetVisibility();
 		$this->approval_comment->SetVisibility();
 		$this->item_name->SetVisibility();
@@ -831,6 +831,7 @@ class creport_form_view extends creport_form {
 		$this->initiator_comment->setDbValue($row['initiator_comment']);
 		$this->report_by->setDbValue($row['report_by']);
 		$this->datetime_resolved->setDbValue($row['datetime_resolved']);
+		$this->assign->setDbValue($row['assign']);
 		$this->assign_task->setDbValue($row['assign_task']);
 		$this->approval_action->setDbValue($row['approval_action']);
 		$this->approval_comment->setDbValue($row['approval_comment']);
@@ -885,6 +886,7 @@ class creport_form_view extends creport_form {
 		$row['initiator_comment'] = NULL;
 		$row['report_by'] = NULL;
 		$row['datetime_resolved'] = NULL;
+		$row['assign'] = NULL;
 		$row['assign_task'] = NULL;
 		$row['approval_action'] = NULL;
 		$row['approval_comment'] = NULL;
@@ -942,6 +944,7 @@ class creport_form_view extends creport_form {
 		$this->initiator_comment->DbValue = $row['initiator_comment'];
 		$this->report_by->DbValue = $row['report_by'];
 		$this->datetime_resolved->DbValue = $row['datetime_resolved'];
+		$this->assign->DbValue = $row['assign'];
 		$this->assign_task->DbValue = $row['assign_task'];
 		$this->approval_action->DbValue = $row['approval_action'];
 		$this->approval_comment->DbValue = $row['approval_comment'];
@@ -1013,6 +1016,7 @@ class creport_form_view extends creport_form {
 		// initiator_comment
 		// report_by
 		// datetime_resolved
+		// assign
 		// assign_task
 		// approval_action
 		// approval_comment
@@ -1513,14 +1517,14 @@ class creport_form_view extends creport_form {
 		$this->datetime_resolved->ViewValue = ew_FormatDateTime($this->datetime_resolved->ViewValue, 11);
 		$this->datetime_resolved->ViewCustomAttributes = "";
 
-		// assign_task
-		if (strval($this->assign_task->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_task->CurrentValue, EW_DATATYPE_NUMBER, "");
+		// assign
+		if (strval($this->assign->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->assign_task->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+		$this->assign->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->assign_task, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->assign, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
@@ -1528,14 +1532,17 @@ class creport_form_view extends creport_form {
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
 				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->assign_task->ViewValue = $this->assign_task->DisplayValue($arwrk);
+				$this->assign->ViewValue = $this->assign->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->assign_task->ViewValue = $this->assign_task->CurrentValue;
+				$this->assign->ViewValue = $this->assign->CurrentValue;
 			}
 		} else {
-			$this->assign_task->ViewValue = NULL;
+			$this->assign->ViewValue = NULL;
 		}
+		$this->assign->ViewCustomAttributes = "";
+
+		// assign_task
 		$this->assign_task->ViewCustomAttributes = "";
 
 		// approval_action
@@ -1750,7 +1757,28 @@ class creport_form_view extends creport_form {
 		$this->verified_by->ViewCustomAttributes = "";
 
 		// remainder
-		$this->remainder->ViewValue = $this->remainder->CurrentValue;
+		if (strval($this->remainder->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->remainder->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->remainder->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->remainder, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->remainder->ViewValue = $this->remainder->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->remainder->ViewValue = $this->remainder->CurrentValue;
+			}
+		} else {
+			$this->remainder->ViewValue = NULL;
+		}
 		$this->remainder->ViewCustomAttributes = "";
 
 			// datetime_initiated
@@ -1912,10 +1940,10 @@ class creport_form_view extends creport_form {
 			$this->datetime_resolved->HrefValue = "";
 			$this->datetime_resolved->TooltipValue = "";
 
-			// assign_task
-			$this->assign_task->LinkCustomAttributes = "";
-			$this->assign_task->HrefValue = "";
-			$this->assign_task->TooltipValue = "";
+			// assign
+			$this->assign->LinkCustomAttributes = "";
+			$this->assign->HrefValue = "";
+			$this->assign->TooltipValue = "";
 
 			// approval_action
 			$this->approval_action->LinkCustomAttributes = "";
@@ -2351,8 +2379,8 @@ freport_formview.Lists["x_initiator_action"].Options = <?php echo json_encode($r
 freport_formview.Lists["x_report_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 freport_formview.Lists["x_report_by"].Data = "<?php echo $report_form_view->report_by->LookupFilterQuery(FALSE, "view") ?>";
 freport_formview.AutoSuggests["x_report_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $report_form_view->report_by->LookupFilterQuery(TRUE, "view"))) ?>;
-freport_formview.Lists["x_assign_task"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-freport_formview.Lists["x_assign_task"].Data = "<?php echo $report_form_view->assign_task->LookupFilterQuery(FALSE, "view") ?>";
+freport_formview.Lists["x_assign"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+freport_formview.Lists["x_assign"].Data = "<?php echo $report_form_view->assign->LookupFilterQuery(FALSE, "view") ?>";
 freport_formview.Lists["x_approval_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 freport_formview.Lists["x_approval_action"].Options = <?php echo json_encode($report_form_view->approval_action->Options()) ?>;
 freport_formview.Lists["x_item_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
@@ -2377,6 +2405,8 @@ freport_formview.Lists["x_verified_action"].Options = <?php echo json_encode($re
 freport_formview.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 freport_formview.Lists["x_verified_by"].Data = "<?php echo $report_form_view->verified_by->LookupFilterQuery(FALSE, "view") ?>";
 freport_formview.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $report_form_view->verified_by->LookupFilterQuery(TRUE, "view"))) ?>;
+freport_formview.Lists["x_remainder"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+freport_formview.Lists["x_remainder"].Data = "<?php echo $report_form_view->remainder->LookupFilterQuery(FALSE, "view") ?>";
 
 // Form object for search
 </script>
@@ -2793,13 +2823,13 @@ $report_form_view->ShowMessage();
 </td>
 	</tr>
 <?php } ?>
-<?php if ($report_form->assign_task->Visible) { // assign_task ?>
-	<tr id="r_assign_task">
-		<td class="col-sm-2"><span id="elh_report_form_assign_task"><?php echo $report_form->assign_task->FldCaption() ?></span></td>
-		<td data-name="assign_task"<?php echo $report_form->assign_task->CellAttributes() ?>>
-<span id="el_report_form_assign_task" data-page="2">
-<span<?php echo $report_form->assign_task->ViewAttributes() ?>>
-<?php echo $report_form->assign_task->ViewValue ?></span>
+<?php if ($report_form->assign->Visible) { // assign ?>
+	<tr id="r_assign">
+		<td class="col-sm-2"><span id="elh_report_form_assign"><?php echo $report_form->assign->FldCaption() ?></span></td>
+		<td data-name="assign"<?php echo $report_form->assign->CellAttributes() ?>>
+<span id="el_report_form_assign" data-page="2">
+<span<?php echo $report_form->assign->ViewAttributes() ?>>
+<?php echo $report_form->assign->ViewValue ?></span>
 </span>
 </td>
 	</tr>

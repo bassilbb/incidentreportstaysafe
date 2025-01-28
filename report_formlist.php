@@ -463,7 +463,7 @@ class creport_form_list extends creport_form {
 		$this->incident_sub_location->SetVisibility();
 		$this->incident_description->SetVisibility();
 		$this->status->SetVisibility();
-		$this->assign_task->SetVisibility();
+		$this->assign->SetVisibility();
 		$this->item_name->SetVisibility();
 		$this->quantity_issued->SetVisibility();
 		$this->reason->SetVisibility();
@@ -871,6 +871,7 @@ class creport_form_list extends creport_form {
 		$sFilterList = ew_Concat($sFilterList, $this->initiator_comment->AdvancedSearch->ToJson(), ","); // Field initiator_comment
 		$sFilterList = ew_Concat($sFilterList, $this->report_by->AdvancedSearch->ToJson(), ","); // Field report_by
 		$sFilterList = ew_Concat($sFilterList, $this->datetime_resolved->AdvancedSearch->ToJson(), ","); // Field datetime_resolved
+		$sFilterList = ew_Concat($sFilterList, $this->assign->AdvancedSearch->ToJson(), ","); // Field assign
 		$sFilterList = ew_Concat($sFilterList, $this->assign_task->AdvancedSearch->ToJson(), ","); // Field assign_task
 		$sFilterList = ew_Concat($sFilterList, $this->approval_action->AdvancedSearch->ToJson(), ","); // Field approval_action
 		$sFilterList = ew_Concat($sFilterList, $this->approval_comment->AdvancedSearch->ToJson(), ","); // Field approval_comment
@@ -1174,6 +1175,14 @@ class creport_form_list extends creport_form {
 		$this->datetime_resolved->AdvancedSearch->SearchOperator2 = @$filter["w_datetime_resolved"];
 		$this->datetime_resolved->AdvancedSearch->Save();
 
+		// Field assign
+		$this->assign->AdvancedSearch->SearchValue = @$filter["x_assign"];
+		$this->assign->AdvancedSearch->SearchOperator = @$filter["z_assign"];
+		$this->assign->AdvancedSearch->SearchCondition = @$filter["v_assign"];
+		$this->assign->AdvancedSearch->SearchValue2 = @$filter["y_assign"];
+		$this->assign->AdvancedSearch->SearchOperator2 = @$filter["w_assign"];
+		$this->assign->AdvancedSearch->Save();
+
 		// Field assign_task
 		$this->assign_task->AdvancedSearch->SearchValue = @$filter["x_assign_task"];
 		$this->assign_task->AdvancedSearch->SearchOperator = @$filter["z_assign_task"];
@@ -1364,6 +1373,7 @@ class creport_form_list extends creport_form {
 		$this->BuildSearchSql($sWhere, $this->initiator_comment, $Default, FALSE); // initiator_comment
 		$this->BuildSearchSql($sWhere, $this->report_by, $Default, FALSE); // report_by
 		$this->BuildSearchSql($sWhere, $this->datetime_resolved, $Default, FALSE); // datetime_resolved
+		$this->BuildSearchSql($sWhere, $this->assign, $Default, FALSE); // assign
 		$this->BuildSearchSql($sWhere, $this->assign_task, $Default, FALSE); // assign_task
 		$this->BuildSearchSql($sWhere, $this->approval_action, $Default, FALSE); // approval_action
 		$this->BuildSearchSql($sWhere, $this->approval_comment, $Default, FALSE); // approval_comment
@@ -1419,6 +1429,7 @@ class creport_form_list extends creport_form {
 			$this->initiator_comment->AdvancedSearch->Save(); // initiator_comment
 			$this->report_by->AdvancedSearch->Save(); // report_by
 			$this->datetime_resolved->AdvancedSearch->Save(); // datetime_resolved
+			$this->assign->AdvancedSearch->Save(); // assign
 			$this->assign_task->AdvancedSearch->Save(); // assign_task
 			$this->approval_action->AdvancedSearch->Save(); // approval_action
 			$this->approval_comment->AdvancedSearch->Save(); // approval_comment
@@ -1669,6 +1680,8 @@ class creport_form_list extends creport_form {
 			return TRUE;
 		if ($this->datetime_resolved->AdvancedSearch->IssetSession())
 			return TRUE;
+		if ($this->assign->AdvancedSearch->IssetSession())
+			return TRUE;
 		if ($this->assign_task->AdvancedSearch->IssetSession())
 			return TRUE;
 		if ($this->approval_action->AdvancedSearch->IssetSession())
@@ -1766,6 +1779,7 @@ class creport_form_list extends creport_form {
 		$this->initiator_comment->AdvancedSearch->UnsetSession();
 		$this->report_by->AdvancedSearch->UnsetSession();
 		$this->datetime_resolved->AdvancedSearch->UnsetSession();
+		$this->assign->AdvancedSearch->UnsetSession();
 		$this->assign_task->AdvancedSearch->UnsetSession();
 		$this->approval_action->AdvancedSearch->UnsetSession();
 		$this->approval_comment->AdvancedSearch->UnsetSession();
@@ -1825,6 +1839,7 @@ class creport_form_list extends creport_form {
 		$this->initiator_comment->AdvancedSearch->Load();
 		$this->report_by->AdvancedSearch->Load();
 		$this->datetime_resolved->AdvancedSearch->Load();
+		$this->assign->AdvancedSearch->Load();
 		$this->assign_task->AdvancedSearch->Load();
 		$this->approval_action->AdvancedSearch->Load();
 		$this->approval_comment->AdvancedSearch->Load();
@@ -1864,7 +1879,7 @@ class creport_form_list extends creport_form {
 			$this->UpdateSort($this->incident_sub_location); // incident_sub_location
 			$this->UpdateSort($this->incident_description); // incident_description
 			$this->UpdateSort($this->status); // status
-			$this->UpdateSort($this->assign_task); // assign_task
+			$this->UpdateSort($this->assign); // assign
 			$this->UpdateSort($this->item_name); // item_name
 			$this->UpdateSort($this->quantity_issued); // quantity_issued
 			$this->UpdateSort($this->reason); // reason
@@ -1914,7 +1929,7 @@ class creport_form_list extends creport_form {
 				$this->incident_sub_location->setSort("");
 				$this->incident_description->setSort("");
 				$this->status->setSort("");
-				$this->assign_task->setSort("");
+				$this->assign->setSort("");
 				$this->item_name->setSort("");
 				$this->quantity_issued->setSort("");
 				$this->reason->setSort("");
@@ -2464,6 +2479,11 @@ class creport_form_list extends creport_form {
 		if ($this->datetime_resolved->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
 		$this->datetime_resolved->AdvancedSearch->SearchOperator = @$_GET["z_datetime_resolved"];
 
+		// assign
+		$this->assign->AdvancedSearch->SearchValue = @$_GET["x_assign"];
+		if ($this->assign->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->assign->AdvancedSearch->SearchOperator = @$_GET["z_assign"];
+
 		// assign_task
 		$this->assign_task->AdvancedSearch->SearchValue = @$_GET["x_assign_task"];
 		if ($this->assign_task->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
@@ -2650,6 +2670,7 @@ class creport_form_list extends creport_form {
 		$this->initiator_comment->setDbValue($row['initiator_comment']);
 		$this->report_by->setDbValue($row['report_by']);
 		$this->datetime_resolved->setDbValue($row['datetime_resolved']);
+		$this->assign->setDbValue($row['assign']);
 		$this->assign_task->setDbValue($row['assign_task']);
 		$this->approval_action->setDbValue($row['approval_action']);
 		$this->approval_comment->setDbValue($row['approval_comment']);
@@ -2704,6 +2725,7 @@ class creport_form_list extends creport_form {
 		$row['initiator_comment'] = NULL;
 		$row['report_by'] = NULL;
 		$row['datetime_resolved'] = NULL;
+		$row['assign'] = NULL;
 		$row['assign_task'] = NULL;
 		$row['approval_action'] = NULL;
 		$row['approval_comment'] = NULL;
@@ -2761,6 +2783,7 @@ class creport_form_list extends creport_form {
 		$this->initiator_comment->DbValue = $row['initiator_comment'];
 		$this->report_by->DbValue = $row['report_by'];
 		$this->datetime_resolved->DbValue = $row['datetime_resolved'];
+		$this->assign->DbValue = $row['assign'];
 		$this->assign_task->DbValue = $row['assign_task'];
 		$this->approval_action->DbValue = $row['approval_action'];
 		$this->approval_comment->DbValue = $row['approval_comment'];
@@ -2850,6 +2873,7 @@ class creport_form_list extends creport_form {
 		// initiator_comment
 		// report_by
 		// datetime_resolved
+		// assign
 		// assign_task
 		// approval_action
 		// approval_comment
@@ -3342,14 +3366,14 @@ class creport_form_list extends creport_form {
 		$this->datetime_resolved->ViewValue = ew_FormatDateTime($this->datetime_resolved->ViewValue, 11);
 		$this->datetime_resolved->ViewCustomAttributes = "";
 
-		// assign_task
-		if (strval($this->assign_task->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_task->CurrentValue, EW_DATATYPE_NUMBER, "");
+		// assign
+		if (strval($this->assign->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->assign_task->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+		$this->assign->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->assign_task, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->assign, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
@@ -3357,14 +3381,17 @@ class creport_form_list extends creport_form {
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
 				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->assign_task->ViewValue = $this->assign_task->DisplayValue($arwrk);
+				$this->assign->ViewValue = $this->assign->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->assign_task->ViewValue = $this->assign_task->CurrentValue;
+				$this->assign->ViewValue = $this->assign->CurrentValue;
 			}
 		} else {
-			$this->assign_task->ViewValue = NULL;
+			$this->assign->ViewValue = NULL;
 		}
+		$this->assign->ViewCustomAttributes = "";
+
+		// assign_task
 		$this->assign_task->ViewCustomAttributes = "";
 
 		// approval_action
@@ -3571,7 +3598,28 @@ class creport_form_list extends creport_form {
 		$this->verified_by->ViewCustomAttributes = "";
 
 		// remainder
-		$this->remainder->ViewValue = $this->remainder->CurrentValue;
+		if (strval($this->remainder->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->remainder->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->remainder->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->remainder, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->remainder->ViewValue = $this->remainder->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->remainder->ViewValue = $this->remainder->CurrentValue;
+			}
+		} else {
+			$this->remainder->ViewValue = NULL;
+		}
 		$this->remainder->ViewCustomAttributes = "";
 
 			// datetime_initiated
@@ -3629,10 +3677,10 @@ class creport_form_list extends creport_form {
 			$this->status->HrefValue = "";
 			$this->status->TooltipValue = "";
 
-			// assign_task
-			$this->assign_task->LinkCustomAttributes = "";
-			$this->assign_task->HrefValue = "";
-			$this->assign_task->TooltipValue = "";
+			// assign
+			$this->assign->LinkCustomAttributes = "";
+			$this->assign->HrefValue = "";
+			$this->assign->TooltipValue = "";
 
 			// item_name
 			$this->item_name->LinkCustomAttributes = "";
@@ -3732,9 +3780,9 @@ class creport_form_list extends creport_form {
 			if ($rswrk) $rswrk->Close();
 			$this->status->EditValue = $arwrk;
 
-			// assign_task
-			$this->assign_task->EditAttrs["class"] = "form-control";
-			$this->assign_task->EditCustomAttributes = "";
+			// assign
+			$this->assign->EditAttrs["class"] = "form-control";
+			$this->assign->EditCustomAttributes = "";
 
 			// item_name
 			$this->item_name->EditAttrs["class"] = "form-control";
@@ -3829,6 +3877,7 @@ class creport_form_list extends creport_form {
 		$this->initiator_comment->AdvancedSearch->Load();
 		$this->report_by->AdvancedSearch->Load();
 		$this->datetime_resolved->AdvancedSearch->Load();
+		$this->assign->AdvancedSearch->Load();
 		$this->assign_task->AdvancedSearch->Load();
 		$this->approval_action->AdvancedSearch->Load();
 		$this->approval_comment->AdvancedSearch->Load();
@@ -4232,8 +4281,8 @@ freport_formlist.Lists["x_incident_sub_location"] = {"LinkField":"x_code_sub","A
 freport_formlist.Lists["x_incident_sub_location"].Data = "<?php echo $report_form_list->incident_sub_location->LookupFilterQuery(FALSE, "list") ?>";
 freport_formlist.Lists["x_status"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"status"};
 freport_formlist.Lists["x_status"].Data = "<?php echo $report_form_list->status->LookupFilterQuery(FALSE, "list") ?>";
-freport_formlist.Lists["x_assign_task"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-freport_formlist.Lists["x_assign_task"].Data = "<?php echo $report_form_list->assign_task->LookupFilterQuery(FALSE, "list") ?>";
+freport_formlist.Lists["x_assign"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+freport_formlist.Lists["x_assign"].Data = "<?php echo $report_form_list->assign->LookupFilterQuery(FALSE, "list") ?>";
 freport_formlist.Lists["x_item_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
 freport_formlist.Lists["x_item_name"].Data = "<?php echo $report_form_list->item_name->LookupFilterQuery(FALSE, "list") ?>";
 freport_formlist.Lists["x_reason"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"reason"};
@@ -4581,12 +4630,12 @@ $report_form_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($report_form->assign_task->Visible) { // assign_task ?>
-	<?php if ($report_form->SortUrl($report_form->assign_task) == "") { ?>
-		<th data-name="assign_task" class="<?php echo $report_form->assign_task->HeaderCellClass() ?>"><div id="elh_report_form_assign_task" class="report_form_assign_task"><div class="ewTableHeaderCaption"><?php echo $report_form->assign_task->FldCaption() ?></div></div></th>
+<?php if ($report_form->assign->Visible) { // assign ?>
+	<?php if ($report_form->SortUrl($report_form->assign) == "") { ?>
+		<th data-name="assign" class="<?php echo $report_form->assign->HeaderCellClass() ?>"><div id="elh_report_form_assign" class="report_form_assign"><div class="ewTableHeaderCaption"><?php echo $report_form->assign->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="assign_task" class="<?php echo $report_form->assign_task->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $report_form->SortUrl($report_form->assign_task) ?>',1);"><div id="elh_report_form_assign_task" class="report_form_assign_task">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $report_form->assign_task->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($report_form->assign_task->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($report_form->assign_task->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="assign" class="<?php echo $report_form->assign->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $report_form->SortUrl($report_form->assign) ?>',1);"><div id="elh_report_form_assign" class="report_form_assign">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $report_form->assign->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($report_form->assign->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($report_form->assign->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -4797,11 +4846,11 @@ $report_form_list->ListOptions->Render("body", "left", $report_form_list->RowCnt
 </span>
 </td>
 	<?php } ?>
-	<?php if ($report_form->assign_task->Visible) { // assign_task ?>
-		<td data-name="assign_task"<?php echo $report_form->assign_task->CellAttributes() ?>>
-<span id="el<?php echo $report_form_list->RowCnt ?>_report_form_assign_task" class="report_form_assign_task">
-<span<?php echo $report_form->assign_task->ViewAttributes() ?>>
-<?php echo $report_form->assign_task->ListViewValue() ?></span>
+	<?php if ($report_form->assign->Visible) { // assign ?>
+		<td data-name="assign"<?php echo $report_form->assign->CellAttributes() ?>>
+<span id="el<?php echo $report_form_list->RowCnt ?>_report_form_assign" class="report_form_assign">
+<span<?php echo $report_form->assign->ViewAttributes() ?>>
+<?php echo $report_form->assign->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

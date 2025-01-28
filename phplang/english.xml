@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2025/1/21" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2025/1/28" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -958,6 +958,9 @@
       </field>
       <field id="datetime_resolved">
         <phrase id="fldcaption" value="Last Updated Date" />
+      </field>
+      <field id="assign">
+        <phrase id="fldcaption" value="Assign Task" />
       </field>
       <field id="assign_task">
         <phrase id="fldcaption" value="Assign Task" />

@@ -23,7 +23,7 @@ if ((CurrentUserLevel() == 1)) {
 		 $_SESSION['MyReworkCount']  = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (1) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 		 $_SESSION['MyPendingCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (3) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 		 $_SESSION['MyNewCount']      = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
-		 $_SESSION['MyAssigntaskCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4)AND `staff_id` = '".$_SESSION['Staff_ID']."' ");
+		 $_SESSION['MyAssignCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4)AND `staff_id` = '".$_SESSION['Staff_ID']."' ");
 	     $_SESSION['MyIssueresolvedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (6) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 	     $_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 	     $_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
@@ -40,7 +40,7 @@ if (CurrentUserLevel() == -1) {
 	$_SESSION['MyReworkCount']  = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (1) ");
 	$_SESSION['MyPendingCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (3) ");
 	$_SESSION['MyNewCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
-	$_SESSION['MyAssigntaskCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4) ");
+	$_SESSION['MyAssignCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4) ");
 	$_SESSION['MyIssueresolvedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (6) ");
 	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2) ");
 	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3) ");
@@ -57,7 +57,7 @@ if (CurrentUserLevel() == 2) {
 	$_SESSION['MyReworkCount']  = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (1) AND `departments` = '".$_SESSION['Department']."' ");
 	$_SESSION['MyPendingCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4) AND `departments` = '".$_SESSION['Department']."' ");
 	$_SESSION['MyNewCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) AND `departments` = '".$_SESSION['Department']."' ");
-	$_SESSION['MyAssigntaskCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4) AND `assign_task` = '".$_SESSION['Staff_ID']."' ");
+	$_SESSION['MyAssignCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."' ");
 	$_SESSION['MyIssueresolvedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (6)AND `departments` = '".$_SESSION['Department']."' ");
 	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
@@ -68,7 +68,7 @@ if (CurrentUserLevel() == 3) {
 	$_SESSION['MyReworkCount']  = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (1) ");
 	$_SESSION['MyPendingCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (3) ");
 	$_SESSION['MyNewCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
-	$_SESSION['MyAssigntaskCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4) ");
+	$_SESSION['MyAssignCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4) ");
 	$_SESSION['MyIssueresolvedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (6) ");
 	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2) ");
 	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3) ");
@@ -79,7 +79,7 @@ if (CurrentUserLevel() == 4) {
 	$_SESSION['MyReworkCount']  = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (1) ");
 	$_SESSION['MyPendingCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (3) ");
 	$_SESSION['MyNewCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
-	$_SESSION['MyAssigntaskCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4) ");
+	$_SESSION['MyAssignCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4) ");
 	$_SESSION['MyIssueresolvedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (6) ");
 	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2) ");
 	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3) ");
@@ -90,7 +90,7 @@ if (CurrentUserLevel() == 5) {
 	$_SESSION['MyReworkCount']  = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
 	$_SESSION['MyPendingCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
 	$_SESSION['MyNewCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
-	$_SESSION['MyAssigntaskCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyAssignCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
 	$_SESSION['MyIssueresolvedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (12) ");
 	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (12) ");
 	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (12) ");

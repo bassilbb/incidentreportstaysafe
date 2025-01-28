@@ -357,7 +357,7 @@ class creport_form_edit extends creport_form {
 		$this->initiator_comment->SetVisibility();
 		$this->report_by->SetVisibility();
 		$this->datetime_resolved->SetVisibility();
-		$this->assign_task->SetVisibility();
+		$this->assign->SetVisibility();
 		$this->approval_action->SetVisibility();
 		$this->approval_comment->SetVisibility();
 		$this->item_name->SetVisibility();
@@ -760,8 +760,8 @@ class creport_form_edit extends creport_form {
 			$this->datetime_resolved->setFormValue($objForm->GetValue("x_datetime_resolved"));
 			$this->datetime_resolved->CurrentValue = ew_UnFormatDateTime($this->datetime_resolved->CurrentValue, 11);
 		}
-		if (!$this->assign_task->FldIsDetailKey) {
-			$this->assign_task->setFormValue($objForm->GetValue("x_assign_task"));
+		if (!$this->assign->FldIsDetailKey) {
+			$this->assign->setFormValue($objForm->GetValue("x_assign"));
 		}
 		if (!$this->approval_action->FldIsDetailKey) {
 			$this->approval_action->setFormValue($objForm->GetValue("x_approval_action"));
@@ -860,7 +860,7 @@ class creport_form_edit extends creport_form {
 		$this->report_by->CurrentValue = $this->report_by->FormValue;
 		$this->datetime_resolved->CurrentValue = $this->datetime_resolved->FormValue;
 		$this->datetime_resolved->CurrentValue = ew_UnFormatDateTime($this->datetime_resolved->CurrentValue, 11);
-		$this->assign_task->CurrentValue = $this->assign_task->FormValue;
+		$this->assign->CurrentValue = $this->assign->FormValue;
 		$this->approval_action->CurrentValue = $this->approval_action->FormValue;
 		$this->approval_comment->CurrentValue = $this->approval_comment->FormValue;
 		$this->item_name->CurrentValue = $this->item_name->FormValue;
@@ -974,6 +974,7 @@ class creport_form_edit extends creport_form {
 		$this->initiator_comment->setDbValue($row['initiator_comment']);
 		$this->report_by->setDbValue($row['report_by']);
 		$this->datetime_resolved->setDbValue($row['datetime_resolved']);
+		$this->assign->setDbValue($row['assign']);
 		$this->assign_task->setDbValue($row['assign_task']);
 		$this->approval_action->setDbValue($row['approval_action']);
 		$this->approval_comment->setDbValue($row['approval_comment']);
@@ -1028,6 +1029,7 @@ class creport_form_edit extends creport_form {
 		$row['initiator_comment'] = NULL;
 		$row['report_by'] = NULL;
 		$row['datetime_resolved'] = NULL;
+		$row['assign'] = NULL;
 		$row['assign_task'] = NULL;
 		$row['approval_action'] = NULL;
 		$row['approval_comment'] = NULL;
@@ -1085,6 +1087,7 @@ class creport_form_edit extends creport_form {
 		$this->initiator_comment->DbValue = $row['initiator_comment'];
 		$this->report_by->DbValue = $row['report_by'];
 		$this->datetime_resolved->DbValue = $row['datetime_resolved'];
+		$this->assign->DbValue = $row['assign'];
 		$this->assign_task->DbValue = $row['assign_task'];
 		$this->approval_action->DbValue = $row['approval_action'];
 		$this->approval_comment->DbValue = $row['approval_comment'];
@@ -1172,6 +1175,7 @@ class creport_form_edit extends creport_form {
 		// initiator_comment
 		// report_by
 		// datetime_resolved
+		// assign
 		// assign_task
 		// approval_action
 		// approval_comment
@@ -1672,14 +1676,14 @@ class creport_form_edit extends creport_form {
 		$this->datetime_resolved->ViewValue = ew_FormatDateTime($this->datetime_resolved->ViewValue, 11);
 		$this->datetime_resolved->ViewCustomAttributes = "";
 
-		// assign_task
-		if (strval($this->assign_task->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_task->CurrentValue, EW_DATATYPE_NUMBER, "");
+		// assign
+		if (strval($this->assign->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->assign_task->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+		$this->assign->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->assign_task, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->assign, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
@@ -1687,14 +1691,17 @@ class creport_form_edit extends creport_form {
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
 				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->assign_task->ViewValue = $this->assign_task->DisplayValue($arwrk);
+				$this->assign->ViewValue = $this->assign->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->assign_task->ViewValue = $this->assign_task->CurrentValue;
+				$this->assign->ViewValue = $this->assign->CurrentValue;
 			}
 		} else {
-			$this->assign_task->ViewValue = NULL;
+			$this->assign->ViewValue = NULL;
 		}
+		$this->assign->ViewCustomAttributes = "";
+
+		// assign_task
 		$this->assign_task->ViewCustomAttributes = "";
 
 		// approval_action
@@ -1909,7 +1916,28 @@ class creport_form_edit extends creport_form {
 		$this->verified_by->ViewCustomAttributes = "";
 
 		// remainder
-		$this->remainder->ViewValue = $this->remainder->CurrentValue;
+		if (strval($this->remainder->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->remainder->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->remainder->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->remainder, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->remainder->ViewValue = $this->remainder->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->remainder->ViewValue = $this->remainder->CurrentValue;
+			}
+		} else {
+			$this->remainder->ViewValue = NULL;
+		}
 		$this->remainder->ViewCustomAttributes = "";
 
 			// datetime_initiated
@@ -2071,10 +2099,10 @@ class creport_form_edit extends creport_form {
 			$this->datetime_resolved->HrefValue = "";
 			$this->datetime_resolved->TooltipValue = "";
 
-			// assign_task
-			$this->assign_task->LinkCustomAttributes = "";
-			$this->assign_task->HrefValue = "";
-			$this->assign_task->TooltipValue = "";
+			// assign
+			$this->assign->LinkCustomAttributes = "";
+			$this->assign->HrefValue = "";
+			$this->assign->TooltipValue = "";
 
 			// approval_action
 			$this->approval_action->LinkCustomAttributes = "";
@@ -2663,18 +2691,18 @@ class creport_form_edit extends creport_form {
 			$this->datetime_resolved->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->datetime_resolved->CurrentValue, 11));
 			$this->datetime_resolved->PlaceHolder = ew_RemoveHtml($this->datetime_resolved->FldCaption());
 
-			// assign_task
-			$this->assign_task->EditCustomAttributes = "";
-			if (trim(strval($this->assign_task->CurrentValue)) == "") {
+			// assign
+			$this->assign->EditCustomAttributes = "";
+			if (trim(strval($this->assign->CurrentValue)) == "") {
 				$sFilterWrk = "0=1";
 			} else {
-				$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_task->CurrentValue, EW_DATATYPE_NUMBER, "");
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign->CurrentValue, EW_DATATYPE_NUMBER, "");
 			}
 			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
 			$sWhereWrk = "";
-			$this->assign_task->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+			$this->assign->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
-			$this->Lookup_Selecting($this->assign_task, $sWhereWrk); // Call Lookup Selecting
+			$this->Lookup_Selecting($this->assign, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
@@ -2682,13 +2710,13 @@ class creport_form_edit extends creport_form {
 				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
 				$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
 				$arwrk[3] = ew_HtmlEncode($rswrk->fields('Disp3Fld'));
-				$this->assign_task->ViewValue = $this->assign_task->DisplayValue($arwrk);
+				$this->assign->ViewValue = $this->assign->DisplayValue($arwrk);
 			} else {
-				$this->assign_task->ViewValue = $Language->Phrase("PleaseSelect");
+				$this->assign->ViewValue = $Language->Phrase("PleaseSelect");
 			}
 			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
 			if ($rswrk) $rswrk->Close();
-			$this->assign_task->EditValue = $arwrk;
+			$this->assign->EditValue = $arwrk;
 
 			// approval_action
 			$this->approval_action->EditCustomAttributes = "";
@@ -2899,8 +2927,21 @@ class creport_form_edit extends creport_form {
 			// remainder
 			$this->remainder->EditAttrs["class"] = "form-control";
 			$this->remainder->EditCustomAttributes = "";
-			$this->remainder->EditValue = ew_HtmlEncode($this->remainder->CurrentValue);
-			$this->remainder->PlaceHolder = ew_RemoveHtml($this->remainder->FldCaption());
+			if (trim(strval($this->remainder->CurrentValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->remainder->CurrentValue, EW_DATATYPE_NUMBER, "");
+			}
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
+			$sWhereWrk = "";
+			$this->remainder->LookupFilters = array();
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->remainder, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->remainder->EditValue = $arwrk;
 
 			// Edit refer script
 			// datetime_initiated
@@ -3028,9 +3069,9 @@ class creport_form_edit extends creport_form {
 			$this->datetime_resolved->LinkCustomAttributes = "";
 			$this->datetime_resolved->HrefValue = "";
 
-			// assign_task
-			$this->assign_task->LinkCustomAttributes = "";
-			$this->assign_task->HrefValue = "";
+			// assign
+			$this->assign->LinkCustomAttributes = "";
+			$this->assign->HrefValue = "";
 
 			// approval_action
 			$this->approval_action->LinkCustomAttributes = "";
@@ -3202,9 +3243,6 @@ class creport_form_edit extends creport_form {
 		}
 		if (!ew_CheckEuroDate($this->datetime_resolved->FormValue)) {
 			ew_AddMessage($gsFormError, $this->datetime_resolved->FldErrMsg());
-		}
-		if (!$this->assign_task->FldIsDetailKey && !is_null($this->assign_task->FormValue) && $this->assign_task->FormValue == "") {
-			ew_AddMessage($gsFormError, str_replace("%s", $this->assign_task->FldCaption(), $this->assign_task->ReqErrMsg));
 		}
 		if (!ew_CheckInteger($this->quantity_issued->FormValue)) {
 			ew_AddMessage($gsFormError, $this->quantity_issued->FldErrMsg());
@@ -3391,8 +3429,8 @@ class creport_form_edit extends creport_form {
 			// datetime_resolved
 			$this->datetime_resolved->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->datetime_resolved->CurrentValue, 11), NULL, $this->datetime_resolved->ReadOnly);
 
-			// assign_task
-			$this->assign_task->SetDbValueDef($rsnew, $this->assign_task->CurrentValue, NULL, $this->assign_task->ReadOnly);
+			// assign
+			$this->assign->SetDbValueDef($rsnew, $this->assign->CurrentValue, NULL, $this->assign->ReadOnly);
 
 			// approval_action
 			$this->approval_action->SetDbValueDef($rsnew, $this->approval_action->CurrentValue, NULL, $this->approval_action->ReadOnly);
@@ -3777,14 +3815,14 @@ class creport_form_edit extends creport_form {
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
 			break;
-		case "x_assign_task":
+		case "x_assign":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 			$sWhereWrk = "{filter}";
 			$fld->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
-			$this->Lookup_Selecting($this->assign_task, $sWhereWrk); // Call Lookup Selecting
+			$this->Lookup_Selecting($this->assign, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
@@ -3857,6 +3895,18 @@ class creport_form_edit extends creport_form {
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->verified_by, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+		case "x_remainder":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sWhereWrk = "";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->remainder, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
@@ -4174,9 +4224,6 @@ freport_formedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_datetime_resolved");
 			if (elm && !ew_CheckEuroDate(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($report_form->datetime_resolved->FldErrMsg()) ?>");
-			elm = this.GetElements("x" + infix + "_assign_task");
-			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
-				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $report_form->assign_task->FldCaption(), $report_form->assign_task->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_quantity_issued");
 			if (elm && !ew_CheckInteger(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($report_form->quantity_issued->FldErrMsg()) ?>");
@@ -4297,8 +4344,8 @@ freport_formedit.Lists["x_initiator_action"].Options = <?php echo json_encode($r
 freport_formedit.Lists["x_report_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 freport_formedit.Lists["x_report_by"].Data = "<?php echo $report_form_edit->report_by->LookupFilterQuery(FALSE, "edit") ?>";
 freport_formedit.AutoSuggests["x_report_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $report_form_edit->report_by->LookupFilterQuery(TRUE, "edit"))) ?>;
-freport_formedit.Lists["x_assign_task"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-freport_formedit.Lists["x_assign_task"].Data = "<?php echo $report_form_edit->assign_task->LookupFilterQuery(FALSE, "edit") ?>";
+freport_formedit.Lists["x_assign"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+freport_formedit.Lists["x_assign"].Data = "<?php echo $report_form_edit->assign->LookupFilterQuery(FALSE, "edit") ?>";
 freport_formedit.Lists["x_approval_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 freport_formedit.Lists["x_approval_action"].Options = <?php echo json_encode($report_form_edit->approval_action->Options()) ?>;
 freport_formedit.Lists["x_item_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
@@ -4323,6 +4370,8 @@ freport_formedit.Lists["x_verified_action"].Options = <?php echo json_encode($re
 freport_formedit.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 freport_formedit.Lists["x_verified_by"].Data = "<?php echo $report_form_edit->verified_by->LookupFilterQuery(FALSE, "edit") ?>";
 freport_formedit.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $report_form_edit->verified_by->LookupFilterQuery(TRUE, "edit"))) ?>;
+freport_formedit.Lists["x_remainder"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+freport_formedit.Lists["x_remainder"].Data = "<?php echo $report_form_edit->remainder->LookupFilterQuery(FALSE, "edit") ?>";
 
 // Form object for search
 </script>
@@ -4648,7 +4697,8 @@ $("#x_quantity_issued").on("change", function() {
    var quantity_issued = parseInt(this.value);
    if((quantity_issued !="") && (storeQty > quantity_issued) ){
 		  var newQuantity = storeQty - quantity_issued;
-		   $("#x_remainder").val(parseInt(newQuantity));
+
+		   //$("#x_remainder").val(parseInt(newQuantity));
 	 }else{
 
 			 //alertify.alert('You Do Not and Savings Plan In-Progress .').set('title', 'Duplicate Savings Plan!');
@@ -5440,26 +5490,26 @@ freport_formedit.CreateAutoSuggest({"id":"x_report_by","forceSelect":false});
 <?php echo $report_form->datetime_resolved->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($report_form->assign_task->Visible) { // assign_task ?>
-	<div id="r_assign_task" class="form-group">
-		<label id="elh_report_form_assign_task" for="x_assign_task" class="<?php echo $report_form_edit->LeftColumnClass ?>"><?php echo $report_form->assign_task->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
-		<div class="<?php echo $report_form_edit->RightColumnClass ?>"><div<?php echo $report_form->assign_task->CellAttributes() ?>>
+<?php if ($report_form->assign->Visible) { // assign ?>
+	<div id="r_assign" class="form-group">
+		<label id="elh_report_form_assign" for="x_assign" class="<?php echo $report_form_edit->LeftColumnClass ?>"><?php echo $report_form->assign->FldCaption() ?></label>
+		<div class="<?php echo $report_form_edit->RightColumnClass ?>"><div<?php echo $report_form->assign->CellAttributes() ?>>
 <?php if ($report_form->CurrentAction <> "F") { ?>
-<span id="el_report_form_assign_task">
+<span id="el_report_form_assign">
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_assign_task"><?php echo (strval($report_form->assign_task->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $report_form->assign_task->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_assign"><?php echo (strval($report_form->assign->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $report_form->assign->ViewValue); ?></span>
 </span>
-<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($report_form->assign_task->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_assign_task',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($report_form->assign_task->ReadOnly || $report_form->assign_task->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
-<input type="hidden" data-table="report_form" data-field="x_assign_task" data-page="2" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $report_form->assign_task->DisplayValueSeparatorAttribute() ?>" name="x_assign_task" id="x_assign_task" value="<?php echo $report_form->assign_task->CurrentValue ?>"<?php echo $report_form->assign_task->EditAttributes() ?>>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($report_form->assign->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_assign',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($report_form->assign->ReadOnly || $report_form->assign->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="report_form" data-field="x_assign" data-page="2" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $report_form->assign->DisplayValueSeparatorAttribute() ?>" name="x_assign" id="x_assign" value="<?php echo $report_form->assign->CurrentValue ?>"<?php echo $report_form->assign->EditAttributes() ?>>
 </span>
 <?php } else { ?>
-<span id="el_report_form_assign_task">
-<span<?php echo $report_form->assign_task->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $report_form->assign_task->ViewValue ?></p></span>
+<span id="el_report_form_assign">
+<span<?php echo $report_form->assign->ViewAttributes() ?>>
+<p class="form-control-static"><?php echo $report_form->assign->ViewValue ?></p></span>
 </span>
-<input type="hidden" data-table="report_form" data-field="x_assign_task" data-page="2" name="x_assign_task" id="x_assign_task" value="<?php echo ew_HtmlEncode($report_form->assign_task->FormValue) ?>">
+<input type="hidden" data-table="report_form" data-field="x_assign" data-page="2" name="x_assign" id="x_assign" value="<?php echo ew_HtmlEncode($report_form->assign->FormValue) ?>">
 <?php } ?>
-<?php echo $report_form->assign_task->CustomMsg ?></div></div>
+<?php echo $report_form->assign->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($report_form->approval_action->Visible) { // approval_action ?>
@@ -5612,7 +5662,7 @@ $wrkonchange = trim(" " . @$report_form->resolved_by->EditAttrs["onchange"]);
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $report_form->resolved_by->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_resolved_by" style="white-space: nowrap; z-index: 8610">
+<span id="as_x_resolved_by" style="white-space: nowrap; z-index: 8600">
 	<input type="text" name="sv_x_resolved_by" id="sv_x_resolved_by" value="<?php echo $report_form->resolved_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($report_form->resolved_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($report_form->resolved_by->getPlaceHolder()) ?>"<?php echo $report_form->resolved_by->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="report_form" data-field="x_resolved_by" data-page="2" data-value-separator="<?php echo $report_form->resolved_by->DisplayValueSeparatorAttribute() ?>" name="x_resolved_by" id="x_resolved_by" value="<?php echo ew_HtmlEncode($report_form->resolved_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
@@ -5659,7 +5709,7 @@ $wrkonchange = trim(" " . @$report_form->approved_by->EditAttrs["onchange"]);
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $report_form->approved_by->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_approved_by" style="white-space: nowrap; z-index: 8590">
+<span id="as_x_approved_by" style="white-space: nowrap; z-index: 8580">
 	<input type="text" name="sv_x_approved_by" id="sv_x_approved_by" value="<?php echo $report_form->approved_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($report_form->approved_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($report_form->approved_by->getPlaceHolder()) ?>"<?php echo $report_form->approved_by->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="report_form" data-field="x_approved_by" data-page="2" data-value-separator="<?php echo $report_form->approved_by->DisplayValueSeparatorAttribute() ?>" name="x_approved_by" id="x_approved_by" value="<?php echo ew_HtmlEncode($report_form->approved_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
@@ -5706,7 +5756,7 @@ $wrkonchange = trim(" " . @$report_form->last_updated_by->EditAttrs["onchange"])
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $report_form->last_updated_by->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_last_updated_by" style="white-space: nowrap; z-index: 8570">
+<span id="as_x_last_updated_by" style="white-space: nowrap; z-index: 8560">
 	<input type="text" name="sv_x_last_updated_by" id="sv_x_last_updated_by" value="<?php echo $report_form->last_updated_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($report_form->last_updated_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($report_form->last_updated_by->getPlaceHolder()) ?>"<?php echo $report_form->last_updated_by->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="report_form" data-field="x_last_updated_by" data-page="2" data-value-separator="<?php echo $report_form->last_updated_by->DisplayValueSeparatorAttribute() ?>" name="x_last_updated_by" id="x_last_updated_by" value="<?php echo ew_HtmlEncode($report_form->last_updated_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
@@ -5813,7 +5863,7 @@ $wrkonchange = trim(" " . @$report_form->verified_by->EditAttrs["onchange"]);
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $report_form->verified_by->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_verified_by" style="white-space: nowrap; z-index: 8520">
+<span id="as_x_verified_by" style="white-space: nowrap; z-index: 8510">
 	<input type="text" name="sv_x_verified_by" id="sv_x_verified_by" value="<?php echo $report_form->verified_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($report_form->verified_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($report_form->verified_by->getPlaceHolder()) ?>"<?php echo $report_form->verified_by->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="report_form" data-field="x_verified_by" data-page="2" data-value-separator="<?php echo $report_form->verified_by->DisplayValueSeparatorAttribute() ?>" name="x_verified_by" id="x_verified_by" value="<?php echo ew_HtmlEncode($report_form->verified_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
@@ -5837,7 +5887,9 @@ freport_formedit.CreateAutoSuggest({"id":"x_verified_by","forceSelect":false});
 		<div class="<?php echo $report_form_edit->RightColumnClass ?>"><div<?php echo $report_form->remainder->CellAttributes() ?>>
 <?php if ($report_form->CurrentAction <> "F") { ?>
 <span id="el_report_form_remainder">
-<input type="text" data-table="report_form" data-field="x_remainder" data-page="2" name="x_remainder" id="x_remainder" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($report_form->remainder->getPlaceHolder()) ?>" value="<?php echo $report_form->remainder->EditValue ?>"<?php echo $report_form->remainder->EditAttributes() ?>>
+<select data-table="report_form" data-field="x_remainder" data-page="2" data-value-separator="<?php echo $report_form->remainder->DisplayValueSeparatorAttribute() ?>" id="x_remainder" name="x_remainder"<?php echo $report_form->remainder->EditAttributes() ?>>
+<?php echo $report_form->remainder->SelectOptionListHtml("x_remainder") ?>
+</select>
 </span>
 <?php } else { ?>
 <span id="el_report_form_remainder">
@@ -5893,7 +5945,8 @@ if (stat == 1) {
 }
 
 //$('#x_departments').attr('readonly',true);
-$('#r_assign_task').attr('readonly',true);
+//$('#r_assign_task').attr('readonly',true);
+
 ;
 
 //var test = $("#x_incident_id").val()

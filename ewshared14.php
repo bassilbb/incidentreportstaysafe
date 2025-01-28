@@ -875,7 +875,7 @@ if (IsLoggedIn()) {
 				$_SESSION['MyReportCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 			}
 			if (CurrentUserLevel() == 2) {
-				$_SESSION['MyReportCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE (`status` in (0,1,4,6) AND `assign_task` = '".$_SESSION['Staff_ID']."')");
+				$_SESSION['MyReportCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE (`status` in (0,1,4,6) AND `assign` = '".$_SESSION['Staff_ID']."')");
 			}
 			/*if (CurrentUserLevel() == 2) {
 				$_SESSION['MyReportCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE (`status` in (3) AND `departments` = '".$_SESSION['Department']."') OR (`status` in (0) AND `staff_id` = '".$_SESSION['Staff_ID']."')");

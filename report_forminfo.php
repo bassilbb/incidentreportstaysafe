@@ -43,6 +43,7 @@ class creport_form extends cTable {
 	var $initiator_comment;
 	var $report_by;
 	var $datetime_resolved;
+	var $assign;
 	var $assign_task;
 	var $approval_action;
 	var $approval_comment;
@@ -293,6 +294,14 @@ class creport_form extends cTable {
 		$this->datetime_resolved->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectDateDMY"));
 		$this->fields['datetime_resolved'] = &$this->datetime_resolved;
 
+		// assign
+		$this->assign = new cField('report_form', 'report_form', 'x_assign', 'assign', '`assign`', '`assign`', 3, -1, FALSE, '`assign`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->assign->Sortable = TRUE; // Allow sort
+		$this->assign->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->assign->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
+		$this->assign->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->fields['assign'] = &$this->assign;
+
 		// assign_task
 		$this->assign_task = new cField('report_form', 'report_form', 'x_assign_task', 'assign_task', '`assign_task`', '`assign_task`', 3, -1, FALSE, '`assign_task`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->assign_task->Sortable = TRUE; // Allow sort
@@ -407,8 +416,10 @@ class creport_form extends cTable {
 		$this->fields['verified_by'] = &$this->verified_by;
 
 		// remainder
-		$this->remainder = new cField('report_form', 'report_form', 'x_remainder', 'remainder', '`remainder`', '`remainder`', 200, -1, FALSE, '`remainder`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->remainder = new cField('report_form', 'report_form', 'x_remainder', 'remainder', '`remainder`', '`remainder`', 200, -1, FALSE, '`remainder`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->remainder->Sortable = TRUE; // Allow sort
+		$this->remainder->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->remainder->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['remainder'] = &$this->remainder;
 	}
 
@@ -977,6 +988,7 @@ class creport_form extends cTable {
 		$this->initiator_comment->setDbValue($rs->fields('initiator_comment'));
 		$this->report_by->setDbValue($rs->fields('report_by'));
 		$this->datetime_resolved->setDbValue($rs->fields('datetime_resolved'));
+		$this->assign->setDbValue($rs->fields('assign'));
 		$this->assign_task->setDbValue($rs->fields('assign_task'));
 		$this->approval_action->setDbValue($rs->fields('approval_action'));
 		$this->approval_comment->setDbValue($rs->fields('approval_comment'));
@@ -1036,6 +1048,7 @@ class creport_form extends cTable {
 		// initiator_comment
 		// report_by
 		// datetime_resolved
+		// assign
 		// assign_task
 		// approval_action
 		// approval_comment
@@ -1534,14 +1547,14 @@ class creport_form extends cTable {
 		$this->datetime_resolved->ViewValue = ew_FormatDateTime($this->datetime_resolved->ViewValue, 11);
 		$this->datetime_resolved->ViewCustomAttributes = "";
 
-		// assign_task
-		if (strval($this->assign_task->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_task->CurrentValue, EW_DATATYPE_NUMBER, "");
+		// assign
+		if (strval($this->assign->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->assign_task->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+		$this->assign->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->assign_task, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->assign, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
@@ -1549,14 +1562,17 @@ class creport_form extends cTable {
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
 				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->assign_task->ViewValue = $this->assign_task->DisplayValue($arwrk);
+				$this->assign->ViewValue = $this->assign->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->assign_task->ViewValue = $this->assign_task->CurrentValue;
+				$this->assign->ViewValue = $this->assign->CurrentValue;
 			}
 		} else {
-			$this->assign_task->ViewValue = NULL;
+			$this->assign->ViewValue = NULL;
 		}
+		$this->assign->ViewCustomAttributes = "";
+
+		// assign_task
 		$this->assign_task->ViewCustomAttributes = "";
 
 		// approval_action
@@ -1771,7 +1787,28 @@ class creport_form extends cTable {
 		$this->verified_by->ViewCustomAttributes = "";
 
 		// remainder
-		$this->remainder->ViewValue = $this->remainder->CurrentValue;
+		if (strval($this->remainder->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->remainder->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->remainder->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->remainder, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->remainder->ViewValue = $this->remainder->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->remainder->ViewValue = $this->remainder->CurrentValue;
+			}
+		} else {
+			$this->remainder->ViewValue = NULL;
+		}
 		$this->remainder->ViewCustomAttributes = "";
 
 		// id
@@ -1937,6 +1974,11 @@ class creport_form extends cTable {
 		$this->datetime_resolved->LinkCustomAttributes = "";
 		$this->datetime_resolved->HrefValue = "";
 		$this->datetime_resolved->TooltipValue = "";
+
+		// assign
+		$this->assign->LinkCustomAttributes = "";
+		$this->assign->HrefValue = "";
+		$this->assign->TooltipValue = "";
 
 		// assign_task
 		$this->assign_task->LinkCustomAttributes = "";
@@ -2199,6 +2241,10 @@ class creport_form extends cTable {
 		$this->datetime_resolved->EditValue = ew_FormatDateTime($this->datetime_resolved->CurrentValue, 11);
 		$this->datetime_resolved->PlaceHolder = ew_RemoveHtml($this->datetime_resolved->FldCaption());
 
+		// assign
+		$this->assign->EditAttrs["class"] = "form-control";
+		$this->assign->EditCustomAttributes = "";
+
 		// assign_task
 		$this->assign_task->EditAttrs["class"] = "form-control";
 		$this->assign_task->EditCustomAttributes = "";
@@ -2296,8 +2342,6 @@ class creport_form extends cTable {
 		// remainder
 		$this->remainder->EditAttrs["class"] = "form-control";
 		$this->remainder->EditCustomAttributes = "";
-		$this->remainder->EditValue = $this->remainder->CurrentValue;
-		$this->remainder->PlaceHolder = ew_RemoveHtml($this->remainder->FldCaption());
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -2355,7 +2399,7 @@ class creport_form extends cTable {
 					if ($this->initiator_comment->Exportable) $Doc->ExportCaption($this->initiator_comment);
 					if ($this->report_by->Exportable) $Doc->ExportCaption($this->report_by);
 					if ($this->datetime_resolved->Exportable) $Doc->ExportCaption($this->datetime_resolved);
-					if ($this->assign_task->Exportable) $Doc->ExportCaption($this->assign_task);
+					if ($this->assign->Exportable) $Doc->ExportCaption($this->assign);
 					if ($this->approval_action->Exportable) $Doc->ExportCaption($this->approval_action);
 					if ($this->approval_comment->Exportable) $Doc->ExportCaption($this->approval_comment);
 					if ($this->item_name->Exportable) $Doc->ExportCaption($this->item_name);
@@ -2403,6 +2447,7 @@ class creport_form extends cTable {
 					if ($this->initiator_action->Exportable) $Doc->ExportCaption($this->initiator_action);
 					if ($this->report_by->Exportable) $Doc->ExportCaption($this->report_by);
 					if ($this->datetime_resolved->Exportable) $Doc->ExportCaption($this->datetime_resolved);
+					if ($this->assign->Exportable) $Doc->ExportCaption($this->assign);
 					if ($this->assign_task->Exportable) $Doc->ExportCaption($this->assign_task);
 					if ($this->approval_action->Exportable) $Doc->ExportCaption($this->approval_action);
 					if ($this->item_name->Exportable) $Doc->ExportCaption($this->item_name);
@@ -2480,7 +2525,7 @@ class creport_form extends cTable {
 						if ($this->initiator_comment->Exportable) $Doc->ExportField($this->initiator_comment);
 						if ($this->report_by->Exportable) $Doc->ExportField($this->report_by);
 						if ($this->datetime_resolved->Exportable) $Doc->ExportField($this->datetime_resolved);
-						if ($this->assign_task->Exportable) $Doc->ExportField($this->assign_task);
+						if ($this->assign->Exportable) $Doc->ExportField($this->assign);
 						if ($this->approval_action->Exportable) $Doc->ExportField($this->approval_action);
 						if ($this->approval_comment->Exportable) $Doc->ExportField($this->approval_comment);
 						if ($this->item_name->Exportable) $Doc->ExportField($this->item_name);
@@ -2528,6 +2573,7 @@ class creport_form extends cTable {
 						if ($this->initiator_action->Exportable) $Doc->ExportField($this->initiator_action);
 						if ($this->report_by->Exportable) $Doc->ExportField($this->report_by);
 						if ($this->datetime_resolved->Exportable) $Doc->ExportField($this->datetime_resolved);
+						if ($this->assign->Exportable) $Doc->ExportField($this->assign);
 						if ($this->assign_task->Exportable) $Doc->ExportField($this->assign_task);
 						if ($this->approval_action->Exportable) $Doc->ExportField($this->approval_action);
 						if ($this->item_name->Exportable) $Doc->ExportField($this->item_name);
@@ -2715,16 +2761,20 @@ class creport_form extends cTable {
 
 		// Enter your code here
 		if (CurrentUserLevel() == 1) {
-			ew_AddFilter($filter, "`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."' OR (`status` in (4) AND `assign_task` = '".$_SESSION['Staff_ID']."')");
+
+			//ew_AddFilter($filter, "`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."' OR (`status` in (4) AND `assign_task` = '".$_SESSION['Staff_ID']."')");
+			ew_AddFilter($filter, "`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."' OR (`status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."')");
 		}
 	   if (CurrentUserLevel() == 2) {
-				ew_AddFilter($filter, "`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."' OR (`status` in (4) AND `assign_task` = '".$_SESSION['Staff_ID']."')");
+
+				//ew_AddFilter($filter, "`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."' OR (`status` in (4) AND `assign_task` = '".$_SESSION['Staff_ID']."')");
+				ew_AddFilter($filter, "`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."' OR (`status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."')");
 		 }
 		if (CurrentUserLevel() == 3) {
-		   ew_AddFilter($filter, "`status` in (3,6,7) OR (`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."') OR (`status` in (4) AND `assign_task` = '".$_SESSION['Staff_ID']."')");
+		   ew_AddFilter($filter, "`status` in (3,6,7) OR (`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."') OR (`status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."')");
 		}
 		if (CurrentUserLevel() == 4) {
-				ew_AddFilter($filter, "`status` in (3) OR (`status` in (3,6,7) AND `branch` = '".$_SESSION['Branch']."') OR (`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."') OR (`status` in (4) AND `assign_task` = '".$_SESSION['Staff_ID']."')");
+				ew_AddFilter($filter, "`status` in (3) OR (`status` in (3,6,7) AND `branch` = '".$_SESSION['Branch']."') OR (`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."') OR (`status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."')");
 			 }
 		/*if (CurrentUserLevel() == 2) {
 			ew_AddFilter($filter, "(`status` in (3) AND `department` = '".$_SESSION['Department']."') OR (`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."')");
@@ -2899,6 +2949,7 @@ class creport_form extends cTable {
 		$rsnew["verified_datetime"] = ew_CurrentDateTime();
 		$rsnew["verified_by"] = $_SESSION['Staff_ID'];
 		$rsnew["report_by"] = $_SESSION['Staff_ID'];
+		$rsnew["assign_task"] = $_SESSION['Staff_ID'];
 
 		//$rsnew["resolved_by"] = $_SESSION['Staff_ID'];
 		// Officer Only
@@ -3124,6 +3175,7 @@ class creport_form extends cTable {
 			$rsnew["initiator_comment"] = $rsold["initiator_comment"];
 			$rsnew["reason"] = $rsold["reason"];
 
+			//$rsnew["assign_task"] = $rsold["assign_task"];
 		//	$rsnew["closed_by"] = $rsold["closed_by"];
 			//$rsnew["status"] = $rsold["status"];
 
@@ -3191,8 +3243,8 @@ class creport_form extends cTable {
 			$rsnew["incident_venue"] = $rsold["incident_venue"];
 			$rsnew["incident_sub_location"] = $rsold["incident_sub_location"];
 			$rsnew["sub_sub_category"] = $rsold["sub_sub_category"];
-			$rsnew["assign_task"] = $rsold["assign_task"];
 
+			//$rsnew["assign_task"] = $rsold["assign_task"];
 			//$rsnew["closed_by"] = $rsold["closed_by"];
 			//$rsnew["status"] = $rsold["status"];
 
@@ -3201,9 +3253,9 @@ class creport_form extends cTable {
 
 			//$rsnew["resolved_action"] = $rsold["resolved_action"];
 			//$rsnew["resolved_comment"] = $rsold["resolved_comment"];
+			//$rsnew["approval_action"] = $rsold["approval_action"];
+			//$rsnew["approval_comment"] = $rsold["approval_comment"];
 
-			$rsnew["approval_action"] = $rsold["approval_action"];
-			$rsnew["approval_comment"] = $rsold["approval_comment"];
 		}
 
 		// Supervisor
@@ -3553,7 +3605,7 @@ class creport_form extends cTable {
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
 
-		if (CurrentPageID() == "add") {
+			if (CurrentPageID() == "add") {
 				if (CurrentUserLevel() == 1) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staffid->ReadOnly = TRUE;
@@ -3580,7 +3632,7 @@ class creport_form extends cTable {
 					$this->approval_action->Visible = FALSE;
 					$this->approval_comment->Visible = FALSE;
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->Visible = FALSE;
+					$this->assign->Visible = FALSE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -3618,7 +3670,7 @@ class creport_form extends cTable {
 					$this->approval_action->Visible = FALSE;
 					$this->approval_comment->Visible = FALSE;
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->Visible = FALSE;
+					$this->assign->Visible = FALSE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -3656,7 +3708,7 @@ class creport_form extends cTable {
 					$this->approval_action->Visible = FALSE;
 					$this->approval_comment->Visible = FALSE;
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->Visible = TRUE;
+					$this->assign->Visible = TRUE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -3694,7 +3746,7 @@ class creport_form extends cTable {
 					$this->approval_action->Visible = FALSE;
 					$this->approval_comment->Visible = FALSE;
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->Visible = TRUE;
+					$this->assign->Visible = TRUE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -3742,7 +3794,7 @@ class creport_form extends cTable {
 					$this->approval_action->Visible = FALSE;
 					$this->approval_comment->Visible = FALSE;
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->Visible = FALSE;
+					$this->assign->Visible = TRUE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -3755,7 +3807,7 @@ class creport_form extends cTable {
 					$this->quantity_issued->Visible = FALSE;
 					$this->remainder-> Visible= FALSE;
 				}
-				if ((CurrentUserLevel() == 1) && $this->status->CurrentValue == 4 && $this->assign_task->CurrentValue == $_SESSION['Staff_ID']) {
+				if ((CurrentUserLevel() == 1) && $this->status->CurrentValue == 4 && $this->assign->CurrentValue == $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
 					$this->staffid->ReadOnly = TRUE;
@@ -3807,7 +3859,7 @@ class creport_form extends cTable {
 					$this->quantity_issued->Visible = TRUE;
 					$this->remainder-> Visible= FALSE;
 						if ($this->status->CurrentValue == 4) {
-						$this->assign_task->ReadOnly = TRUE;
+						$this->assign->ReadOnly = TRUE;
 						$this->remainder->Visible = FALSE;
 						$this->item_name->Visible = TRUE;
 						$this->quantity_issued->Visible = TRUE;
@@ -3849,7 +3901,7 @@ class creport_form extends cTable {
 					$this->approval_action->Visible = FALSE;
 					$this->approval_comment->Visible = FALSE;
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->Visible = FALSE;
+					$this->assign->Visible = FALSE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -3862,7 +3914,7 @@ class creport_form extends cTable {
 					$this->quantity_issued->Visible = FALSE;
 					$this->remainder-> Visible= FALSE;
 				}
-				if ((CurrentUserLevel() == 2 || CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && $this->status->CurrentValue == 4 && $this->assign_task->CurrentValue == $_SESSION['Staff_ID']) {
+				if ((CurrentUserLevel() == 2 || CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && $this->status->CurrentValue == 4 && $this->assign->CurrentValue == $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
 					$this->staffid->ReadOnly = TRUE;
@@ -3898,7 +3950,7 @@ class creport_form extends cTable {
 					$this->approval_action->ReadOnly = TRUE;
 					$this->approval_comment->ReadOnly = TRUE;
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->ReadOnly = TRUE;
+					$this->assign->ReadOnly = TRUE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -3957,15 +4009,15 @@ class creport_form extends cTable {
 					$this->incident_sub_location->ReadOnly = TRUE;
 					$this->incident_venue->ReadOnly = TRUE;
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->ReadOnly = TRUE;
+					$this->assign->ReadOnly = TRUE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
 					$this->verified_action->Visible = FALSE;
 					$this->verified_comment->Visible = FALSE;
 					$this->verified_by->Visible = FALSE;
-					$this->remainder-> Visible= FALSE;
 
+					//$this->remainder-> Visible= FALSE;
 					//$this->item_name->Visible = FALSE;
 					//$this->quantity_issued->Visible = FALSE;
 
@@ -3975,7 +4027,7 @@ class creport_form extends cTable {
 						$this->approval_action->ReadOnly = TRUE;
 						$this->approval_comment->ReadOnly = TRUE;
 						$this->resolved_by->Visible = FALSE;
-						$this->assign_task->ReadOnly = TRUE;
+						$this->assign->ReadOnly = TRUE;
 						$this->reason->Visible = TRUE;
 						$this->remainder-> Visible= FALSE;
 					} else {
@@ -4015,7 +4067,7 @@ class creport_form extends cTable {
 					$this->approval_action->Visible = FALSE;
 					$this->approval_comment->Visible = FALSE;
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->Visible = TRUE;
+					$this->assign->Visible = TRUE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -4086,12 +4138,12 @@ class creport_form extends cTable {
 					if ($this->status->CurrentValue == 4) {
 							$this->approval_action->ReadOnly = TRUE;
 							$this->approval_comment->ReadOnly = TRUE;
-							$this->assign_task->ReadOnly = TRUE;
+							$this->assign->ReadOnly = TRUE;
 							$this->remainder-> Visible= FALSE;
 						} else {
 							$this->approval_action->Visible = TRUE;
 							$this->approval_comment->Visible = TRUE;
-							$this->assign_task->Visible = TRUE;
+							$this->assign->Visible = TRUE;
 							$this->remainder-> Visible= FALSE;
 						}
 				  }
@@ -4154,12 +4206,12 @@ class creport_form extends cTable {
 					if ($this->status->CurrentValue == 6) {
 							$this->approval_action->ReadOnly = TRUE;
 							$this->approval_comment->ReadOnly = TRUE;
-							$this->assign_task->ReadOnly = TRUE;
+							$this->assign->ReadOnly = TRUE;
 							$this->remainder-> Visible= FALSE;
 						} else {
 							$this->approval_action->Visible = TRUE;
 							$this->approval_comment->Visible = TRUE;
-							$this->assign_task->Visible = TRUE;
+							$this->assign->Visible = TRUE;
 							$this->remainder-> Visible= FALSE;
 						}
 				}
@@ -4197,7 +4249,7 @@ class creport_form extends cTable {
 						$this->approval_action->Visible = TRUE;
 						$this->approval_comment->Visible = TRUE;
 						$this->approved_by->Visible = FALSE;
-						$this->assign_task->Visible = TRUE;
+						$this->assign->Visible = TRUE;
 						$this->last_updated_date->Visible = FALSE;
 						$this->last_updated_by->Visible = FALSE;
 						$this->verified_datetime->Visible = FALSE;
@@ -4246,7 +4298,7 @@ class creport_form extends cTable {
 					//$this->approval_comment->ReadOnly = TRUE;
 
 					$this->approved_by->Visible = FALSE;
-					$this->assign_task->Visible = TRUE;
+					$this->assign->Visible = TRUE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -4260,12 +4312,12 @@ class creport_form extends cTable {
 					if ($this->status->CurrentValue == 7) {
 							$this->approval_action->ReadOnly = TRUE;
 							$this->approval_comment->ReadOnly = TRUE;
-							$this->assign_task->ReadOnly = TRUE;
+							$this->assign->ReadOnly = TRUE;
 							$this->remainder-> Visible= FALSE;
 					} else {
 							$this->approval_action->Visible = TRUE;
 							$this->approval_comment->Visible = TRUE;
-							$this->assign_task->Visible = TRUE;
+							$this->assign->Visible = TRUE;
 							$this->remainder-> Visible= FALSE;
 							}
 				}
@@ -4303,7 +4355,7 @@ class creport_form extends cTable {
 
 					$this->datetime_resolved->Visible = FALSE;
 					$this->datetime_approved->Visible = FALSE;
-					$this->assign_task->Visible = TRUE;
+					$this->assign->Visible = TRUE;
 					$this->last_updated_date->Visible = FALSE;
 					$this->last_updated_by->Visible = FALSE;
 					$this->verified_datetime->Visible = FALSE;
@@ -4347,7 +4399,7 @@ class creport_form extends cTable {
 								$this->resolved_comment->Visible = TRUE;
 								$this->approval_action->ReadOnly = TRUE;
 								$this->approval_comment->ReadOnly = TRUE;
-								$this->assign_task->Visible = TRUE;
+								$this->assign->Visible = TRUE;
 								$this->verified_action->Visible = TRUE;
 								$this->verified_comment->Visible = TRUE;
 								$this->resolved_by->Visible = FALSE;
@@ -4365,8 +4417,7 @@ class creport_form extends cTable {
 								$this->approval_action->Visible = TRUE;
 								$this->approval_comment->Visible = TRUE;
 								$this->approved_by->Visible = FALSE;
-
-								//$this->reason->Visible = FALSE;
+								$this->reason->Visible = FALSE;
 								$this->remainder-> Visible= FALSE;
 					}
 			}
@@ -4397,7 +4448,7 @@ class creport_form extends cTable {
 				$this->duration->CellCssStyle = "color: orange; text-align: left;";
 				$this->amount_paid->CellCssStyle = "color: orange; text-align: left;";
 				$this->incident_sub_location->CellCssStyle = "color: orange; text-align: left;";
-				$this->assign_task->CellCssStyle = "color: orange; text-align: left;";
+				$this->assign->CellCssStyle = "color: orange; text-align: left;";
 				$this->last_updated_date->CellCssStyle = "color: orange; text-align: left;";
 				$this->last_updated_by->CellCssStyle = "color: orange; text-align: left;";
 			}
@@ -4424,7 +4475,7 @@ class creport_form extends cTable {
 				$this->duration->CellCssStyle = "color: red; text-align: left;";
 				$this->amount_paid->CellCssStyle = "color: red; text-align: left;";
 				$this->incident_sub_location->CellCssStyle = "color: red; text-align: left;";
-				$this->assign_task->CellCssStyle = "color: red; text-align: left;";
+				$this->assign->CellCssStyle = "color: red; text-align: left;";
 				$this->last_updated_date->CellCssStyle = "color: red; text-align: left;";
 				$this->last_updated_by->CellCssStyle = "color: red; text-align: left;";
 			}
@@ -4451,7 +4502,7 @@ class creport_form extends cTable {
 				$this->duration->CellCssStyle = "color: blue; text-align: left;";
 				$this->amount_paid->CellCssStyle = "color: blue; text-align: left;";
 				$this->incident_sub_location->CellCssStyle = "color: blue; text-align: left;";
-				$this->assign_task->CellCssStyle = "color: blue; text-align: left;";
+				$this->assign->CellCssStyle = "color: blue; text-align: left;";
 				$this->last_updated_date->CellCssStyle = "color: blue; text-align: left;";
 				$this->last_updated_by->CellCssStyle = "color: blue; text-align: left;";
 			}
@@ -4478,7 +4529,7 @@ class creport_form extends cTable {
 				$this->duration->CellCssStyle = "color: teal; text-align: left;";
 				$this->amount_paid->CellCssStyle = "color: teal; text-align: left;";
 				$this->incident_sub_location->CellCssStyle = "color: teal; text-align: left;";
-				$this->assign_task->CellCssStyle = "color: teal; text-align: left;";
+				$this->assign->CellCssStyle = "color: teal; text-align: left;";
 				$this->last_updated_date->CellCssStyle = "color: teal; text-align: left;";
 				$this->last_updated_by->CellCssStyle = "color: teal; text-align: left;";
 			}
@@ -4505,7 +4556,7 @@ class creport_form extends cTable {
 				$this->duration->CellCssStyle = "color: purple; text-align: left;";
 				$this->amount_paid->CellCssStyle = "color: purple; text-align: left;";
 				$this->incident_sub_location->CellCssStyle = "color: purple; text-align: left;";
-				$this->assign_task->CellCssStyle = "color: purple; text-align: left;";
+				$this->assign->CellCssStyle = "color: purple; text-align: left;";
 				$this->last_updated_date->CellCssStyle = "color: purple; text-align: left;";
 				$this->last_updated_by->CellCssStyle = "color: purple; text-align: left;";
 				$this->reason->CellCssStyle = "color: purple; text-align: left;";
@@ -4533,7 +4584,7 @@ class creport_form extends cTable {
 				$this->duration->CellCssStyle = "color: coral; text-align: left;";
 				$this->amount_paid->CellCssStyle = "color: coral; text-align: left;";
 				$this->incident_sub_location->CellCssStyle = "color: coral; text-align: left;";
-				$this->assign_task->CellCssStyle = "color: coral; text-align: left;";
+				$this->assign->CellCssStyle = "color: coral; text-align: left;";
 				$this->last_updated_date->CellCssStyle = "color: coral; text-align: left;";
 				$this->last_updated_by->CellCssStyle = "color: coral; text-align: left;";
 				$this->reason->CellCssStyle = "color: coral; text-align: left;";
@@ -4561,7 +4612,7 @@ class creport_form extends cTable {
 				$this->duration->CellCssStyle = "color: red; text-align: left;";
 				$this->amount_paid->CellCssStyle = "color: red; text-align: left;";
 				$this->incident_sub_location->CellCssStyle = "color: red; text-align: left;";
-				$this->assign_task->CellCssStyle = "color: red; text-align: left;";
+				$this->assign->CellCssStyle = "color: red; text-align: left;";
 				$this->last_updated_date->CellCssStyle = "color: red; text-align: left;";
 				$this->last_updated_by->CellCssStyle = "color: red; text-align: left;";
 				$this->reason->CellCssStyle = "color: red; text-align: left;";
@@ -4590,7 +4641,7 @@ class creport_form extends cTable {
 				$this->duration->CellCssStyle = "color: green; text-align: left;";
 				$this->amount_paid->CellCssStyle = "color: green; text-align: left;";
 				$this->incident_sub_location->CellCssStyle = "color: green; text-align: left;";
-				$this->assign_task->CellCssStyle = "color: green; text-align: left;";
+				$this->assign->CellCssStyle = "color: green; text-align: left;";
 				$this->last_updated_date->CellCssStyle = "color: green; text-align: left;";
 				$this->last_updated_by->CellCssStyle = "color: green; text-align: left;";
 				$this->job_assessment->CellCssStyle = "color: green; text-align: left;";
