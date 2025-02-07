@@ -7,6 +7,12 @@ $pc_issuance = NULL;
 // Table class for pc_issuance
 //
 class cpc_issuance extends cTable {
+	var $AuditTrailOnAdd = TRUE;
+	var $AuditTrailOnEdit = TRUE;
+	var $AuditTrailOnDelete = TRUE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 	var $id;
 	var $issued_date;
 	var $reference_id;
@@ -25,6 +31,7 @@ class cpc_issuance extends cTable {
 	var $retriever_action;
 	var $retriever_comment;
 	var $retrieved_by;
+	var $staff_id;
 
 	//
 	// Table class constructor
@@ -65,9 +72,8 @@ class cpc_issuance extends cTable {
 		$this->fields['id'] = &$this->id;
 
 		// issued_date
-		$this->issued_date = new cField('pc_issuance', 'pc_issuance', 'x_issued_date', 'issued_date', '`issued_date`', ew_CastDateFieldForLike('`issued_date`', 0, "DB"), 135, 0, FALSE, '`issued_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->issued_date = new cField('pc_issuance', 'pc_issuance', 'x_issued_date', 'issued_date', '`issued_date`', ew_CastDateFieldForLike('`issued_date`', 17, "DB"), 135, 17, FALSE, '`issued_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->issued_date->Sortable = TRUE; // Allow sort
-		$this->issued_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['issued_date'] = &$this->issued_date;
 
 		// reference_id
@@ -91,32 +97,38 @@ class cpc_issuance extends cTable {
 		$this->fields['color'] = &$this->color;
 
 		// department
-		$this->department = new cField('pc_issuance', 'pc_issuance', 'x_department', 'department', '`department`', '`department`', 3, -1, FALSE, '`department`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->department = new cField('pc_issuance', 'pc_issuance', 'x_department', 'department', '`department`', '`department`', 3, -1, FALSE, '`department`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->department->Sortable = TRUE; // Allow sort
+		$this->department->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->department->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->department->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['department'] = &$this->department;
 
 		// designation
-		$this->designation = new cField('pc_issuance', 'pc_issuance', 'x_designation', 'designation', '`designation`', '`designation`', 3, -1, FALSE, '`designation`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->designation = new cField('pc_issuance', 'pc_issuance', 'x_designation', 'designation', '`designation`', '`designation`', 3, -1, FALSE, '`designation`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->designation->Sortable = TRUE; // Allow sort
-		$this->designation->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->designation->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->designation->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['designation'] = &$this->designation;
 
 		// assign_to
-		$this->assign_to = new cField('pc_issuance', 'pc_issuance', 'x_assign_to', 'assign_to', '`assign_to`', '`assign_to`', 3, -1, FALSE, '`assign_to`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->assign_to = new cField('pc_issuance', 'pc_issuance', 'x_assign_to', 'assign_to', '`assign_to`', '`assign_to`', 3, -1, FALSE, '`assign_to`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->assign_to->Sortable = TRUE; // Allow sort
+		$this->assign_to->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->assign_to->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->assign_to->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['assign_to'] = &$this->assign_to;
 
 		// date_assign
-		$this->date_assign = new cField('pc_issuance', 'pc_issuance', 'x_date_assign', 'date_assign', '`date_assign`', ew_CastDateFieldForLike('`date_assign`', 0, "DB"), 135, 0, FALSE, '`date_assign`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date_assign = new cField('pc_issuance', 'pc_issuance', 'x_date_assign', 'date_assign', '`date_assign`', ew_CastDateFieldForLike('`date_assign`', 17, "DB"), 135, 17, FALSE, '`date_assign`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->date_assign->Sortable = TRUE; // Allow sort
-		$this->date_assign->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
+		$this->date_assign->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
 		$this->fields['date_assign'] = &$this->date_assign;
 
 		// assign_action
-		$this->assign_action = new cField('pc_issuance', 'pc_issuance', 'x_assign_action', 'assign_action', '`assign_action`', '`assign_action`', 3, -1, FALSE, '`assign_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->assign_action = new cField('pc_issuance', 'pc_issuance', 'x_assign_action', 'assign_action', '`assign_action`', '`assign_action`', 3, -1, FALSE, '`assign_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->assign_action->Sortable = TRUE; // Allow sort
+		$this->assign_action->OptionCount = 2;
 		$this->assign_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['assign_action'] = &$this->assign_action;
 
@@ -126,26 +138,28 @@ class cpc_issuance extends cTable {
 		$this->fields['assign_comment'] = &$this->assign_comment;
 
 		// assign_by
-		$this->assign_by = new cField('pc_issuance', 'pc_issuance', 'x_assign_by', 'assign_by', '`assign_by`', '`assign_by`', 3, -1, FALSE, '`assign_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->assign_by = new cField('pc_issuance', 'pc_issuance', 'x_assign_by', 'assign_by', '`assign_by`', '`assign_by`', 3, -1, FALSE, '`assign_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->assign_by->Sortable = TRUE; // Allow sort
-		$this->assign_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->assign_by->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->assign_by->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['assign_by'] = &$this->assign_by;
 
 		// statuse
-		$this->statuse = new cField('pc_issuance', 'pc_issuance', 'x_statuse', 'statuse', '`statuse`', '`statuse`', 200, -1, FALSE, '`statuse`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->statuse = new cField('pc_issuance', 'pc_issuance', 'x_statuse', 'statuse', '`statuse`', '`statuse`', 200, -1, FALSE, '`statuse`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->statuse->Sortable = TRUE; // Allow sort
+		$this->statuse->FldSelectMultiple = TRUE; // Multiple select
 		$this->fields['statuse'] = &$this->statuse;
 
 		// date_retrieved
-		$this->date_retrieved = new cField('pc_issuance', 'pc_issuance', 'x_date_retrieved', 'date_retrieved', '`date_retrieved`', ew_CastDateFieldForLike('`date_retrieved`', 0, "DB"), 135, 0, FALSE, '`date_retrieved`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date_retrieved = new cField('pc_issuance', 'pc_issuance', 'x_date_retrieved', 'date_retrieved', '`date_retrieved`', ew_CastDateFieldForLike('`date_retrieved`', 17, "DB"), 135, 17, FALSE, '`date_retrieved`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->date_retrieved->Sortable = TRUE; // Allow sort
-		$this->date_retrieved->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
+		$this->date_retrieved->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
 		$this->fields['date_retrieved'] = &$this->date_retrieved;
 
 		// retriever_action
-		$this->retriever_action = new cField('pc_issuance', 'pc_issuance', 'x_retriever_action', 'retriever_action', '`retriever_action`', '`retriever_action`', 3, -1, FALSE, '`retriever_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->retriever_action = new cField('pc_issuance', 'pc_issuance', 'x_retriever_action', 'retriever_action', '`retriever_action`', '`retriever_action`', 3, -1, FALSE, '`retriever_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->retriever_action->Sortable = TRUE; // Allow sort
-		$this->retriever_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->retriever_action->OptionCount = 2;
 		$this->fields['retriever_action'] = &$this->retriever_action;
 
 		// retriever_comment
@@ -154,10 +168,18 @@ class cpc_issuance extends cTable {
 		$this->fields['retriever_comment'] = &$this->retriever_comment;
 
 		// retrieved_by
-		$this->retrieved_by = new cField('pc_issuance', 'pc_issuance', 'x_retrieved_by', 'retrieved_by', '`retrieved_by`', '`retrieved_by`', 3, -1, FALSE, '`retrieved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->retrieved_by = new cField('pc_issuance', 'pc_issuance', 'x_retrieved_by', 'retrieved_by', '`retrieved_by`', '`retrieved_by`', 3, -1, FALSE, '`retrieved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->retrieved_by->Sortable = TRUE; // Allow sort
+		$this->retrieved_by->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->retrieved_by->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->retrieved_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['retrieved_by'] = &$this->retrieved_by;
+
+		// staff_id
+		$this->staff_id = new cField('pc_issuance', 'pc_issuance', 'x_staff_id', 'staff_id', '`staff_id`', '`staff_id`', 3, -1, FALSE, '`staff_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->staff_id->Sortable = TRUE; // Allow sort
+		$this->staff_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->fields['staff_id'] = &$this->staff_id;
 	}
 
 	// Field Visibility
@@ -431,6 +453,8 @@ class cpc_issuance extends cTable {
 			// Get insert id if necessary
 			$this->id->setDbValue($conn->Insert_ID());
 			$rs['id'] = $this->id->DbValue;
+			if ($this->AuditTrailOnAdd)
+				$this->WriteAuditTrailOnAdd($rs);
 		}
 		return $bInsert;
 	}
@@ -457,6 +481,12 @@ class cpc_issuance extends cTable {
 	function Update(&$rs, $where = "", $rsold = NULL, $curfilter = TRUE) {
 		$conn = &$this->Connection();
 		$bUpdate = $conn->Execute($this->UpdateSQL($rs, $where, $curfilter));
+		if ($bUpdate && $this->AuditTrailOnEdit) {
+			$rsaudit = $rs;
+			$fldname = 'id';
+			if (!array_key_exists($fldname, $rsaudit)) $rsaudit[$fldname] = $rsold[$fldname];
+			$this->WriteAuditTrailOnEdit($rsold, $rsaudit);
+		}
 		return $bUpdate;
 	}
 
@@ -484,6 +514,8 @@ class cpc_issuance extends cTable {
 		$conn = &$this->Connection();
 		if ($bDelete)
 			$bDelete = $conn->Execute($this->DeleteSQL($rs, $where, $curfilter));
+		if ($bDelete && $this->AuditTrailOnDelete)
+			$this->WriteAuditTrailOnDelete($rs);
 		return $bDelete;
 	}
 
@@ -703,6 +735,7 @@ class cpc_issuance extends cTable {
 		$this->retriever_action->setDbValue($rs->fields('retriever_action'));
 		$this->retriever_comment->setDbValue($rs->fields('retriever_comment'));
 		$this->retrieved_by->setDbValue($rs->fields('retrieved_by'));
+		$this->staff_id->setDbValue($rs->fields('staff_id'));
 	}
 
 	// Render list row values
@@ -731,6 +764,7 @@ class cpc_issuance extends cTable {
 		// retriever_action
 		// retriever_comment
 		// retrieved_by
+		// staff_id
 		// id
 
 		$this->id->ViewValue = $this->id->CurrentValue;
@@ -738,7 +772,7 @@ class cpc_issuance extends cTable {
 
 		// issued_date
 		$this->issued_date->ViewValue = $this->issued_date->CurrentValue;
-		$this->issued_date->ViewValue = ew_FormatDateTime($this->issued_date->ViewValue, 0);
+		$this->issued_date->ViewValue = ew_FormatDateTime($this->issued_date->ViewValue, 17);
 		$this->issued_date->ViewCustomAttributes = "";
 
 		// reference_id
@@ -758,24 +792,88 @@ class cpc_issuance extends cTable {
 		$this->color->ViewCustomAttributes = "";
 
 		// department
-		$this->department->ViewValue = $this->department->CurrentValue;
+		if (strval($this->department->CurrentValue) <> "") {
+			$sFilterWrk = "`department_id`" . ew_SearchString("=", $this->department->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
+		$sWhereWrk = "";
+		$this->department->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->department->ViewValue = $this->department->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->department->ViewValue = $this->department->CurrentValue;
+			}
+		} else {
+			$this->department->ViewValue = NULL;
+		}
 		$this->department->ViewCustomAttributes = "";
 
 		// designation
-		$this->designation->ViewValue = $this->designation->CurrentValue;
+		if (strval($this->designation->CurrentValue) <> "") {
+			$sFilterWrk = "`code`" . ew_SearchString("=", $this->designation->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `code`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `designation`";
+		$sWhereWrk = "";
+		$this->designation->LookupFilters = array("dx1" => '`description`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->designation, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+		$sSqlWrk .= " ORDER BY `code` ASC";
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->designation->ViewValue = $this->designation->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->designation->ViewValue = $this->designation->CurrentValue;
+			}
+		} else {
+			$this->designation->ViewValue = NULL;
+		}
 		$this->designation->ViewCustomAttributes = "";
 
 		// assign_to
-		$this->assign_to->ViewValue = $this->assign_to->CurrentValue;
+		if (strval($this->assign_to->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_to->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->assign_to->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->assign_to, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+		$sSqlWrk .= " ORDER BY `id` ASC";
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->assign_to->ViewValue = $this->assign_to->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->assign_to->ViewValue = $this->assign_to->CurrentValue;
+			}
+		} else {
+			$this->assign_to->ViewValue = NULL;
+		}
 		$this->assign_to->ViewCustomAttributes = "";
 
 		// date_assign
 		$this->date_assign->ViewValue = $this->date_assign->CurrentValue;
-		$this->date_assign->ViewValue = ew_FormatDateTime($this->date_assign->ViewValue, 0);
+		$this->date_assign->ViewValue = ew_FormatDateTime($this->date_assign->ViewValue, 17);
 		$this->date_assign->ViewCustomAttributes = "";
 
 		// assign_action
-		$this->assign_action->ViewValue = $this->assign_action->CurrentValue;
+		if (strval($this->assign_action->CurrentValue) <> "") {
+			$this->assign_action->ViewValue = $this->assign_action->OptionCaption($this->assign_action->CurrentValue);
+		} else {
+			$this->assign_action->ViewValue = NULL;
+		}
 		$this->assign_action->ViewCustomAttributes = "";
 
 		// assign_comment
@@ -783,20 +881,75 @@ class cpc_issuance extends cTable {
 		$this->assign_comment->ViewCustomAttributes = "";
 
 		// assign_by
-		$this->assign_by->ViewValue = $this->assign_by->CurrentValue;
+		if (strval($this->assign_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->assign_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->assign_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->assign_by->ViewValue = $this->assign_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->assign_by->ViewValue = $this->assign_by->CurrentValue;
+			}
+		} else {
+			$this->assign_by->ViewValue = NULL;
+		}
 		$this->assign_by->ViewCustomAttributes = "";
 
 		// statuse
-		$this->statuse->ViewValue = $this->statuse->CurrentValue;
+		if (strval($this->statuse->CurrentValue) <> "") {
+			$arwrk = explode(",", $this->statuse->CurrentValue);
+			$sFilterWrk = "";
+			foreach ($arwrk as $wrk) {
+				if ($sFilterWrk <> "") $sFilterWrk .= " OR ";
+				$sFilterWrk .= "`id`" . ew_SearchString("=", trim($wrk), EW_DATATYPE_NUMBER, "");
+			}
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `system_status`";
+		$sWhereWrk = "";
+		$this->statuse->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->statuse, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$this->statuse->ViewValue = "";
+				$ari = 0;
+				while (!$rswrk->EOF) {
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('DispFld');
+					$this->statuse->ViewValue .= $this->statuse->DisplayValue($arwrk);
+					$rswrk->MoveNext();
+					if (!$rswrk->EOF) $this->statuse->ViewValue .= ew_ViewOptionSeparator($ari); // Separate Options
+					$ari++;
+				}
+				$rswrk->Close();
+			} else {
+				$this->statuse->ViewValue = $this->statuse->CurrentValue;
+			}
+		} else {
+			$this->statuse->ViewValue = NULL;
+		}
 		$this->statuse->ViewCustomAttributes = "";
 
 		// date_retrieved
 		$this->date_retrieved->ViewValue = $this->date_retrieved->CurrentValue;
-		$this->date_retrieved->ViewValue = ew_FormatDateTime($this->date_retrieved->ViewValue, 0);
+		$this->date_retrieved->ViewValue = ew_FormatDateTime($this->date_retrieved->ViewValue, 17);
 		$this->date_retrieved->ViewCustomAttributes = "";
 
 		// retriever_action
-		$this->retriever_action->ViewValue = $this->retriever_action->CurrentValue;
+		if (strval($this->retriever_action->CurrentValue) <> "") {
+			$this->retriever_action->ViewValue = $this->retriever_action->OptionCaption($this->retriever_action->CurrentValue);
+		} else {
+			$this->retriever_action->ViewValue = NULL;
+		}
 		$this->retriever_action->ViewCustomAttributes = "";
 
 		// retriever_comment
@@ -804,8 +957,53 @@ class cpc_issuance extends cTable {
 		$this->retriever_comment->ViewCustomAttributes = "";
 
 		// retrieved_by
-		$this->retrieved_by->ViewValue = $this->retrieved_by->CurrentValue;
+		if (strval($this->retrieved_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->retrieved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->retrieved_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->retrieved_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->retrieved_by->ViewValue = $this->retrieved_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->retrieved_by->ViewValue = $this->retrieved_by->CurrentValue;
+			}
+		} else {
+			$this->retrieved_by->ViewValue = NULL;
+		}
 		$this->retrieved_by->ViewCustomAttributes = "";
+
+		// staff_id
+		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
+		if (strval($this->staff_id->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->staff_id->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->staff_id->ViewValue = $this->staff_id->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
+			}
+		} else {
+			$this->staff_id->ViewValue = NULL;
+		}
+		$this->staff_id->ViewCustomAttributes = "";
 
 		// id
 		$this->id->LinkCustomAttributes = "";
@@ -897,6 +1095,11 @@ class cpc_issuance extends cTable {
 		$this->retrieved_by->HrefValue = "";
 		$this->retrieved_by->TooltipValue = "";
 
+		// staff_id
+		$this->staff_id->LinkCustomAttributes = "";
+		$this->staff_id->HrefValue = "";
+		$this->staff_id->TooltipValue = "";
+
 		// Call Row Rendered event
 		$this->Row_Rendered();
 
@@ -920,7 +1123,7 @@ class cpc_issuance extends cTable {
 		// issued_date
 		$this->issued_date->EditAttrs["class"] = "form-control";
 		$this->issued_date->EditCustomAttributes = "";
-		$this->issued_date->EditValue = ew_FormatDateTime($this->issued_date->CurrentValue, 8);
+		$this->issued_date->EditValue = ew_FormatDateTime($this->issued_date->CurrentValue, 17);
 		$this->issued_date->PlaceHolder = ew_RemoveHtml($this->issued_date->FldCaption());
 
 		// reference_id
@@ -950,32 +1153,24 @@ class cpc_issuance extends cTable {
 		// department
 		$this->department->EditAttrs["class"] = "form-control";
 		$this->department->EditCustomAttributes = "";
-		$this->department->EditValue = $this->department->CurrentValue;
-		$this->department->PlaceHolder = ew_RemoveHtml($this->department->FldCaption());
 
 		// designation
 		$this->designation->EditAttrs["class"] = "form-control";
 		$this->designation->EditCustomAttributes = "";
-		$this->designation->EditValue = $this->designation->CurrentValue;
-		$this->designation->PlaceHolder = ew_RemoveHtml($this->designation->FldCaption());
 
 		// assign_to
 		$this->assign_to->EditAttrs["class"] = "form-control";
 		$this->assign_to->EditCustomAttributes = "";
-		$this->assign_to->EditValue = $this->assign_to->CurrentValue;
-		$this->assign_to->PlaceHolder = ew_RemoveHtml($this->assign_to->FldCaption());
 
 		// date_assign
 		$this->date_assign->EditAttrs["class"] = "form-control";
 		$this->date_assign->EditCustomAttributes = "";
-		$this->date_assign->EditValue = ew_FormatDateTime($this->date_assign->CurrentValue, 8);
+		$this->date_assign->EditValue = ew_FormatDateTime($this->date_assign->CurrentValue, 17);
 		$this->date_assign->PlaceHolder = ew_RemoveHtml($this->date_assign->FldCaption());
 
 		// assign_action
-		$this->assign_action->EditAttrs["class"] = "form-control";
 		$this->assign_action->EditCustomAttributes = "";
-		$this->assign_action->EditValue = $this->assign_action->CurrentValue;
-		$this->assign_action->PlaceHolder = ew_RemoveHtml($this->assign_action->FldCaption());
+		$this->assign_action->EditValue = $this->assign_action->Options(FALSE);
 
 		// assign_comment
 		$this->assign_comment->EditAttrs["class"] = "form-control";
@@ -986,26 +1181,20 @@ class cpc_issuance extends cTable {
 		// assign_by
 		$this->assign_by->EditAttrs["class"] = "form-control";
 		$this->assign_by->EditCustomAttributes = "";
-		$this->assign_by->EditValue = $this->assign_by->CurrentValue;
-		$this->assign_by->PlaceHolder = ew_RemoveHtml($this->assign_by->FldCaption());
 
 		// statuse
 		$this->statuse->EditAttrs["class"] = "form-control";
 		$this->statuse->EditCustomAttributes = "";
-		$this->statuse->EditValue = $this->statuse->CurrentValue;
-		$this->statuse->PlaceHolder = ew_RemoveHtml($this->statuse->FldCaption());
 
 		// date_retrieved
 		$this->date_retrieved->EditAttrs["class"] = "form-control";
 		$this->date_retrieved->EditCustomAttributes = "";
-		$this->date_retrieved->EditValue = ew_FormatDateTime($this->date_retrieved->CurrentValue, 8);
+		$this->date_retrieved->EditValue = ew_FormatDateTime($this->date_retrieved->CurrentValue, 17);
 		$this->date_retrieved->PlaceHolder = ew_RemoveHtml($this->date_retrieved->FldCaption());
 
 		// retriever_action
-		$this->retriever_action->EditAttrs["class"] = "form-control";
 		$this->retriever_action->EditCustomAttributes = "";
-		$this->retriever_action->EditValue = $this->retriever_action->CurrentValue;
-		$this->retriever_action->PlaceHolder = ew_RemoveHtml($this->retriever_action->FldCaption());
+		$this->retriever_action->EditValue = $this->retriever_action->Options(FALSE);
 
 		// retriever_comment
 		$this->retriever_comment->EditAttrs["class"] = "form-control";
@@ -1016,8 +1205,12 @@ class cpc_issuance extends cTable {
 		// retrieved_by
 		$this->retrieved_by->EditAttrs["class"] = "form-control";
 		$this->retrieved_by->EditCustomAttributes = "";
-		$this->retrieved_by->EditValue = $this->retrieved_by->CurrentValue;
-		$this->retrieved_by->PlaceHolder = ew_RemoveHtml($this->retrieved_by->FldCaption());
+
+		// staff_id
+		$this->staff_id->EditAttrs["class"] = "form-control";
+		$this->staff_id->EditCustomAttributes = "";
+		$this->staff_id->EditValue = $this->staff_id->CurrentValue;
+		$this->staff_id->PlaceHolder = ew_RemoveHtml($this->staff_id->FldCaption());
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -1064,6 +1257,7 @@ class cpc_issuance extends cTable {
 					if ($this->retriever_action->Exportable) $Doc->ExportCaption($this->retriever_action);
 					if ($this->retriever_comment->Exportable) $Doc->ExportCaption($this->retriever_comment);
 					if ($this->retrieved_by->Exportable) $Doc->ExportCaption($this->retrieved_by);
+					if ($this->staff_id->Exportable) $Doc->ExportCaption($this->staff_id);
 				} else {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->issued_date->Exportable) $Doc->ExportCaption($this->issued_date);
@@ -1081,6 +1275,7 @@ class cpc_issuance extends cTable {
 					if ($this->date_retrieved->Exportable) $Doc->ExportCaption($this->date_retrieved);
 					if ($this->retriever_action->Exportable) $Doc->ExportCaption($this->retriever_action);
 					if ($this->retrieved_by->Exportable) $Doc->ExportCaption($this->retrieved_by);
+					if ($this->staff_id->Exportable) $Doc->ExportCaption($this->staff_id);
 				}
 				$Doc->EndExportRow();
 			}
@@ -1130,6 +1325,7 @@ class cpc_issuance extends cTable {
 						if ($this->retriever_action->Exportable) $Doc->ExportField($this->retriever_action);
 						if ($this->retriever_comment->Exportable) $Doc->ExportField($this->retriever_comment);
 						if ($this->retrieved_by->Exportable) $Doc->ExportField($this->retrieved_by);
+						if ($this->staff_id->Exportable) $Doc->ExportField($this->staff_id);
 					} else {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->issued_date->Exportable) $Doc->ExportField($this->issued_date);
@@ -1147,6 +1343,7 @@ class cpc_issuance extends cTable {
 						if ($this->date_retrieved->Exportable) $Doc->ExportField($this->date_retrieved);
 						if ($this->retriever_action->Exportable) $Doc->ExportField($this->retriever_action);
 						if ($this->retrieved_by->Exportable) $Doc->ExportField($this->retrieved_by);
+						if ($this->staff_id->Exportable) $Doc->ExportField($this->staff_id);
 					}
 					$Doc->EndExportRow($RowCnt);
 				}
@@ -1185,6 +1382,129 @@ class cpc_issuance extends cTable {
 			return ew_ArrayToJson($rsarr);
 		} else {
 			return FALSE;
+		}
+	}
+
+	// Write Audit Trail start/end for grid update
+	function WriteAuditTrailDummy($typ) {
+		$table = 'pc_issuance';
+		$usr = CurrentUserName();
+		ew_WriteAuditTrail("log", ew_StdCurrentDateTime(), ew_ScriptName(), $usr, $typ, $table, "", "", "", "");
+	}
+
+	// Write Audit Trail (add page)
+	function WriteAuditTrailOnAdd(&$rs) {
+		global $Language;
+		if (!$this->AuditTrailOnAdd) return;
+		$table = 'pc_issuance';
+
+		// Get key value
+		$key = "";
+		if ($key <> "") $key .= $GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rs['id'];
+
+		// Write Audit Trail
+		$dt = ew_StdCurrentDateTime();
+		$id = ew_ScriptName();
+		$usr = CurrentUserName();
+		foreach (array_keys($rs) as $fldname) {
+			if (array_key_exists($fldname, $this->fields) && $this->fields[$fldname]->FldDataType <> EW_DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->FldHtmlTag == "PASSWORD") {
+					$newvalue = $Language->Phrase("PasswordMask"); // Password Field
+				} elseif ($this->fields[$fldname]->FldDataType == EW_DATATYPE_MEMO) {
+					if (EW_AUDIT_TRAIL_TO_DATABASE)
+						$newvalue = $rs[$fldname];
+					else
+						$newvalue = "[MEMO]"; // Memo Field
+				} elseif ($this->fields[$fldname]->FldDataType == EW_DATATYPE_XML) {
+					$newvalue = "[XML]"; // XML Field
+				} else {
+					$newvalue = $rs[$fldname];
+				}
+				ew_WriteAuditTrail("log", $dt, $id, $usr, "A", $table, $fldname, $key, "", $newvalue);
+			}
+		}
+	}
+
+	// Write Audit Trail (edit page)
+	function WriteAuditTrailOnEdit(&$rsold, &$rsnew) {
+		global $Language;
+		if (!$this->AuditTrailOnEdit) return;
+		$table = 'pc_issuance';
+
+		// Get key value
+		$key = "";
+		if ($key <> "") $key .= $GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rsold['id'];
+
+		// Write Audit Trail
+		$dt = ew_StdCurrentDateTime();
+		$id = ew_ScriptName();
+		$usr = CurrentUserName();
+		foreach (array_keys($rsnew) as $fldname) {
+			if (array_key_exists($fldname, $this->fields) && array_key_exists($fldname, $rsold) && $this->fields[$fldname]->FldDataType <> EW_DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->FldDataType == EW_DATATYPE_DATE) { // DateTime field
+					$modified = (ew_FormatDateTime($rsold[$fldname], 0) <> ew_FormatDateTime($rsnew[$fldname], 0));
+				} else {
+					$modified = !ew_CompareValue($rsold[$fldname], $rsnew[$fldname]);
+				}
+				if ($modified) {
+					if ($this->fields[$fldname]->FldHtmlTag == "PASSWORD") { // Password Field
+						$oldvalue = $Language->Phrase("PasswordMask");
+						$newvalue = $Language->Phrase("PasswordMask");
+					} elseif ($this->fields[$fldname]->FldDataType == EW_DATATYPE_MEMO) { // Memo field
+						if (EW_AUDIT_TRAIL_TO_DATABASE) {
+							$oldvalue = $rsold[$fldname];
+							$newvalue = $rsnew[$fldname];
+						} else {
+							$oldvalue = "[MEMO]";
+							$newvalue = "[MEMO]";
+						}
+					} elseif ($this->fields[$fldname]->FldDataType == EW_DATATYPE_XML) { // XML field
+						$oldvalue = "[XML]";
+						$newvalue = "[XML]";
+					} else {
+						$oldvalue = $rsold[$fldname];
+						$newvalue = $rsnew[$fldname];
+					}
+					ew_WriteAuditTrail("log", $dt, $id, $usr, "U", $table, $fldname, $key, $oldvalue, $newvalue);
+				}
+			}
+		}
+	}
+
+	// Write Audit Trail (delete page)
+	function WriteAuditTrailOnDelete(&$rs) {
+		global $Language;
+		if (!$this->AuditTrailOnDelete) return;
+		$table = 'pc_issuance';
+
+		// Get key value
+		$key = "";
+		if ($key <> "")
+			$key .= $GLOBALS["EW_COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rs['id'];
+
+		// Write Audit Trail
+		$dt = ew_StdCurrentDateTime();
+		$id = ew_ScriptName();
+		$curUser = CurrentUserName();
+		foreach (array_keys($rs) as $fldname) {
+			if (array_key_exists($fldname, $this->fields) && $this->fields[$fldname]->FldDataType <> EW_DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->FldHtmlTag == "PASSWORD") {
+					$oldvalue = $Language->Phrase("PasswordMask"); // Password Field
+				} elseif ($this->fields[$fldname]->FldDataType == EW_DATATYPE_MEMO) {
+					if (EW_AUDIT_TRAIL_TO_DATABASE)
+						$oldvalue = $rs[$fldname];
+					else
+						$oldvalue = "[MEMO]"; // Memo field
+				} elseif ($this->fields[$fldname]->FldDataType == EW_DATATYPE_XML) {
+					$oldvalue = "[XML]"; // XML field
+				} else {
+					$oldvalue = $rs[$fldname];
+				}
+				ew_WriteAuditTrail("log", $dt, $id, $curUser, "D", $table, $fldname, $key, $oldvalue, "");
+			}
 		}
 	}
 
@@ -1233,6 +1553,86 @@ class cpc_issuance extends cTable {
 		// Enter your code here
 		// To cancel, set return value to FALSE
 
+		date_default_timezone_set('Africa/Lagos');
+		$now = new DateTime();
+		$this->issued_date->CurrentValue = $now->Format('Y-m-d H:i:s');
+		$this->issued_date->EditValue = $this->issued_date->CurrentValue;
+
+			// Officer Only
+		if (CurrentPageID() == "add" && CurrentUserLevel() == 1) {
+
+			// Save and forward
+			if ($this->assign_action->CurrentValue == 1) {
+				$rsnew["statuse"] = 1;
+				$rsnew["assign_action"] = 1;
+				$rsnew["staff_id"] = $_SESSION['Staff_ID'];
+				$this->setSuccessMessage("&#x25C9; System Assigned to the Approperate Personnel &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->assign_action->CurrentValue == 0) {
+				$rsnew["statuse"] = 0;			
+				$rsnew["assign_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}			
+		}
+
+			// Officer Only
+		if (CurrentPageID() == "add" && CurrentUserLevel() == 2) {
+
+			// Save and forward
+			if ($this->assign_action->CurrentValue == 1) {
+				$rsnew["statuse"] = 1;
+				$rsnew["assign_action"] = 1;
+				$rsnew["staff_id"] = $_SESSION['Staff_ID'];
+				$this->setSuccessMessage("&#x25C9; System Assigned to the Approperate Personnel &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->assign_action->CurrentValue == 0) {
+				$rsnew["statuse"] = 0;			
+				$rsnew["assign_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}			
+		}
+
+			// Manager Only
+		if (CurrentPageID() == "add" && CurrentUserLevel() == 3 ) {
+
+			// Save and forward
+			if ($this->assign_action->CurrentValue == 1) {
+				$rsnew["statuse"] = 1;
+				$rsnew["assign_action"] = 1;
+				$rsnew["staff_id"] = $_SESSION['Staff_ID'];
+				$this->setSuccessMessage("&#x25C9; System Assigned to the Approperate Personnel &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->assign_action->CurrentValue == 0) {
+				$rsnew["statuse"] = 0;			
+				$rsnew["assign_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}			
+		}
+
+			// Manager Only
+		if (CurrentPageID() == "add" && CurrentUserLevel() == 4 ) {
+
+			// Save and forward
+			if ($this->assign_action->CurrentValue == 1) {
+				$rsnew["statuse"] = 1;
+				$rsnew["assign_action"] = 1;
+				$rsnew["staff_id"] = $_SESSION['Staff_ID'];
+				$this->setSuccessMessage("&#x25C9; System Assigned to the Approperate Personnel &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->assign_action->CurrentValue == 0) {
+				$rsnew["statuse"] = 0;			
+				$rsnew["assign_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}			
+		}
 		return TRUE;
 	}
 
@@ -1248,6 +1648,157 @@ class cpc_issuance extends cTable {
 		// Enter your code here
 		// To cancel, set return value to FALSE
 
+		date_default_timezone_set('Africa/Lagos');
+		$now = new DateTime();
+		$this->date_issued->CurrentValue = $now->Format('Y-m-d H:i:s');
+		$this->date_issued->EditValue = $this->date_issued->CurrentValue;
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 1) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 5) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
+		}	
+
+		// Officer Only
+		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 1 || CurrentUserLevel() == 2 || CurrentUserLevel() == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 6)) {
+
+				//if (CurrentPageID() == "edit" && CurrentUserLevel() == 1) {
+			// Save and forward
+
+			if ($this->assign_action->CurrentValue == 1 && $this->statuse->CurrentValue == 0) {
+				$rsnew["statuse"] = 1;
+				$rsnew["assign_action"] = 1;
+				$rsnew["retriever_action"] = NULL;
+				$rsnew["retriever_comment"] = NULL;
+				$this->setSuccessMessage("&#x25C9; System Issued to the Approparate Personnel &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->assign_action->CurrentValue == 0 && $this->statue->CurrentValue == 0) {
+				$rsnew["statuse"] = 0;			
+				$rsnew["assign_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}
+		}
+		 if (CurrentPageID() == "edit" && CurrentUserLevel() == 3) {
+
+			// Save and forward
+			if ($this->assign_action->CurrentValue == 1 && $this->statuse->CurrentValue == 0) {
+				$rsnew["statuse"] = 1;
+				$rsnew["assign_action"] = 1;
+				$rsnew["retriever_action"] = NULL;
+				$rsnew["retriever_comment"] = NULL;
+				$this->setSuccessMessage("&#x25C9; System Issued to the Approparate Personnel &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->assign_action->CurrentValue == 0 ) {
+				$rsnew["statuse"] = 0;			
+				$rsnew["assign_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}
+		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 6) {
+
+			// Save and forward
+			if ($this->assign_action->CurrentValue == 1 && $this->statuse->CurrentValue == 0) {
+				$rsnew["statuse"] = 1;
+				$rsnew["assign_action"] = 1;
+				$rsnew["retriever_action"] = NULL;
+				$rsnew["retriever_comment"] = NULL;
+				$this->setSuccessMessage("&#x25C9; System Issued to the Approparate Personnel &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->assign_action->CurrentValue == 0 ) {
+				$rsnew["statuse"] = 0;			
+				$rsnew["assign_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}
+		}
+
+		// Supervisor
+		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && ($this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$rsnew["date_retrieved"] = $now->format('Y-m-d H:i:s');
+			$rsnew["retrieved_by"] = $_SESSION['Staff_ID'];
+		}
+
+		// Administartor - Don't change field values captured by tenant
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && ($this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
+			$rsnew["id"] = $rsold["id"];
+			$rsnew["issue_date"] = $rsold["date_recieved"];
+			$rsnew["reference_id"] = $rsold["reference_id"];
+			$rsnew["asset_tag"] = $rsold["asset_tag"];
+			$rsnew["make"] = $rsold["make"];
+			$rsnew["color"] = $rsold["color"];
+			$rsnew["assign_to"] = $rsold["assign_to"];
+			$rsnew["department"] = $rsold["department"];
+			$rsnew["designation"] = $rsold["designation"];
+
+			//$rsnew["status"] = $rsold["status"];
+			$rsnew["assign_action"] = $rsold["recieved_action"];
+			$rsnew["assign_comment"] = $rsold["assign_comment"];
+
+			//$rsnew["reviewed_action"] = $rsold["reviewed_action"];
+			//$rsnew["reviewed_comment"] = $rsold["reviewed_comment"];
+
+		}
+
+			// Confirmed by Administrators
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+				$rsnew["date_retrieved"] = $now->format('Y-m-d H:i:s');
+				$rsnew["retrieved_by"] = $_SESSION['Staff_ID'];
+			  }
+
+			  // Confirmed by Administrators
+				if ($this->reviewed_action->CurrentValue == 0 && $this->statuse->CurrentValue == 1 ) {
+
+					// New
+					if ($this->statuse->CurrentValue == 1) {
+						$rsnew["statuse"] = 1;					
+						$rsnew["reviewed_action"] = 0;
+					}
+
+					//$this->setSuccessMessage("&#x25C9; Save Only &#x2714;");
+				}
+
+				// Confirmed by Administrators
+				if ($this->retriever_action->CurrentValue == 3 ) {
+
+					// New
+					if ($this->statuse->CurrentValue == 1) {
+						$rsnew["statuse"] = 2;					
+						$rsnew["retriever_action"] = 3;
+					}
+					$this->setSuccessMessage("&#x25C9; System was Successfully Retrieved &#x2714;");
+				}
+
+					// Confirmed by Administrators
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 6) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+				$rsnew["date_retrieved"] = $now->format('Y-m-d H:i:s');
+				$rsnew["retrieved_by"] = $_SESSION['Staff_ID'];
+			  }
+
+			  // Confirmed by Administrators
+				if ($this->reviewed_action->CurrentValue == 0 && $this->statuse->CurrentValue == 1 ) {
+
+					// New
+					if ($this->statuse->CurrentValue == 1) {
+						$rsnew["statuse"] = 1;					
+						$rsnew["reviewed_action"] = 0;
+					}
+
+					//$this->setSuccessMessage("&#x25C9; Save Only &#x2714;");
+				}
+
+				// Confirmed by Administrators
+				if ($this->retriever_action->CurrentValue == 3 ) {
+
+					// New
+					if ($this->statuse->CurrentValue == 1) {
+						$rsnew["statuse"] = 2;					
+						$rsnew["retriever_action"] = 3;
+					}
+					$this->setSuccessMessage("&#x25C9; System was Successfully Retrieved &#x2714;");
+				}
 		return TRUE;
 	}
 
@@ -1330,6 +1881,62 @@ class cpc_issuance extends cTable {
 	function Row_Rendering() {
 
 		// Enter your code here
+		if (CurrentPageID() == "add" )  {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->issued_date->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->issued_date->EditValue = $this->issued_date->CurrentValue;
+			$this->date_assign->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_assign->EditValue = $this->date_assign->CurrentValue;
+		}
+		if (CurrentPageID() == "add" && (CurrentUserLevel() == 1 || CurrentUserLevel() == 2 || CurrentUserLevel()   == 3 || CurrentUserLevel() == 4)) {
+			$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
+			$this->staff_id->EditValue = $this->staff_id->CurrentValue;
+			$this->assign_by->CurrentValue = $_SESSION['Staff_ID'];
+			$this->assign_by->EditValue = $this->assign_by->CurrentValue;
+		}
+		if (CurrentPageID() == "add")  {
+			$this->reference_id->CurrentValue = $_SESSION['SYS_ID'];
+			$this->reference_id->EditValue = $this->reference_id->CurrentValue;
+		}
+
+			//if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 ) {
+		if (CurrentPageID() == "add" && (CurrentUserLevel() == 2 || CurrentUserLevel() == 3 || CurrentUserLevel()   == 4 || CurrentUserLevel() == 5)) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_retrieved->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_retrieved->EditValue = $this->date_retrieved->CurrentValue;
+
+			//$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
+			//$this->staff_id->EditValue = $this->staff_id->CurrentValue;
+
+			$this->retrieved_by->CurrentValue = $_SESSION['Staff_ID'];
+			$this->retrieved_by->EditValue = $this->retrieved_by->CurrentValue;
+		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3  ) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_retrieved->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_retrieved->EditValue = $this->date_retrieved->CurrentValue;
+		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 2 && $this->statuse->CurrentValue == 1) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_retrieved->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_retrieved->EditValue = $this->date_retrieved->CurrentValue;
+		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 1 && $this->statuse->CurrentValue == 1) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_retrieved->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_retrieved->EditValue = $this->date_retrieved->CurrentValue;
+		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 && $this->statuse->CurrentValue == 1) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_retrieved->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_retrieved->EditValue = $this->date_retrieved->CurrentValue;
+		}
 	}
 
 	// Row Rendered event
@@ -1338,6 +1945,259 @@ class cpc_issuance extends cTable {
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
 
+			if (CurrentPageID() == "add") {
+				if (CurrentUserLevel() == 1) {
+					$this->issued_date->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+
+					//$this->staff_id->ReadOnly = TRUE;
+					$this->date_retrieved->Visible = FALSE;
+					$this->retriever_action->Visible = FALSE;
+					$this->retriever_comment->Visible = FALSE;
+					$this->retrieved_by->Visible = FALSE;
+				}
+				if (CurrentUserLevel() == 2) {
+					$this->issued_date->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+
+					//$this->staff_id->ReadOnly = TRUE;
+					$this->date_retrieved->Visible = FALSE;
+					$this->retriever_action->Visible = FALSE;
+					$this->retriever_comment->Visible = FALSE;
+					$this->retrieved_by->Visible = FALSE;
+				}
+				if (CurrentUserLevel() == 3) {
+					$this->issued_date->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+
+					//$this->staff_id->ReadOnly = TRUE;
+					$this->date_retrieved->Visible = FALSE;
+					$this->retriever_action->Visible = FALSE;
+					$this->retriever_comment->Visible = FALSE;
+					$this->retrieved_by->Visible = FALSE;	
+				}
+				if (CurrentUserLevel() == 6) {
+					$this->issued_date->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+
+					//$this->staff_id->ReadOnly = TRUE;
+					$this->date_retrieved->Visible = FALSE;
+					$this->retriever_action->Visible = FALSE;
+					$this->retriever_comment->Visible = FALSE;
+					$this->retrieved_by->Visible = FALSE;	
+				}
+		   }
+
+		   // Edit Page
+			if (CurrentPageID() == "edit") {
+				if ((CurrentUserLevel() == 1||CurrentUserLevel() == 2 && $this->statuse->CurrentValue == 0)) {
+					$this->issued_date->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->asset_tag->ReadOnly = TRUE;
+					$this->make->ReadOnly = TRUE;
+					$this->color->ReadOnly = TRUE;
+					$this->department->ReadOnly = TRUE;
+					$this->designation->ReadOnly = TRUE;
+					$this->assign_to->ReadOnly = TRUE;
+					$this->date_assign->ReadOnly = TRUE;
+					$this->assign_action->Visible = TRUE;
+					$this->assign_comment->Visible = TRUE;
+					$this->assign_by->ReadOnly = TRUE;
+
+					//$this->staff_id->ReadOnly = TRUE;
+					$this->date_retrieved->Visible = FALSE;
+					$this->retriever_action->Visible = FALSE;
+					$this->retriever_comment->Visible = FALSE;
+					$this->retrieved_by->Visible = FALSE;
+				}
+				if ((CurrentUserLevel() == 1||CurrentUserLevel() == 2 && $this->statuse->CurrentValue == 1)) {
+					$this->issued_date->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->asset_tag->ReadOnly = TRUE;
+					$this->make->ReadOnly = TRUE;
+					$this->color->ReadOnly = TRUE;
+					$this->department->ReadOnly = TRUE;
+					$this->designation->ReadOnly = TRUE;
+					$this->assign_to->ReadOnly = TRUE;
+					$this->date_assign->ReadOnly = TRUE;
+					$this->assign_action->ReadOnly = TRUE;
+					$this->assign_comment->ReadOnly = TRUE;
+					$this->assign_by->ReadOnly = TRUE;
+
+					//$this->staff_id->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = FALSE;
+					$this->retriever_action->Visible = TRUE;
+					$this->retriever_comment->Visible = TRUE;
+					$this->retrieved_by->Visible = FALSE;
+				}
+				if (CurrentUserLevel() == 3 && $this->statuse->CurrentValue == 0 || $this->statuse->CurrentValue == 1) {
+					$this->issued_date->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->asset_tag->ReadOnly = TRUE;
+					$this->make->ReadOnly = TRUE;
+					$this->color->ReadOnly = TRUE;
+					$this->department->ReadOnly = TRUE;
+					$this->designation->ReadOnly = TRUE;
+					$this->assign_to->ReadOnly = TRUE;
+					$this->date_assign->ReadOnly = TRUE;
+					$this->assign_action->Visible = TRUE;
+					$this->assign_comment->Visible = TRUE;
+					$this->assign_by->ReadOnly = TRUE;
+
+					//$this->staff_id->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = FALSE;
+					$this->retriever_action->Visible = TRUE;
+					$this->retriever_comment->Visible = TRUE;
+					$this->retrieved_by->Visible = FALSE;
+				}
+				if (CurrentUserLevel() == 5 && $this->statuse->CurrentValue == 0) {
+					$this->issued_date->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->asset_tag->ReadOnly = TRUE;
+					$this->make->ReadOnly = TRUE;
+					$this->color->ReadOnly = TRUE;
+					$this->department->ReadOnly = TRUE;
+					$this->designation->ReadOnly = TRUE;
+					$this->assign_to->ReadOnly = TRUE;
+					$this->date_assign->ReadOnly = TRUE;
+					$this->assign_action->Visible = TRUE;
+					$this->assign_comment->Visible = TRUE;
+					$this->assign_by->ReadOnly = TRUE;
+
+					//$this->staff_id->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = FALSE;
+					$this->retriever_action->Visible = TRUE;
+					$this->retriever_comment->Visible = TRUE;
+					$this->retrieved_by->Visible = FALSE;
+				}
+				if (CurrentUserLevel() == 6 && $this->statuse->CurrentValue == 0) {
+					$this->issued_date->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->asset_tag->ReadOnly = TRUE;
+					$this->make->ReadOnly = TRUE;
+					$this->color->ReadOnly = TRUE;
+					$this->department->ReadOnly = TRUE;
+					$this->designation->ReadOnly = TRUE;
+					$this->assign_to->ReadOnly = TRUE;
+					$this->date_assign->ReadOnly = TRUE;
+					$this->assign_action->Visible = TRUE;
+					$this->assign_comment->Visible = TRUE;
+					$this->assign_by->ReadOnly = TRUE;
+
+					//$this->staff_id->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = TRUE;
+					$this->retriever_action->Visible = FALSE;
+					$this->retriever_comment->Visible = FALSE;
+					$this->retrieved_by->Visible = FALSE;
+					if ($this->statuse->CurrentValue == 1) {
+						$this->assign_action->ReadOnly = TRUE;
+						$this->assign_comment->ReadOnly = TRUE;
+						$this->retriever_action->Visible = TRUE;
+						$this->retriever_comment->Visible = TRUE;
+					} else {
+						$this->date_retrieved->ReadOnly = TRUE;
+
+						//$this->retriever_action->Visible = TRUE;
+						//$this->retriever_comment->Visible = TRUE;
+
+					}
+				}
+			}
+
+			// Highligh rows in color based on the status
+		if (CurrentPageID() == "list") {
+
+			//$this->branch_code->Visible = FALSE;
+			if ($this->statuse->CurrentValue == 1) {
+				$this->id->CellCssStyle = "color: orange; text-align: left;";
+				$this->issued_date->CellCssStyle = "color: orange; text-align: left;";
+				$this->date_retrieved->CellCssStyle = "color: orange; text-align: left;";
+				$this->reference_id->CellCssStyle = "color: orange; text-align: left;";
+				$this->asset_tag->CellCssStyle = "color: orange; text-align: left;";
+				$this->make->CellCssStyle = "color: orange; text-align: left;";
+				$this->color->CellCssStyle = "color: orange; text-align: left;";
+				$this->department->CellCssStyle = "color: orange; text-align: left;";
+				$this->designation->CellCssStyle = "color: orange; text-align: left;";
+				$this->assign_to->CellCssStyle = "color: orange; text-align: left;";
+				$this->statuse->CellCssStyle = "color: orange; text-align: left;";
+				$this->date_assign->CellCssStyle = "color: orange; text-align: left;";
+
+				//$this->approver_action->CellCssStyle = "color: orange; text-align: left;";
+				//$this->approver_comment->CellCssStyle = "color: orange; text-align: left;";
+
+				$this->assign_by->CellCssStyle = "color: orange; text-align: left;";
+				$this->retrieved_by->CellCssStyle = "color: orange; text-align: left;";
+			}
+			if ($this->statuse->CurrentValue == 2) {
+				$this->id->CellCssStyle = "color: red; text-align: left;";
+				$this->date_retrieved->CellCssStyle = "color: red; text-align: left;";
+				$this->issued_date->CellCssStyle = "color: red; text-align: left;";
+				$this->reference_id->CellCssStyle = "color: red; text-align: left;";
+				$this->asset_tag->CellCssStyle = "color: red; text-align: left;";
+				$this->make->CellCssStyle = "color: red; text-align: left;";
+				$this->color->CellCssStyle = "color: red; text-align: left;";
+				$this->department->CellCssStyle = "color: red; text-align: left;";
+				$this->designation->CellCssStyle = "color: red; text-align: left;";
+				$this->assign_to->CellCssStyle = "color: red; text-align: left;";
+				$this->statuse->CellCssStyle = "color: red; text-align: left;";
+				$this->date_assign->CellCssStyle = "color: red; text-align: left;";
+
+				//$this->approver_action->CellCssStyle = "color: red; text-align: left;";
+				//$this->approver_comment->CellCssStyle = "color: red; text-align: left;";
+
+				$this->assign_by->CellCssStyle = "color: red; text-align: left;";
+				$this->retrieved_by->CellCssStyle = "color: red; text-align: left;";
+			}
+			if ($this->statuse->CurrentValue == 3) {
+				$this->id->CellCssStyle = "color: blue; text-align: left;";
+				$this->date_retrieved->CellCssStyle = "color: blue; text-align: left;";
+				$this->issued_date->CellCssStyle = "color: blue; text-align: left;";
+				$this->reference_id->CellCssStyle = "color: blue; text-align: left;";
+				$this->asset_tag->CellCssStyle = "color: blue; text-align: left;";
+				$this->make->CellCssStyle = "color: blue; text-align: left;";
+				$this->color->CellCssStyle = "color: blue; text-align: left;";
+				$this->department->CellCssStyle = "color: blue; text-align: left;";
+				$this->designation->CellCssStyle = "color: blue; text-align: left;";
+				$this->assign_to->CellCssStyle = "color: blue; text-align: left;";
+				$this->statuse->CellCssStyle = "color: blue; text-align: left;";
+				$this->date_assign->CellCssStyle = "color: blue; text-align: left;";
+
+				//$this->approver_action->CellCssStyle = "color: blue; text-align: left;";
+				//$this->approver_comment->CellCssStyle = "color: blue; text-align: left;";
+
+				$this->assign_by->CellCssStyle = "color: blue; text-align: left;";
+				$this->retrieved_by->CellCssStyle = "color: blue; text-align: left;";
+			}
+			if ($this->statuse->CurrentValue == 4) {
+				$this->id->CellCssStyle = "color: green; text-align: left;";
+				$this->date_retrieved->CellCssStyle = "color: green; text-align: left;";
+				$this->issued_date->CellCssStyle = "color: green; text-align: left;";
+				$this->reference_id->CellCssStyle = "color: green; text-align: left;";
+				$this->asset_tag->CellCssStyle = "color: green; text-align: left;";
+				$this->make->CellCssStyle = "color: green; text-align: left;";
+				$this->color->CellCssStyle = "color: green; text-align: left;";
+				$this->department->CellCssStyle = "color: green; text-align: left;";
+				$this->designation->CellCssStyle = "color: green; text-align: left;";
+				$this->assign_to->CellCssStyle = "color: green; text-align: left;";
+				$this->statuse->CellCssStyle = "color: green; text-align: left;";
+				$this->date_assign->CellCssStyle = "color: green; text-align: left;";
+
+				//$this->approver_action->CellCssStyle = "color: green; text-align: left;";
+				//$this->approver_comment->CellCssStyle = "color: green; text-align: left;";
+
+				$this->assign_by->CellCssStyle = "color: green; text-align: left;";
+				$this->retrieved_by->CellCssStyle = "color: green; text-align: left;";
+			}
+		}
 	}
 
 	// User ID Filtering event

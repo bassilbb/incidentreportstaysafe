@@ -1736,9 +1736,6 @@ class cissuance_store extends cTable {
 	function Row_Inserted($rsold, &$rsnew) {
 
 		//echo "Row Inserted"
-			//[the error was i did not add quantity_out] ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $rsnew["quantity"] . ") WHERE `id`= ".$rsnew["material_name"]."");
-
-			ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $rsnew["quantity_out"] . ") WHERE `id`= ".$rsnew["material_name"]."");
 	}
 
 	// Row Updating event
@@ -1747,10 +1744,10 @@ class cissuance_store extends cTable {
 		// Enter your code here
 		// To cancel, set return value to FALSE
 
-			date_default_timezone_set('Africa/Lagos');
+		date_default_timezone_set('Africa/Lagos');
 		$now = new DateTime();
 		$this->date->CurrentValue = $now->Format('Y-m-d H:i:s');
-		$this->date->EditValue = $this->date_approved->CurrentValue;
+		$this->date->EditValue = $this->date->CurrentValue;
 		$this->verified_date->CurrentValue = $now->Format('Y-m-d H:i:s');
 		$this->verified_date->EditValue = $this->verified_date->CurrentValue;
 			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 1) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
@@ -1798,6 +1795,7 @@ class cissuance_store extends cTable {
 			$rsnew["quantity_out"] = $rsold["quantity_out"];
 			$rsnew["treated_by"] = $rsold["treated_by"];
 			$rsnew["issued_by"] = $rsold["issued_by"];
+			$rsnew["total_quantity"] = $rsold["total_quantity"];
 
 			//$rsnew["status"] = $rsold["status"];
 			$rsnew["issued_action"] = $rsold["issued_action"];
@@ -1835,6 +1833,7 @@ class cissuance_store extends cTable {
 			$rsnew["approver_action"] = $rsold["approver_action"];
 			$rsnew["approved_comment"] = $rsold["approved_comment"];
 			$rsnew["approved_by"] = $rsold["approved_by"];
+			$rsnew["total_quantity"] = $rsold["total_quantity"];
 		}
 
 			// Approved by Administrators
@@ -1905,8 +1904,24 @@ class cissuance_store extends cTable {
 		//echo "Row Updated";
 		//ew_Execute("UPDATE inventory SET quantity=".$rsnew["remainder"]." WHERE id=".$rsnew["item_name"]."");
 		//ew_Execute("UPDATE `inventory` SET `quantity`= ((`quantity` + " . $rsold["quantity"] . ") - " . $rsnew["quantity"] . ") WHERE `id`= ".$rsold["material_name"]."");
+	   //	if (CurrentPageID() == "edit" && (CurrentUserLevel() == 5 && $this->statuss->CurrentValue == 3 )) {
+		//	echo "Status -> " . $this->statuss->CurrentValue . "</br>";
+		//	echo "UserLevel -> " . CurrentUserLevel() . "</br>";
+		  // ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $rsnew["quantity_out"] . ") WHERE `id`= ".$rsnew["material_name"]."");
+		   ///ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
+		   //exit;
+		//}
 
-		ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $rsnew["quantity_out"] . ") WHERE `id`= ".$rsnew["material_name"]."");
+			if (CurrentPageID() == "edit" && (CurrentUserLevel() == 5 && $rsnew["statuss"] == 4 )) {
+
+		//	echo "Status -> " . $this->statuss->CurrentValue . "</br>";
+		//	echo "UserLevel -> " . CurrentUserLevel() . "</br>";
+		  // ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $rsnew["quantity_out"] . ") WHERE `id`= ".$rsnew["material_name"]."");
+
+		   ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
+
+		   //exit;
+		}
 	}
 
 	// Row Update Conflict event

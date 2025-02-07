@@ -85,7 +85,7 @@ if (CurrentUserLevel() == 4) {
 	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3) ");
 	$_SESSION['MyDispenserCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `dispenser` WHERE `status` in (1) ");
 }
-if (CurrentUserLevel() == 5) {
+if ((CurrentUserLevel() == 5 || CurrentUserLevel() == 6)) {
 	$_SESSION['MyApprovedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
 	$_SESSION['MyReworkCount']  = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
 	$_SESSION['MyPendingCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
@@ -125,6 +125,11 @@ return "INV".$randStrs;
 function generateINSKey(){
 $randStrs =	mt_rand(0000001,9999999);
 return "INS".$randStrs;
+}
+
+function generateSYSKey(){
+$randStrs =	mt_rand(0000001,9999999);
+return "SYS".$randStrs;
 }
 
 //

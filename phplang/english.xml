@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2025/1/28" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2025/2/7" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -787,19 +787,19 @@
       <phrase id="menutext" value="Dispenser Report" />
     </menu>
     <menu id="256">
-      <phrase id="menutext" value="Laptop Module" />
+      <phrase id="menutext" value="System Module" />
     </menu>
     <menu id="200">
-      <phrase id="menutext" value="Laptop Tablet" />
-    </menu>
-    <menu id="201">
-      <phrase id="menutext" value="Tablet Status" />
+      <phrase id="menutext" value="Systems" />
     </menu>
     <menu id="257">
-      <phrase id="menutext" value="Tablet Issues" />
+      <phrase id="menutext" value="Systems Issues" />
     </menu>
     <menu id="259">
-      <phrase id="menutext" value="PC Issuance" />
+      <phrase id="menutext" value="System Issuance" />
+    </menu>
+    <menu id="271">
+      <phrase id="menutext" value="System status" />
     </menu>
     <table id="branch">
       <phrase id="tblcaption" value="Organization" />
@@ -2386,46 +2386,46 @@
         <phrase id="fldcaption" value="Verified By" />
       </field>
     </table>
-    <table id="laptop_tablet">
-      <phrase id="tblcaption" value="Laptop Tablet" />
+    <table id="systems">
+      <phrase id="tblcaption" value="Systems" />
       <field id="id">
-        <phrase id="fldcaption" value="id" />
+        <phrase id="fldcaption" value="ID" />
       </field>
       <field id="asset_tag">
-        <phrase id="fldcaption" value="asset tag" />
+        <phrase id="fldcaption" value="Asset Tag" />
       </field>
       <field id="start_sate">
-        <phrase id="fldcaption" value="start sate" />
+        <phrase id="fldcaption" value="Start Date" />
       </field>
       <field id="end_date">
-        <phrase id="fldcaption" value="end date" />
+        <phrase id="fldcaption" value="End Date" />
       </field>
       <field id="cost_for_repair">
-        <phrase id="fldcaption" value="cost for repair" />
+        <phrase id="fldcaption" value="Cost for Repair" />
       </field>
       <field id="service_provider">
-        <phrase id="fldcaption" value="service provider" />
+        <phrase id="fldcaption" value="Service Provider" />
       </field>
       <field id="address">
-        <phrase id="fldcaption" value="address" />
+        <phrase id="fldcaption" value="Address" />
       </field>
       <field id="type_of_repair">
-        <phrase id="fldcaption" value="type of repair" />
+        <phrase id="fldcaption" value="Type of Repair" />
       </field>
       <field id="note">
-        <phrase id="fldcaption" value="note" />
+        <phrase id="fldcaption" value="Note" />
       </field>
       <field id="status">
-        <phrase id="fldcaption" value="status" />
+        <phrase id="fldcaption" value="Status" />
       </field>
       <field id="asset_category">
-        <phrase id="fldcaption" value="asset category" />
+        <phrase id="fldcaption" value="Asset Category" />
       </field>
       <field id="asset_sub_category">
-        <phrase id="fldcaption" value="asset sub category" />
+        <phrase id="fldcaption" value="Asset Sub Category" />
       </field>
       <field id="serial_number">
-        <phrase id="fldcaption" value="serial number" />
+        <phrase id="fldcaption" value="Serial Number" />
       </field>
       <field id="programe_area">
         <phrase id="fldcaption" value="programe area" />
@@ -2440,44 +2440,44 @@
         <phrase id="fldcaption" value="department" />
       </field>
       <field id="staff_id">
-        <phrase id="fldcaption" value="staff id" />
+        <phrase id="fldcaption" value="Staff ID" />
       </field>
       <field id="created_by">
-        <phrase id="fldcaption" value="created by" />
+        <phrase id="fldcaption" value="Created By" />
       </field>
       <field id="created_date">
-        <phrase id="fldcaption" value="created date" />
+        <phrase id="fldcaption" value="Created Date" />
       </field>
       <field id="device_number">
-        <phrase id="fldcaption" value="device number" />
+        <phrase id="fldcaption" value="Device number" />
       </field>
       <field id="tablet_imie_number">
-        <phrase id="fldcaption" value="tablet imie number" />
+        <phrase id="fldcaption" value="Serial Number" />
       </field>
       <field id="model">
-        <phrase id="fldcaption" value="model" />
+        <phrase id="fldcaption" value="Brand" />
       </field>
       <field id="flag">
-        <phrase id="fldcaption" value="flag" />
+        <phrase id="fldcaption" value="Flag" />
       </field>
       <field id="area">
-        <phrase id="fldcaption" value="area" />
+        <phrase id="fldcaption" value="Area" />
       </field>
       <field id="updated_date">
-        <phrase id="fldcaption" value="updated date" />
+        <phrase id="fldcaption" value="Updated Date" />
       </field>
       <field id="updated_by">
-        <phrase id="fldcaption" value="updated by" />
+        <phrase id="fldcaption" value="Updated By" />
       </field>
       <field id="received_date">
-        <phrase id="fldcaption" value="received date" />
+        <phrase id="fldcaption" value="Received Date" />
       </field>
       <field id="received_by">
-        <phrase id="fldcaption" value="received by" />
+        <phrase id="fldcaption" value="Received By" />
       </field>
     </table>
-    <table id="tablet_issues">
-      <phrase id="tblcaption" value="Tablet Issues" />
+    <table id="system_issues">
+      <phrase id="tblcaption" value="Systems Issues" />
       <field id="id">
         <phrase id="fldcaption" value="id" />
       </field>
@@ -2488,73 +2488,74 @@
         <phrase id="fldcaption" value="status" />
       </field>
     </table>
-    <table id="tablet_status">
-      <phrase id="tblcaption" value="Tablet Status" />
-      <field id="id">
-        <phrase id="fldcaption" value="id" />
-      </field>
-      <field id="description">
-        <phrase id="fldcaption" value="description" />
-      </field>
-      <field id="flag">
-        <phrase id="fldcaption" value="flag" />
-      </field>
-    </table>
     <table id="pc_issuance">
-      <phrase id="tblcaption" value="PC Issuance" />
+      <phrase id="tblcaption" value="System Issuance" />
+      <phrase id="tblpagecaption1" value="System Issuance Info" />
+      <phrase id="tblpagecaption2" value="System Retrieval Info" />
       <field id="id">
-        <phrase id="fldcaption" value="id" />
+        <phrase id="fldcaption" value="ID" />
       </field>
       <field id="issued_date">
-        <phrase id="fldcaption" value="issued date" />
+        <phrase id="fldcaption" value="Issued Date" />
       </field>
       <field id="reference_id">
-        <phrase id="fldcaption" value="reference id" />
+        <phrase id="fldcaption" value="Reference ID" />
       </field>
       <field id="asset_tag">
-        <phrase id="fldcaption" value="asset tag" />
+        <phrase id="fldcaption" value="Asset Tag" />
       </field>
       <field id="make">
-        <phrase id="fldcaption" value="make" />
+        <phrase id="fldcaption" value="Make" />
       </field>
       <field id="color">
-        <phrase id="fldcaption" value="color" />
+        <phrase id="fldcaption" value="Color" />
       </field>
       <field id="department">
-        <phrase id="fldcaption" value="department" />
+        <phrase id="fldcaption" value="Department" />
       </field>
       <field id="designation">
-        <phrase id="fldcaption" value="designation" />
+        <phrase id="fldcaption" value="Designation" />
       </field>
       <field id="assign_to">
-        <phrase id="fldcaption" value="assign to" />
+        <phrase id="fldcaption" value="Assign To" />
       </field>
       <field id="date_assign">
-        <phrase id="fldcaption" value="date assign" />
+        <phrase id="fldcaption" value="Date Assign" />
       </field>
       <field id="assign_action">
-        <phrase id="fldcaption" value="assign action" />
+        <phrase id="fldcaption" value="Assign Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Save and forward" />
       </field>
       <field id="assign_comment">
-        <phrase id="fldcaption" value="assign comment" />
+        <phrase id="fldcaption" value="Assign Comment" />
       </field>
       <field id="assign_by">
-        <phrase id="fldcaption" value="assign by" />
+        <phrase id="fldcaption" value="Assign By" />
       </field>
       <field id="statuse">
-        <phrase id="fldcaption" value="statuse" />
+        <phrase id="fldcaption" value="Status" />
       </field>
       <field id="date_retrieved">
-        <phrase id="fldcaption" value="date retrieved" />
+        <phrase id="fldcaption" value="Date Retrieved" />
       </field>
       <field id="retriever_action">
-        <phrase id="fldcaption" value="retriever action" />
+        <phrase id="fldcaption" value="Retriever Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="3" />
+        <phrase id="fldtagcaption2" value="System Retrieved" />
       </field>
       <field id="retriever_comment">
-        <phrase id="fldcaption" value="retriever comment" />
+        <phrase id="fldcaption" value="Retriever Comment" />
       </field>
       <field id="retrieved_by">
-        <phrase id="fldcaption" value="retrieved by" />
+        <phrase id="fldcaption" value="Retrieved By" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="staff id" />
       </field>
     </table>
     <table id="issuance_history">
@@ -2725,6 +2726,18 @@
       </field>
       <field id="statuss">
         <phrase id="fldcaption" value="Status" />
+      </field>
+    </table>
+    <table id="system_status">
+      <phrase id="tblcaption" value="System status" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="description" />
+      </field>
+      <field id="flag">
+        <phrase id="fldcaption" value="flag" />
       </field>
     </table>
   </project>

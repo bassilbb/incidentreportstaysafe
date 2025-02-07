@@ -65,6 +65,12 @@ class cpc_issuance_edit extends cpc_issuance {
 		if ($this->UseTokenInUrl) $PageUrl .= "t=" . $this->TableVar . "&"; // Add page token
 		return $PageUrl;
 	}
+	var $AuditTrailOnAdd = TRUE;
+	var $AuditTrailOnEdit = TRUE;
+	var $AuditTrailOnDelete = TRUE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -322,9 +328,6 @@ class cpc_issuance_edit extends cpc_issuance {
 
 		$objForm = new cFormObj();
 		$this->CurrentAction = (@$_GET["a"] <> "") ? $_GET["a"] : @$_POST["a_list"]; // Set up current action
-		$this->id->SetVisibility();
-		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
-			$this->id->Visible = FALSE;
 		$this->issued_date->SetVisibility();
 		$this->reference_id->SetVisibility();
 		$this->asset_tag->SetVisibility();
@@ -342,6 +345,10 @@ class cpc_issuance_edit extends cpc_issuance {
 		$this->retriever_action->SetVisibility();
 		$this->retriever_comment->SetVisibility();
 		$this->retrieved_by->SetVisibility();
+		$this->staff_id->SetVisibility();
+
+		// Set up multi page object
+		$this->SetupMultiPages();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -448,6 +455,7 @@ class cpc_issuance_edit extends cpc_issuance {
 	var $AutoHidePager = EW_AUTO_HIDE_PAGER;
 	var $RecCnt;
 	var $Recordset;
+	var $MultiPages; // Multi pages object
 
 	//
 	// Page main
@@ -626,11 +634,9 @@ class cpc_issuance_edit extends cpc_issuance {
 
 		// Load from form
 		global $objForm;
-		if (!$this->id->FldIsDetailKey)
-			$this->id->setFormValue($objForm->GetValue("x_id"));
 		if (!$this->issued_date->FldIsDetailKey) {
 			$this->issued_date->setFormValue($objForm->GetValue("x_issued_date"));
-			$this->issued_date->CurrentValue = ew_UnFormatDateTime($this->issued_date->CurrentValue, 0);
+			$this->issued_date->CurrentValue = ew_UnFormatDateTime($this->issued_date->CurrentValue, 17);
 		}
 		if (!$this->reference_id->FldIsDetailKey) {
 			$this->reference_id->setFormValue($objForm->GetValue("x_reference_id"));
@@ -655,7 +661,7 @@ class cpc_issuance_edit extends cpc_issuance {
 		}
 		if (!$this->date_assign->FldIsDetailKey) {
 			$this->date_assign->setFormValue($objForm->GetValue("x_date_assign"));
-			$this->date_assign->CurrentValue = ew_UnFormatDateTime($this->date_assign->CurrentValue, 0);
+			$this->date_assign->CurrentValue = ew_UnFormatDateTime($this->date_assign->CurrentValue, 17);
 		}
 		if (!$this->assign_action->FldIsDetailKey) {
 			$this->assign_action->setFormValue($objForm->GetValue("x_assign_action"));
@@ -671,7 +677,7 @@ class cpc_issuance_edit extends cpc_issuance {
 		}
 		if (!$this->date_retrieved->FldIsDetailKey) {
 			$this->date_retrieved->setFormValue($objForm->GetValue("x_date_retrieved"));
-			$this->date_retrieved->CurrentValue = ew_UnFormatDateTime($this->date_retrieved->CurrentValue, 0);
+			$this->date_retrieved->CurrentValue = ew_UnFormatDateTime($this->date_retrieved->CurrentValue, 17);
 		}
 		if (!$this->retriever_action->FldIsDetailKey) {
 			$this->retriever_action->setFormValue($objForm->GetValue("x_retriever_action"));
@@ -682,6 +688,11 @@ class cpc_issuance_edit extends cpc_issuance {
 		if (!$this->retrieved_by->FldIsDetailKey) {
 			$this->retrieved_by->setFormValue($objForm->GetValue("x_retrieved_by"));
 		}
+		if (!$this->staff_id->FldIsDetailKey) {
+			$this->staff_id->setFormValue($objForm->GetValue("x_staff_id"));
+		}
+		if (!$this->id->FldIsDetailKey)
+			$this->id->setFormValue($objForm->GetValue("x_id"));
 	}
 
 	// Restore form values
@@ -689,7 +700,7 @@ class cpc_issuance_edit extends cpc_issuance {
 		global $objForm;
 		$this->id->CurrentValue = $this->id->FormValue;
 		$this->issued_date->CurrentValue = $this->issued_date->FormValue;
-		$this->issued_date->CurrentValue = ew_UnFormatDateTime($this->issued_date->CurrentValue, 0);
+		$this->issued_date->CurrentValue = ew_UnFormatDateTime($this->issued_date->CurrentValue, 17);
 		$this->reference_id->CurrentValue = $this->reference_id->FormValue;
 		$this->asset_tag->CurrentValue = $this->asset_tag->FormValue;
 		$this->make->CurrentValue = $this->make->FormValue;
@@ -698,16 +709,17 @@ class cpc_issuance_edit extends cpc_issuance {
 		$this->designation->CurrentValue = $this->designation->FormValue;
 		$this->assign_to->CurrentValue = $this->assign_to->FormValue;
 		$this->date_assign->CurrentValue = $this->date_assign->FormValue;
-		$this->date_assign->CurrentValue = ew_UnFormatDateTime($this->date_assign->CurrentValue, 0);
+		$this->date_assign->CurrentValue = ew_UnFormatDateTime($this->date_assign->CurrentValue, 17);
 		$this->assign_action->CurrentValue = $this->assign_action->FormValue;
 		$this->assign_comment->CurrentValue = $this->assign_comment->FormValue;
 		$this->assign_by->CurrentValue = $this->assign_by->FormValue;
 		$this->statuse->CurrentValue = $this->statuse->FormValue;
 		$this->date_retrieved->CurrentValue = $this->date_retrieved->FormValue;
-		$this->date_retrieved->CurrentValue = ew_UnFormatDateTime($this->date_retrieved->CurrentValue, 0);
+		$this->date_retrieved->CurrentValue = ew_UnFormatDateTime($this->date_retrieved->CurrentValue, 17);
 		$this->retriever_action->CurrentValue = $this->retriever_action->FormValue;
 		$this->retriever_comment->CurrentValue = $this->retriever_comment->FormValue;
 		$this->retrieved_by->CurrentValue = $this->retrieved_by->FormValue;
+		$this->staff_id->CurrentValue = $this->staff_id->FormValue;
 	}
 
 	// Load recordset
@@ -787,6 +799,7 @@ class cpc_issuance_edit extends cpc_issuance {
 		$this->retriever_action->setDbValue($row['retriever_action']);
 		$this->retriever_comment->setDbValue($row['retriever_comment']);
 		$this->retrieved_by->setDbValue($row['retrieved_by']);
+		$this->staff_id->setDbValue($row['staff_id']);
 	}
 
 	// Return a row with default values
@@ -810,6 +823,7 @@ class cpc_issuance_edit extends cpc_issuance {
 		$row['retriever_action'] = NULL;
 		$row['retriever_comment'] = NULL;
 		$row['retrieved_by'] = NULL;
+		$row['staff_id'] = NULL;
 		return $row;
 	}
 
@@ -836,6 +850,7 @@ class cpc_issuance_edit extends cpc_issuance {
 		$this->retriever_action->DbValue = $row['retriever_action'];
 		$this->retriever_comment->DbValue = $row['retriever_comment'];
 		$this->retrieved_by->DbValue = $row['retrieved_by'];
+		$this->staff_id->DbValue = $row['staff_id'];
 	}
 
 	// Load old record
@@ -888,6 +903,7 @@ class cpc_issuance_edit extends cpc_issuance {
 		// retriever_action
 		// retriever_comment
 		// retrieved_by
+		// staff_id
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -897,7 +913,7 @@ class cpc_issuance_edit extends cpc_issuance {
 
 		// issued_date
 		$this->issued_date->ViewValue = $this->issued_date->CurrentValue;
-		$this->issued_date->ViewValue = ew_FormatDateTime($this->issued_date->ViewValue, 0);
+		$this->issued_date->ViewValue = ew_FormatDateTime($this->issued_date->ViewValue, 17);
 		$this->issued_date->ViewCustomAttributes = "";
 
 		// reference_id
@@ -917,24 +933,88 @@ class cpc_issuance_edit extends cpc_issuance {
 		$this->color->ViewCustomAttributes = "";
 
 		// department
-		$this->department->ViewValue = $this->department->CurrentValue;
+		if (strval($this->department->CurrentValue) <> "") {
+			$sFilterWrk = "`department_id`" . ew_SearchString("=", $this->department->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
+		$sWhereWrk = "";
+		$this->department->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->department->ViewValue = $this->department->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->department->ViewValue = $this->department->CurrentValue;
+			}
+		} else {
+			$this->department->ViewValue = NULL;
+		}
 		$this->department->ViewCustomAttributes = "";
 
 		// designation
-		$this->designation->ViewValue = $this->designation->CurrentValue;
+		if (strval($this->designation->CurrentValue) <> "") {
+			$sFilterWrk = "`code`" . ew_SearchString("=", $this->designation->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `code`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `designation`";
+		$sWhereWrk = "";
+		$this->designation->LookupFilters = array("dx1" => '`description`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->designation, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+		$sSqlWrk .= " ORDER BY `code` ASC";
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->designation->ViewValue = $this->designation->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->designation->ViewValue = $this->designation->CurrentValue;
+			}
+		} else {
+			$this->designation->ViewValue = NULL;
+		}
 		$this->designation->ViewCustomAttributes = "";
 
 		// assign_to
-		$this->assign_to->ViewValue = $this->assign_to->CurrentValue;
+		if (strval($this->assign_to->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_to->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->assign_to->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->assign_to, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+		$sSqlWrk .= " ORDER BY `id` ASC";
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->assign_to->ViewValue = $this->assign_to->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->assign_to->ViewValue = $this->assign_to->CurrentValue;
+			}
+		} else {
+			$this->assign_to->ViewValue = NULL;
+		}
 		$this->assign_to->ViewCustomAttributes = "";
 
 		// date_assign
 		$this->date_assign->ViewValue = $this->date_assign->CurrentValue;
-		$this->date_assign->ViewValue = ew_FormatDateTime($this->date_assign->ViewValue, 0);
+		$this->date_assign->ViewValue = ew_FormatDateTime($this->date_assign->ViewValue, 17);
 		$this->date_assign->ViewCustomAttributes = "";
 
 		// assign_action
-		$this->assign_action->ViewValue = $this->assign_action->CurrentValue;
+		if (strval($this->assign_action->CurrentValue) <> "") {
+			$this->assign_action->ViewValue = $this->assign_action->OptionCaption($this->assign_action->CurrentValue);
+		} else {
+			$this->assign_action->ViewValue = NULL;
+		}
 		$this->assign_action->ViewCustomAttributes = "";
 
 		// assign_comment
@@ -942,20 +1022,75 @@ class cpc_issuance_edit extends cpc_issuance {
 		$this->assign_comment->ViewCustomAttributes = "";
 
 		// assign_by
-		$this->assign_by->ViewValue = $this->assign_by->CurrentValue;
+		if (strval($this->assign_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->assign_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->assign_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->assign_by->ViewValue = $this->assign_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->assign_by->ViewValue = $this->assign_by->CurrentValue;
+			}
+		} else {
+			$this->assign_by->ViewValue = NULL;
+		}
 		$this->assign_by->ViewCustomAttributes = "";
 
 		// statuse
-		$this->statuse->ViewValue = $this->statuse->CurrentValue;
+		if (strval($this->statuse->CurrentValue) <> "") {
+			$arwrk = explode(",", $this->statuse->CurrentValue);
+			$sFilterWrk = "";
+			foreach ($arwrk as $wrk) {
+				if ($sFilterWrk <> "") $sFilterWrk .= " OR ";
+				$sFilterWrk .= "`id`" . ew_SearchString("=", trim($wrk), EW_DATATYPE_NUMBER, "");
+			}
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `system_status`";
+		$sWhereWrk = "";
+		$this->statuse->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->statuse, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$this->statuse->ViewValue = "";
+				$ari = 0;
+				while (!$rswrk->EOF) {
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('DispFld');
+					$this->statuse->ViewValue .= $this->statuse->DisplayValue($arwrk);
+					$rswrk->MoveNext();
+					if (!$rswrk->EOF) $this->statuse->ViewValue .= ew_ViewOptionSeparator($ari); // Separate Options
+					$ari++;
+				}
+				$rswrk->Close();
+			} else {
+				$this->statuse->ViewValue = $this->statuse->CurrentValue;
+			}
+		} else {
+			$this->statuse->ViewValue = NULL;
+		}
 		$this->statuse->ViewCustomAttributes = "";
 
 		// date_retrieved
 		$this->date_retrieved->ViewValue = $this->date_retrieved->CurrentValue;
-		$this->date_retrieved->ViewValue = ew_FormatDateTime($this->date_retrieved->ViewValue, 0);
+		$this->date_retrieved->ViewValue = ew_FormatDateTime($this->date_retrieved->ViewValue, 17);
 		$this->date_retrieved->ViewCustomAttributes = "";
 
 		// retriever_action
-		$this->retriever_action->ViewValue = $this->retriever_action->CurrentValue;
+		if (strval($this->retriever_action->CurrentValue) <> "") {
+			$this->retriever_action->ViewValue = $this->retriever_action->OptionCaption($this->retriever_action->CurrentValue);
+		} else {
+			$this->retriever_action->ViewValue = NULL;
+		}
 		$this->retriever_action->ViewCustomAttributes = "";
 
 		// retriever_comment
@@ -963,13 +1098,53 @@ class cpc_issuance_edit extends cpc_issuance {
 		$this->retriever_comment->ViewCustomAttributes = "";
 
 		// retrieved_by
-		$this->retrieved_by->ViewValue = $this->retrieved_by->CurrentValue;
+		if (strval($this->retrieved_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->retrieved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->retrieved_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->retrieved_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->retrieved_by->ViewValue = $this->retrieved_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->retrieved_by->ViewValue = $this->retrieved_by->CurrentValue;
+			}
+		} else {
+			$this->retrieved_by->ViewValue = NULL;
+		}
 		$this->retrieved_by->ViewCustomAttributes = "";
 
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
+		// staff_id
+		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
+		if (strval($this->staff_id->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->staff_id->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->staff_id->ViewValue = $this->staff_id->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
+			}
+		} else {
+			$this->staff_id->ViewValue = NULL;
+		}
+		$this->staff_id->ViewCustomAttributes = "";
 
 			// issued_date
 			$this->issued_date->LinkCustomAttributes = "";
@@ -1055,18 +1230,17 @@ class cpc_issuance_edit extends cpc_issuance {
 			$this->retrieved_by->LinkCustomAttributes = "";
 			$this->retrieved_by->HrefValue = "";
 			$this->retrieved_by->TooltipValue = "";
-		} elseif ($this->RowType == EW_ROWTYPE_EDIT) { // Edit row
 
-			// id
-			$this->id->EditAttrs["class"] = "form-control";
-			$this->id->EditCustomAttributes = "";
-			$this->id->EditValue = $this->id->CurrentValue;
-			$this->id->ViewCustomAttributes = "";
+			// staff_id
+			$this->staff_id->LinkCustomAttributes = "";
+			$this->staff_id->HrefValue = "";
+			$this->staff_id->TooltipValue = "";
+		} elseif ($this->RowType == EW_ROWTYPE_EDIT) { // Edit row
 
 			// issued_date
 			$this->issued_date->EditAttrs["class"] = "form-control";
 			$this->issued_date->EditCustomAttributes = "";
-			$this->issued_date->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->issued_date->CurrentValue, 8));
+			$this->issued_date->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->issued_date->CurrentValue, 17));
 			$this->issued_date->PlaceHolder = ew_RemoveHtml($this->issued_date->FldCaption());
 
 			// reference_id
@@ -1096,32 +1270,84 @@ class cpc_issuance_edit extends cpc_issuance {
 			// department
 			$this->department->EditAttrs["class"] = "form-control";
 			$this->department->EditCustomAttributes = "";
-			$this->department->EditValue = ew_HtmlEncode($this->department->CurrentValue);
-			$this->department->PlaceHolder = ew_RemoveHtml($this->department->FldCaption());
+			if (trim(strval($this->department->CurrentValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$sFilterWrk = "`department_id`" . ew_SearchString("=", $this->department->CurrentValue, EW_DATATYPE_NUMBER, "");
+			}
+			$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `depertment`";
+			$sWhereWrk = "";
+			$this->department->LookupFilters = array();
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->department->EditValue = $arwrk;
 
 			// designation
-			$this->designation->EditAttrs["class"] = "form-control";
 			$this->designation->EditCustomAttributes = "";
-			$this->designation->EditValue = ew_HtmlEncode($this->designation->CurrentValue);
-			$this->designation->PlaceHolder = ew_RemoveHtml($this->designation->FldCaption());
+			if (trim(strval($this->designation->CurrentValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$sFilterWrk = "`code`" . ew_SearchString("=", $this->designation->CurrentValue, EW_DATATYPE_NUMBER, "");
+			}
+			$sSqlWrk = "SELECT `code`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `designation`";
+			$sWhereWrk = "";
+			$this->designation->LookupFilters = array("dx1" => '`description`');
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->designation, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$sSqlWrk .= " ORDER BY `code` ASC";
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+				$this->designation->ViewValue = $this->designation->DisplayValue($arwrk);
+			} else {
+				$this->designation->ViewValue = $Language->Phrase("PleaseSelect");
+			}
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->designation->EditValue = $arwrk;
 
 			// assign_to
-			$this->assign_to->EditAttrs["class"] = "form-control";
 			$this->assign_to->EditCustomAttributes = "";
-			$this->assign_to->EditValue = ew_HtmlEncode($this->assign_to->CurrentValue);
-			$this->assign_to->PlaceHolder = ew_RemoveHtml($this->assign_to->FldCaption());
+			if (trim(strval($this->assign_to->CurrentValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_to->CurrentValue, EW_DATATYPE_NUMBER, "");
+			}
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
+			$sWhereWrk = "";
+			$this->assign_to->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->assign_to, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$sSqlWrk .= " ORDER BY `id` ASC";
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+				$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
+				$this->assign_to->ViewValue = $this->assign_to->DisplayValue($arwrk);
+			} else {
+				$this->assign_to->ViewValue = $Language->Phrase("PleaseSelect");
+			}
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->assign_to->EditValue = $arwrk;
 
 			// date_assign
 			$this->date_assign->EditAttrs["class"] = "form-control";
 			$this->date_assign->EditCustomAttributes = "";
-			$this->date_assign->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->date_assign->CurrentValue, 8));
+			$this->date_assign->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->date_assign->CurrentValue, 17));
 			$this->date_assign->PlaceHolder = ew_RemoveHtml($this->date_assign->FldCaption());
 
 			// assign_action
-			$this->assign_action->EditAttrs["class"] = "form-control";
 			$this->assign_action->EditCustomAttributes = "";
-			$this->assign_action->EditValue = ew_HtmlEncode($this->assign_action->CurrentValue);
-			$this->assign_action->PlaceHolder = ew_RemoveHtml($this->assign_action->FldCaption());
+			$this->assign_action->EditValue = $this->assign_action->Options(FALSE);
 
 			// assign_comment
 			$this->assign_comment->EditAttrs["class"] = "form-control";
@@ -1132,26 +1358,55 @@ class cpc_issuance_edit extends cpc_issuance {
 			// assign_by
 			$this->assign_by->EditAttrs["class"] = "form-control";
 			$this->assign_by->EditCustomAttributes = "";
-			$this->assign_by->EditValue = ew_HtmlEncode($this->assign_by->CurrentValue);
-			$this->assign_by->PlaceHolder = ew_RemoveHtml($this->assign_by->FldCaption());
+			if (trim(strval($this->assign_by->CurrentValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+			}
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
+			$sWhereWrk = "";
+			$this->assign_by->LookupFilters = array();
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->assign_by, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->assign_by->EditValue = $arwrk;
 
 			// statuse
 			$this->statuse->EditAttrs["class"] = "form-control";
 			$this->statuse->EditCustomAttributes = "";
-			$this->statuse->EditValue = ew_HtmlEncode($this->statuse->CurrentValue);
-			$this->statuse->PlaceHolder = ew_RemoveHtml($this->statuse->FldCaption());
+			if (trim(strval($this->statuse->CurrentValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$arwrk = explode(",", $this->statuse->CurrentValue);
+				$sFilterWrk = "";
+				foreach ($arwrk as $wrk) {
+					if ($sFilterWrk <> "") $sFilterWrk .= " OR ";
+					$sFilterWrk .= "`id`" . ew_SearchString("=", trim($wrk), EW_DATATYPE_NUMBER, "");
+				}
+			}
+			$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `system_status`";
+			$sWhereWrk = "";
+			$this->statuse->LookupFilters = array();
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->statuse, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->statuse->EditValue = $arwrk;
 
 			// date_retrieved
 			$this->date_retrieved->EditAttrs["class"] = "form-control";
 			$this->date_retrieved->EditCustomAttributes = "";
-			$this->date_retrieved->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->date_retrieved->CurrentValue, 8));
+			$this->date_retrieved->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->date_retrieved->CurrentValue, 17));
 			$this->date_retrieved->PlaceHolder = ew_RemoveHtml($this->date_retrieved->FldCaption());
 
 			// retriever_action
-			$this->retriever_action->EditAttrs["class"] = "form-control";
 			$this->retriever_action->EditCustomAttributes = "";
-			$this->retriever_action->EditValue = ew_HtmlEncode($this->retriever_action->CurrentValue);
-			$this->retriever_action->PlaceHolder = ew_RemoveHtml($this->retriever_action->FldCaption());
+			$this->retriever_action->EditValue = $this->retriever_action->Options(FALSE);
 
 			// retriever_comment
 			$this->retriever_comment->EditAttrs["class"] = "form-control";
@@ -1162,16 +1417,52 @@ class cpc_issuance_edit extends cpc_issuance {
 			// retrieved_by
 			$this->retrieved_by->EditAttrs["class"] = "form-control";
 			$this->retrieved_by->EditCustomAttributes = "";
-			$this->retrieved_by->EditValue = ew_HtmlEncode($this->retrieved_by->CurrentValue);
-			$this->retrieved_by->PlaceHolder = ew_RemoveHtml($this->retrieved_by->FldCaption());
+			if (trim(strval($this->retrieved_by->CurrentValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->retrieved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+			}
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
+			$sWhereWrk = "";
+			$this->retrieved_by->LookupFilters = array();
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->retrieved_by, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->retrieved_by->EditValue = $arwrk;
+
+			// staff_id
+			$this->staff_id->EditAttrs["class"] = "form-control";
+			$this->staff_id->EditCustomAttributes = "";
+			$this->staff_id->EditValue = ew_HtmlEncode($this->staff_id->CurrentValue);
+			if (strval($this->staff_id->CurrentValue) <> "") {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sWhereWrk = "";
+			$this->staff_id->LookupFilters = array();
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+				$rswrk = Conn()->Execute($sSqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+					$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
+					$this->staff_id->EditValue = $this->staff_id->DisplayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->staff_id->EditValue = ew_HtmlEncode($this->staff_id->CurrentValue);
+				}
+			} else {
+				$this->staff_id->EditValue = NULL;
+			}
+			$this->staff_id->PlaceHolder = ew_RemoveHtml($this->staff_id->FldCaption());
 
 			// Edit refer script
-			// id
-
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-
 			// issued_date
+
 			$this->issued_date->LinkCustomAttributes = "";
 			$this->issued_date->HrefValue = "";
 
@@ -1238,6 +1529,10 @@ class cpc_issuance_edit extends cpc_issuance {
 			// retrieved_by
 			$this->retrieved_by->LinkCustomAttributes = "";
 			$this->retrieved_by->HrefValue = "";
+
+			// staff_id
+			$this->staff_id->LinkCustomAttributes = "";
+			$this->staff_id->HrefValue = "";
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD || $this->RowType == EW_ROWTYPE_EDIT || $this->RowType == EW_ROWTYPE_SEARCH) // Add/Edit/Search row
 			$this->SetupFieldTitles();
@@ -1257,35 +1552,14 @@ class cpc_issuance_edit extends cpc_issuance {
 		// Check if validation required
 		if (!EW_SERVER_VALIDATE)
 			return ($gsFormError == "");
-		if (!ew_CheckDateDef($this->issued_date->FormValue)) {
-			ew_AddMessage($gsFormError, $this->issued_date->FldErrMsg());
-		}
-		if (!ew_CheckInteger($this->department->FormValue)) {
-			ew_AddMessage($gsFormError, $this->department->FldErrMsg());
-		}
-		if (!ew_CheckInteger($this->designation->FormValue)) {
-			ew_AddMessage($gsFormError, $this->designation->FldErrMsg());
-		}
-		if (!ew_CheckInteger($this->assign_to->FormValue)) {
-			ew_AddMessage($gsFormError, $this->assign_to->FldErrMsg());
-		}
-		if (!ew_CheckDateDef($this->date_assign->FormValue)) {
+		if (!ew_CheckShortEuroDate($this->date_assign->FormValue)) {
 			ew_AddMessage($gsFormError, $this->date_assign->FldErrMsg());
 		}
-		if (!ew_CheckInteger($this->assign_action->FormValue)) {
-			ew_AddMessage($gsFormError, $this->assign_action->FldErrMsg());
-		}
-		if (!ew_CheckInteger($this->assign_by->FormValue)) {
-			ew_AddMessage($gsFormError, $this->assign_by->FldErrMsg());
-		}
-		if (!ew_CheckDateDef($this->date_retrieved->FormValue)) {
+		if (!ew_CheckShortEuroDate($this->date_retrieved->FormValue)) {
 			ew_AddMessage($gsFormError, $this->date_retrieved->FldErrMsg());
 		}
-		if (!ew_CheckInteger($this->retriever_action->FormValue)) {
-			ew_AddMessage($gsFormError, $this->retriever_action->FldErrMsg());
-		}
-		if (!ew_CheckInteger($this->retrieved_by->FormValue)) {
-			ew_AddMessage($gsFormError, $this->retrieved_by->FldErrMsg());
+		if (!ew_CheckInteger($this->staff_id->FormValue)) {
+			ew_AddMessage($gsFormError, $this->staff_id->FldErrMsg());
 		}
 
 		// Return validate result
@@ -1324,7 +1598,7 @@ class cpc_issuance_edit extends cpc_issuance {
 			$rsnew = array();
 
 			// issued_date
-			$this->issued_date->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->issued_date->CurrentValue, 0), NULL, $this->issued_date->ReadOnly);
+			$this->issued_date->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->issued_date->CurrentValue, 17), NULL, $this->issued_date->ReadOnly);
 
 			// reference_id
 			$this->reference_id->SetDbValueDef($rsnew, $this->reference_id->CurrentValue, NULL, $this->reference_id->ReadOnly);
@@ -1348,7 +1622,7 @@ class cpc_issuance_edit extends cpc_issuance {
 			$this->assign_to->SetDbValueDef($rsnew, $this->assign_to->CurrentValue, NULL, $this->assign_to->ReadOnly);
 
 			// date_assign
-			$this->date_assign->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->date_assign->CurrentValue, 0), NULL, $this->date_assign->ReadOnly);
+			$this->date_assign->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->date_assign->CurrentValue, 17), NULL, $this->date_assign->ReadOnly);
 
 			// assign_action
 			$this->assign_action->SetDbValueDef($rsnew, $this->assign_action->CurrentValue, NULL, $this->assign_action->ReadOnly);
@@ -1363,7 +1637,7 @@ class cpc_issuance_edit extends cpc_issuance {
 			$this->statuse->SetDbValueDef($rsnew, $this->statuse->CurrentValue, NULL, $this->statuse->ReadOnly);
 
 			// date_retrieved
-			$this->date_retrieved->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->date_retrieved->CurrentValue, 0), NULL, $this->date_retrieved->ReadOnly);
+			$this->date_retrieved->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->date_retrieved->CurrentValue, 17), NULL, $this->date_retrieved->ReadOnly);
 
 			// retriever_action
 			$this->retriever_action->SetDbValueDef($rsnew, $this->retriever_action->CurrentValue, NULL, $this->retriever_action->ReadOnly);
@@ -1373,6 +1647,9 @@ class cpc_issuance_edit extends cpc_issuance {
 
 			// retrieved_by
 			$this->retrieved_by->SetDbValueDef($rsnew, $this->retrieved_by->CurrentValue, NULL, $this->retrieved_by->ReadOnly);
+
+			// staff_id
+			$this->staff_id->SetDbValueDef($rsnew, $this->staff_id->CurrentValue, NULL, $this->staff_id->ReadOnly);
 
 			// Call Row Updating event
 			$bUpdateRow = $this->Row_Updating($rsold, $rsnew);
@@ -1416,11 +1693,107 @@ class cpc_issuance_edit extends cpc_issuance {
 		$Breadcrumb->Add("edit", $PageId, $url);
 	}
 
+	// Set up multi pages
+	function SetupMultiPages() {
+		$pages = new cSubPages();
+		$pages->Style = "tabs";
+		$pages->Add(0);
+		$pages->Add(1);
+		$pages->Add(2);
+		$this->MultiPages = $pages;
+	}
+
 	// Setup lookup filters of a field
 	function SetupLookupFilters($fld, $pageId = null) {
 		global $gsLanguage;
 		$pageId = $pageId ?: $this->PageID;
 		switch ($fld->FldVar) {
+		case "x_department":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `department_id` AS `LinkFld`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
+			$sWhereWrk = "";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`department_id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+		case "x_designation":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `code` AS `LinkFld`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `designation`";
+			$sWhereWrk = "{filter}";
+			$fld->LookupFilters = array("dx1" => '`description`');
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`code` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->designation, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$sSqlWrk .= " ORDER BY `code` ASC";
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+		case "x_assign_to":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sWhereWrk = "{filter}";
+			$fld->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->assign_to, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$sSqlWrk .= " ORDER BY `id` ASC";
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+		case "x_assign_by":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sWhereWrk = "";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->assign_by, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+		case "x_statuse":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `system_status`";
+			$sWhereWrk = "";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->statuse, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+		case "x_retrieved_by":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sWhereWrk = "";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->retrieved_by, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+		case "x_staff_id":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sWhereWrk = "{filter}";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
 		}
 	}
 
@@ -1429,6 +1802,18 @@ class cpc_issuance_edit extends cpc_issuance {
 		global $gsLanguage;
 		$pageId = $pageId ?: $this->PageID;
 		switch ($fld->FldVar) {
+		case "x_staff_id":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld` FROM `users`";
+			$sWhereWrk = "`firstname` LIKE '{query_value}%' OR CONCAT(COALESCE(`firstname`, ''),'" . ew_ValueSeparator(1, $this->staff_id) . "',COALESCE(`lastname`,'')) LIKE '{query_value}%'";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
 		}
 	}
 
@@ -1540,36 +1925,15 @@ fpc_issuanceedit.Validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
-			elm = this.GetElements("x" + infix + "_issued_date");
-			if (elm && !ew_CheckDateDef(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->issued_date->FldErrMsg()) ?>");
-			elm = this.GetElements("x" + infix + "_department");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->department->FldErrMsg()) ?>");
-			elm = this.GetElements("x" + infix + "_designation");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->designation->FldErrMsg()) ?>");
-			elm = this.GetElements("x" + infix + "_assign_to");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->assign_to->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_date_assign");
-			if (elm && !ew_CheckDateDef(elm.value))
+			if (elm && !ew_CheckShortEuroDate(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->date_assign->FldErrMsg()) ?>");
-			elm = this.GetElements("x" + infix + "_assign_action");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->assign_action->FldErrMsg()) ?>");
-			elm = this.GetElements("x" + infix + "_assign_by");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->assign_by->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_date_retrieved");
-			if (elm && !ew_CheckDateDef(elm.value))
+			if (elm && !ew_CheckShortEuroDate(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->date_retrieved->FldErrMsg()) ?>");
-			elm = this.GetElements("x" + infix + "_retriever_action");
+			elm = this.GetElements("x" + infix + "_staff_id");
 			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->retriever_action->FldErrMsg()) ?>");
-			elm = this.GetElements("x" + infix + "_retrieved_by");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->retrieved_by->FldErrMsg()) ?>");
+				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->staff_id->FldErrMsg()) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -1598,9 +1962,31 @@ fpc_issuanceedit.Form_CustomValidate =
 // Use JavaScript validation or not
 fpc_issuanceedit.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
-// Dynamic selection lists
-// Form object for search
+// Multi-Page
+fpc_issuanceedit.MultiPage = new ew_MultiPage("fpc_issuanceedit");
 
+// Dynamic selection lists
+fpc_issuanceedit.Lists["x_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
+fpc_issuanceedit.Lists["x_department"].Data = "<?php echo $pc_issuance_edit->department->LookupFilterQuery(FALSE, "edit") ?>";
+fpc_issuanceedit.Lists["x_designation"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"designation"};
+fpc_issuanceedit.Lists["x_designation"].Data = "<?php echo $pc_issuance_edit->designation->LookupFilterQuery(FALSE, "edit") ?>";
+fpc_issuanceedit.Lists["x_assign_to"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fpc_issuanceedit.Lists["x_assign_to"].Data = "<?php echo $pc_issuance_edit->assign_to->LookupFilterQuery(FALSE, "edit") ?>";
+fpc_issuanceedit.Lists["x_assign_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+fpc_issuanceedit.Lists["x_assign_action"].Options = <?php echo json_encode($pc_issuance_edit->assign_action->Options()) ?>;
+fpc_issuanceedit.Lists["x_assign_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fpc_issuanceedit.Lists["x_assign_by"].Data = "<?php echo $pc_issuance_edit->assign_by->LookupFilterQuery(FALSE, "edit") ?>";
+fpc_issuanceedit.Lists["x_statuse[]"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"system_status"};
+fpc_issuanceedit.Lists["x_statuse[]"].Data = "<?php echo $pc_issuance_edit->statuse->LookupFilterQuery(FALSE, "edit") ?>";
+fpc_issuanceedit.Lists["x_retriever_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+fpc_issuanceedit.Lists["x_retriever_action"].Options = <?php echo json_encode($pc_issuance_edit->retriever_action->Options()) ?>;
+fpc_issuanceedit.Lists["x_retrieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fpc_issuanceedit.Lists["x_retrieved_by"].Data = "<?php echo $pc_issuance_edit->retrieved_by->LookupFilterQuery(FALSE, "edit") ?>";
+fpc_issuanceedit.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fpc_issuanceedit.Lists["x_staff_id"].Data = "<?php echo $pc_issuance_edit->staff_id->LookupFilterQuery(FALSE, "edit") ?>";
+fpc_issuanceedit.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $pc_issuance_edit->staff_id->LookupFilterQuery(TRUE, "edit"))) ?>;
+
+// Form object for search
 </script>
 <script type="text/javascript">
 
@@ -1662,25 +2048,21 @@ $pc_issuance_edit->ShowMessage();
 <input type="hidden" name="t" value="pc_issuance">
 <input type="hidden" name="a_edit" id="a_edit" value="U">
 <input type="hidden" name="modal" value="<?php echo intval($pc_issuance_edit->IsModal) ?>">
+<div class="ewMultiPage"><!-- multi-page -->
+<div class="nav-tabs-custom" id="pc_issuance_edit"><!-- multi-page .nav-tabs-custom -->
+	<ul class="nav<?php echo $pc_issuance_edit->MultiPages->NavStyle() ?>">
+		<li<?php echo $pc_issuance_edit->MultiPages->TabStyle("1") ?>><a href="#tab_pc_issuance1" data-toggle="tab"><?php echo $pc_issuance->PageCaption(1) ?></a></li>
+		<li<?php echo $pc_issuance_edit->MultiPages->TabStyle("2") ?>><a href="#tab_pc_issuance2" data-toggle="tab"><?php echo $pc_issuance->PageCaption(2) ?></a></li>
+	</ul>
+	<div class="tab-content"><!-- multi-page .nav-tabs-custom .tab-content -->
+		<div class="tab-pane<?php echo $pc_issuance_edit->MultiPages->PageStyle("1") ?>" id="tab_pc_issuance1"><!-- multi-page .tab-pane -->
 <div class="ewEditDiv"><!-- page* -->
-<?php if ($pc_issuance->id->Visible) { // id ?>
-	<div id="r_id" class="form-group">
-		<label id="elh_pc_issuance_id" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->id->FldCaption() ?></label>
-		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->id->CellAttributes() ?>>
-<span id="el_pc_issuance_id">
-<span<?php echo $pc_issuance->id->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $pc_issuance->id->EditValue ?></p></span>
-</span>
-<input type="hidden" data-table="pc_issuance" data-field="x_id" name="x_id" id="x_id" value="<?php echo ew_HtmlEncode($pc_issuance->id->CurrentValue) ?>">
-<?php echo $pc_issuance->id->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
 <?php if ($pc_issuance->issued_date->Visible) { // issued_date ?>
 	<div id="r_issued_date" class="form-group">
 		<label id="elh_pc_issuance_issued_date" for="x_issued_date" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->issued_date->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->issued_date->CellAttributes() ?>>
 <span id="el_pc_issuance_issued_date">
-<input type="text" data-table="pc_issuance" data-field="x_issued_date" name="x_issued_date" id="x_issued_date" placeholder="<?php echo ew_HtmlEncode($pc_issuance->issued_date->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->issued_date->EditValue ?>"<?php echo $pc_issuance->issued_date->EditAttributes() ?>>
+<input type="text" data-table="pc_issuance" data-field="x_issued_date" data-page="1" data-format="17" name="x_issued_date" id="x_issued_date" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->issued_date->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->issued_date->EditValue ?>"<?php echo $pc_issuance->issued_date->EditAttributes() ?>>
 </span>
 <?php echo $pc_issuance->issued_date->CustomMsg ?></div></div>
 	</div>
@@ -1690,7 +2072,7 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_reference_id" for="x_reference_id" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->reference_id->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->reference_id->CellAttributes() ?>>
 <span id="el_pc_issuance_reference_id">
-<input type="text" data-table="pc_issuance" data-field="x_reference_id" name="x_reference_id" id="x_reference_id" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->reference_id->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->reference_id->EditValue ?>"<?php echo $pc_issuance->reference_id->EditAttributes() ?>>
+<input type="text" data-table="pc_issuance" data-field="x_reference_id" data-page="1" name="x_reference_id" id="x_reference_id" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->reference_id->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->reference_id->EditValue ?>"<?php echo $pc_issuance->reference_id->EditAttributes() ?>>
 </span>
 <?php echo $pc_issuance->reference_id->CustomMsg ?></div></div>
 	</div>
@@ -1700,7 +2082,7 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_asset_tag" for="x_asset_tag" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->asset_tag->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->asset_tag->CellAttributes() ?>>
 <span id="el_pc_issuance_asset_tag">
-<input type="text" data-table="pc_issuance" data-field="x_asset_tag" name="x_asset_tag" id="x_asset_tag" size="30" maxlength="100" placeholder="<?php echo ew_HtmlEncode($pc_issuance->asset_tag->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->asset_tag->EditValue ?>"<?php echo $pc_issuance->asset_tag->EditAttributes() ?>>
+<input type="text" data-table="pc_issuance" data-field="x_asset_tag" data-page="1" name="x_asset_tag" id="x_asset_tag" size="30" maxlength="100" placeholder="<?php echo ew_HtmlEncode($pc_issuance->asset_tag->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->asset_tag->EditValue ?>"<?php echo $pc_issuance->asset_tag->EditAttributes() ?>>
 </span>
 <?php echo $pc_issuance->asset_tag->CustomMsg ?></div></div>
 	</div>
@@ -1710,7 +2092,7 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_make" for="x_make" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->make->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->make->CellAttributes() ?>>
 <span id="el_pc_issuance_make">
-<input type="text" data-table="pc_issuance" data-field="x_make" name="x_make" id="x_make" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->make->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->make->EditValue ?>"<?php echo $pc_issuance->make->EditAttributes() ?>>
+<input type="text" data-table="pc_issuance" data-field="x_make" data-page="1" name="x_make" id="x_make" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->make->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->make->EditValue ?>"<?php echo $pc_issuance->make->EditAttributes() ?>>
 </span>
 <?php echo $pc_issuance->make->CustomMsg ?></div></div>
 	</div>
@@ -1720,7 +2102,7 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_color" for="x_color" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->color->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->color->CellAttributes() ?>>
 <span id="el_pc_issuance_color">
-<input type="text" data-table="pc_issuance" data-field="x_color" name="x_color" id="x_color" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->color->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->color->EditValue ?>"<?php echo $pc_issuance->color->EditAttributes() ?>>
+<input type="text" data-table="pc_issuance" data-field="x_color" data-page="1" name="x_color" id="x_color" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->color->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->color->EditValue ?>"<?php echo $pc_issuance->color->EditAttributes() ?>>
 </span>
 <?php echo $pc_issuance->color->CustomMsg ?></div></div>
 	</div>
@@ -1730,7 +2112,9 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_department" for="x_department" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->department->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->department->CellAttributes() ?>>
 <span id="el_pc_issuance_department">
-<input type="text" data-table="pc_issuance" data-field="x_department" name="x_department" id="x_department" size="30" placeholder="<?php echo ew_HtmlEncode($pc_issuance->department->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->department->EditValue ?>"<?php echo $pc_issuance->department->EditAttributes() ?>>
+<select data-table="pc_issuance" data-field="x_department" data-page="1" data-value-separator="<?php echo $pc_issuance->department->DisplayValueSeparatorAttribute() ?>" id="x_department" name="x_department"<?php echo $pc_issuance->department->EditAttributes() ?>>
+<?php echo $pc_issuance->department->SelectOptionListHtml("x_department") ?>
+</select>
 </span>
 <?php echo $pc_issuance->department->CustomMsg ?></div></div>
 	</div>
@@ -1740,7 +2124,11 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_designation" for="x_designation" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->designation->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->designation->CellAttributes() ?>>
 <span id="el_pc_issuance_designation">
-<input type="text" data-table="pc_issuance" data-field="x_designation" name="x_designation" id="x_designation" size="30" placeholder="<?php echo ew_HtmlEncode($pc_issuance->designation->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->designation->EditValue ?>"<?php echo $pc_issuance->designation->EditAttributes() ?>>
+<span class="ewLookupList">
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_designation"><?php echo (strval($pc_issuance->designation->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $pc_issuance->designation->ViewValue); ?></span>
+</span>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($pc_issuance->designation->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_designation',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($pc_issuance->designation->ReadOnly || $pc_issuance->designation->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="pc_issuance" data-field="x_designation" data-page="1" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $pc_issuance->designation->DisplayValueSeparatorAttribute() ?>" name="x_designation" id="x_designation" value="<?php echo $pc_issuance->designation->CurrentValue ?>"<?php echo $pc_issuance->designation->EditAttributes() ?>>
 </span>
 <?php echo $pc_issuance->designation->CustomMsg ?></div></div>
 	</div>
@@ -1750,7 +2138,11 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_assign_to" for="x_assign_to" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->assign_to->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->assign_to->CellAttributes() ?>>
 <span id="el_pc_issuance_assign_to">
-<input type="text" data-table="pc_issuance" data-field="x_assign_to" name="x_assign_to" id="x_assign_to" size="30" placeholder="<?php echo ew_HtmlEncode($pc_issuance->assign_to->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->assign_to->EditValue ?>"<?php echo $pc_issuance->assign_to->EditAttributes() ?>>
+<span class="ewLookupList">
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_assign_to"><?php echo (strval($pc_issuance->assign_to->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $pc_issuance->assign_to->ViewValue); ?></span>
+</span>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($pc_issuance->assign_to->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_assign_to',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($pc_issuance->assign_to->ReadOnly || $pc_issuance->assign_to->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="pc_issuance" data-field="x_assign_to" data-page="1" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $pc_issuance->assign_to->DisplayValueSeparatorAttribute() ?>" name="x_assign_to" id="x_assign_to" value="<?php echo $pc_issuance->assign_to->CurrentValue ?>"<?php echo $pc_issuance->assign_to->EditAttributes() ?>>
 </span>
 <?php echo $pc_issuance->assign_to->CustomMsg ?></div></div>
 	</div>
@@ -1760,17 +2152,20 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_date_assign" for="x_date_assign" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->date_assign->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->date_assign->CellAttributes() ?>>
 <span id="el_pc_issuance_date_assign">
-<input type="text" data-table="pc_issuance" data-field="x_date_assign" name="x_date_assign" id="x_date_assign" placeholder="<?php echo ew_HtmlEncode($pc_issuance->date_assign->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->date_assign->EditValue ?>"<?php echo $pc_issuance->date_assign->EditAttributes() ?>>
+<input type="text" data-table="pc_issuance" data-field="x_date_assign" data-page="1" data-format="17" name="x_date_assign" id="x_date_assign" placeholder="<?php echo ew_HtmlEncode($pc_issuance->date_assign->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->date_assign->EditValue ?>"<?php echo $pc_issuance->date_assign->EditAttributes() ?>>
 </span>
 <?php echo $pc_issuance->date_assign->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($pc_issuance->assign_action->Visible) { // assign_action ?>
 	<div id="r_assign_action" class="form-group">
-		<label id="elh_pc_issuance_assign_action" for="x_assign_action" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->assign_action->FldCaption() ?></label>
+		<label id="elh_pc_issuance_assign_action" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->assign_action->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->assign_action->CellAttributes() ?>>
 <span id="el_pc_issuance_assign_action">
-<input type="text" data-table="pc_issuance" data-field="x_assign_action" name="x_assign_action" id="x_assign_action" size="30" placeholder="<?php echo ew_HtmlEncode($pc_issuance->assign_action->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->assign_action->EditValue ?>"<?php echo $pc_issuance->assign_action->EditAttributes() ?>>
+<div id="tp_x_assign_action" class="ewTemplate"><input type="radio" data-table="pc_issuance" data-field="x_assign_action" data-page="1" data-value-separator="<?php echo $pc_issuance->assign_action->DisplayValueSeparatorAttribute() ?>" name="x_assign_action" id="x_assign_action" value="{value}"<?php echo $pc_issuance->assign_action->EditAttributes() ?>></div>
+<div id="dsl_x_assign_action" data-repeatcolumn="5" class="ewItemList" style="display: none;"><div>
+<?php echo $pc_issuance->assign_action->RadioButtonListHtml(FALSE, "x_assign_action", 1) ?>
+</div></div>
 </span>
 <?php echo $pc_issuance->assign_action->CustomMsg ?></div></div>
 	</div>
@@ -1780,7 +2175,7 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_assign_comment" for="x_assign_comment" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->assign_comment->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->assign_comment->CellAttributes() ?>>
 <span id="el_pc_issuance_assign_comment">
-<textarea data-table="pc_issuance" data-field="x_assign_comment" name="x_assign_comment" id="x_assign_comment" cols="35" rows="4" placeholder="<?php echo ew_HtmlEncode($pc_issuance->assign_comment->getPlaceHolder()) ?>"<?php echo $pc_issuance->assign_comment->EditAttributes() ?>><?php echo $pc_issuance->assign_comment->EditValue ?></textarea>
+<textarea data-table="pc_issuance" data-field="x_assign_comment" data-page="1" name="x_assign_comment" id="x_assign_comment" cols="35" rows="4" placeholder="<?php echo ew_HtmlEncode($pc_issuance->assign_comment->getPlaceHolder()) ?>"<?php echo $pc_issuance->assign_comment->EditAttributes() ?>><?php echo $pc_issuance->assign_comment->EditValue ?></textarea>
 </span>
 <?php echo $pc_issuance->assign_comment->CustomMsg ?></div></div>
 	</div>
@@ -1790,17 +2185,46 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_assign_by" for="x_assign_by" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->assign_by->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->assign_by->CellAttributes() ?>>
 <span id="el_pc_issuance_assign_by">
-<input type="text" data-table="pc_issuance" data-field="x_assign_by" name="x_assign_by" id="x_assign_by" size="30" placeholder="<?php echo ew_HtmlEncode($pc_issuance->assign_by->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->assign_by->EditValue ?>"<?php echo $pc_issuance->assign_by->EditAttributes() ?>>
+<select data-table="pc_issuance" data-field="x_assign_by" data-page="1" data-value-separator="<?php echo $pc_issuance->assign_by->DisplayValueSeparatorAttribute() ?>" id="x_assign_by" name="x_assign_by"<?php echo $pc_issuance->assign_by->EditAttributes() ?>>
+<?php echo $pc_issuance->assign_by->SelectOptionListHtml("x_assign_by") ?>
+</select>
 </span>
 <?php echo $pc_issuance->assign_by->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
+<?php if ($pc_issuance->staff_id->Visible) { // staff_id ?>
+	<div id="r_staff_id" class="form-group">
+		<label id="elh_pc_issuance_staff_id" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->staff_id->FldCaption() ?></label>
+		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->staff_id->CellAttributes() ?>>
+<span id="el_pc_issuance_staff_id">
+<?php
+$wrkonchange = trim(" " . @$pc_issuance->staff_id->EditAttrs["onchange"]);
+if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
+$pc_issuance->staff_id->EditAttrs["onchange"] = "";
+?>
+<span id="as_x_staff_id" style="white-space: nowrap; z-index: 8810">
+	<input type="text" name="sv_x_staff_id" id="sv_x_staff_id" value="<?php echo $pc_issuance->staff_id->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($pc_issuance->staff_id->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($pc_issuance->staff_id->getPlaceHolder()) ?>"<?php echo $pc_issuance->staff_id->EditAttributes() ?>>
+</span>
+<input type="hidden" data-table="pc_issuance" data-field="x_staff_id" data-page="1" data-value-separator="<?php echo $pc_issuance->staff_id->DisplayValueSeparatorAttribute() ?>" name="x_staff_id" id="x_staff_id" value="<?php echo ew_HtmlEncode($pc_issuance->staff_id->CurrentValue) ?>"<?php echo $wrkonchange ?>>
+<script type="text/javascript">
+fpc_issuanceedit.CreateAutoSuggest({"id":"x_staff_id","forceSelect":false});
+</script>
+</span>
+<?php echo $pc_issuance->staff_id->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+</div><!-- /page* -->
+		</div><!-- /multi-page .tab-pane -->
+		<div class="tab-pane<?php echo $pc_issuance_edit->MultiPages->PageStyle("2") ?>" id="tab_pc_issuance2"><!-- multi-page .tab-pane -->
+<div class="ewEditDiv"><!-- page* -->
 <?php if ($pc_issuance->statuse->Visible) { // statuse ?>
 	<div id="r_statuse" class="form-group">
 		<label id="elh_pc_issuance_statuse" for="x_statuse" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->statuse->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->statuse->CellAttributes() ?>>
 <span id="el_pc_issuance_statuse">
-<input type="text" data-table="pc_issuance" data-field="x_statuse" name="x_statuse" id="x_statuse" size="30" maxlength="255" placeholder="<?php echo ew_HtmlEncode($pc_issuance->statuse->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->statuse->EditValue ?>"<?php echo $pc_issuance->statuse->EditAttributes() ?>>
+<select data-table="pc_issuance" data-field="x_statuse" data-page="2" data-value-separator="<?php echo $pc_issuance->statuse->DisplayValueSeparatorAttribute() ?>" id="x_statuse[]" name="x_statuse[]" multiple="multiple"<?php echo $pc_issuance->statuse->EditAttributes() ?>>
+<?php echo $pc_issuance->statuse->SelectOptionListHtml("x_statuse[]") ?>
+</select>
 </span>
 <?php echo $pc_issuance->statuse->CustomMsg ?></div></div>
 	</div>
@@ -1810,17 +2234,20 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_date_retrieved" for="x_date_retrieved" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->date_retrieved->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->date_retrieved->CellAttributes() ?>>
 <span id="el_pc_issuance_date_retrieved">
-<input type="text" data-table="pc_issuance" data-field="x_date_retrieved" name="x_date_retrieved" id="x_date_retrieved" placeholder="<?php echo ew_HtmlEncode($pc_issuance->date_retrieved->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->date_retrieved->EditValue ?>"<?php echo $pc_issuance->date_retrieved->EditAttributes() ?>>
+<input type="text" data-table="pc_issuance" data-field="x_date_retrieved" data-page="2" data-format="17" name="x_date_retrieved" id="x_date_retrieved" placeholder="<?php echo ew_HtmlEncode($pc_issuance->date_retrieved->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->date_retrieved->EditValue ?>"<?php echo $pc_issuance->date_retrieved->EditAttributes() ?>>
 </span>
 <?php echo $pc_issuance->date_retrieved->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($pc_issuance->retriever_action->Visible) { // retriever_action ?>
 	<div id="r_retriever_action" class="form-group">
-		<label id="elh_pc_issuance_retriever_action" for="x_retriever_action" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->retriever_action->FldCaption() ?></label>
+		<label id="elh_pc_issuance_retriever_action" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->retriever_action->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->retriever_action->CellAttributes() ?>>
 <span id="el_pc_issuance_retriever_action">
-<input type="text" data-table="pc_issuance" data-field="x_retriever_action" name="x_retriever_action" id="x_retriever_action" size="30" placeholder="<?php echo ew_HtmlEncode($pc_issuance->retriever_action->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->retriever_action->EditValue ?>"<?php echo $pc_issuance->retriever_action->EditAttributes() ?>>
+<div id="tp_x_retriever_action" class="ewTemplate"><input type="radio" data-table="pc_issuance" data-field="x_retriever_action" data-page="2" data-value-separator="<?php echo $pc_issuance->retriever_action->DisplayValueSeparatorAttribute() ?>" name="x_retriever_action" id="x_retriever_action" value="{value}"<?php echo $pc_issuance->retriever_action->EditAttributes() ?>></div>
+<div id="dsl_x_retriever_action" data-repeatcolumn="5" class="ewItemList" style="display: none;"><div>
+<?php echo $pc_issuance->retriever_action->RadioButtonListHtml(FALSE, "x_retriever_action", 2) ?>
+</div></div>
 </span>
 <?php echo $pc_issuance->retriever_action->CustomMsg ?></div></div>
 	</div>
@@ -1830,7 +2257,7 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_retriever_comment" for="x_retriever_comment" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->retriever_comment->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->retriever_comment->CellAttributes() ?>>
 <span id="el_pc_issuance_retriever_comment">
-<textarea data-table="pc_issuance" data-field="x_retriever_comment" name="x_retriever_comment" id="x_retriever_comment" cols="35" rows="4" placeholder="<?php echo ew_HtmlEncode($pc_issuance->retriever_comment->getPlaceHolder()) ?>"<?php echo $pc_issuance->retriever_comment->EditAttributes() ?>><?php echo $pc_issuance->retriever_comment->EditValue ?></textarea>
+<textarea data-table="pc_issuance" data-field="x_retriever_comment" data-page="2" name="x_retriever_comment" id="x_retriever_comment" cols="35" rows="4" placeholder="<?php echo ew_HtmlEncode($pc_issuance->retriever_comment->getPlaceHolder()) ?>"<?php echo $pc_issuance->retriever_comment->EditAttributes() ?>><?php echo $pc_issuance->retriever_comment->EditValue ?></textarea>
 </span>
 <?php echo $pc_issuance->retriever_comment->CustomMsg ?></div></div>
 	</div>
@@ -1840,12 +2267,19 @@ $pc_issuance_edit->ShowMessage();
 		<label id="elh_pc_issuance_retrieved_by" for="x_retrieved_by" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->retrieved_by->FldCaption() ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->retrieved_by->CellAttributes() ?>>
 <span id="el_pc_issuance_retrieved_by">
-<input type="text" data-table="pc_issuance" data-field="x_retrieved_by" name="x_retrieved_by" id="x_retrieved_by" size="30" placeholder="<?php echo ew_HtmlEncode($pc_issuance->retrieved_by->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->retrieved_by->EditValue ?>"<?php echo $pc_issuance->retrieved_by->EditAttributes() ?>>
+<select data-table="pc_issuance" data-field="x_retrieved_by" data-page="2" data-value-separator="<?php echo $pc_issuance->retrieved_by->DisplayValueSeparatorAttribute() ?>" id="x_retrieved_by" name="x_retrieved_by"<?php echo $pc_issuance->retrieved_by->EditAttributes() ?>>
+<?php echo $pc_issuance->retrieved_by->SelectOptionListHtml("x_retrieved_by") ?>
+</select>
 </span>
 <?php echo $pc_issuance->retrieved_by->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 </div><!-- /page* -->
+		</div><!-- /multi-page .tab-pane -->
+	</div><!-- /multi-page .nav-tabs-custom .tab-content -->
+</div><!-- /multi-page .nav-tabs-custom -->
+</div><!-- /multi-page -->
+<input type="hidden" data-table="pc_issuance" data-field="x_id" name="x_id" id="x_id" value="<?php echo ew_HtmlEncode($pc_issuance->id->CurrentValue) ?>">
 <?php if (!$pc_issuance_edit->IsModal) { ?>
 <div class="form-group"><!-- buttons .form-group -->
 	<div class="<?php echo $pc_issuance_edit->OffsetColumnClass ?>"><!-- buttons offset -->
@@ -1868,6 +2302,10 @@ if (EW_DEBUG_ENABLED)
 // Write your table-specific startup script here
 // document.write("page loaded");
 
+$('#r_statuse').hide();
+$('#r_assign_by').hide();
+$('#r_date_assign').hide();
+$('#r_retrieved_by').hide();
 </script>
 <?php include_once "footer.php" ?>
 <?php

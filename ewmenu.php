@@ -57,11 +57,11 @@ $RootMenu->AddMenuItem(270, "mi_issuance_tracking", $Language->MenuPhrase("270",
 $RootMenu->AddMenuItem(193, "mci_Dispenser_Module", $Language->MenuPhrase("193", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fa fa-futbol-o");
 $RootMenu->AddMenuItem(146, "mi_dispenser", $Language->MenuPhrase("146", "MenuText"), "dispenserlist.php", 193, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}dispenser'), FALSE, FALSE, "fa fa-glass");
 $RootMenu->AddMenuItem(194, "mi_dispenser_report", $Language->MenuPhrase("194", "MenuText"), "dispenser_reportlist.php", 193, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}dispenser_report'), FALSE, FALSE, "fas fa-indent");
-$RootMenu->AddMenuItem(256, "mci_Laptop_Module", $Language->MenuPhrase("256", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "");
-$RootMenu->AddMenuItem(200, "mi_laptop_tablet", $Language->MenuPhrase("200", "MenuText"), "laptop_tabletlist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}laptop_tablet'), FALSE, FALSE, "");
-$RootMenu->AddMenuItem(201, "mi_tablet_status", $Language->MenuPhrase("201", "MenuText"), "tablet_statuslist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}tablet_status'), FALSE, FALSE, "");
-$RootMenu->AddMenuItem(257, "mi_tablet_issues", $Language->MenuPhrase("257", "MenuText"), "tablet_issueslist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}tablet_issues'), FALSE, FALSE, "");
-$RootMenu->AddMenuItem(259, "mi_pc_issuance", $Language->MenuPhrase("259", "MenuText"), "pc_issuancelist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}pc_issuance'), FALSE, FALSE, "");
+$RootMenu->AddMenuItem(256, "mci_System_Module", $Language->MenuPhrase("256", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fas fa-desktop");
+$RootMenu->AddMenuItem(200, "mi_systems", $Language->MenuPhrase("200", "MenuText"), "systemslist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}systems'), FALSE, FALSE, "fa fa-laptop");
+$RootMenu->AddMenuItem(257, "mi_system_issues", $Language->MenuPhrase("257", "MenuText"), "system_issueslist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}system_issues'), FALSE, FALSE, "fas fa-cog");
+$RootMenu->AddMenuItem(259, "mi_pc_issuance", $Language->MenuPhrase("259", "MenuText"), "pc_issuancelist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}pc_issuance'), FALSE, FALSE, "fa fa-laptop");
+$RootMenu->AddMenuItem(271, "mi_system_status", $Language->MenuPhrase("271", "MenuText"), "system_statuslist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}system_status'), FALSE, FALSE, "fas fa-hourglass-start");
 echo $RootMenu->ToScript();
 ?>
 <div class="ewVertical" id="ewMenu"></div>

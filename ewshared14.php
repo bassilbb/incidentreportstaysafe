@@ -946,6 +946,9 @@ if (IsLoggedIn()) {
 			if (CurrentUserLevel() == 5) {
 				$_SESSION['MyInventoryCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `inventory` WHERE `statuss` in (3)");
 			}
+			if (CurrentUserLevel() == 6) {
+				$_SESSION['MyInventoryCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `inventory` WHERE `statuss` in (3)");
+			}
 		if ($Item->Text == "Inventory Store") {
 			$MyInventoryCount = $_SESSION['MyInventoryCount'];
 			if ($MyInventoryCount > 0) {
@@ -975,6 +978,9 @@ if (IsLoggedIn()) {
 			//}
 
 			if (CurrentUserLevel() == 5) {
+				$_SESSION['MyIssuanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `issuance_store` WHERE `statuss` in (3)");
+			}
+				if (CurrentUserLevel() == 6) {
 				$_SESSION['MyIssuanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `issuance_store` WHERE `statuss` in (3)");
 			}
 		if ($Item->Text == "Inventory Issuance") {

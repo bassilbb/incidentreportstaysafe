@@ -1958,6 +1958,8 @@ class cissuance_store_add extends cissuance_store {
 	function Page_Render() {
 
 		//echo "Page Render";
+			//$this->item_name->CustomMsg .= "<div class='small' id='lnmessage' style='padding-top:3px; color:blue;'></div>";
+
 	}
 
 	// Page Data Rendering event
@@ -2166,19 +2168,79 @@ $(document).ready(function(){
 				if(quantity!=''){
 					quantity = parseInt(quantity)
 
-					// alert(inventory_quantity);
-					if(quantity <= inventory_quantity && quantity > 0){
+					 //alert(inventory_quantity + 'Inputted');
+					// alert(quantity + 'In stock');
+
+					if((quantity <= inventory_quantity) && (quantity > 0)){
 						var getBal =  inventory_quantity - quantity ;
 
-						// alert(inventory_quantity + '2')
-						$('#x_total_quantity').val(getBal);
-					}else {
-						$('#x_quantity').val('');
+						//var getBal =  quantity - inventory_quantity  ;
+						// alert(getBal + 'Balance');
 
-						//$('#x_amount').val('');
+						getBal = parseInt(getBal);
+
+						//alert(getBal);
+						if(getBal < 0 ){
+
+						    //alert('Here');
+						   //alertify('Quantity inputted can not be less than quantity in Stock');
+						   //alert('Quantity inputted can not be zero and can not be higher than quantity in stock!');
+
+						   $('#x_quantity_out').val('');
+						   $('#x_total_quantity').val('');
+						}else{
+							 $('#x_total_quantity').val(getBal);
+						}
+
+						// alert(inventory_quantity + '2')
+						//$('#x_total_quantity').val(getBal);
+
 					}
+					 else {
+
+					 	  //alert('Quantity inputted can not be zero and can not be higher than quantity in stock!');
+						   $('#x_quantity_out').val('');
+						   $('#x_total_quantity').val('');
+					 }
+				}else{
+						$('#x_total_quantity').val('');
 				}
 			})
+
+			//$('#x_quantity_out').on("change", function() { 
+				//var quantity = this.value;
+				//inventory_quantity = parseInt($('#x_quantity_in').val());
+				//if(quantity!=''){
+					//quantity = parseInt(quantity)
+					// alert(inventory_quantity);
+					//if(quantity >= inventory_quantity && quantity > 0){
+					//	var getBal =  inventory_quantity - quantity ;
+						// alert(inventory_quantity + '2')
+						//$('#x_total_quantity').val(getBal);
+					//}else {
+						//alert('Quantity inputted can not be less than quantity in Stock')
+						//$('#x_quantity').val('');
+						//$('#x_amount').val('');
+				//	}
+				//}
+			//})
+			//$('#x_quantity_out').on("change", function() { 
+				//var quantity = this.value;
+				//inventory_quantity = parseInt($('#x_quantity_in').val());
+				//if(quantity!=''){
+				//	quantity = parseInt(quantity)
+					// alert(inventory_quantity);
+					//if(quantity <= inventory_quantity && quantity > 0){
+					//	var getBal =  inventory_quantity - quantity ;
+						// alert(inventory_quantity + '2'
+					//	$('#x_total_quantity').val(getBal);
+					//}else {
+					//	$('#x_quantity').val('');
+						//$('#x_amount').val('');
+					//}
+			//	}
+			//})
+
 })
 </script>
 <?php $issuance_store_add->ShowPageHeader(); ?>

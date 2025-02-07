@@ -393,18 +393,18 @@ class cdefault {
 			$this->Page_Terminate("inventory_reportlist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'inventory_record'))
 			$this->Page_Terminate("inventory_recordlist.php");
-		if ($Security->AllowList(CurrentProjectID() . 'laptop_tablet'))
-			$this->Page_Terminate("laptop_tabletlist.php");
-		if ($Security->AllowList(CurrentProjectID() . 'tablet_issues'))
-			$this->Page_Terminate("tablet_issueslist.php");
-		if ($Security->AllowList(CurrentProjectID() . 'tablet_status'))
-			$this->Page_Terminate("tablet_statuslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'systems'))
+			$this->Page_Terminate("systemslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'system_issues'))
+			$this->Page_Terminate("system_issueslist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'pc_issuance'))
 			$this->Page_Terminate("pc_issuancelist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'issuance_history'))
 			$this->Page_Terminate("issuance_historylist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'issuance_tracking'))
 			$this->Page_Terminate("issuance_trackinglist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'system_status'))
+			$this->Page_Terminate("system_statuslist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

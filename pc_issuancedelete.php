@@ -65,6 +65,12 @@ class cpc_issuance_delete extends cpc_issuance {
 		if ($this->UseTokenInUrl) $PageUrl .= "t=" . $this->TableVar . "&"; // Add page token
 		return $PageUrl;
 	}
+	var $AuditTrailOnAdd = TRUE;
+	var $AuditTrailOnEdit = TRUE;
+	var $AuditTrailOnDelete = TRUE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -317,9 +323,6 @@ class cpc_issuance_delete extends cpc_issuance {
 		// 
 
 		$this->CurrentAction = (@$_GET["a"] <> "") ? $_GET["a"] : @$_POST["a_list"]; // Set up current action
-		$this->id->SetVisibility();
-		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
-			$this->id->Visible = FALSE;
 		$this->issued_date->SetVisibility();
 		$this->reference_id->SetVisibility();
 		$this->asset_tag->SetVisibility();
@@ -329,12 +332,11 @@ class cpc_issuance_delete extends cpc_issuance {
 		$this->designation->SetVisibility();
 		$this->assign_to->SetVisibility();
 		$this->date_assign->SetVisibility();
-		$this->assign_action->SetVisibility();
 		$this->assign_by->SetVisibility();
 		$this->statuse->SetVisibility();
 		$this->date_retrieved->SetVisibility();
-		$this->retriever_action->SetVisibility();
 		$this->retrieved_by->SetVisibility();
+		$this->staff_id->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -532,6 +534,7 @@ class cpc_issuance_delete extends cpc_issuance {
 		$this->retriever_action->setDbValue($row['retriever_action']);
 		$this->retriever_comment->setDbValue($row['retriever_comment']);
 		$this->retrieved_by->setDbValue($row['retrieved_by']);
+		$this->staff_id->setDbValue($row['staff_id']);
 	}
 
 	// Return a row with default values
@@ -555,6 +558,7 @@ class cpc_issuance_delete extends cpc_issuance {
 		$row['retriever_action'] = NULL;
 		$row['retriever_comment'] = NULL;
 		$row['retrieved_by'] = NULL;
+		$row['staff_id'] = NULL;
 		return $row;
 	}
 
@@ -581,6 +585,7 @@ class cpc_issuance_delete extends cpc_issuance {
 		$this->retriever_action->DbValue = $row['retriever_action'];
 		$this->retriever_comment->DbValue = $row['retriever_comment'];
 		$this->retrieved_by->DbValue = $row['retrieved_by'];
+		$this->staff_id->DbValue = $row['staff_id'];
 	}
 
 	// Render row values based on field settings
@@ -611,6 +616,7 @@ class cpc_issuance_delete extends cpc_issuance {
 		// retriever_action
 		// retriever_comment
 		// retrieved_by
+		// staff_id
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -620,7 +626,7 @@ class cpc_issuance_delete extends cpc_issuance {
 
 		// issued_date
 		$this->issued_date->ViewValue = $this->issued_date->CurrentValue;
-		$this->issued_date->ViewValue = ew_FormatDateTime($this->issued_date->ViewValue, 0);
+		$this->issued_date->ViewValue = ew_FormatDateTime($this->issued_date->ViewValue, 17);
 		$this->issued_date->ViewCustomAttributes = "";
 
 		// reference_id
@@ -640,51 +646,210 @@ class cpc_issuance_delete extends cpc_issuance {
 		$this->color->ViewCustomAttributes = "";
 
 		// department
-		$this->department->ViewValue = $this->department->CurrentValue;
+		if (strval($this->department->CurrentValue) <> "") {
+			$sFilterWrk = "`department_id`" . ew_SearchString("=", $this->department->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
+		$sWhereWrk = "";
+		$this->department->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->department->ViewValue = $this->department->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->department->ViewValue = $this->department->CurrentValue;
+			}
+		} else {
+			$this->department->ViewValue = NULL;
+		}
 		$this->department->ViewCustomAttributes = "";
 
 		// designation
-		$this->designation->ViewValue = $this->designation->CurrentValue;
+		if (strval($this->designation->CurrentValue) <> "") {
+			$sFilterWrk = "`code`" . ew_SearchString("=", $this->designation->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `code`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `designation`";
+		$sWhereWrk = "";
+		$this->designation->LookupFilters = array("dx1" => '`description`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->designation, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+		$sSqlWrk .= " ORDER BY `code` ASC";
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->designation->ViewValue = $this->designation->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->designation->ViewValue = $this->designation->CurrentValue;
+			}
+		} else {
+			$this->designation->ViewValue = NULL;
+		}
 		$this->designation->ViewCustomAttributes = "";
 
 		// assign_to
-		$this->assign_to->ViewValue = $this->assign_to->CurrentValue;
+		if (strval($this->assign_to->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_to->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->assign_to->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->assign_to, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+		$sSqlWrk .= " ORDER BY `id` ASC";
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->assign_to->ViewValue = $this->assign_to->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->assign_to->ViewValue = $this->assign_to->CurrentValue;
+			}
+		} else {
+			$this->assign_to->ViewValue = NULL;
+		}
 		$this->assign_to->ViewCustomAttributes = "";
 
 		// date_assign
 		$this->date_assign->ViewValue = $this->date_assign->CurrentValue;
-		$this->date_assign->ViewValue = ew_FormatDateTime($this->date_assign->ViewValue, 0);
+		$this->date_assign->ViewValue = ew_FormatDateTime($this->date_assign->ViewValue, 17);
 		$this->date_assign->ViewCustomAttributes = "";
 
 		// assign_action
-		$this->assign_action->ViewValue = $this->assign_action->CurrentValue;
+		if (strval($this->assign_action->CurrentValue) <> "") {
+			$this->assign_action->ViewValue = $this->assign_action->OptionCaption($this->assign_action->CurrentValue);
+		} else {
+			$this->assign_action->ViewValue = NULL;
+		}
 		$this->assign_action->ViewCustomAttributes = "";
 
 		// assign_by
-		$this->assign_by->ViewValue = $this->assign_by->CurrentValue;
+		if (strval($this->assign_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->assign_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->assign_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->assign_by->ViewValue = $this->assign_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->assign_by->ViewValue = $this->assign_by->CurrentValue;
+			}
+		} else {
+			$this->assign_by->ViewValue = NULL;
+		}
 		$this->assign_by->ViewCustomAttributes = "";
 
 		// statuse
-		$this->statuse->ViewValue = $this->statuse->CurrentValue;
+		if (strval($this->statuse->CurrentValue) <> "") {
+			$arwrk = explode(",", $this->statuse->CurrentValue);
+			$sFilterWrk = "";
+			foreach ($arwrk as $wrk) {
+				if ($sFilterWrk <> "") $sFilterWrk .= " OR ";
+				$sFilterWrk .= "`id`" . ew_SearchString("=", trim($wrk), EW_DATATYPE_NUMBER, "");
+			}
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `system_status`";
+		$sWhereWrk = "";
+		$this->statuse->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->statuse, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$this->statuse->ViewValue = "";
+				$ari = 0;
+				while (!$rswrk->EOF) {
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('DispFld');
+					$this->statuse->ViewValue .= $this->statuse->DisplayValue($arwrk);
+					$rswrk->MoveNext();
+					if (!$rswrk->EOF) $this->statuse->ViewValue .= ew_ViewOptionSeparator($ari); // Separate Options
+					$ari++;
+				}
+				$rswrk->Close();
+			} else {
+				$this->statuse->ViewValue = $this->statuse->CurrentValue;
+			}
+		} else {
+			$this->statuse->ViewValue = NULL;
+		}
 		$this->statuse->ViewCustomAttributes = "";
 
 		// date_retrieved
 		$this->date_retrieved->ViewValue = $this->date_retrieved->CurrentValue;
-		$this->date_retrieved->ViewValue = ew_FormatDateTime($this->date_retrieved->ViewValue, 0);
+		$this->date_retrieved->ViewValue = ew_FormatDateTime($this->date_retrieved->ViewValue, 17);
 		$this->date_retrieved->ViewCustomAttributes = "";
 
 		// retriever_action
-		$this->retriever_action->ViewValue = $this->retriever_action->CurrentValue;
+		if (strval($this->retriever_action->CurrentValue) <> "") {
+			$this->retriever_action->ViewValue = $this->retriever_action->OptionCaption($this->retriever_action->CurrentValue);
+		} else {
+			$this->retriever_action->ViewValue = NULL;
+		}
 		$this->retriever_action->ViewCustomAttributes = "";
 
 		// retrieved_by
-		$this->retrieved_by->ViewValue = $this->retrieved_by->CurrentValue;
+		if (strval($this->retrieved_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->retrieved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->retrieved_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->retrieved_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->retrieved_by->ViewValue = $this->retrieved_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->retrieved_by->ViewValue = $this->retrieved_by->CurrentValue;
+			}
+		} else {
+			$this->retrieved_by->ViewValue = NULL;
+		}
 		$this->retrieved_by->ViewCustomAttributes = "";
 
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
+		// staff_id
+		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
+		if (strval($this->staff_id->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->staff_id->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->staff_id->ViewValue = $this->staff_id->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
+			}
+		} else {
+			$this->staff_id->ViewValue = NULL;
+		}
+		$this->staff_id->ViewCustomAttributes = "";
 
 			// issued_date
 			$this->issued_date->LinkCustomAttributes = "";
@@ -731,11 +896,6 @@ class cpc_issuance_delete extends cpc_issuance {
 			$this->date_assign->HrefValue = "";
 			$this->date_assign->TooltipValue = "";
 
-			// assign_action
-			$this->assign_action->LinkCustomAttributes = "";
-			$this->assign_action->HrefValue = "";
-			$this->assign_action->TooltipValue = "";
-
 			// assign_by
 			$this->assign_by->LinkCustomAttributes = "";
 			$this->assign_by->HrefValue = "";
@@ -751,15 +911,15 @@ class cpc_issuance_delete extends cpc_issuance {
 			$this->date_retrieved->HrefValue = "";
 			$this->date_retrieved->TooltipValue = "";
 
-			// retriever_action
-			$this->retriever_action->LinkCustomAttributes = "";
-			$this->retriever_action->HrefValue = "";
-			$this->retriever_action->TooltipValue = "";
-
 			// retrieved_by
 			$this->retrieved_by->LinkCustomAttributes = "";
 			$this->retrieved_by->HrefValue = "";
 			$this->retrieved_by->TooltipValue = "";
+
+			// staff_id
+			$this->staff_id->LinkCustomAttributes = "";
+			$this->staff_id->HrefValue = "";
+			$this->staff_id->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -791,6 +951,7 @@ class cpc_issuance_delete extends cpc_issuance {
 		}
 		$rows = ($rs) ? $rs->GetRows() : array();
 		$conn->BeginTrans();
+		if ($this->AuditTrailOnDelete) $this->WriteAuditTrailDummy($Language->Phrase("BatchDeleteBegin")); // Batch delete begin
 
 		// Clone old rows
 		$rsold = $rows;
@@ -837,8 +998,10 @@ class cpc_issuance_delete extends cpc_issuance {
 		}
 		if ($DeleteRows) {
 			$conn->CommitTrans(); // Commit the changes
+			if ($this->AuditTrailOnDelete) $this->WriteAuditTrailDummy($Language->Phrase("BatchDeleteSuccess")); // Batch delete success
 		} else {
 			$conn->RollbackTrans(); // Rollback changes
+			if ($this->AuditTrailOnDelete) $this->WriteAuditTrailDummy($Language->Phrase("BatchDeleteRollback")); // Batch delete rollback
 		}
 
 		// Call Row Deleted event
@@ -974,8 +1137,23 @@ fpc_issuancedelete.Form_CustomValidate =
 fpc_issuancedelete.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-// Form object for search
+fpc_issuancedelete.Lists["x_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
+fpc_issuancedelete.Lists["x_department"].Data = "<?php echo $pc_issuance_delete->department->LookupFilterQuery(FALSE, "delete") ?>";
+fpc_issuancedelete.Lists["x_designation"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"designation"};
+fpc_issuancedelete.Lists["x_designation"].Data = "<?php echo $pc_issuance_delete->designation->LookupFilterQuery(FALSE, "delete") ?>";
+fpc_issuancedelete.Lists["x_assign_to"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fpc_issuancedelete.Lists["x_assign_to"].Data = "<?php echo $pc_issuance_delete->assign_to->LookupFilterQuery(FALSE, "delete") ?>";
+fpc_issuancedelete.Lists["x_assign_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fpc_issuancedelete.Lists["x_assign_by"].Data = "<?php echo $pc_issuance_delete->assign_by->LookupFilterQuery(FALSE, "delete") ?>";
+fpc_issuancedelete.Lists["x_statuse[]"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"system_status"};
+fpc_issuancedelete.Lists["x_statuse[]"].Data = "<?php echo $pc_issuance_delete->statuse->LookupFilterQuery(FALSE, "delete") ?>";
+fpc_issuancedelete.Lists["x_retrieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fpc_issuancedelete.Lists["x_retrieved_by"].Data = "<?php echo $pc_issuance_delete->retrieved_by->LookupFilterQuery(FALSE, "delete") ?>";
+fpc_issuancedelete.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fpc_issuancedelete.Lists["x_staff_id"].Data = "<?php echo $pc_issuance_delete->staff_id->LookupFilterQuery(FALSE, "delete") ?>";
+fpc_issuancedelete.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $pc_issuance_delete->staff_id->LookupFilterQuery(TRUE, "delete"))) ?>;
 
+// Form object for search
 </script>
 <script type="text/javascript">
 
@@ -1000,9 +1178,6 @@ $pc_issuance_delete->ShowMessage();
 <table class="table ewTable">
 	<thead>
 	<tr class="ewTableHeader">
-<?php if ($pc_issuance->id->Visible) { // id ?>
-		<th class="<?php echo $pc_issuance->id->HeaderCellClass() ?>"><span id="elh_pc_issuance_id" class="pc_issuance_id"><?php echo $pc_issuance->id->FldCaption() ?></span></th>
-<?php } ?>
 <?php if ($pc_issuance->issued_date->Visible) { // issued_date ?>
 		<th class="<?php echo $pc_issuance->issued_date->HeaderCellClass() ?>"><span id="elh_pc_issuance_issued_date" class="pc_issuance_issued_date"><?php echo $pc_issuance->issued_date->FldCaption() ?></span></th>
 <?php } ?>
@@ -1030,9 +1205,6 @@ $pc_issuance_delete->ShowMessage();
 <?php if ($pc_issuance->date_assign->Visible) { // date_assign ?>
 		<th class="<?php echo $pc_issuance->date_assign->HeaderCellClass() ?>"><span id="elh_pc_issuance_date_assign" class="pc_issuance_date_assign"><?php echo $pc_issuance->date_assign->FldCaption() ?></span></th>
 <?php } ?>
-<?php if ($pc_issuance->assign_action->Visible) { // assign_action ?>
-		<th class="<?php echo $pc_issuance->assign_action->HeaderCellClass() ?>"><span id="elh_pc_issuance_assign_action" class="pc_issuance_assign_action"><?php echo $pc_issuance->assign_action->FldCaption() ?></span></th>
-<?php } ?>
 <?php if ($pc_issuance->assign_by->Visible) { // assign_by ?>
 		<th class="<?php echo $pc_issuance->assign_by->HeaderCellClass() ?>"><span id="elh_pc_issuance_assign_by" class="pc_issuance_assign_by"><?php echo $pc_issuance->assign_by->FldCaption() ?></span></th>
 <?php } ?>
@@ -1042,11 +1214,11 @@ $pc_issuance_delete->ShowMessage();
 <?php if ($pc_issuance->date_retrieved->Visible) { // date_retrieved ?>
 		<th class="<?php echo $pc_issuance->date_retrieved->HeaderCellClass() ?>"><span id="elh_pc_issuance_date_retrieved" class="pc_issuance_date_retrieved"><?php echo $pc_issuance->date_retrieved->FldCaption() ?></span></th>
 <?php } ?>
-<?php if ($pc_issuance->retriever_action->Visible) { // retriever_action ?>
-		<th class="<?php echo $pc_issuance->retriever_action->HeaderCellClass() ?>"><span id="elh_pc_issuance_retriever_action" class="pc_issuance_retriever_action"><?php echo $pc_issuance->retriever_action->FldCaption() ?></span></th>
-<?php } ?>
 <?php if ($pc_issuance->retrieved_by->Visible) { // retrieved_by ?>
 		<th class="<?php echo $pc_issuance->retrieved_by->HeaderCellClass() ?>"><span id="elh_pc_issuance_retrieved_by" class="pc_issuance_retrieved_by"><?php echo $pc_issuance->retrieved_by->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($pc_issuance->staff_id->Visible) { // staff_id ?>
+		<th class="<?php echo $pc_issuance->staff_id->HeaderCellClass() ?>"><span id="elh_pc_issuance_staff_id" class="pc_issuance_staff_id"><?php echo $pc_issuance->staff_id->FldCaption() ?></span></th>
 <?php } ?>
 	</tr>
 	</thead>
@@ -1069,14 +1241,6 @@ while (!$pc_issuance_delete->Recordset->EOF) {
 	$pc_issuance_delete->RenderRow();
 ?>
 	<tr<?php echo $pc_issuance->RowAttributes() ?>>
-<?php if ($pc_issuance->id->Visible) { // id ?>
-		<td<?php echo $pc_issuance->id->CellAttributes() ?>>
-<span id="el<?php echo $pc_issuance_delete->RowCnt ?>_pc_issuance_id" class="pc_issuance_id">
-<span<?php echo $pc_issuance->id->ViewAttributes() ?>>
-<?php echo $pc_issuance->id->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
 <?php if ($pc_issuance->issued_date->Visible) { // issued_date ?>
 		<td<?php echo $pc_issuance->issued_date->CellAttributes() ?>>
 <span id="el<?php echo $pc_issuance_delete->RowCnt ?>_pc_issuance_issued_date" class="pc_issuance_issued_date">
@@ -1149,14 +1313,6 @@ while (!$pc_issuance_delete->Recordset->EOF) {
 </span>
 </td>
 <?php } ?>
-<?php if ($pc_issuance->assign_action->Visible) { // assign_action ?>
-		<td<?php echo $pc_issuance->assign_action->CellAttributes() ?>>
-<span id="el<?php echo $pc_issuance_delete->RowCnt ?>_pc_issuance_assign_action" class="pc_issuance_assign_action">
-<span<?php echo $pc_issuance->assign_action->ViewAttributes() ?>>
-<?php echo $pc_issuance->assign_action->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
 <?php if ($pc_issuance->assign_by->Visible) { // assign_by ?>
 		<td<?php echo $pc_issuance->assign_by->CellAttributes() ?>>
 <span id="el<?php echo $pc_issuance_delete->RowCnt ?>_pc_issuance_assign_by" class="pc_issuance_assign_by">
@@ -1181,19 +1337,19 @@ while (!$pc_issuance_delete->Recordset->EOF) {
 </span>
 </td>
 <?php } ?>
-<?php if ($pc_issuance->retriever_action->Visible) { // retriever_action ?>
-		<td<?php echo $pc_issuance->retriever_action->CellAttributes() ?>>
-<span id="el<?php echo $pc_issuance_delete->RowCnt ?>_pc_issuance_retriever_action" class="pc_issuance_retriever_action">
-<span<?php echo $pc_issuance->retriever_action->ViewAttributes() ?>>
-<?php echo $pc_issuance->retriever_action->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
 <?php if ($pc_issuance->retrieved_by->Visible) { // retrieved_by ?>
 		<td<?php echo $pc_issuance->retrieved_by->CellAttributes() ?>>
 <span id="el<?php echo $pc_issuance_delete->RowCnt ?>_pc_issuance_retrieved_by" class="pc_issuance_retrieved_by">
 <span<?php echo $pc_issuance->retrieved_by->ViewAttributes() ?>>
 <?php echo $pc_issuance->retrieved_by->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($pc_issuance->staff_id->Visible) { // staff_id ?>
+		<td<?php echo $pc_issuance->staff_id->CellAttributes() ?>>
+<span id="el<?php echo $pc_issuance_delete->RowCnt ?>_pc_issuance_staff_id" class="pc_issuance_staff_id">
+<span<?php echo $pc_issuance->staff_id->ViewAttributes() ?>>
+<?php echo $pc_issuance->staff_id->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

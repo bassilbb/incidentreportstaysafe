@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg14.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
 <?php include_once "phpfn14.php" ?>
-<?php include_once "pc_issuanceinfo.php" ?>
+<?php include_once "systemsinfo.php" ?>
 <?php include_once "usersinfo.php" ?>
 <?php include_once "userfn14.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$pc_issuance_view = NULL; // Initialize page object first
+$systems_view = NULL; // Initialize page object first
 
-class cpc_issuance_view extends cpc_issuance {
+class csystems_view extends csystems {
 
 	// Page ID
 	var $PageID = 'view';
@@ -25,10 +25,10 @@ class cpc_issuance_view extends cpc_issuance {
 	var $ProjectID = '{DD9080C0-D1CA-431F-831F-CAC8FA61260C}';
 
 	// Table name
-	var $TableName = 'pc_issuance';
+	var $TableName = 'systems';
 
 	// Page object name
-	var $PageObjName = 'pc_issuance_view';
+	var $PageObjName = 'systems_view';
 
 	// Page headings
 	var $Heading = '';
@@ -97,12 +97,6 @@ class cpc_issuance_view extends cpc_issuance {
 	var $GridEditUrl;
 	var $MultiDeleteUrl;
 	var $MultiUpdateUrl;
-	var $AuditTrailOnAdd = TRUE;
-	var $AuditTrailOnEdit = TRUE;
-	var $AuditTrailOnDelete = TRUE;
-	var $AuditTrailOnView = FALSE;
-	var $AuditTrailOnViewData = FALSE;
-	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -288,10 +282,10 @@ class cpc_issuance_view extends cpc_issuance {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (pc_issuance)
-		if (!isset($GLOBALS["pc_issuance"]) || get_class($GLOBALS["pc_issuance"]) == "cpc_issuance") {
-			$GLOBALS["pc_issuance"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["pc_issuance"];
+		// Table object (systems)
+		if (!isset($GLOBALS["systems"]) || get_class($GLOBALS["systems"]) == "csystems") {
+			$GLOBALS["systems"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["systems"];
 		}
 		$KeyUrl = "";
 		if (@$_GET["id"] <> "") {
@@ -315,7 +309,7 @@ class cpc_issuance_view extends cpc_issuance {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'pc_issuance', TRUE);
+			define("EW_TABLE_NAME", 'systems', TRUE);
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -372,7 +366,7 @@ class cpc_issuance_view extends cpc_issuance {
 			$Security->SaveLastUrl();
 			$this->setFailureMessage(ew_DeniedMsg()); // Set no permission
 			if ($Security->CanList())
-				$this->Page_Terminate(ew_GetUrl("pc_issuancelist.php"));
+				$this->Page_Terminate(ew_GetUrl("systemslist.php"));
 			else
 				$this->Page_Terminate(ew_GetUrl("login.php"));
 		}
@@ -431,27 +425,34 @@ class cpc_issuance_view extends cpc_issuance {
 		$this->id->SetVisibility();
 		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
 			$this->id->Visible = FALSE;
-		$this->issued_date->SetVisibility();
-		$this->reference_id->SetVisibility();
 		$this->asset_tag->SetVisibility();
-		$this->make->SetVisibility();
-		$this->color->SetVisibility();
+		$this->start_sate->SetVisibility();
+		$this->end_date->SetVisibility();
+		$this->cost_for_repair->SetVisibility();
+		$this->service_provider->SetVisibility();
+		$this->address->SetVisibility();
+		$this->type_of_repair->SetVisibility();
+		$this->note->SetVisibility();
+		$this->status->SetVisibility();
+		$this->asset_category->SetVisibility();
+		$this->asset_sub_category->SetVisibility();
+		$this->serial_number->SetVisibility();
+		$this->programe_area->SetVisibility();
+		$this->division->SetVisibility();
+		$this->branch->SetVisibility();
 		$this->department->SetVisibility();
-		$this->designation->SetVisibility();
-		$this->assign_to->SetVisibility();
-		$this->date_assign->SetVisibility();
-		$this->assign_action->SetVisibility();
-		$this->assign_comment->SetVisibility();
-		$this->assign_by->SetVisibility();
-		$this->statuse->SetVisibility();
-		$this->date_retrieved->SetVisibility();
-		$this->retriever_action->SetVisibility();
-		$this->retriever_comment->SetVisibility();
-		$this->retrieved_by->SetVisibility();
 		$this->staff_id->SetVisibility();
-
-		// Set up multi page object
-		$this->SetupMultiPages();
+		$this->created_by->SetVisibility();
+		$this->created_date->SetVisibility();
+		$this->device_number->SetVisibility();
+		$this->tablet_imie_number->SetVisibility();
+		$this->model->SetVisibility();
+		$this->flag->SetVisibility();
+		$this->area->SetVisibility();
+		$this->updated_date->SetVisibility();
+		$this->updated_by->SetVisibility();
+		$this->received_date->SetVisibility();
+		$this->received_by->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -483,13 +484,13 @@ class cpc_issuance_view extends cpc_issuance {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $pc_issuance;
+		global $EW_EXPORT, $systems;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($pc_issuance);
+				$doc = new $class($systems);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -515,7 +516,7 @@ class cpc_issuance_view extends cpc_issuance {
 				$pageName = ew_GetPageName($url);
 				if ($pageName != $this->GetListUrl()) { // Not List page
 					$row["caption"] = $this->GetModalCaption($pageName);
-					if ($pageName == "pc_issuanceview.php")
+					if ($pageName == "systemsview.php")
 						$row["view"] = "1";
 				} else { // List page should not be shown as modal => error
 					$row["error"] = $this->getFailureMessage();
@@ -545,7 +546,6 @@ class cpc_issuance_view extends cpc_issuance {
 	var $RecKey = array();
 	var $IsModal = FALSE;
 	var $Recordset;
-	var $MultiPages; // Multi pages object
 
 	//
 	// Page main
@@ -582,7 +582,7 @@ class cpc_issuance_view extends cpc_issuance {
 					if ($this->TotalRecs <= 0) { // No record found
 						if ($this->getSuccessMessage() == "" && $this->getFailureMessage() == "")
 							$this->setFailureMessage($Language->Phrase("NoRecord")); // Set no record message
-						$this->Page_Terminate("pc_issuancelist.php"); // Return to list page
+						$this->Page_Terminate("systemslist.php"); // Return to list page
 					} elseif ($bLoadCurrentRecord) { // Load current record position
 						$this->SetupStartRec(); // Set up start record position
 
@@ -606,7 +606,7 @@ class cpc_issuance_view extends cpc_issuance {
 					if (!$bMatchRecord) {
 						if ($this->getSuccessMessage() == "" && $this->getFailureMessage() == "")
 							$this->setFailureMessage($Language->Phrase("NoRecord")); // Set no record message
-						$sReturnUrl = "pc_issuancelist.php"; // No matching record, return to list
+						$sReturnUrl = "systemslist.php"; // No matching record, return to list
 					} else {
 						$this->LoadRowValues($this->Recordset); // Load row values
 					}
@@ -619,7 +619,7 @@ class cpc_issuance_view extends cpc_issuance {
 				exit();
 			}
 		} else {
-			$sReturnUrl = "pc_issuancelist.php"; // Not page request, return to list
+			$sReturnUrl = "systemslist.php"; // Not page request, return to list
 		}
 		if ($sReturnUrl <> "")
 			$this->Page_Terminate($sReturnUrl);
@@ -781,50 +781,69 @@ class cpc_issuance_view extends cpc_issuance {
 		$this->Row_Selected($row);
 		if (!$rs || $rs->EOF)
 			return;
-		if ($this->AuditTrailOnView) $this->WriteAuditTrailOnView($row);
 		$this->id->setDbValue($row['id']);
-		$this->issued_date->setDbValue($row['issued_date']);
-		$this->reference_id->setDbValue($row['reference_id']);
 		$this->asset_tag->setDbValue($row['asset_tag']);
-		$this->make->setDbValue($row['make']);
-		$this->color->setDbValue($row['color']);
+		$this->start_sate->setDbValue($row['start_sate']);
+		$this->end_date->setDbValue($row['end_date']);
+		$this->cost_for_repair->setDbValue($row['cost_for_repair']);
+		$this->service_provider->setDbValue($row['service_provider']);
+		$this->address->setDbValue($row['address']);
+		$this->type_of_repair->setDbValue($row['type_of_repair']);
+		$this->note->setDbValue($row['note']);
+		$this->status->setDbValue($row['status']);
+		$this->asset_category->setDbValue($row['asset_category']);
+		$this->asset_sub_category->setDbValue($row['asset_sub_category']);
+		$this->serial_number->setDbValue($row['serial_number']);
+		$this->programe_area->setDbValue($row['programe_area']);
+		$this->division->setDbValue($row['division']);
+		$this->branch->setDbValue($row['branch']);
 		$this->department->setDbValue($row['department']);
-		$this->designation->setDbValue($row['designation']);
-		$this->assign_to->setDbValue($row['assign_to']);
-		$this->date_assign->setDbValue($row['date_assign']);
-		$this->assign_action->setDbValue($row['assign_action']);
-		$this->assign_comment->setDbValue($row['assign_comment']);
-		$this->assign_by->setDbValue($row['assign_by']);
-		$this->statuse->setDbValue($row['statuse']);
-		$this->date_retrieved->setDbValue($row['date_retrieved']);
-		$this->retriever_action->setDbValue($row['retriever_action']);
-		$this->retriever_comment->setDbValue($row['retriever_comment']);
-		$this->retrieved_by->setDbValue($row['retrieved_by']);
 		$this->staff_id->setDbValue($row['staff_id']);
+		$this->created_by->setDbValue($row['created_by']);
+		$this->created_date->setDbValue($row['created_date']);
+		$this->device_number->setDbValue($row['device_number']);
+		$this->tablet_imie_number->setDbValue($row['tablet_imie_number']);
+		$this->model->setDbValue($row['model']);
+		$this->flag->setDbValue($row['flag']);
+		$this->area->setDbValue($row['area']);
+		$this->updated_date->setDbValue($row['updated_date']);
+		$this->updated_by->setDbValue($row['updated_by']);
+		$this->received_date->setDbValue($row['received_date']);
+		$this->received_by->setDbValue($row['received_by']);
 	}
 
 	// Return a row with default values
 	function NewRow() {
 		$row = array();
 		$row['id'] = NULL;
-		$row['issued_date'] = NULL;
-		$row['reference_id'] = NULL;
 		$row['asset_tag'] = NULL;
-		$row['make'] = NULL;
-		$row['color'] = NULL;
+		$row['start_sate'] = NULL;
+		$row['end_date'] = NULL;
+		$row['cost_for_repair'] = NULL;
+		$row['service_provider'] = NULL;
+		$row['address'] = NULL;
+		$row['type_of_repair'] = NULL;
+		$row['note'] = NULL;
+		$row['status'] = NULL;
+		$row['asset_category'] = NULL;
+		$row['asset_sub_category'] = NULL;
+		$row['serial_number'] = NULL;
+		$row['programe_area'] = NULL;
+		$row['division'] = NULL;
+		$row['branch'] = NULL;
 		$row['department'] = NULL;
-		$row['designation'] = NULL;
-		$row['assign_to'] = NULL;
-		$row['date_assign'] = NULL;
-		$row['assign_action'] = NULL;
-		$row['assign_comment'] = NULL;
-		$row['assign_by'] = NULL;
-		$row['statuse'] = NULL;
-		$row['date_retrieved'] = NULL;
-		$row['retriever_action'] = NULL;
-		$row['retriever_comment'] = NULL;
-		$row['retrieved_by'] = NULL;
 		$row['staff_id'] = NULL;
+		$row['created_by'] = NULL;
+		$row['created_date'] = NULL;
+		$row['device_number'] = NULL;
+		$row['tablet_imie_number'] = NULL;
+		$row['model'] = NULL;
+		$row['flag'] = NULL;
+		$row['area'] = NULL;
+		$row['updated_date'] = NULL;
+		$row['updated_by'] = NULL;
+		$row['received_date'] = NULL;
+		$row['received_by'] = NULL;
 		return $row;
 	}
 
@@ -834,24 +853,34 @@ class cpc_issuance_view extends cpc_issuance {
 			return;
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
-		$this->issued_date->DbValue = $row['issued_date'];
-		$this->reference_id->DbValue = $row['reference_id'];
 		$this->asset_tag->DbValue = $row['asset_tag'];
-		$this->make->DbValue = $row['make'];
-		$this->color->DbValue = $row['color'];
+		$this->start_sate->DbValue = $row['start_sate'];
+		$this->end_date->DbValue = $row['end_date'];
+		$this->cost_for_repair->DbValue = $row['cost_for_repair'];
+		$this->service_provider->DbValue = $row['service_provider'];
+		$this->address->DbValue = $row['address'];
+		$this->type_of_repair->DbValue = $row['type_of_repair'];
+		$this->note->DbValue = $row['note'];
+		$this->status->DbValue = $row['status'];
+		$this->asset_category->DbValue = $row['asset_category'];
+		$this->asset_sub_category->DbValue = $row['asset_sub_category'];
+		$this->serial_number->DbValue = $row['serial_number'];
+		$this->programe_area->DbValue = $row['programe_area'];
+		$this->division->DbValue = $row['division'];
+		$this->branch->DbValue = $row['branch'];
 		$this->department->DbValue = $row['department'];
-		$this->designation->DbValue = $row['designation'];
-		$this->assign_to->DbValue = $row['assign_to'];
-		$this->date_assign->DbValue = $row['date_assign'];
-		$this->assign_action->DbValue = $row['assign_action'];
-		$this->assign_comment->DbValue = $row['assign_comment'];
-		$this->assign_by->DbValue = $row['assign_by'];
-		$this->statuse->DbValue = $row['statuse'];
-		$this->date_retrieved->DbValue = $row['date_retrieved'];
-		$this->retriever_action->DbValue = $row['retriever_action'];
-		$this->retriever_comment->DbValue = $row['retriever_comment'];
-		$this->retrieved_by->DbValue = $row['retrieved_by'];
 		$this->staff_id->DbValue = $row['staff_id'];
+		$this->created_by->DbValue = $row['created_by'];
+		$this->created_date->DbValue = $row['created_date'];
+		$this->device_number->DbValue = $row['device_number'];
+		$this->tablet_imie_number->DbValue = $row['tablet_imie_number'];
+		$this->model->DbValue = $row['model'];
+		$this->flag->DbValue = $row['flag'];
+		$this->area->DbValue = $row['area'];
+		$this->updated_date->DbValue = $row['updated_date'];
+		$this->updated_by->DbValue = $row['updated_by'];
+		$this->received_date->DbValue = $row['received_date'];
+		$this->received_by->DbValue = $row['received_by'];
 	}
 
 	// Render row values based on field settings
@@ -871,24 +900,34 @@ class cpc_issuance_view extends cpc_issuance {
 
 		// Common render codes for all row types
 		// id
-		// issued_date
-		// reference_id
 		// asset_tag
-		// make
-		// color
+		// start_sate
+		// end_date
+		// cost_for_repair
+		// service_provider
+		// address
+		// type_of_repair
+		// note
+		// status
+		// asset_category
+		// asset_sub_category
+		// serial_number
+		// programe_area
+		// division
+		// branch
 		// department
-		// designation
-		// assign_to
-		// date_assign
-		// assign_action
-		// assign_comment
-		// assign_by
-		// statuse
-		// date_retrieved
-		// retriever_action
-		// retriever_comment
-		// retrieved_by
 		// staff_id
+		// created_by
+		// created_date
+		// device_number
+		// tablet_imie_number
+		// model
+		// flag
+		// area
+		// updated_date
+		// updated_by
+		// received_date
+		// received_by
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -896,335 +935,267 @@ class cpc_issuance_view extends cpc_issuance {
 		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// issued_date
-		$this->issued_date->ViewValue = $this->issued_date->CurrentValue;
-		$this->issued_date->ViewValue = ew_FormatDateTime($this->issued_date->ViewValue, 17);
-		$this->issued_date->ViewCustomAttributes = "";
-
-		// reference_id
-		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
-		$this->reference_id->ViewCustomAttributes = "";
-
 		// asset_tag
 		$this->asset_tag->ViewValue = $this->asset_tag->CurrentValue;
 		$this->asset_tag->ViewCustomAttributes = "";
 
-		// make
-		$this->make->ViewValue = $this->make->CurrentValue;
-		$this->make->ViewCustomAttributes = "";
+		// start_sate
+		$this->start_sate->ViewValue = $this->start_sate->CurrentValue;
+		$this->start_sate->ViewValue = ew_FormatDateTime($this->start_sate->ViewValue, 0);
+		$this->start_sate->ViewCustomAttributes = "";
 
-		// color
-		$this->color->ViewValue = $this->color->CurrentValue;
-		$this->color->ViewCustomAttributes = "";
+		// end_date
+		$this->end_date->ViewValue = $this->end_date->CurrentValue;
+		$this->end_date->ViewValue = ew_FormatDateTime($this->end_date->ViewValue, 0);
+		$this->end_date->ViewCustomAttributes = "";
+
+		// cost_for_repair
+		$this->cost_for_repair->ViewValue = $this->cost_for_repair->CurrentValue;
+		$this->cost_for_repair->ViewCustomAttributes = "";
+
+		// service_provider
+		$this->service_provider->ViewValue = $this->service_provider->CurrentValue;
+		$this->service_provider->ViewCustomAttributes = "";
+
+		// address
+		$this->address->ViewValue = $this->address->CurrentValue;
+		$this->address->ViewCustomAttributes = "";
+
+		// type_of_repair
+		$this->type_of_repair->ViewValue = $this->type_of_repair->CurrentValue;
+		$this->type_of_repair->ViewCustomAttributes = "";
+
+		// note
+		$this->note->ViewValue = $this->note->CurrentValue;
+		$this->note->ViewCustomAttributes = "";
+
+		// status
+		$this->status->ViewValue = $this->status->CurrentValue;
+		$this->status->ViewCustomAttributes = "";
+
+		// asset_category
+		$this->asset_category->ViewValue = $this->asset_category->CurrentValue;
+		$this->asset_category->ViewCustomAttributes = "";
+
+		// asset_sub_category
+		$this->asset_sub_category->ViewValue = $this->asset_sub_category->CurrentValue;
+		$this->asset_sub_category->ViewCustomAttributes = "";
+
+		// serial_number
+		$this->serial_number->ViewValue = $this->serial_number->CurrentValue;
+		$this->serial_number->ViewCustomAttributes = "";
+
+		// programe_area
+		$this->programe_area->ViewValue = $this->programe_area->CurrentValue;
+		$this->programe_area->ViewCustomAttributes = "";
+
+		// division
+		$this->division->ViewValue = $this->division->CurrentValue;
+		$this->division->ViewCustomAttributes = "";
+
+		// branch
+		$this->branch->ViewValue = $this->branch->CurrentValue;
+		$this->branch->ViewCustomAttributes = "";
 
 		// department
-		if (strval($this->department->CurrentValue) <> "") {
-			$sFilterWrk = "`department_id`" . ew_SearchString("=", $this->department->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
-		$sWhereWrk = "";
-		$this->department->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->department->ViewValue = $this->department->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->department->ViewValue = $this->department->CurrentValue;
-			}
-		} else {
-			$this->department->ViewValue = NULL;
-		}
+		$this->department->ViewValue = $this->department->CurrentValue;
 		$this->department->ViewCustomAttributes = "";
-
-		// designation
-		if (strval($this->designation->CurrentValue) <> "") {
-			$sFilterWrk = "`code`" . ew_SearchString("=", $this->designation->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `code`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `designation`";
-		$sWhereWrk = "";
-		$this->designation->LookupFilters = array("dx1" => '`description`');
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->designation, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-		$sSqlWrk .= " ORDER BY `code` ASC";
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->designation->ViewValue = $this->designation->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->designation->ViewValue = $this->designation->CurrentValue;
-			}
-		} else {
-			$this->designation->ViewValue = NULL;
-		}
-		$this->designation->ViewCustomAttributes = "";
-
-		// assign_to
-		if (strval($this->assign_to->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_to->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->assign_to->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->assign_to, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-		$sSqlWrk .= " ORDER BY `id` ASC";
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$this->assign_to->ViewValue = $this->assign_to->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->assign_to->ViewValue = $this->assign_to->CurrentValue;
-			}
-		} else {
-			$this->assign_to->ViewValue = NULL;
-		}
-		$this->assign_to->ViewCustomAttributes = "";
-
-		// date_assign
-		$this->date_assign->ViewValue = $this->date_assign->CurrentValue;
-		$this->date_assign->ViewValue = ew_FormatDateTime($this->date_assign->ViewValue, 17);
-		$this->date_assign->ViewCustomAttributes = "";
-
-		// assign_action
-		if (strval($this->assign_action->CurrentValue) <> "") {
-			$this->assign_action->ViewValue = $this->assign_action->OptionCaption($this->assign_action->CurrentValue);
-		} else {
-			$this->assign_action->ViewValue = NULL;
-		}
-		$this->assign_action->ViewCustomAttributes = "";
-
-		// assign_comment
-		$this->assign_comment->ViewValue = $this->assign_comment->CurrentValue;
-		$this->assign_comment->ViewCustomAttributes = "";
-
-		// assign_by
-		if (strval($this->assign_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->assign_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->assign_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->assign_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$this->assign_by->ViewValue = $this->assign_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->assign_by->ViewValue = $this->assign_by->CurrentValue;
-			}
-		} else {
-			$this->assign_by->ViewValue = NULL;
-		}
-		$this->assign_by->ViewCustomAttributes = "";
-
-		// statuse
-		if (strval($this->statuse->CurrentValue) <> "") {
-			$arwrk = explode(",", $this->statuse->CurrentValue);
-			$sFilterWrk = "";
-			foreach ($arwrk as $wrk) {
-				if ($sFilterWrk <> "") $sFilterWrk .= " OR ";
-				$sFilterWrk .= "`id`" . ew_SearchString("=", trim($wrk), EW_DATATYPE_NUMBER, "");
-			}
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `system_status`";
-		$sWhereWrk = "";
-		$this->statuse->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->statuse, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$this->statuse->ViewValue = "";
-				$ari = 0;
-				while (!$rswrk->EOF) {
-					$arwrk = array();
-					$arwrk[1] = $rswrk->fields('DispFld');
-					$this->statuse->ViewValue .= $this->statuse->DisplayValue($arwrk);
-					$rswrk->MoveNext();
-					if (!$rswrk->EOF) $this->statuse->ViewValue .= ew_ViewOptionSeparator($ari); // Separate Options
-					$ari++;
-				}
-				$rswrk->Close();
-			} else {
-				$this->statuse->ViewValue = $this->statuse->CurrentValue;
-			}
-		} else {
-			$this->statuse->ViewValue = NULL;
-		}
-		$this->statuse->ViewCustomAttributes = "";
-
-		// date_retrieved
-		$this->date_retrieved->ViewValue = $this->date_retrieved->CurrentValue;
-		$this->date_retrieved->ViewValue = ew_FormatDateTime($this->date_retrieved->ViewValue, 17);
-		$this->date_retrieved->ViewCustomAttributes = "";
-
-		// retriever_action
-		if (strval($this->retriever_action->CurrentValue) <> "") {
-			$this->retriever_action->ViewValue = $this->retriever_action->OptionCaption($this->retriever_action->CurrentValue);
-		} else {
-			$this->retriever_action->ViewValue = NULL;
-		}
-		$this->retriever_action->ViewCustomAttributes = "";
-
-		// retriever_comment
-		$this->retriever_comment->ViewValue = $this->retriever_comment->CurrentValue;
-		$this->retriever_comment->ViewCustomAttributes = "";
-
-		// retrieved_by
-		if (strval($this->retrieved_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->retrieved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->retrieved_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->retrieved_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$this->retrieved_by->ViewValue = $this->retrieved_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->retrieved_by->ViewValue = $this->retrieved_by->CurrentValue;
-			}
-		} else {
-			$this->retrieved_by->ViewValue = NULL;
-		}
-		$this->retrieved_by->ViewCustomAttributes = "";
 
 		// staff_id
 		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
-		if (strval($this->staff_id->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->staff_id->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$this->staff_id->ViewValue = $this->staff_id->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
-			}
-		} else {
-			$this->staff_id->ViewValue = NULL;
-		}
 		$this->staff_id->ViewCustomAttributes = "";
+
+		// created_by
+		$this->created_by->ViewValue = $this->created_by->CurrentValue;
+		$this->created_by->ViewCustomAttributes = "";
+
+		// created_date
+		$this->created_date->ViewValue = $this->created_date->CurrentValue;
+		$this->created_date->ViewValue = ew_FormatDateTime($this->created_date->ViewValue, 0);
+		$this->created_date->ViewCustomAttributes = "";
+
+		// device_number
+		$this->device_number->ViewValue = $this->device_number->CurrentValue;
+		$this->device_number->ViewCustomAttributes = "";
+
+		// tablet_imie_number
+		$this->tablet_imie_number->ViewValue = $this->tablet_imie_number->CurrentValue;
+		$this->tablet_imie_number->ViewCustomAttributes = "";
+
+		// model
+		$this->model->ViewValue = $this->model->CurrentValue;
+		$this->model->ViewCustomAttributes = "";
+
+		// flag
+		$this->flag->ViewValue = $this->flag->CurrentValue;
+		$this->flag->ViewCustomAttributes = "";
+
+		// area
+		$this->area->ViewValue = $this->area->CurrentValue;
+		$this->area->ViewCustomAttributes = "";
+
+		// updated_date
+		$this->updated_date->ViewValue = $this->updated_date->CurrentValue;
+		$this->updated_date->ViewValue = ew_FormatDateTime($this->updated_date->ViewValue, 0);
+		$this->updated_date->ViewCustomAttributes = "";
+
+		// updated_by
+		$this->updated_by->ViewValue = $this->updated_by->CurrentValue;
+		$this->updated_by->ViewCustomAttributes = "";
+
+		// received_date
+		$this->received_date->ViewValue = $this->received_date->CurrentValue;
+		$this->received_date->ViewValue = ew_FormatDateTime($this->received_date->ViewValue, 0);
+		$this->received_date->ViewCustomAttributes = "";
+
+		// received_by
+		$this->received_by->ViewValue = $this->received_by->CurrentValue;
+		$this->received_by->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
 			$this->id->TooltipValue = "";
 
-			// issued_date
-			$this->issued_date->LinkCustomAttributes = "";
-			$this->issued_date->HrefValue = "";
-			$this->issued_date->TooltipValue = "";
-
-			// reference_id
-			$this->reference_id->LinkCustomAttributes = "";
-			$this->reference_id->HrefValue = "";
-			$this->reference_id->TooltipValue = "";
-
 			// asset_tag
 			$this->asset_tag->LinkCustomAttributes = "";
 			$this->asset_tag->HrefValue = "";
 			$this->asset_tag->TooltipValue = "";
 
-			// make
-			$this->make->LinkCustomAttributes = "";
-			$this->make->HrefValue = "";
-			$this->make->TooltipValue = "";
+			// start_sate
+			$this->start_sate->LinkCustomAttributes = "";
+			$this->start_sate->HrefValue = "";
+			$this->start_sate->TooltipValue = "";
 
-			// color
-			$this->color->LinkCustomAttributes = "";
-			$this->color->HrefValue = "";
-			$this->color->TooltipValue = "";
+			// end_date
+			$this->end_date->LinkCustomAttributes = "";
+			$this->end_date->HrefValue = "";
+			$this->end_date->TooltipValue = "";
+
+			// cost_for_repair
+			$this->cost_for_repair->LinkCustomAttributes = "";
+			$this->cost_for_repair->HrefValue = "";
+			$this->cost_for_repair->TooltipValue = "";
+
+			// service_provider
+			$this->service_provider->LinkCustomAttributes = "";
+			$this->service_provider->HrefValue = "";
+			$this->service_provider->TooltipValue = "";
+
+			// address
+			$this->address->LinkCustomAttributes = "";
+			$this->address->HrefValue = "";
+			$this->address->TooltipValue = "";
+
+			// type_of_repair
+			$this->type_of_repair->LinkCustomAttributes = "";
+			$this->type_of_repair->HrefValue = "";
+			$this->type_of_repair->TooltipValue = "";
+
+			// note
+			$this->note->LinkCustomAttributes = "";
+			$this->note->HrefValue = "";
+			$this->note->TooltipValue = "";
+
+			// status
+			$this->status->LinkCustomAttributes = "";
+			$this->status->HrefValue = "";
+			$this->status->TooltipValue = "";
+
+			// asset_category
+			$this->asset_category->LinkCustomAttributes = "";
+			$this->asset_category->HrefValue = "";
+			$this->asset_category->TooltipValue = "";
+
+			// asset_sub_category
+			$this->asset_sub_category->LinkCustomAttributes = "";
+			$this->asset_sub_category->HrefValue = "";
+			$this->asset_sub_category->TooltipValue = "";
+
+			// serial_number
+			$this->serial_number->LinkCustomAttributes = "";
+			$this->serial_number->HrefValue = "";
+			$this->serial_number->TooltipValue = "";
+
+			// programe_area
+			$this->programe_area->LinkCustomAttributes = "";
+			$this->programe_area->HrefValue = "";
+			$this->programe_area->TooltipValue = "";
+
+			// division
+			$this->division->LinkCustomAttributes = "";
+			$this->division->HrefValue = "";
+			$this->division->TooltipValue = "";
+
+			// branch
+			$this->branch->LinkCustomAttributes = "";
+			$this->branch->HrefValue = "";
+			$this->branch->TooltipValue = "";
 
 			// department
 			$this->department->LinkCustomAttributes = "";
 			$this->department->HrefValue = "";
 			$this->department->TooltipValue = "";
 
-			// designation
-			$this->designation->LinkCustomAttributes = "";
-			$this->designation->HrefValue = "";
-			$this->designation->TooltipValue = "";
-
-			// assign_to
-			$this->assign_to->LinkCustomAttributes = "";
-			$this->assign_to->HrefValue = "";
-			$this->assign_to->TooltipValue = "";
-
-			// date_assign
-			$this->date_assign->LinkCustomAttributes = "";
-			$this->date_assign->HrefValue = "";
-			$this->date_assign->TooltipValue = "";
-
-			// assign_action
-			$this->assign_action->LinkCustomAttributes = "";
-			$this->assign_action->HrefValue = "";
-			$this->assign_action->TooltipValue = "";
-
-			// assign_comment
-			$this->assign_comment->LinkCustomAttributes = "";
-			$this->assign_comment->HrefValue = "";
-			$this->assign_comment->TooltipValue = "";
-
-			// assign_by
-			$this->assign_by->LinkCustomAttributes = "";
-			$this->assign_by->HrefValue = "";
-			$this->assign_by->TooltipValue = "";
-
-			// statuse
-			$this->statuse->LinkCustomAttributes = "";
-			$this->statuse->HrefValue = "";
-			$this->statuse->TooltipValue = "";
-
-			// date_retrieved
-			$this->date_retrieved->LinkCustomAttributes = "";
-			$this->date_retrieved->HrefValue = "";
-			$this->date_retrieved->TooltipValue = "";
-
-			// retriever_action
-			$this->retriever_action->LinkCustomAttributes = "";
-			$this->retriever_action->HrefValue = "";
-			$this->retriever_action->TooltipValue = "";
-
-			// retriever_comment
-			$this->retriever_comment->LinkCustomAttributes = "";
-			$this->retriever_comment->HrefValue = "";
-			$this->retriever_comment->TooltipValue = "";
-
-			// retrieved_by
-			$this->retrieved_by->LinkCustomAttributes = "";
-			$this->retrieved_by->HrefValue = "";
-			$this->retrieved_by->TooltipValue = "";
-
 			// staff_id
 			$this->staff_id->LinkCustomAttributes = "";
 			$this->staff_id->HrefValue = "";
 			$this->staff_id->TooltipValue = "";
+
+			// created_by
+			$this->created_by->LinkCustomAttributes = "";
+			$this->created_by->HrefValue = "";
+			$this->created_by->TooltipValue = "";
+
+			// created_date
+			$this->created_date->LinkCustomAttributes = "";
+			$this->created_date->HrefValue = "";
+			$this->created_date->TooltipValue = "";
+
+			// device_number
+			$this->device_number->LinkCustomAttributes = "";
+			$this->device_number->HrefValue = "";
+			$this->device_number->TooltipValue = "";
+
+			// tablet_imie_number
+			$this->tablet_imie_number->LinkCustomAttributes = "";
+			$this->tablet_imie_number->HrefValue = "";
+			$this->tablet_imie_number->TooltipValue = "";
+
+			// model
+			$this->model->LinkCustomAttributes = "";
+			$this->model->HrefValue = "";
+			$this->model->TooltipValue = "";
+
+			// flag
+			$this->flag->LinkCustomAttributes = "";
+			$this->flag->HrefValue = "";
+			$this->flag->TooltipValue = "";
+
+			// area
+			$this->area->LinkCustomAttributes = "";
+			$this->area->HrefValue = "";
+			$this->area->TooltipValue = "";
+
+			// updated_date
+			$this->updated_date->LinkCustomAttributes = "";
+			$this->updated_date->HrefValue = "";
+			$this->updated_date->TooltipValue = "";
+
+			// updated_by
+			$this->updated_by->LinkCustomAttributes = "";
+			$this->updated_by->HrefValue = "";
+			$this->updated_by->TooltipValue = "";
+
+			// received_date
+			$this->received_date->LinkCustomAttributes = "";
+			$this->received_date->HrefValue = "";
+			$this->received_date->TooltipValue = "";
+
+			// received_by
+			$this->received_by->LinkCustomAttributes = "";
+			$this->received_by->HrefValue = "";
+			$this->received_by->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1274,7 +1245,7 @@ class cpc_issuance_view extends cpc_issuance {
 		// Export to Email
 		$item = &$this->ExportOptions->Add("email");
 		$url = "";
-		$item->Body = "<button id=\"emf_pc_issuance\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_pc_issuance',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fpc_issuanceview,key:" . ew_ArrayToJsonAttr($this->RecKey) . ",sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
+		$item->Body = "<button id=\"emf_systems\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_systems',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fsystemsview,key:" . ew_ArrayToJsonAttr($this->RecKey) . ",sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
 		$item->Visible = FALSE;
 
 		// Drop down button for export
@@ -1374,19 +1345,9 @@ class cpc_issuance_view extends cpc_issuance {
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new cBreadcrumb();
 		$url = substr(ew_CurrentUrl(), strrpos(ew_CurrentUrl(), "/")+1);
-		$Breadcrumb->Add("list", $this->TableVar, $this->AddMasterUrl("pc_issuancelist.php"), "", $this->TableVar, TRUE);
+		$Breadcrumb->Add("list", $this->TableVar, $this->AddMasterUrl("systemslist.php"), "", $this->TableVar, TRUE);
 		$PageId = "view";
 		$Breadcrumb->Add("view", $PageId, $url);
-	}
-
-	// Set up multi pages
-	function SetupMultiPages() {
-		$pages = new cSubPages();
-		$pages->Style = "tabs";
-		$pages->Add(0);
-		$pages->Add(1);
-		$pages->Add(2);
-		$this->MultiPages = $pages;
 	}
 
 	// Setup lookup filters of a field
@@ -1496,30 +1457,30 @@ class cpc_issuance_view extends cpc_issuance {
 <?php
 
 // Create page object
-if (!isset($pc_issuance_view)) $pc_issuance_view = new cpc_issuance_view();
+if (!isset($systems_view)) $systems_view = new csystems_view();
 
 // Page init
-$pc_issuance_view->Page_Init();
+$systems_view->Page_Init();
 
 // Page main
-$pc_issuance_view->Page_Main();
+$systems_view->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$pc_issuance_view->Page_Render();
+$systems_view->Page_Render();
 ?>
 <?php include_once "header.php" ?>
-<?php if ($pc_issuance->Export == "") { ?>
+<?php if ($systems->Export == "") { ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "view";
-var CurrentForm = fpc_issuanceview = new ew_Form("fpc_issuanceview", "view");
+var CurrentForm = fsystemsview = new ew_Form("fsystemsview", "view");
 
 // Form_CustomValidate event
-fpc_issuanceview.Form_CustomValidate = 
+fsystemsview.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid.
@@ -1527,357 +1488,417 @@ fpc_issuanceview.Form_CustomValidate =
  }
 
 // Use JavaScript validation or not
-fpc_issuanceview.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
-
-// Multi-Page
-fpc_issuanceview.MultiPage = new ew_MultiPage("fpc_issuanceview");
+fsystemsview.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-fpc_issuanceview.Lists["x_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
-fpc_issuanceview.Lists["x_department"].Data = "<?php echo $pc_issuance_view->department->LookupFilterQuery(FALSE, "view") ?>";
-fpc_issuanceview.Lists["x_designation"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"designation"};
-fpc_issuanceview.Lists["x_designation"].Data = "<?php echo $pc_issuance_view->designation->LookupFilterQuery(FALSE, "view") ?>";
-fpc_issuanceview.Lists["x_assign_to"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fpc_issuanceview.Lists["x_assign_to"].Data = "<?php echo $pc_issuance_view->assign_to->LookupFilterQuery(FALSE, "view") ?>";
-fpc_issuanceview.Lists["x_assign_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-fpc_issuanceview.Lists["x_assign_action"].Options = <?php echo json_encode($pc_issuance_view->assign_action->Options()) ?>;
-fpc_issuanceview.Lists["x_assign_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fpc_issuanceview.Lists["x_assign_by"].Data = "<?php echo $pc_issuance_view->assign_by->LookupFilterQuery(FALSE, "view") ?>";
-fpc_issuanceview.Lists["x_statuse[]"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"system_status"};
-fpc_issuanceview.Lists["x_statuse[]"].Data = "<?php echo $pc_issuance_view->statuse->LookupFilterQuery(FALSE, "view") ?>";
-fpc_issuanceview.Lists["x_retriever_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-fpc_issuanceview.Lists["x_retriever_action"].Options = <?php echo json_encode($pc_issuance_view->retriever_action->Options()) ?>;
-fpc_issuanceview.Lists["x_retrieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fpc_issuanceview.Lists["x_retrieved_by"].Data = "<?php echo $pc_issuance_view->retrieved_by->LookupFilterQuery(FALSE, "view") ?>";
-fpc_issuanceview.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fpc_issuanceview.Lists["x_staff_id"].Data = "<?php echo $pc_issuance_view->staff_id->LookupFilterQuery(FALSE, "view") ?>";
-fpc_issuanceview.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $pc_issuance_view->staff_id->LookupFilterQuery(TRUE, "view"))) ?>;
-
 // Form object for search
+
 </script>
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
 </script>
 <?php } ?>
-<?php if ($pc_issuance->Export == "") { ?>
+<?php if ($systems->Export == "") { ?>
 <div class="ewToolbar">
-<?php $pc_issuance_view->ExportOptions->Render("body") ?>
+<?php $systems_view->ExportOptions->Render("body") ?>
 <?php
-	foreach ($pc_issuance_view->OtherOptions as &$option)
+	foreach ($systems_view->OtherOptions as &$option)
 		$option->Render("body");
 ?>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
-<?php $pc_issuance_view->ShowPageHeader(); ?>
+<?php $systems_view->ShowPageHeader(); ?>
 <?php
-$pc_issuance_view->ShowMessage();
+$systems_view->ShowMessage();
 ?>
-<?php if (!$pc_issuance_view->IsModal) { ?>
-<?php if ($pc_issuance->Export == "") { ?>
+<?php if (!$systems_view->IsModal) { ?>
+<?php if ($systems->Export == "") { ?>
 <form name="ewPagerForm" class="form-inline ewForm ewPagerForm" action="<?php echo ew_CurrentPage() ?>">
-<?php if (!isset($pc_issuance_view->Pager)) $pc_issuance_view->Pager = new cPrevNextPager($pc_issuance_view->StartRec, $pc_issuance_view->DisplayRecs, $pc_issuance_view->TotalRecs, $pc_issuance_view->AutoHidePager) ?>
-<?php if ($pc_issuance_view->Pager->RecordCount > 0 && $pc_issuance_view->Pager->Visible) { ?>
+<?php if (!isset($systems_view->Pager)) $systems_view->Pager = new cPrevNextPager($systems_view->StartRec, $systems_view->DisplayRecs, $systems_view->TotalRecs, $systems_view->AutoHidePager) ?>
+<?php if ($systems_view->Pager->RecordCount > 0 && $systems_view->Pager->Visible) { ?>
 <div class="ewPager">
 <span><?php echo $Language->Phrase("Page") ?>&nbsp;</span>
 <div class="ewPrevNext"><div class="input-group">
 <div class="input-group-btn">
 <!--first page button-->
-	<?php if ($pc_issuance_view->Pager->FirstButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $pc_issuance_view->PageUrl() ?>start=<?php echo $pc_issuance_view->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
+	<?php if ($systems_view->Pager->FirstButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $systems_view->PageUrl() ?>start=<?php echo $systems_view->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerFirst") ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } ?>
 <!--previous page button-->
-	<?php if ($pc_issuance_view->Pager->PrevButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $pc_issuance_view->PageUrl() ?>start=<?php echo $pc_issuance_view->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php if ($systems_view->Pager->PrevButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $systems_view->PageUrl() ?>start=<?php echo $systems_view->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerPrevious") ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } ?>
 </div>
 <!--current page number-->
-	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $pc_issuance_view->Pager->CurrentPage ?>">
+	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $systems_view->Pager->CurrentPage ?>">
 <div class="input-group-btn">
 <!--next page button-->
-	<?php if ($pc_issuance_view->Pager->NextButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $pc_issuance_view->PageUrl() ?>start=<?php echo $pc_issuance_view->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
+	<?php if ($systems_view->Pager->NextButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $systems_view->PageUrl() ?>start=<?php echo $systems_view->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerNext") ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } ?>
 <!--last page button-->
-	<?php if ($pc_issuance_view->Pager->LastButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $pc_issuance_view->PageUrl() ?>start=<?php echo $pc_issuance_view->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
+	<?php if ($systems_view->Pager->LastButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $systems_view->PageUrl() ?>start=<?php echo $systems_view->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerLast") ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } ?>
 </div>
 </div>
 </div>
-<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $pc_issuance_view->Pager->PageCount ?></span>
+<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $systems_view->Pager->PageCount ?></span>
 </div>
 <?php } ?>
 <div class="clearfix"></div>
 </form>
 <?php } ?>
 <?php } ?>
-<form name="fpc_issuanceview" id="fpc_issuanceview" class="form-inline ewForm ewViewForm" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($pc_issuance_view->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $pc_issuance_view->Token ?>">
+<form name="fsystemsview" id="fsystemsview" class="form-inline ewForm ewViewForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($systems_view->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $systems_view->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="pc_issuance">
-<input type="hidden" name="modal" value="<?php echo intval($pc_issuance_view->IsModal) ?>">
-<?php if ($pc_issuance->Export == "") { ?>
-<div class="ewMultiPage">
-<div class="nav-tabs-custom" id="pc_issuance_view">
-	<ul class="nav<?php echo $pc_issuance_view->MultiPages->NavStyle() ?>">
-		<li<?php echo $pc_issuance_view->MultiPages->TabStyle("1") ?>><a href="#tab_pc_issuance1" data-toggle="tab"><?php echo $pc_issuance->PageCaption(1) ?></a></li>
-		<li<?php echo $pc_issuance_view->MultiPages->TabStyle("2") ?>><a href="#tab_pc_issuance2" data-toggle="tab"><?php echo $pc_issuance->PageCaption(2) ?></a></li>
-	</ul>
-	<div class="tab-content">
-<?php } ?>
-<?php if ($pc_issuance->Export == "") { ?>
-		<div class="tab-pane<?php echo $pc_issuance_view->MultiPages->PageStyle("1") ?>" id="tab_pc_issuance1">
-<?php } ?>
+<input type="hidden" name="t" value="systems">
+<input type="hidden" name="modal" value="<?php echo intval($systems_view->IsModal) ?>">
 <table class="table table-striped table-bordered table-hover table-condensed ewViewTable">
-<?php if ($pc_issuance->id->Visible) { // id ?>
+<?php if ($systems->id->Visible) { // id ?>
 	<tr id="r_id">
-		<td class="col-sm-2"><span id="elh_pc_issuance_id"><?php echo $pc_issuance->id->FldCaption() ?></span></td>
-		<td data-name="id"<?php echo $pc_issuance->id->CellAttributes() ?>>
-<span id="el_pc_issuance_id" data-page="1">
-<span<?php echo $pc_issuance->id->ViewAttributes() ?>>
-<?php echo $pc_issuance->id->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_systems_id"><?php echo $systems->id->FldCaption() ?></span></td>
+		<td data-name="id"<?php echo $systems->id->CellAttributes() ?>>
+<span id="el_systems_id">
+<span<?php echo $systems->id->ViewAttributes() ?>>
+<?php echo $systems->id->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($pc_issuance->issued_date->Visible) { // issued_date ?>
-	<tr id="r_issued_date">
-		<td class="col-sm-2"><span id="elh_pc_issuance_issued_date"><?php echo $pc_issuance->issued_date->FldCaption() ?></span></td>
-		<td data-name="issued_date"<?php echo $pc_issuance->issued_date->CellAttributes() ?>>
-<span id="el_pc_issuance_issued_date" data-page="1">
-<span<?php echo $pc_issuance->issued_date->ViewAttributes() ?>>
-<?php echo $pc_issuance->issued_date->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($pc_issuance->reference_id->Visible) { // reference_id ?>
-	<tr id="r_reference_id">
-		<td class="col-sm-2"><span id="elh_pc_issuance_reference_id"><?php echo $pc_issuance->reference_id->FldCaption() ?></span></td>
-		<td data-name="reference_id"<?php echo $pc_issuance->reference_id->CellAttributes() ?>>
-<span id="el_pc_issuance_reference_id" data-page="1">
-<span<?php echo $pc_issuance->reference_id->ViewAttributes() ?>>
-<?php echo $pc_issuance->reference_id->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($pc_issuance->asset_tag->Visible) { // asset_tag ?>
+<?php if ($systems->asset_tag->Visible) { // asset_tag ?>
 	<tr id="r_asset_tag">
-		<td class="col-sm-2"><span id="elh_pc_issuance_asset_tag"><?php echo $pc_issuance->asset_tag->FldCaption() ?></span></td>
-		<td data-name="asset_tag"<?php echo $pc_issuance->asset_tag->CellAttributes() ?>>
-<span id="el_pc_issuance_asset_tag" data-page="1">
-<span<?php echo $pc_issuance->asset_tag->ViewAttributes() ?>>
-<?php echo $pc_issuance->asset_tag->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_systems_asset_tag"><?php echo $systems->asset_tag->FldCaption() ?></span></td>
+		<td data-name="asset_tag"<?php echo $systems->asset_tag->CellAttributes() ?>>
+<span id="el_systems_asset_tag">
+<span<?php echo $systems->asset_tag->ViewAttributes() ?>>
+<?php echo $systems->asset_tag->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($pc_issuance->make->Visible) { // make ?>
-	<tr id="r_make">
-		<td class="col-sm-2"><span id="elh_pc_issuance_make"><?php echo $pc_issuance->make->FldCaption() ?></span></td>
-		<td data-name="make"<?php echo $pc_issuance->make->CellAttributes() ?>>
-<span id="el_pc_issuance_make" data-page="1">
-<span<?php echo $pc_issuance->make->ViewAttributes() ?>>
-<?php echo $pc_issuance->make->ViewValue ?></span>
+<?php if ($systems->start_sate->Visible) { // start_sate ?>
+	<tr id="r_start_sate">
+		<td class="col-sm-2"><span id="elh_systems_start_sate"><?php echo $systems->start_sate->FldCaption() ?></span></td>
+		<td data-name="start_sate"<?php echo $systems->start_sate->CellAttributes() ?>>
+<span id="el_systems_start_sate">
+<span<?php echo $systems->start_sate->ViewAttributes() ?>>
+<?php echo $systems->start_sate->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($pc_issuance->color->Visible) { // color ?>
-	<tr id="r_color">
-		<td class="col-sm-2"><span id="elh_pc_issuance_color"><?php echo $pc_issuance->color->FldCaption() ?></span></td>
-		<td data-name="color"<?php echo $pc_issuance->color->CellAttributes() ?>>
-<span id="el_pc_issuance_color" data-page="1">
-<span<?php echo $pc_issuance->color->ViewAttributes() ?>>
-<?php echo $pc_issuance->color->ViewValue ?></span>
+<?php if ($systems->end_date->Visible) { // end_date ?>
+	<tr id="r_end_date">
+		<td class="col-sm-2"><span id="elh_systems_end_date"><?php echo $systems->end_date->FldCaption() ?></span></td>
+		<td data-name="end_date"<?php echo $systems->end_date->CellAttributes() ?>>
+<span id="el_systems_end_date">
+<span<?php echo $systems->end_date->ViewAttributes() ?>>
+<?php echo $systems->end_date->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($pc_issuance->department->Visible) { // department ?>
+<?php if ($systems->cost_for_repair->Visible) { // cost_for_repair ?>
+	<tr id="r_cost_for_repair">
+		<td class="col-sm-2"><span id="elh_systems_cost_for_repair"><?php echo $systems->cost_for_repair->FldCaption() ?></span></td>
+		<td data-name="cost_for_repair"<?php echo $systems->cost_for_repair->CellAttributes() ?>>
+<span id="el_systems_cost_for_repair">
+<span<?php echo $systems->cost_for_repair->ViewAttributes() ?>>
+<?php echo $systems->cost_for_repair->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->service_provider->Visible) { // service_provider ?>
+	<tr id="r_service_provider">
+		<td class="col-sm-2"><span id="elh_systems_service_provider"><?php echo $systems->service_provider->FldCaption() ?></span></td>
+		<td data-name="service_provider"<?php echo $systems->service_provider->CellAttributes() ?>>
+<span id="el_systems_service_provider">
+<span<?php echo $systems->service_provider->ViewAttributes() ?>>
+<?php echo $systems->service_provider->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->address->Visible) { // address ?>
+	<tr id="r_address">
+		<td class="col-sm-2"><span id="elh_systems_address"><?php echo $systems->address->FldCaption() ?></span></td>
+		<td data-name="address"<?php echo $systems->address->CellAttributes() ?>>
+<span id="el_systems_address">
+<span<?php echo $systems->address->ViewAttributes() ?>>
+<?php echo $systems->address->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->type_of_repair->Visible) { // type_of_repair ?>
+	<tr id="r_type_of_repair">
+		<td class="col-sm-2"><span id="elh_systems_type_of_repair"><?php echo $systems->type_of_repair->FldCaption() ?></span></td>
+		<td data-name="type_of_repair"<?php echo $systems->type_of_repair->CellAttributes() ?>>
+<span id="el_systems_type_of_repair">
+<span<?php echo $systems->type_of_repair->ViewAttributes() ?>>
+<?php echo $systems->type_of_repair->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->note->Visible) { // note ?>
+	<tr id="r_note">
+		<td class="col-sm-2"><span id="elh_systems_note"><?php echo $systems->note->FldCaption() ?></span></td>
+		<td data-name="note"<?php echo $systems->note->CellAttributes() ?>>
+<span id="el_systems_note">
+<span<?php echo $systems->note->ViewAttributes() ?>>
+<?php echo $systems->note->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->status->Visible) { // status ?>
+	<tr id="r_status">
+		<td class="col-sm-2"><span id="elh_systems_status"><?php echo $systems->status->FldCaption() ?></span></td>
+		<td data-name="status"<?php echo $systems->status->CellAttributes() ?>>
+<span id="el_systems_status">
+<span<?php echo $systems->status->ViewAttributes() ?>>
+<?php echo $systems->status->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->asset_category->Visible) { // asset_category ?>
+	<tr id="r_asset_category">
+		<td class="col-sm-2"><span id="elh_systems_asset_category"><?php echo $systems->asset_category->FldCaption() ?></span></td>
+		<td data-name="asset_category"<?php echo $systems->asset_category->CellAttributes() ?>>
+<span id="el_systems_asset_category">
+<span<?php echo $systems->asset_category->ViewAttributes() ?>>
+<?php echo $systems->asset_category->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->asset_sub_category->Visible) { // asset_sub_category ?>
+	<tr id="r_asset_sub_category">
+		<td class="col-sm-2"><span id="elh_systems_asset_sub_category"><?php echo $systems->asset_sub_category->FldCaption() ?></span></td>
+		<td data-name="asset_sub_category"<?php echo $systems->asset_sub_category->CellAttributes() ?>>
+<span id="el_systems_asset_sub_category">
+<span<?php echo $systems->asset_sub_category->ViewAttributes() ?>>
+<?php echo $systems->asset_sub_category->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->serial_number->Visible) { // serial_number ?>
+	<tr id="r_serial_number">
+		<td class="col-sm-2"><span id="elh_systems_serial_number"><?php echo $systems->serial_number->FldCaption() ?></span></td>
+		<td data-name="serial_number"<?php echo $systems->serial_number->CellAttributes() ?>>
+<span id="el_systems_serial_number">
+<span<?php echo $systems->serial_number->ViewAttributes() ?>>
+<?php echo $systems->serial_number->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->programe_area->Visible) { // programe_area ?>
+	<tr id="r_programe_area">
+		<td class="col-sm-2"><span id="elh_systems_programe_area"><?php echo $systems->programe_area->FldCaption() ?></span></td>
+		<td data-name="programe_area"<?php echo $systems->programe_area->CellAttributes() ?>>
+<span id="el_systems_programe_area">
+<span<?php echo $systems->programe_area->ViewAttributes() ?>>
+<?php echo $systems->programe_area->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->division->Visible) { // division ?>
+	<tr id="r_division">
+		<td class="col-sm-2"><span id="elh_systems_division"><?php echo $systems->division->FldCaption() ?></span></td>
+		<td data-name="division"<?php echo $systems->division->CellAttributes() ?>>
+<span id="el_systems_division">
+<span<?php echo $systems->division->ViewAttributes() ?>>
+<?php echo $systems->division->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->branch->Visible) { // branch ?>
+	<tr id="r_branch">
+		<td class="col-sm-2"><span id="elh_systems_branch"><?php echo $systems->branch->FldCaption() ?></span></td>
+		<td data-name="branch"<?php echo $systems->branch->CellAttributes() ?>>
+<span id="el_systems_branch">
+<span<?php echo $systems->branch->ViewAttributes() ?>>
+<?php echo $systems->branch->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->department->Visible) { // department ?>
 	<tr id="r_department">
-		<td class="col-sm-2"><span id="elh_pc_issuance_department"><?php echo $pc_issuance->department->FldCaption() ?></span></td>
-		<td data-name="department"<?php echo $pc_issuance->department->CellAttributes() ?>>
-<span id="el_pc_issuance_department" data-page="1">
-<span<?php echo $pc_issuance->department->ViewAttributes() ?>>
-<?php echo $pc_issuance->department->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_systems_department"><?php echo $systems->department->FldCaption() ?></span></td>
+		<td data-name="department"<?php echo $systems->department->CellAttributes() ?>>
+<span id="el_systems_department">
+<span<?php echo $systems->department->ViewAttributes() ?>>
+<?php echo $systems->department->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($pc_issuance->designation->Visible) { // designation ?>
-	<tr id="r_designation">
-		<td class="col-sm-2"><span id="elh_pc_issuance_designation"><?php echo $pc_issuance->designation->FldCaption() ?></span></td>
-		<td data-name="designation"<?php echo $pc_issuance->designation->CellAttributes() ?>>
-<span id="el_pc_issuance_designation" data-page="1">
-<span<?php echo $pc_issuance->designation->ViewAttributes() ?>>
-<?php echo $pc_issuance->designation->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($pc_issuance->assign_to->Visible) { // assign_to ?>
-	<tr id="r_assign_to">
-		<td class="col-sm-2"><span id="elh_pc_issuance_assign_to"><?php echo $pc_issuance->assign_to->FldCaption() ?></span></td>
-		<td data-name="assign_to"<?php echo $pc_issuance->assign_to->CellAttributes() ?>>
-<span id="el_pc_issuance_assign_to" data-page="1">
-<span<?php echo $pc_issuance->assign_to->ViewAttributes() ?>>
-<?php echo $pc_issuance->assign_to->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($pc_issuance->date_assign->Visible) { // date_assign ?>
-	<tr id="r_date_assign">
-		<td class="col-sm-2"><span id="elh_pc_issuance_date_assign"><?php echo $pc_issuance->date_assign->FldCaption() ?></span></td>
-		<td data-name="date_assign"<?php echo $pc_issuance->date_assign->CellAttributes() ?>>
-<span id="el_pc_issuance_date_assign" data-page="1">
-<span<?php echo $pc_issuance->date_assign->ViewAttributes() ?>>
-<?php echo $pc_issuance->date_assign->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($pc_issuance->assign_action->Visible) { // assign_action ?>
-	<tr id="r_assign_action">
-		<td class="col-sm-2"><span id="elh_pc_issuance_assign_action"><?php echo $pc_issuance->assign_action->FldCaption() ?></span></td>
-		<td data-name="assign_action"<?php echo $pc_issuance->assign_action->CellAttributes() ?>>
-<span id="el_pc_issuance_assign_action" data-page="1">
-<span<?php echo $pc_issuance->assign_action->ViewAttributes() ?>>
-<?php echo $pc_issuance->assign_action->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($pc_issuance->assign_comment->Visible) { // assign_comment ?>
-	<tr id="r_assign_comment">
-		<td class="col-sm-2"><span id="elh_pc_issuance_assign_comment"><?php echo $pc_issuance->assign_comment->FldCaption() ?></span></td>
-		<td data-name="assign_comment"<?php echo $pc_issuance->assign_comment->CellAttributes() ?>>
-<span id="el_pc_issuance_assign_comment" data-page="1">
-<span<?php echo $pc_issuance->assign_comment->ViewAttributes() ?>>
-<?php echo $pc_issuance->assign_comment->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($pc_issuance->assign_by->Visible) { // assign_by ?>
-	<tr id="r_assign_by">
-		<td class="col-sm-2"><span id="elh_pc_issuance_assign_by"><?php echo $pc_issuance->assign_by->FldCaption() ?></span></td>
-		<td data-name="assign_by"<?php echo $pc_issuance->assign_by->CellAttributes() ?>>
-<span id="el_pc_issuance_assign_by" data-page="1">
-<span<?php echo $pc_issuance->assign_by->ViewAttributes() ?>>
-<?php echo $pc_issuance->assign_by->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($pc_issuance->staff_id->Visible) { // staff_id ?>
+<?php if ($systems->staff_id->Visible) { // staff_id ?>
 	<tr id="r_staff_id">
-		<td class="col-sm-2"><span id="elh_pc_issuance_staff_id"><?php echo $pc_issuance->staff_id->FldCaption() ?></span></td>
-		<td data-name="staff_id"<?php echo $pc_issuance->staff_id->CellAttributes() ?>>
-<span id="el_pc_issuance_staff_id" data-page="1">
-<span<?php echo $pc_issuance->staff_id->ViewAttributes() ?>>
-<?php echo $pc_issuance->staff_id->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_systems_staff_id"><?php echo $systems->staff_id->FldCaption() ?></span></td>
+		<td data-name="staff_id"<?php echo $systems->staff_id->CellAttributes() ?>>
+<span id="el_systems_staff_id">
+<span<?php echo $systems->staff_id->ViewAttributes() ?>>
+<?php echo $systems->staff_id->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->created_by->Visible) { // created_by ?>
+	<tr id="r_created_by">
+		<td class="col-sm-2"><span id="elh_systems_created_by"><?php echo $systems->created_by->FldCaption() ?></span></td>
+		<td data-name="created_by"<?php echo $systems->created_by->CellAttributes() ?>>
+<span id="el_systems_created_by">
+<span<?php echo $systems->created_by->ViewAttributes() ?>>
+<?php echo $systems->created_by->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->created_date->Visible) { // created_date ?>
+	<tr id="r_created_date">
+		<td class="col-sm-2"><span id="elh_systems_created_date"><?php echo $systems->created_date->FldCaption() ?></span></td>
+		<td data-name="created_date"<?php echo $systems->created_date->CellAttributes() ?>>
+<span id="el_systems_created_date">
+<span<?php echo $systems->created_date->ViewAttributes() ?>>
+<?php echo $systems->created_date->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->device_number->Visible) { // device_number ?>
+	<tr id="r_device_number">
+		<td class="col-sm-2"><span id="elh_systems_device_number"><?php echo $systems->device_number->FldCaption() ?></span></td>
+		<td data-name="device_number"<?php echo $systems->device_number->CellAttributes() ?>>
+<span id="el_systems_device_number">
+<span<?php echo $systems->device_number->ViewAttributes() ?>>
+<?php echo $systems->device_number->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->tablet_imie_number->Visible) { // tablet_imie_number ?>
+	<tr id="r_tablet_imie_number">
+		<td class="col-sm-2"><span id="elh_systems_tablet_imie_number"><?php echo $systems->tablet_imie_number->FldCaption() ?></span></td>
+		<td data-name="tablet_imie_number"<?php echo $systems->tablet_imie_number->CellAttributes() ?>>
+<span id="el_systems_tablet_imie_number">
+<span<?php echo $systems->tablet_imie_number->ViewAttributes() ?>>
+<?php echo $systems->tablet_imie_number->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->model->Visible) { // model ?>
+	<tr id="r_model">
+		<td class="col-sm-2"><span id="elh_systems_model"><?php echo $systems->model->FldCaption() ?></span></td>
+		<td data-name="model"<?php echo $systems->model->CellAttributes() ?>>
+<span id="el_systems_model">
+<span<?php echo $systems->model->ViewAttributes() ?>>
+<?php echo $systems->model->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->flag->Visible) { // flag ?>
+	<tr id="r_flag">
+		<td class="col-sm-2"><span id="elh_systems_flag"><?php echo $systems->flag->FldCaption() ?></span></td>
+		<td data-name="flag"<?php echo $systems->flag->CellAttributes() ?>>
+<span id="el_systems_flag">
+<span<?php echo $systems->flag->ViewAttributes() ?>>
+<?php echo $systems->flag->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->area->Visible) { // area ?>
+	<tr id="r_area">
+		<td class="col-sm-2"><span id="elh_systems_area"><?php echo $systems->area->FldCaption() ?></span></td>
+		<td data-name="area"<?php echo $systems->area->CellAttributes() ?>>
+<span id="el_systems_area">
+<span<?php echo $systems->area->ViewAttributes() ?>>
+<?php echo $systems->area->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->updated_date->Visible) { // updated_date ?>
+	<tr id="r_updated_date">
+		<td class="col-sm-2"><span id="elh_systems_updated_date"><?php echo $systems->updated_date->FldCaption() ?></span></td>
+		<td data-name="updated_date"<?php echo $systems->updated_date->CellAttributes() ?>>
+<span id="el_systems_updated_date">
+<span<?php echo $systems->updated_date->ViewAttributes() ?>>
+<?php echo $systems->updated_date->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->updated_by->Visible) { // updated_by ?>
+	<tr id="r_updated_by">
+		<td class="col-sm-2"><span id="elh_systems_updated_by"><?php echo $systems->updated_by->FldCaption() ?></span></td>
+		<td data-name="updated_by"<?php echo $systems->updated_by->CellAttributes() ?>>
+<span id="el_systems_updated_by">
+<span<?php echo $systems->updated_by->ViewAttributes() ?>>
+<?php echo $systems->updated_by->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->received_date->Visible) { // received_date ?>
+	<tr id="r_received_date">
+		<td class="col-sm-2"><span id="elh_systems_received_date"><?php echo $systems->received_date->FldCaption() ?></span></td>
+		<td data-name="received_date"<?php echo $systems->received_date->CellAttributes() ?>>
+<span id="el_systems_received_date">
+<span<?php echo $systems->received_date->ViewAttributes() ?>>
+<?php echo $systems->received_date->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($systems->received_by->Visible) { // received_by ?>
+	<tr id="r_received_by">
+		<td class="col-sm-2"><span id="elh_systems_received_by"><?php echo $systems->received_by->FldCaption() ?></span></td>
+		<td data-name="received_by"<?php echo $systems->received_by->CellAttributes() ?>>
+<span id="el_systems_received_by">
+<span<?php echo $systems->received_by->ViewAttributes() ?>>
+<?php echo $systems->received_by->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
 </table>
-<?php if ($pc_issuance->Export == "") { ?>
-		</div>
-<?php } ?>
-<?php if ($pc_issuance->Export == "") { ?>
-		<div class="tab-pane<?php echo $pc_issuance_view->MultiPages->PageStyle("2") ?>" id="tab_pc_issuance2">
-<?php } ?>
-<table class="table table-striped table-bordered table-hover table-condensed ewViewTable">
-<?php if ($pc_issuance->statuse->Visible) { // statuse ?>
-	<tr id="r_statuse">
-		<td class="col-sm-2"><span id="elh_pc_issuance_statuse"><?php echo $pc_issuance->statuse->FldCaption() ?></span></td>
-		<td data-name="statuse"<?php echo $pc_issuance->statuse->CellAttributes() ?>>
-<span id="el_pc_issuance_statuse" data-page="2">
-<span<?php echo $pc_issuance->statuse->ViewAttributes() ?>>
-<?php echo $pc_issuance->statuse->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($pc_issuance->date_retrieved->Visible) { // date_retrieved ?>
-	<tr id="r_date_retrieved">
-		<td class="col-sm-2"><span id="elh_pc_issuance_date_retrieved"><?php echo $pc_issuance->date_retrieved->FldCaption() ?></span></td>
-		<td data-name="date_retrieved"<?php echo $pc_issuance->date_retrieved->CellAttributes() ?>>
-<span id="el_pc_issuance_date_retrieved" data-page="2">
-<span<?php echo $pc_issuance->date_retrieved->ViewAttributes() ?>>
-<?php echo $pc_issuance->date_retrieved->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($pc_issuance->retriever_action->Visible) { // retriever_action ?>
-	<tr id="r_retriever_action">
-		<td class="col-sm-2"><span id="elh_pc_issuance_retriever_action"><?php echo $pc_issuance->retriever_action->FldCaption() ?></span></td>
-		<td data-name="retriever_action"<?php echo $pc_issuance->retriever_action->CellAttributes() ?>>
-<span id="el_pc_issuance_retriever_action" data-page="2">
-<span<?php echo $pc_issuance->retriever_action->ViewAttributes() ?>>
-<?php echo $pc_issuance->retriever_action->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($pc_issuance->retriever_comment->Visible) { // retriever_comment ?>
-	<tr id="r_retriever_comment">
-		<td class="col-sm-2"><span id="elh_pc_issuance_retriever_comment"><?php echo $pc_issuance->retriever_comment->FldCaption() ?></span></td>
-		<td data-name="retriever_comment"<?php echo $pc_issuance->retriever_comment->CellAttributes() ?>>
-<span id="el_pc_issuance_retriever_comment" data-page="2">
-<span<?php echo $pc_issuance->retriever_comment->ViewAttributes() ?>>
-<?php echo $pc_issuance->retriever_comment->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($pc_issuance->retrieved_by->Visible) { // retrieved_by ?>
-	<tr id="r_retrieved_by">
-		<td class="col-sm-2"><span id="elh_pc_issuance_retrieved_by"><?php echo $pc_issuance->retrieved_by->FldCaption() ?></span></td>
-		<td data-name="retrieved_by"<?php echo $pc_issuance->retrieved_by->CellAttributes() ?>>
-<span id="el_pc_issuance_retrieved_by" data-page="2">
-<span<?php echo $pc_issuance->retrieved_by->ViewAttributes() ?>>
-<?php echo $pc_issuance->retrieved_by->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-</table>
-<?php if ($pc_issuance->Export == "") { ?>
-		</div>
-<?php } ?>
-<?php if ($pc_issuance->Export == "") { ?>
-	</div>
-</div>
-</div>
-<?php } ?>
 </form>
-<?php if ($pc_issuance->Export == "") { ?>
+<?php if ($systems->Export == "") { ?>
 <script type="text/javascript">
-fpc_issuanceview.Init();
+fsystemsview.Init();
 </script>
 <?php } ?>
 <?php
-$pc_issuance_view->ShowPageFooter();
+$systems_view->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
-<?php if ($pc_issuance->Export == "") { ?>
+<?php if ($systems->Export == "") { ?>
 <script type="text/javascript">
 
 // Write your table-specific startup script here
@@ -1887,5 +1908,5 @@ if (EW_DEBUG_ENABLED)
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php
-$pc_issuance_view->Page_Terminate();
+$systems_view->Page_Terminate();
 ?>

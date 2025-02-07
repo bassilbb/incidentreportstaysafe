@@ -1792,7 +1792,7 @@ class cinventory extends cTable {
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
 
-		if (CurrentPageID() == "add") {
+			if (CurrentPageID() == "add") {
 				if (CurrentUserLevel() == 1) {
 					$this->date_recieved->ReadOnly = TRUE;
 					$this->reference_id->ReadOnly = TRUE;
@@ -1909,7 +1909,7 @@ class cinventory extends cTable {
 				}
 			}
 
-				// Highligh rows in color based on the status
+		// Highligh rows in color based on the status
 		if (CurrentPageID() == "list") {
 
 			//$this->branch_code->Visible = FALSE;
