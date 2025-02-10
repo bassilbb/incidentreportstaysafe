@@ -1671,6 +1671,7 @@ class cpc_issuance extends cTable {
 		$now = new DateTime();
 		$this->date_issued->CurrentValue = $now->Format('Y-m-d H:i:s');
 		$this->date_issued->EditValue = $this->date_issued->CurrentValue;
+		$rsnew["retrieved_by"] = $_SESSION['Staff_ID'];
 		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 1) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 5) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 6) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
 		}	
 
@@ -2070,7 +2071,8 @@ class cpc_issuance extends cTable {
 					$this->date_retrieved->Visible = FALSE;
 					$this->retriever_action->Visible = FALSE;
 					$this->retriever_comment->Visible = FALSE;
-					$this->retrieved_by->Visible = FALSE;
+
+					//$this->retrieved_by->Visible = FALSE;
 				}
 				if ((CurrentUserLevel() == 1||CurrentUserLevel() == 2 && $this->statuse->CurrentValue == 1)) {
 					$this->issued_date->ReadOnly = TRUE;
@@ -2091,7 +2093,8 @@ class cpc_issuance extends cTable {
 					$this->date_retrieved->ReadOnly = FALSE;
 					$this->retriever_action->Visible = TRUE;
 					$this->retriever_comment->Visible = TRUE;
-					$this->retrieved_by->Visible = FALSE;
+
+					//$this->retrieved_by->Visible = FALSE;
 				}
 				if (CurrentUserLevel() == 3 && $this->statuse->CurrentValue == 0 || $this->statuse->CurrentValue == 1) {
 					$this->issued_date->ReadOnly = TRUE;
@@ -2112,7 +2115,8 @@ class cpc_issuance extends cTable {
 					$this->date_retrieved->ReadOnly = FALSE;
 					$this->retriever_action->Visible = TRUE;
 					$this->retriever_comment->Visible = TRUE;
-					$this->retrieved_by->Visible = FALSE;
+
+					//$this->retrieved_by->Visible = FALSE;
 				}
 				if (CurrentUserLevel() == 5 && $this->statuse->CurrentValue == 0) {
 					$this->issued_date->ReadOnly = TRUE;
@@ -2133,7 +2137,8 @@ class cpc_issuance extends cTable {
 					$this->date_retrieved->ReadOnly = FALSE;
 					$this->retriever_action->Visible = TRUE;
 					$this->retriever_comment->Visible = TRUE;
-					$this->retrieved_by->Visible = FALSE;
+
+					//$this->retrieved_by->Visible = FALSE;
 				}
 				if (CurrentUserLevel() == 6 && $this->statuse->CurrentValue == 0) {
 					$this->issued_date->ReadOnly = TRUE;
@@ -2154,8 +2159,8 @@ class cpc_issuance extends cTable {
 					$this->date_retrieved->ReadOnly = TRUE;
 					$this->retriever_action->Visible = FALSE;
 					$this->retriever_comment->Visible = FALSE;
-					$this->retrieved_by->Visible = FALSE;
 
+					//$this->retrieved_by->Visible = FALSE;
 					//if ($this->statuse->CurrentValue == 1) {
 						//$this->assign_action->ReadOnly = TRUE;
 						//$this->assign_comment->ReadOnly = TRUE;
@@ -2168,7 +2173,7 @@ class cpc_issuance extends cTable {
 					//}
 
 				}
-				if (CurrentUserLevel() == 6 && $this->statuse->CurrentValue == 1 || $this->statuse->CurrentValue == 1) {
+				if ((CurrentUserLevel() == 6 && $this->statuse->CurrentValue == 1 || $this->statuse->CurrentValue == 1 && $this->staff_id->CurrentValue != $_SESSION['Staff_ID'] || $this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
 					$this->issued_date->ReadOnly = TRUE;
 					$this->date_retrieved->ReadOnly = TRUE;
 					$this->reference_id->ReadOnly = TRUE;
@@ -2187,7 +2192,8 @@ class cpc_issuance extends cTable {
 					$this->date_retrieved->ReadOnly = FALSE;
 					$this->retriever_action->Visible = TRUE;
 					$this->retriever_comment->Visible = TRUE;
-					$this->retrieved_by->Visible = FALSE;
+
+					//$this->retrieved_by->Visible = FALSE;
 				}
 			}
 
