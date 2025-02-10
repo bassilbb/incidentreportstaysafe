@@ -2555,7 +2555,7 @@
         <phrase id="fldcaption" value="Retrieved By" />
       </field>
       <field id="staff_id">
-        <phrase id="fldcaption" value="staff id" />
+        <phrase id="fldcaption" value="Staff ID" />
       </field>
     </table>
     <table id="issuance_history">
