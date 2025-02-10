@@ -1552,8 +1552,38 @@ class cpc_issuance_edit extends cpc_issuance {
 		// Check if validation required
 		if (!EW_SERVER_VALIDATE)
 			return ($gsFormError == "");
+		if (!$this->issued_date->FldIsDetailKey && !is_null($this->issued_date->FormValue) && $this->issued_date->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->issued_date->FldCaption(), $this->issued_date->ReqErrMsg));
+		}
+		if (!$this->reference_id->FldIsDetailKey && !is_null($this->reference_id->FormValue) && $this->reference_id->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->reference_id->FldCaption(), $this->reference_id->ReqErrMsg));
+		}
+		if (!$this->asset_tag->FldIsDetailKey && !is_null($this->asset_tag->FormValue) && $this->asset_tag->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->asset_tag->FldCaption(), $this->asset_tag->ReqErrMsg));
+		}
+		if (!$this->make->FldIsDetailKey && !is_null($this->make->FormValue) && $this->make->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->make->FldCaption(), $this->make->ReqErrMsg));
+		}
+		if (!$this->color->FldIsDetailKey && !is_null($this->color->FormValue) && $this->color->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->color->FldCaption(), $this->color->ReqErrMsg));
+		}
+		if (!$this->department->FldIsDetailKey && !is_null($this->department->FormValue) && $this->department->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->department->FldCaption(), $this->department->ReqErrMsg));
+		}
+		if (!$this->designation->FldIsDetailKey && !is_null($this->designation->FormValue) && $this->designation->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->designation->FldCaption(), $this->designation->ReqErrMsg));
+		}
+		if (!$this->assign_to->FldIsDetailKey && !is_null($this->assign_to->FormValue) && $this->assign_to->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->assign_to->FldCaption(), $this->assign_to->ReqErrMsg));
+		}
 		if (!ew_CheckShortEuroDate($this->date_assign->FormValue)) {
 			ew_AddMessage($gsFormError, $this->date_assign->FldErrMsg());
+		}
+		if ($this->assign_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->assign_action->FldCaption(), $this->assign_action->ReqErrMsg));
+		}
+		if (!$this->assign_comment->FldIsDetailKey && !is_null($this->assign_comment->FormValue) && $this->assign_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->assign_comment->FldCaption(), $this->assign_comment->ReqErrMsg));
 		}
 		if (!ew_CheckShortEuroDate($this->date_retrieved->FormValue)) {
 			ew_AddMessage($gsFormError, $this->date_retrieved->FldErrMsg());
@@ -1925,9 +1955,39 @@ fpc_issuanceedit.Validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
+			elm = this.GetElements("x" + infix + "_issued_date");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->issued_date->FldCaption(), $pc_issuance->issued_date->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_reference_id");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->reference_id->FldCaption(), $pc_issuance->reference_id->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_asset_tag");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->asset_tag->FldCaption(), $pc_issuance->asset_tag->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_make");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->make->FldCaption(), $pc_issuance->make->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_color");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->color->FldCaption(), $pc_issuance->color->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_department");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->department->FldCaption(), $pc_issuance->department->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_designation");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->designation->FldCaption(), $pc_issuance->designation->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_assign_to");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->assign_to->FldCaption(), $pc_issuance->assign_to->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_date_assign");
 			if (elm && !ew_CheckShortEuroDate(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->date_assign->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_assign_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->assign_action->FldCaption(), $pc_issuance->assign_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_assign_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->assign_comment->FldCaption(), $pc_issuance->assign_comment->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_date_retrieved");
 			if (elm && !ew_CheckShortEuroDate(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($pc_issuance->date_retrieved->FldErrMsg()) ?>");
@@ -2059,7 +2119,7 @@ $pc_issuance_edit->ShowMessage();
 <div class="ewEditDiv"><!-- page* -->
 <?php if ($pc_issuance->issued_date->Visible) { // issued_date ?>
 	<div id="r_issued_date" class="form-group">
-		<label id="elh_pc_issuance_issued_date" for="x_issued_date" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->issued_date->FldCaption() ?></label>
+		<label id="elh_pc_issuance_issued_date" for="x_issued_date" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->issued_date->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->issued_date->CellAttributes() ?>>
 <span id="el_pc_issuance_issued_date">
 <input type="text" data-table="pc_issuance" data-field="x_issued_date" data-page="1" data-format="17" name="x_issued_date" id="x_issued_date" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->issued_date->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->issued_date->EditValue ?>"<?php echo $pc_issuance->issued_date->EditAttributes() ?>>
@@ -2069,7 +2129,7 @@ $pc_issuance_edit->ShowMessage();
 <?php } ?>
 <?php if ($pc_issuance->reference_id->Visible) { // reference_id ?>
 	<div id="r_reference_id" class="form-group">
-		<label id="elh_pc_issuance_reference_id" for="x_reference_id" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->reference_id->FldCaption() ?></label>
+		<label id="elh_pc_issuance_reference_id" for="x_reference_id" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->reference_id->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->reference_id->CellAttributes() ?>>
 <span id="el_pc_issuance_reference_id">
 <input type="text" data-table="pc_issuance" data-field="x_reference_id" data-page="1" name="x_reference_id" id="x_reference_id" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->reference_id->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->reference_id->EditValue ?>"<?php echo $pc_issuance->reference_id->EditAttributes() ?>>
@@ -2079,7 +2139,7 @@ $pc_issuance_edit->ShowMessage();
 <?php } ?>
 <?php if ($pc_issuance->asset_tag->Visible) { // asset_tag ?>
 	<div id="r_asset_tag" class="form-group">
-		<label id="elh_pc_issuance_asset_tag" for="x_asset_tag" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->asset_tag->FldCaption() ?></label>
+		<label id="elh_pc_issuance_asset_tag" for="x_asset_tag" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->asset_tag->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->asset_tag->CellAttributes() ?>>
 <span id="el_pc_issuance_asset_tag">
 <input type="text" data-table="pc_issuance" data-field="x_asset_tag" data-page="1" name="x_asset_tag" id="x_asset_tag" size="30" maxlength="100" placeholder="<?php echo ew_HtmlEncode($pc_issuance->asset_tag->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->asset_tag->EditValue ?>"<?php echo $pc_issuance->asset_tag->EditAttributes() ?>>
@@ -2089,7 +2149,7 @@ $pc_issuance_edit->ShowMessage();
 <?php } ?>
 <?php if ($pc_issuance->make->Visible) { // make ?>
 	<div id="r_make" class="form-group">
-		<label id="elh_pc_issuance_make" for="x_make" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->make->FldCaption() ?></label>
+		<label id="elh_pc_issuance_make" for="x_make" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->make->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->make->CellAttributes() ?>>
 <span id="el_pc_issuance_make">
 <input type="text" data-table="pc_issuance" data-field="x_make" data-page="1" name="x_make" id="x_make" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->make->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->make->EditValue ?>"<?php echo $pc_issuance->make->EditAttributes() ?>>
@@ -2099,7 +2159,7 @@ $pc_issuance_edit->ShowMessage();
 <?php } ?>
 <?php if ($pc_issuance->color->Visible) { // color ?>
 	<div id="r_color" class="form-group">
-		<label id="elh_pc_issuance_color" for="x_color" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->color->FldCaption() ?></label>
+		<label id="elh_pc_issuance_color" for="x_color" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->color->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->color->CellAttributes() ?>>
 <span id="el_pc_issuance_color">
 <input type="text" data-table="pc_issuance" data-field="x_color" data-page="1" name="x_color" id="x_color" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->color->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->color->EditValue ?>"<?php echo $pc_issuance->color->EditAttributes() ?>>
@@ -2109,7 +2169,7 @@ $pc_issuance_edit->ShowMessage();
 <?php } ?>
 <?php if ($pc_issuance->department->Visible) { // department ?>
 	<div id="r_department" class="form-group">
-		<label id="elh_pc_issuance_department" for="x_department" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->department->FldCaption() ?></label>
+		<label id="elh_pc_issuance_department" for="x_department" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->department->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->department->CellAttributes() ?>>
 <span id="el_pc_issuance_department">
 <select data-table="pc_issuance" data-field="x_department" data-page="1" data-value-separator="<?php echo $pc_issuance->department->DisplayValueSeparatorAttribute() ?>" id="x_department" name="x_department"<?php echo $pc_issuance->department->EditAttributes() ?>>
@@ -2121,7 +2181,7 @@ $pc_issuance_edit->ShowMessage();
 <?php } ?>
 <?php if ($pc_issuance->designation->Visible) { // designation ?>
 	<div id="r_designation" class="form-group">
-		<label id="elh_pc_issuance_designation" for="x_designation" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->designation->FldCaption() ?></label>
+		<label id="elh_pc_issuance_designation" for="x_designation" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->designation->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->designation->CellAttributes() ?>>
 <span id="el_pc_issuance_designation">
 <span class="ewLookupList">
@@ -2135,7 +2195,7 @@ $pc_issuance_edit->ShowMessage();
 <?php } ?>
 <?php if ($pc_issuance->assign_to->Visible) { // assign_to ?>
 	<div id="r_assign_to" class="form-group">
-		<label id="elh_pc_issuance_assign_to" for="x_assign_to" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->assign_to->FldCaption() ?></label>
+		<label id="elh_pc_issuance_assign_to" for="x_assign_to" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->assign_to->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->assign_to->CellAttributes() ?>>
 <span id="el_pc_issuance_assign_to">
 <span class="ewLookupList">
@@ -2159,7 +2219,7 @@ $pc_issuance_edit->ShowMessage();
 <?php } ?>
 <?php if ($pc_issuance->assign_action->Visible) { // assign_action ?>
 	<div id="r_assign_action" class="form-group">
-		<label id="elh_pc_issuance_assign_action" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->assign_action->FldCaption() ?></label>
+		<label id="elh_pc_issuance_assign_action" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->assign_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->assign_action->CellAttributes() ?>>
 <span id="el_pc_issuance_assign_action">
 <div id="tp_x_assign_action" class="ewTemplate"><input type="radio" data-table="pc_issuance" data-field="x_assign_action" data-page="1" data-value-separator="<?php echo $pc_issuance->assign_action->DisplayValueSeparatorAttribute() ?>" name="x_assign_action" id="x_assign_action" value="{value}"<?php echo $pc_issuance->assign_action->EditAttributes() ?>></div>
@@ -2172,7 +2232,7 @@ $pc_issuance_edit->ShowMessage();
 <?php } ?>
 <?php if ($pc_issuance->assign_comment->Visible) { // assign_comment ?>
 	<div id="r_assign_comment" class="form-group">
-		<label id="elh_pc_issuance_assign_comment" for="x_assign_comment" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->assign_comment->FldCaption() ?></label>
+		<label id="elh_pc_issuance_assign_comment" for="x_assign_comment" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->assign_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->assign_comment->CellAttributes() ?>>
 <span id="el_pc_issuance_assign_comment">
 <textarea data-table="pc_issuance" data-field="x_assign_comment" data-page="1" name="x_assign_comment" id="x_assign_comment" cols="35" rows="4" placeholder="<?php echo ew_HtmlEncode($pc_issuance->assign_comment->getPlaceHolder()) ?>"<?php echo $pc_issuance->assign_comment->EditAttributes() ?>><?php echo $pc_issuance->assign_comment->EditValue ?></textarea>
@@ -2306,6 +2366,8 @@ $('#r_statuse').hide();
 $('#r_assign_by').hide();
 $('#r_date_assign').hide();
 $('#r_retrieved_by').hide();
+$('#x_date_retrieved').attr('readonly',true);
+$('#r_staff_id').hide();
 </script>
 <?php include_once "footer.php" ?>
 <?php

@@ -465,7 +465,6 @@ class cpc_issuance_list extends cpc_issuance {
 		$this->statuse->SetVisibility();
 		$this->date_retrieved->SetVisibility();
 		$this->retrieved_by->SetVisibility();
-		$this->staff_id->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -1209,7 +1208,6 @@ class cpc_issuance_list extends cpc_issuance {
 			$this->UpdateSort($this->statuse); // statuse
 			$this->UpdateSort($this->date_retrieved); // date_retrieved
 			$this->UpdateSort($this->retrieved_by); // retrieved_by
-			$this->UpdateSort($this->staff_id); // staff_id
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1255,7 +1253,6 @@ class cpc_issuance_list extends cpc_issuance {
 				$this->statuse->setSort("");
 				$this->date_retrieved->setSort("");
 				$this->retrieved_by->setSort("");
-				$this->staff_id->setSort("");
 			}
 
 			// Reset start position
@@ -2140,11 +2137,6 @@ class cpc_issuance_list extends cpc_issuance {
 			$this->retrieved_by->LinkCustomAttributes = "";
 			$this->retrieved_by->HrefValue = "";
 			$this->retrieved_by->TooltipValue = "";
-
-			// staff_id
-			$this->staff_id->LinkCustomAttributes = "";
-			$this->staff_id->HrefValue = "";
-			$this->staff_id->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2503,9 +2495,6 @@ fpc_issuancelist.Lists["x_statuse[]"] = {"LinkField":"x_id","Ajax":true,"AutoFil
 fpc_issuancelist.Lists["x_statuse[]"].Data = "<?php echo $pc_issuance_list->statuse->LookupFilterQuery(FALSE, "list") ?>";
 fpc_issuancelist.Lists["x_retrieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fpc_issuancelist.Lists["x_retrieved_by"].Data = "<?php echo $pc_issuance_list->retrieved_by->LookupFilterQuery(FALSE, "list") ?>";
-fpc_issuancelist.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fpc_issuancelist.Lists["x_staff_id"].Data = "<?php echo $pc_issuance_list->staff_id->LookupFilterQuery(FALSE, "list") ?>";
-fpc_issuancelist.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $pc_issuance_list->staff_id->LookupFilterQuery(TRUE, "list"))) ?>;
 
 // Form object for search
 var CurrentSearchForm = fpc_issuancelistsrch = new ew_Form("fpc_issuancelistsrch");
@@ -2810,15 +2799,6 @@ $pc_issuance_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($pc_issuance->staff_id->Visible) { // staff_id ?>
-	<?php if ($pc_issuance->SortUrl($pc_issuance->staff_id) == "") { ?>
-		<th data-name="staff_id" class="<?php echo $pc_issuance->staff_id->HeaderCellClass() ?>"><div id="elh_pc_issuance_staff_id" class="pc_issuance_staff_id"><div class="ewTableHeaderCaption"><?php echo $pc_issuance->staff_id->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="staff_id" class="<?php echo $pc_issuance->staff_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $pc_issuance->SortUrl($pc_issuance->staff_id) ?>',1);"><div id="elh_pc_issuance_staff_id" class="pc_issuance_staff_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $pc_issuance->staff_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($pc_issuance->staff_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($pc_issuance->staff_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php
 
 // Render list options (header, right)
@@ -2985,14 +2965,6 @@ $pc_issuance_list->ListOptions->Render("body", "left", $pc_issuance_list->RowCnt
 <span id="el<?php echo $pc_issuance_list->RowCnt ?>_pc_issuance_retrieved_by" class="pc_issuance_retrieved_by">
 <span<?php echo $pc_issuance->retrieved_by->ViewAttributes() ?>>
 <?php echo $pc_issuance->retrieved_by->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($pc_issuance->staff_id->Visible) { // staff_id ?>
-		<td data-name="staff_id"<?php echo $pc_issuance->staff_id->CellAttributes() ?>>
-<span id="el<?php echo $pc_issuance_list->RowCnt ?>_pc_issuance_staff_id" class="pc_issuance_staff_id">
-<span<?php echo $pc_issuance->staff_id->ViewAttributes() ?>>
-<?php echo $pc_issuance->staff_id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

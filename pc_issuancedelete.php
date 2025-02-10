@@ -336,7 +336,6 @@ class cpc_issuance_delete extends cpc_issuance {
 		$this->statuse->SetVisibility();
 		$this->date_retrieved->SetVisibility();
 		$this->retrieved_by->SetVisibility();
-		$this->staff_id->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -915,11 +914,6 @@ class cpc_issuance_delete extends cpc_issuance {
 			$this->retrieved_by->LinkCustomAttributes = "";
 			$this->retrieved_by->HrefValue = "";
 			$this->retrieved_by->TooltipValue = "";
-
-			// staff_id
-			$this->staff_id->LinkCustomAttributes = "";
-			$this->staff_id->HrefValue = "";
-			$this->staff_id->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1149,9 +1143,6 @@ fpc_issuancedelete.Lists["x_statuse[]"] = {"LinkField":"x_id","Ajax":true,"AutoF
 fpc_issuancedelete.Lists["x_statuse[]"].Data = "<?php echo $pc_issuance_delete->statuse->LookupFilterQuery(FALSE, "delete") ?>";
 fpc_issuancedelete.Lists["x_retrieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fpc_issuancedelete.Lists["x_retrieved_by"].Data = "<?php echo $pc_issuance_delete->retrieved_by->LookupFilterQuery(FALSE, "delete") ?>";
-fpc_issuancedelete.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fpc_issuancedelete.Lists["x_staff_id"].Data = "<?php echo $pc_issuance_delete->staff_id->LookupFilterQuery(FALSE, "delete") ?>";
-fpc_issuancedelete.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $pc_issuance_delete->staff_id->LookupFilterQuery(TRUE, "delete"))) ?>;
 
 // Form object for search
 </script>
@@ -1216,9 +1207,6 @@ $pc_issuance_delete->ShowMessage();
 <?php } ?>
 <?php if ($pc_issuance->retrieved_by->Visible) { // retrieved_by ?>
 		<th class="<?php echo $pc_issuance->retrieved_by->HeaderCellClass() ?>"><span id="elh_pc_issuance_retrieved_by" class="pc_issuance_retrieved_by"><?php echo $pc_issuance->retrieved_by->FldCaption() ?></span></th>
-<?php } ?>
-<?php if ($pc_issuance->staff_id->Visible) { // staff_id ?>
-		<th class="<?php echo $pc_issuance->staff_id->HeaderCellClass() ?>"><span id="elh_pc_issuance_staff_id" class="pc_issuance_staff_id"><?php echo $pc_issuance->staff_id->FldCaption() ?></span></th>
 <?php } ?>
 	</tr>
 	</thead>
@@ -1342,14 +1330,6 @@ while (!$pc_issuance_delete->Recordset->EOF) {
 <span id="el<?php echo $pc_issuance_delete->RowCnt ?>_pc_issuance_retrieved_by" class="pc_issuance_retrieved_by">
 <span<?php echo $pc_issuance->retrieved_by->ViewAttributes() ?>>
 <?php echo $pc_issuance->retrieved_by->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($pc_issuance->staff_id->Visible) { // staff_id ?>
-		<td<?php echo $pc_issuance->staff_id->CellAttributes() ?>>
-<span id="el<?php echo $pc_issuance_delete->RowCnt ?>_pc_issuance_staff_id" class="pc_issuance_staff_id">
-<span<?php echo $pc_issuance->staff_id->ViewAttributes() ?>>
-<?php echo $pc_issuance->staff_id->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

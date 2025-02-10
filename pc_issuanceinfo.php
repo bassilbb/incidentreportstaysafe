@@ -1604,7 +1604,7 @@ class cpc_issuance extends cTable {
 				$rsnew["statuse"] = 1;
 				$rsnew["assign_action"] = 1;
 				$rsnew["staff_id"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; System Assigned to the Approperate Personnel &#x2714;"); 					
+				$this->setSuccessMessage("&#x25C9; System Assigned to Personnel &#x2714;"); 					
 			}
 
 			// Saved only
@@ -1623,7 +1623,26 @@ class cpc_issuance extends cTable {
 				$rsnew["statuse"] = 1;
 				$rsnew["assign_action"] = 1;
 				$rsnew["staff_id"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; System Assigned to the Approperate Personnel &#x2714;"); 					
+				$this->setSuccessMessage("&#x25C9; System Assigned to Personnel &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->assign_action->CurrentValue == 0) {
+				$rsnew["statuse"] = 0;			
+				$rsnew["assign_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}			
+		}
+
+			// Manager Only
+		if (CurrentPageID() == "add" && CurrentUserLevel() == 6 ) {
+
+			// Save and forward
+			if ($this->assign_action->CurrentValue == 1) {
+				$rsnew["statuse"] = 1;
+				$rsnew["assign_action"] = 1;
+				$rsnew["staff_id"] = $_SESSION['Staff_ID'];
+				$this->setSuccessMessage("&#x25C9; System Assigned to Personnel &#x2714;"); 					
 			}
 
 			// Saved only
@@ -1652,7 +1671,7 @@ class cpc_issuance extends cTable {
 		$now = new DateTime();
 		$this->date_issued->CurrentValue = $now->Format('Y-m-d H:i:s');
 		$this->date_issued->EditValue = $this->date_issued->CurrentValue;
-		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 1) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 5) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 1) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 5) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 6) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
 		}	
 
 		// Officer Only
@@ -1666,11 +1685,12 @@ class cpc_issuance extends cTable {
 				$rsnew["assign_action"] = 1;
 				$rsnew["retriever_action"] = NULL;
 				$rsnew["retriever_comment"] = NULL;
-				$this->setSuccessMessage("&#x25C9; System Issued to the Approparate Personnel &#x2714;"); 					
+
+				//$this->setSuccessMessage("&#x25C9; System Issued to Assign Personnel &#x2714;"); 					
 			}
 
 			// Saved only
-			if ($this->assign_action->CurrentValue == 0 && $this->statue->CurrentValue == 0) {
+			if ($this->assign_action->CurrentValue == 0) {
 				$rsnew["statuse"] = 0;			
 				$rsnew["assign_action"] = 0; 
 				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
@@ -1684,7 +1704,8 @@ class cpc_issuance extends cTable {
 				$rsnew["assign_action"] = 1;
 				$rsnew["retriever_action"] = NULL;
 				$rsnew["retriever_comment"] = NULL;
-				$this->setSuccessMessage("&#x25C9; System Issued to the Approparate Personnel &#x2714;"); 					
+
+				//$this->setSuccessMessage("&#x25C9; System Assign to Personnel &#x2714;"); 					
 			}
 
 			// Saved only
@@ -1702,7 +1723,8 @@ class cpc_issuance extends cTable {
 				$rsnew["assign_action"] = 1;
 				$rsnew["retriever_action"] = NULL;
 				$rsnew["retriever_comment"] = NULL;
-				$this->setSuccessMessage("&#x25C9; System Issued to the Approparate Personnel &#x2714;"); 					
+
+				//$this->setSuccessMessage("&#x25C9; System Assigned to Personnel &#x2714;"); 					
 			}
 
 			// Saved only
@@ -1742,6 +1764,35 @@ class cpc_issuance extends cTable {
 
 		}
 
+		// ICT PERSONNEL
+		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 6) && ($this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$rsnew["date_retrieved"] = $now->format('Y-m-d H:i:s');
+			$rsnew["retrieved_by"] = $_SESSION['Staff_ID'];
+		}
+
+		// ICT PERSONNEL - Don't change field values captured by tenant
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 6) && ($this->staff_id->CurrentValue == $_SESSION['Staff_ID'] || $this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+			$rsnew["id"] = $rsold["id"];
+			$rsnew["issue_date"] = $rsold["date_recieved"];
+			$rsnew["reference_id"] = $rsold["reference_id"];
+			$rsnew["asset_tag"] = $rsold["asset_tag"];
+			$rsnew["make"] = $rsold["make"];
+			$rsnew["color"] = $rsold["color"];
+			$rsnew["assign_to"] = $rsold["assign_to"];
+			$rsnew["department"] = $rsold["department"];
+			$rsnew["designation"] = $rsold["designation"];
+
+			//$rsnew["status"] = $rsold["status"];
+			$rsnew["assign_action"] = $rsold["recieved_action"];
+			$rsnew["assign_comment"] = $rsold["assign_comment"];
+
+			//$rsnew["reviewed_action"] = $rsold["reviewed_action"];
+			//$rsnew["reviewed_comment"] = $rsold["reviewed_comment"];
+
+		}
+
 			// Confirmed by Administrators
 			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
 				$rsnew["date_retrieved"] = $now->format('Y-m-d H:i:s');
@@ -1752,7 +1803,7 @@ class cpc_issuance extends cTable {
 				if ($this->reviewed_action->CurrentValue == 0 && $this->statuse->CurrentValue == 1 ) {
 
 					// New
-					if ($this->statuse->CurrentValue == 1) {
+					if ($this->statuse->CurrentValue == 1 && CurrentUserLevel() == 3) {
 						$rsnew["statuse"] = 1;					
 						$rsnew["reviewed_action"] = 0;
 					}
@@ -1761,7 +1812,7 @@ class cpc_issuance extends cTable {
 				}
 
 				// Confirmed by Administrators
-				if ($this->retriever_action->CurrentValue == 3 ) {
+				if ($this->retriever_action->CurrentValue == 3 && CurrentUserLevel() == 3) {
 
 					// New
 					if ($this->statuse->CurrentValue == 1) {
@@ -1771,7 +1822,7 @@ class cpc_issuance extends cTable {
 					$this->setSuccessMessage("&#x25C9; System was Successfully Retrieved &#x2714;");
 				}
 
-					// Confirmed by Administrators
+			// Confirmed by Administrators====================================================================================================
 			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 6) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
 				$rsnew["date_retrieved"] = $now->format('Y-m-d H:i:s');
 				$rsnew["retrieved_by"] = $_SESSION['Staff_ID'];
@@ -1781,7 +1832,7 @@ class cpc_issuance extends cTable {
 				if ($this->reviewed_action->CurrentValue == 0 && $this->statuse->CurrentValue == 1 ) {
 
 					// New
-					if ($this->statuse->CurrentValue == 1) {
+					if ($this->statuse->CurrentValue == 1 && CurrentUserLevel() == 6) {
 						$rsnew["statuse"] = 1;					
 						$rsnew["reviewed_action"] = 0;
 					}
@@ -1790,10 +1841,10 @@ class cpc_issuance extends cTable {
 				}
 
 				// Confirmed by Administrators
-				if ($this->retriever_action->CurrentValue == 3 ) {
+				if ($this->retriever_action->CurrentValue == 3) {
 
 					// New
-					if ($this->statuse->CurrentValue == 1) {
+					if ($this->statuse->CurrentValue == 1 && CurrentUserLevel() == 6) {
 						$rsnew["statuse"] = 2;					
 						$rsnew["retriever_action"] = 3;
 					}
@@ -1889,7 +1940,7 @@ class cpc_issuance extends cTable {
 			$this->date_assign->CurrentValue = $now->Format('Y-m-d H:i:s');
 			$this->date_assign->EditValue = $this->date_assign->CurrentValue;
 		}
-		if (CurrentPageID() == "add" && (CurrentUserLevel() == 1 || CurrentUserLevel() == 2 || CurrentUserLevel()   == 3 || CurrentUserLevel() == 4)) {
+		if (CurrentPageID() == "add" && (CurrentUserLevel() == 1 || CurrentUserLevel() == 2 || CurrentUserLevel()   == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 6)) {
 			$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
 			$this->staff_id->EditValue = $this->staff_id->CurrentValue;
 			$this->assign_by->CurrentValue = $_SESSION['Staff_ID'];
@@ -1901,7 +1952,7 @@ class cpc_issuance extends cTable {
 		}
 
 			//if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 ) {
-		if (CurrentPageID() == "add" && (CurrentUserLevel() == 2 || CurrentUserLevel() == 3 || CurrentUserLevel()   == 4 || CurrentUserLevel() == 5)) {
+		if (CurrentPageID() == "add" && (CurrentUserLevel() == 2 || CurrentUserLevel() == 3 || CurrentUserLevel()   == 4 || CurrentUserLevel() == 5 || CurrentUserLevel() == 6)) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$this->date_retrieved->CurrentValue = $now->Format('Y-m-d H:i:s');
@@ -1932,6 +1983,12 @@ class cpc_issuance extends cTable {
 			$this->date_retrieved->EditValue = $this->date_retrieved->CurrentValue;
 		}
 		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 && $this->statuse->CurrentValue == 1) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_retrieved->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_retrieved->EditValue = $this->date_retrieved->CurrentValue;
+		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 6 && $this->statuse->CurrentValue == 1) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$this->date_retrieved->CurrentValue = $now->Format('Y-m-d H:i:s');
@@ -2098,18 +2155,39 @@ class cpc_issuance extends cTable {
 					$this->retriever_action->Visible = FALSE;
 					$this->retriever_comment->Visible = FALSE;
 					$this->retrieved_by->Visible = FALSE;
-					if ($this->statuse->CurrentValue == 1) {
-						$this->assign_action->ReadOnly = TRUE;
-						$this->assign_comment->ReadOnly = TRUE;
-						$this->retriever_action->Visible = TRUE;
-						$this->retriever_comment->Visible = TRUE;
-					} else {
-						$this->date_retrieved->ReadOnly = TRUE;
 
+					//if ($this->statuse->CurrentValue == 1) {
+						//$this->assign_action->ReadOnly = TRUE;
+						//$this->assign_comment->ReadOnly = TRUE;
 						//$this->retriever_action->Visible = TRUE;
 						//$this->retriever_comment->Visible = TRUE;
+					//} else {
+						//$this->date_retrieved->ReadOnly = TRUE;
+						//$this->retriever_action->Visible = TRUE;
+						//$this->retriever_comment->Visible = TRUE;
+					//}
 
-					}
+				}
+				if (CurrentUserLevel() == 6 && $this->statuse->CurrentValue == 1 || $this->statuse->CurrentValue == 1) {
+					$this->issued_date->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->asset_tag->ReadOnly = TRUE;
+					$this->make->ReadOnly = TRUE;
+					$this->color->ReadOnly = TRUE;
+					$this->department->ReadOnly = TRUE;
+					$this->designation->ReadOnly = TRUE;
+					$this->assign_to->ReadOnly = TRUE;
+					$this->date_assign->ReadOnly = TRUE;
+					$this->assign_action->ReadOnly = TRUE;
+					$this->assign_comment->ReadOnly = TRUE;
+					$this->assign_by->ReadOnly = TRUE;
+
+					//$this->staff_id->ReadOnly = TRUE;
+					$this->date_retrieved->ReadOnly = FALSE;
+					$this->retriever_action->Visible = TRUE;
+					$this->retriever_comment->Visible = TRUE;
+					$this->retrieved_by->Visible = FALSE;
 				}
 			}
 
@@ -2117,7 +2195,7 @@ class cpc_issuance extends cTable {
 		if (CurrentPageID() == "list") {
 
 			//$this->branch_code->Visible = FALSE;
-			if ($this->statuse->CurrentValue == 1) {
+			if ($this->statuse->CurrentValue == 12) {
 				$this->id->CellCssStyle = "color: orange; text-align: left;";
 				$this->issued_date->CellCssStyle = "color: orange; text-align: left;";
 				$this->date_retrieved->CellCssStyle = "color: orange; text-align: left;";
@@ -2137,7 +2215,7 @@ class cpc_issuance extends cTable {
 				$this->assign_by->CellCssStyle = "color: orange; text-align: left;";
 				$this->retrieved_by->CellCssStyle = "color: orange; text-align: left;";
 			}
-			if ($this->statuse->CurrentValue == 2) {
+			if ($this->statuse->CurrentValue == 0) {
 				$this->id->CellCssStyle = "color: red; text-align: left;";
 				$this->date_retrieved->CellCssStyle = "color: red; text-align: left;";
 				$this->issued_date->CellCssStyle = "color: red; text-align: left;";
@@ -2157,7 +2235,7 @@ class cpc_issuance extends cTable {
 				$this->assign_by->CellCssStyle = "color: red; text-align: left;";
 				$this->retrieved_by->CellCssStyle = "color: red; text-align: left;";
 			}
-			if ($this->statuse->CurrentValue == 3) {
+			if ($this->statuse->CurrentValue == 2) {
 				$this->id->CellCssStyle = "color: blue; text-align: left;";
 				$this->date_retrieved->CellCssStyle = "color: blue; text-align: left;";
 				$this->issued_date->CellCssStyle = "color: blue; text-align: left;";
@@ -2177,7 +2255,7 @@ class cpc_issuance extends cTable {
 				$this->assign_by->CellCssStyle = "color: blue; text-align: left;";
 				$this->retrieved_by->CellCssStyle = "color: blue; text-align: left;";
 			}
-			if ($this->statuse->CurrentValue == 4) {
+			if ($this->statuse->CurrentValue == 1) {
 				$this->id->CellCssStyle = "color: green; text-align: left;";
 				$this->date_retrieved->CellCssStyle = "color: green; text-align: left;";
 				$this->issued_date->CellCssStyle = "color: green; text-align: left;";
