@@ -920,7 +920,7 @@ class cissuance_store_view extends cissuance_store {
 		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
 		if (strval($this->staff_id->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `staffno` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
 		$this->staff_id->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
@@ -930,6 +930,7 @@ class cissuance_store_view extends cissuance_store {
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
 				$this->staff_id->ViewValue = $this->staff_id->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
@@ -1555,7 +1556,7 @@ fissuance_storeview.Form_CustomValidate =
 fissuance_storeview.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-fissuance_storeview.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_staffno","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fissuance_storeview.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fissuance_storeview.Lists["x_staff_id"].Data = "<?php echo $issuance_store_view->staff_id->LookupFilterQuery(FALSE, "view") ?>";
 fissuance_storeview.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_view->staff_id->LookupFilterQuery(TRUE, "view"))) ?>;
 fissuance_storeview.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};

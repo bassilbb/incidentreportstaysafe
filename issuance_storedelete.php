@@ -325,7 +325,6 @@ class cissuance_store_delete extends cissuance_store {
 		$this->CurrentAction = (@$_GET["a"] <> "") ? $_GET["a"] : @$_POST["a_list"]; // Set up current action
 		$this->date->SetVisibility();
 		$this->reference_id->SetVisibility();
-		$this->staff_id->SetVisibility();
 		$this->material_name->SetVisibility();
 		$this->quantity_in->SetVisibility();
 		$this->quantity_type->SetVisibility();
@@ -650,7 +649,7 @@ class cissuance_store_delete extends cissuance_store {
 		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
 		if (strval($this->staff_id->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `staffno` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
 		$this->staff_id->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
@@ -660,6 +659,7 @@ class cissuance_store_delete extends cissuance_store {
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
 				$this->staff_id->ViewValue = $this->staff_id->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
@@ -890,11 +890,6 @@ class cissuance_store_delete extends cissuance_store {
 			$this->reference_id->LinkCustomAttributes = "";
 			$this->reference_id->HrefValue = "";
 			$this->reference_id->TooltipValue = "";
-
-			// staff_id
-			$this->staff_id->LinkCustomAttributes = "";
-			$this->staff_id->HrefValue = "";
-			$this->staff_id->TooltipValue = "";
 
 			// material_name
 			$this->material_name->LinkCustomAttributes = "";
@@ -1172,9 +1167,6 @@ fissuance_storedelete.Form_CustomValidate =
 fissuance_storedelete.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-fissuance_storedelete.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_staffno","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fissuance_storedelete.Lists["x_staff_id"].Data = "<?php echo $issuance_store_delete->staff_id->LookupFilterQuery(FALSE, "delete") ?>";
-fissuance_storedelete.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_delete->staff_id->LookupFilterQuery(TRUE, "delete"))) ?>;
 fissuance_storedelete.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
 fissuance_storedelete.Lists["x_material_name"].Data = "<?php echo $issuance_store_delete->material_name->LookupFilterQuery(FALSE, "delete") ?>";
 fissuance_storedelete.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
@@ -1218,9 +1210,6 @@ $issuance_store_delete->ShowMessage();
 <?php } ?>
 <?php if ($issuance_store->reference_id->Visible) { // reference_id ?>
 		<th class="<?php echo $issuance_store->reference_id->HeaderCellClass() ?>"><span id="elh_issuance_store_reference_id" class="issuance_store_reference_id"><?php echo $issuance_store->reference_id->FldCaption() ?></span></th>
-<?php } ?>
-<?php if ($issuance_store->staff_id->Visible) { // staff_id ?>
-		<th class="<?php echo $issuance_store->staff_id->HeaderCellClass() ?>"><span id="elh_issuance_store_staff_id" class="issuance_store_staff_id"><?php echo $issuance_store->staff_id->FldCaption() ?></span></th>
 <?php } ?>
 <?php if ($issuance_store->material_name->Visible) { // material_name ?>
 		<th class="<?php echo $issuance_store->material_name->HeaderCellClass() ?>"><span id="elh_issuance_store_material_name" class="issuance_store_material_name"><?php echo $issuance_store->material_name->FldCaption() ?></span></th>
@@ -1292,14 +1281,6 @@ while (!$issuance_store_delete->Recordset->EOF) {
 <span id="el<?php echo $issuance_store_delete->RowCnt ?>_issuance_store_reference_id" class="issuance_store_reference_id">
 <span<?php echo $issuance_store->reference_id->ViewAttributes() ?>>
 <?php echo $issuance_store->reference_id->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($issuance_store->staff_id->Visible) { // staff_id ?>
-		<td<?php echo $issuance_store->staff_id->CellAttributes() ?>>
-<span id="el<?php echo $issuance_store_delete->RowCnt ?>_issuance_store_staff_id" class="issuance_store_staff_id">
-<span<?php echo $issuance_store->staff_id->ViewAttributes() ?>>
-<?php echo $issuance_store->staff_id->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

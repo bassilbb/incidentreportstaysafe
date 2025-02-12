@@ -891,7 +891,7 @@ class cissuance_store_add extends cissuance_store {
 		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
 		if (strval($this->staff_id->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `staffno` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
 		$this->staff_id->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
@@ -901,6 +901,7 @@ class cissuance_store_add extends cissuance_store {
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
 				$this->staff_id->ViewValue = $this->staff_id->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
@@ -1246,7 +1247,7 @@ class cissuance_store_add extends cissuance_store {
 			$this->staff_id->EditValue = ew_HtmlEncode($this->staff_id->CurrentValue);
 			if (strval($this->staff_id->CurrentValue) <> "") {
 				$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
-			$sSqlWrk = "SELECT `id`, `staffno` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 			$sWhereWrk = "";
 			$this->staff_id->LookupFilters = array();
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
@@ -1256,6 +1257,7 @@ class cissuance_store_add extends cissuance_store {
 				if ($rswrk && !$rswrk->EOF) { // Lookup values found
 					$arwrk = array();
 					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+					$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
 					$this->staff_id->EditValue = $this->staff_id->DisplayValue($arwrk);
 					$rswrk->Close();
 				} else {
@@ -1595,9 +1597,6 @@ class cissuance_store_add extends cissuance_store {
 		if (!$this->staff_id->FldIsDetailKey && !is_null($this->staff_id->FormValue) && $this->staff_id->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->staff_id->FldCaption(), $this->staff_id->ReqErrMsg));
 		}
-		if (!ew_CheckInteger($this->staff_id->FormValue)) {
-			ew_AddMessage($gsFormError, $this->staff_id->FldErrMsg());
-		}
 		if (!$this->material_name->FldIsDetailKey && !is_null($this->material_name->FormValue) && $this->material_name->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->material_name->FldCaption(), $this->material_name->ReqErrMsg));
 		}
@@ -1774,7 +1773,7 @@ class cissuance_store_add extends cissuance_store {
 		switch ($fld->FldVar) {
 		case "x_staff_id":
 			$sSqlWrk = "";
-			$sSqlWrk = "SELECT `id` AS `LinkFld`, `staffno` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 			$sWhereWrk = "{filter}";
 			$fld->LookupFilters = array();
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
@@ -1866,8 +1865,8 @@ class cissuance_store_add extends cissuance_store {
 		switch ($fld->FldVar) {
 		case "x_staff_id":
 			$sSqlWrk = "";
-			$sSqlWrk = "SELECT `id`, `staffno` AS `DispFld` FROM `users`";
-			$sWhereWrk = "`staffno` LIKE '{query_value}%'";
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld` FROM `users`";
+			$sWhereWrk = "`firstname` LIKE '{query_value}%' OR CONCAT(COALESCE(`firstname`, ''),'" . ew_ValueSeparator(1, $this->staff_id) . "',COALESCE(`lastname`,'')) LIKE '{query_value}%'";
 			$fld->LookupFilters = array();
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
 			$sSqlWrk = "";
@@ -2038,9 +2037,6 @@ fissuance_storeadd.Validate = function() {
 			elm = this.GetElements("x" + infix + "_staff_id");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store->staff_id->FldCaption(), $issuance_store->staff_id->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_staff_id");
-			if (elm && !ew_CheckInteger(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($issuance_store->staff_id->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_material_name");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store->material_name->FldCaption(), $issuance_store->material_name->ReqErrMsg)) ?>");
@@ -2112,7 +2108,7 @@ fissuance_storeadd.Form_CustomValidate =
 fissuance_storeadd.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-fissuance_storeadd.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_staffno","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fissuance_storeadd.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fissuance_storeadd.Lists["x_staff_id"].Data = "<?php echo $issuance_store_add->staff_id->LookupFilterQuery(FALSE, "add") ?>";
 fissuance_storeadd.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_add->staff_id->LookupFilterQuery(TRUE, "add"))) ?>;
 fissuance_storeadd.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};

@@ -454,7 +454,6 @@ class cissuance_history_list extends cissuance_history {
 		$this->SetupExportOptions();
 		$this->date->SetVisibility();
 		$this->reference_id->SetVisibility();
-		$this->staff_id->SetVisibility();
 		$this->material_name->SetVisibility();
 		$this->quantity_in->SetVisibility();
 		$this->quantity_type->SetVisibility();
@@ -1447,7 +1446,6 @@ class cissuance_history_list extends cissuance_history {
 			$this->CurrentOrderType = @$_GET["ordertype"];
 			$this->UpdateSort($this->date); // date
 			$this->UpdateSort($this->reference_id); // reference_id
-			$this->UpdateSort($this->staff_id); // staff_id
 			$this->UpdateSort($this->material_name); // material_name
 			$this->UpdateSort($this->quantity_in); // quantity_in
 			$this->UpdateSort($this->quantity_type); // quantity_type
@@ -1494,7 +1492,6 @@ class cissuance_history_list extends cissuance_history {
 				$this->setSessionOrderBy($sOrderBy);
 				$this->date->setSort("");
 				$this->reference_id->setSort("");
-				$this->staff_id->setSort("");
 				$this->material_name->setSort("");
 				$this->quantity_in->setSort("");
 				$this->quantity_type->setSort("");
@@ -2449,13 +2446,6 @@ class cissuance_history_list extends cissuance_history {
 			if ($this->Export == "")
 				$this->reference_id->ViewValue = $this->HighlightValue($this->reference_id);
 
-			// staff_id
-			$this->staff_id->LinkCustomAttributes = "";
-			$this->staff_id->HrefValue = "";
-			$this->staff_id->TooltipValue = "";
-			if ($this->Export == "")
-				$this->staff_id->ViewValue = $this->HighlightValue($this->staff_id);
-
 			// material_name
 			$this->material_name->LinkCustomAttributes = "";
 			$this->material_name->HrefValue = "";
@@ -2550,12 +2540,6 @@ class cissuance_history_list extends cissuance_history {
 			$this->reference_id->EditCustomAttributes = "";
 			$this->reference_id->EditValue = ew_HtmlEncode($this->reference_id->AdvancedSearch->SearchValue);
 			$this->reference_id->PlaceHolder = ew_RemoveHtml($this->reference_id->FldCaption());
-
-			// staff_id
-			$this->staff_id->EditAttrs["class"] = "form-control";
-			$this->staff_id->EditCustomAttributes = "";
-			$this->staff_id->EditValue = ew_HtmlEncode($this->staff_id->AdvancedSearch->SearchValue);
-			$this->staff_id->PlaceHolder = ew_RemoveHtml($this->staff_id->FldCaption());
 
 			// material_name
 			$this->material_name->EditCustomAttributes = "";
@@ -3094,9 +3078,6 @@ fissuance_historylist.Form_CustomValidate =
 fissuance_historylist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-fissuance_historylist.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_staffno","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fissuance_historylist.Lists["x_staff_id"].Data = "<?php echo $issuance_history_list->staff_id->LookupFilterQuery(FALSE, "list") ?>";
-fissuance_historylist.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_history_list->staff_id->LookupFilterQuery(TRUE, "list"))) ?>;
 fissuance_historylist.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
 fissuance_historylist.Lists["x_material_name"].Data = "<?php echo $issuance_history_list->material_name->LookupFilterQuery(FALSE, "list") ?>";
 fissuance_historylist.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
@@ -3421,15 +3402,6 @@ $issuance_history_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($issuance_history->staff_id->Visible) { // staff_id ?>
-	<?php if ($issuance_history->SortUrl($issuance_history->staff_id) == "") { ?>
-		<th data-name="staff_id" class="<?php echo $issuance_history->staff_id->HeaderCellClass() ?>"><div id="elh_issuance_history_staff_id" class="issuance_history_staff_id"><div class="ewTableHeaderCaption"><?php echo $issuance_history->staff_id->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="staff_id" class="<?php echo $issuance_history->staff_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_history->SortUrl($issuance_history->staff_id) ?>',1);"><div id="elh_issuance_history_staff_id" class="issuance_history_staff_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_history->staff_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_history->staff_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_history->staff_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php if ($issuance_history->material_name->Visible) { // material_name ?>
 	<?php if ($issuance_history->SortUrl($issuance_history->material_name) == "") { ?>
 		<th data-name="material_name" class="<?php echo $issuance_history->material_name->HeaderCellClass() ?>"><div id="elh_issuance_history_material_name" class="issuance_history_material_name"><div class="ewTableHeaderCaption"><?php echo $issuance_history->material_name->FldCaption() ?></div></div></th>
@@ -3616,14 +3588,6 @@ $issuance_history_list->ListOptions->Render("body", "left", $issuance_history_li
 <span id="el<?php echo $issuance_history_list->RowCnt ?>_issuance_history_reference_id" class="issuance_history_reference_id">
 <span<?php echo $issuance_history->reference_id->ViewAttributes() ?>>
 <?php echo $issuance_history->reference_id->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($issuance_history->staff_id->Visible) { // staff_id ?>
-		<td data-name="staff_id"<?php echo $issuance_history->staff_id->CellAttributes() ?>>
-<span id="el<?php echo $issuance_history_list->RowCnt ?>_issuance_history_staff_id" class="issuance_history_staff_id">
-<span<?php echo $issuance_history->staff_id->ViewAttributes() ?>>
-<?php echo $issuance_history->staff_id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

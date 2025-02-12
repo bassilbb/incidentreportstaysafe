@@ -785,7 +785,7 @@ class cissuance_tracking extends cTable {
 		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
 		if (strval($this->staff_id->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `staffno` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
 		$this->staff_id->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
@@ -795,6 +795,7 @@ class cissuance_tracking extends cTable {
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
 				$this->staff_id->ViewValue = $this->staff_id->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
