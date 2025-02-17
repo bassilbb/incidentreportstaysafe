@@ -62,6 +62,7 @@ $RootMenu->AddMenuItem(200, "mi_systems", $Language->MenuPhrase("200", "MenuText
 $RootMenu->AddMenuItem(257, "mi_system_issues", $Language->MenuPhrase("257", "MenuText"), "system_issueslist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}system_issues'), FALSE, FALSE, "fas fa-cog");
 $RootMenu->AddMenuItem(259, "mi_pc_issuance", $Language->MenuPhrase("259", "MenuText"), "pc_issuancelist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}pc_issuance'), FALSE, FALSE, "fa fa-laptop");
 $RootMenu->AddMenuItem(271, "mi_system_status", $Language->MenuPhrase("271", "MenuText"), "system_statuslist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}system_status'), FALSE, FALSE, "fas fa-hourglass-start");
+$RootMenu->AddMenuItem(272, "mi_pc_issuance_report", $Language->MenuPhrase("272", "MenuText"), "pc_issuance_reportlist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}pc_issuance_report'), FALSE, FALSE, "fas fa-indent");
 echo $RootMenu->ToScript();
 ?>
 <div class="ewVertical" id="ewMenu"></div>
