@@ -2258,28 +2258,6 @@ class cpc_issuance extends cTable {
 					$this->retriever_action->Visible = TRUE;
 					$this->retriever_comment->Visible = TRUE;
 				}
-				/*if ((CurrentUserLevel() == 6 && $this->statuse->CurrentValue == 1 && $this->staff_id->CurrentValue != $_SESSION['Staff_ID'] || $this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
-					$this->issued_date->ReadOnly = TRUE;
-					$this->date_retrieved->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->asset_tag->ReadOnly = TRUE;
-					$this->make->ReadOnly = TRUE;
-					$this->color->ReadOnly = TRUE;
-					$this->department->ReadOnly = TRUE;
-					$this->designation->ReadOnly = TRUE;
-					$this->assign_to->ReadOnly = TRUE;
-					$this->date_assign->ReadOnly = TRUE;
-					$this->assign_action->ReadOnly = TRUE;
-					$this->assign_comment->ReadOnly = TRUE;
-					$this->assign_by->ReadOnly = TRUE;
-
-					//$this->staff_id->ReadOnly = TRUE;
-					$this->date_retrieved->ReadOnly = FALSE;
-					$this->retriever_action->Visible = TRUE;
-					$this->retriever_comment->Visible = TRUE;
-
-					//$this->retrieved_by->Visible = FALSE;
-				}*/
 			}
 
 			// Highligh rows in color based on the status
