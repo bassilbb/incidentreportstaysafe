@@ -332,6 +332,8 @@ class cpc_issuance_edit extends cpc_issuance {
 		$this->reference_id->SetVisibility();
 		$this->asset_tag->SetVisibility();
 		$this->make->SetVisibility();
+		$this->ram->SetVisibility();
+		$this->hard_disk->SetVisibility();
 		$this->color->SetVisibility();
 		$this->department->SetVisibility();
 		$this->designation->SetVisibility();
@@ -647,6 +649,12 @@ class cpc_issuance_edit extends cpc_issuance {
 		if (!$this->make->FldIsDetailKey) {
 			$this->make->setFormValue($objForm->GetValue("x_make"));
 		}
+		if (!$this->ram->FldIsDetailKey) {
+			$this->ram->setFormValue($objForm->GetValue("x_ram"));
+		}
+		if (!$this->hard_disk->FldIsDetailKey) {
+			$this->hard_disk->setFormValue($objForm->GetValue("x_hard_disk"));
+		}
 		if (!$this->color->FldIsDetailKey) {
 			$this->color->setFormValue($objForm->GetValue("x_color"));
 		}
@@ -704,6 +712,8 @@ class cpc_issuance_edit extends cpc_issuance {
 		$this->reference_id->CurrentValue = $this->reference_id->FormValue;
 		$this->asset_tag->CurrentValue = $this->asset_tag->FormValue;
 		$this->make->CurrentValue = $this->make->FormValue;
+		$this->ram->CurrentValue = $this->ram->FormValue;
+		$this->hard_disk->CurrentValue = $this->hard_disk->FormValue;
 		$this->color->CurrentValue = $this->color->FormValue;
 		$this->department->CurrentValue = $this->department->FormValue;
 		$this->designation->CurrentValue = $this->designation->FormValue;
@@ -786,6 +796,8 @@ class cpc_issuance_edit extends cpc_issuance {
 		$this->reference_id->setDbValue($row['reference_id']);
 		$this->asset_tag->setDbValue($row['asset_tag']);
 		$this->make->setDbValue($row['make']);
+		$this->ram->setDbValue($row['ram']);
+		$this->hard_disk->setDbValue($row['hard_disk']);
 		$this->color->setDbValue($row['color']);
 		$this->department->setDbValue($row['department']);
 		$this->designation->setDbValue($row['designation']);
@@ -810,6 +822,8 @@ class cpc_issuance_edit extends cpc_issuance {
 		$row['reference_id'] = NULL;
 		$row['asset_tag'] = NULL;
 		$row['make'] = NULL;
+		$row['ram'] = NULL;
+		$row['hard_disk'] = NULL;
 		$row['color'] = NULL;
 		$row['department'] = NULL;
 		$row['designation'] = NULL;
@@ -837,6 +851,8 @@ class cpc_issuance_edit extends cpc_issuance {
 		$this->reference_id->DbValue = $row['reference_id'];
 		$this->asset_tag->DbValue = $row['asset_tag'];
 		$this->make->DbValue = $row['make'];
+		$this->ram->DbValue = $row['ram'];
+		$this->hard_disk->DbValue = $row['hard_disk'];
 		$this->color->DbValue = $row['color'];
 		$this->department->DbValue = $row['department'];
 		$this->designation->DbValue = $row['designation'];
@@ -890,6 +906,8 @@ class cpc_issuance_edit extends cpc_issuance {
 		// reference_id
 		// asset_tag
 		// make
+		// ram
+		// hard_disk
 		// color
 		// department
 		// designation
@@ -927,6 +945,14 @@ class cpc_issuance_edit extends cpc_issuance {
 		// make
 		$this->make->ViewValue = $this->make->CurrentValue;
 		$this->make->ViewCustomAttributes = "";
+
+		// ram
+		$this->ram->ViewValue = $this->ram->CurrentValue;
+		$this->ram->ViewCustomAttributes = "";
+
+		// hard_disk
+		$this->hard_disk->ViewValue = $this->hard_disk->CurrentValue;
+		$this->hard_disk->ViewCustomAttributes = "";
 
 		// color
 		$this->color->ViewValue = $this->color->CurrentValue;
@@ -1166,6 +1192,16 @@ class cpc_issuance_edit extends cpc_issuance {
 			$this->make->HrefValue = "";
 			$this->make->TooltipValue = "";
 
+			// ram
+			$this->ram->LinkCustomAttributes = "";
+			$this->ram->HrefValue = "";
+			$this->ram->TooltipValue = "";
+
+			// hard_disk
+			$this->hard_disk->LinkCustomAttributes = "";
+			$this->hard_disk->HrefValue = "";
+			$this->hard_disk->TooltipValue = "";
+
 			// color
 			$this->color->LinkCustomAttributes = "";
 			$this->color->HrefValue = "";
@@ -1260,6 +1296,18 @@ class cpc_issuance_edit extends cpc_issuance {
 			$this->make->EditCustomAttributes = "";
 			$this->make->EditValue = ew_HtmlEncode($this->make->CurrentValue);
 			$this->make->PlaceHolder = ew_RemoveHtml($this->make->FldCaption());
+
+			// ram
+			$this->ram->EditAttrs["class"] = "form-control";
+			$this->ram->EditCustomAttributes = "";
+			$this->ram->EditValue = ew_HtmlEncode($this->ram->CurrentValue);
+			$this->ram->PlaceHolder = ew_RemoveHtml($this->ram->FldCaption());
+
+			// hard_disk
+			$this->hard_disk->EditAttrs["class"] = "form-control";
+			$this->hard_disk->EditCustomAttributes = "";
+			$this->hard_disk->EditValue = ew_HtmlEncode($this->hard_disk->CurrentValue);
+			$this->hard_disk->PlaceHolder = ew_RemoveHtml($this->hard_disk->FldCaption());
 
 			// color
 			$this->color->EditAttrs["class"] = "form-control";
@@ -1478,6 +1526,14 @@ class cpc_issuance_edit extends cpc_issuance {
 			$this->make->LinkCustomAttributes = "";
 			$this->make->HrefValue = "";
 
+			// ram
+			$this->ram->LinkCustomAttributes = "";
+			$this->ram->HrefValue = "";
+
+			// hard_disk
+			$this->hard_disk->LinkCustomAttributes = "";
+			$this->hard_disk->HrefValue = "";
+
 			// color
 			$this->color->LinkCustomAttributes = "";
 			$this->color->HrefValue = "";
@@ -1564,6 +1620,12 @@ class cpc_issuance_edit extends cpc_issuance {
 		if (!$this->make->FldIsDetailKey && !is_null($this->make->FormValue) && $this->make->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->make->FldCaption(), $this->make->ReqErrMsg));
 		}
+		if (!$this->ram->FldIsDetailKey && !is_null($this->ram->FormValue) && $this->ram->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->ram->FldCaption(), $this->ram->ReqErrMsg));
+		}
+		if (!$this->hard_disk->FldIsDetailKey && !is_null($this->hard_disk->FormValue) && $this->hard_disk->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->hard_disk->FldCaption(), $this->hard_disk->ReqErrMsg));
+		}
 		if (!$this->color->FldIsDetailKey && !is_null($this->color->FormValue) && $this->color->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->color->FldCaption(), $this->color->ReqErrMsg));
 		}
@@ -1638,6 +1700,12 @@ class cpc_issuance_edit extends cpc_issuance {
 
 			// make
 			$this->make->SetDbValueDef($rsnew, $this->make->CurrentValue, NULL, $this->make->ReadOnly);
+
+			// ram
+			$this->ram->SetDbValueDef($rsnew, $this->ram->CurrentValue, NULL, $this->ram->ReadOnly);
+
+			// hard_disk
+			$this->hard_disk->SetDbValueDef($rsnew, $this->hard_disk->CurrentValue, NULL, $this->hard_disk->ReadOnly);
 
 			// color
 			$this->color->SetDbValueDef($rsnew, $this->color->CurrentValue, NULL, $this->color->ReadOnly);
@@ -1967,6 +2035,12 @@ fpc_issuanceedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_make");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->make->FldCaption(), $pc_issuance->make->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_ram");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->ram->FldCaption(), $pc_issuance->ram->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_hard_disk");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->hard_disk->FldCaption(), $pc_issuance->hard_disk->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_color");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $pc_issuance->color->FldCaption(), $pc_issuance->color->ReqErrMsg)) ?>");
@@ -2157,6 +2231,26 @@ $pc_issuance_edit->ShowMessage();
 <?php echo $pc_issuance->make->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
+<?php if ($pc_issuance->ram->Visible) { // ram ?>
+	<div id="r_ram" class="form-group">
+		<label id="elh_pc_issuance_ram" for="x_ram" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->ram->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
+		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->ram->CellAttributes() ?>>
+<span id="el_pc_issuance_ram">
+<input type="text" data-table="pc_issuance" data-field="x_ram" data-page="1" name="x_ram" id="x_ram" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->ram->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->ram->EditValue ?>"<?php echo $pc_issuance->ram->EditAttributes() ?>>
+</span>
+<?php echo $pc_issuance->ram->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($pc_issuance->hard_disk->Visible) { // hard_disk ?>
+	<div id="r_hard_disk" class="form-group">
+		<label id="elh_pc_issuance_hard_disk" for="x_hard_disk" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->hard_disk->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
+		<div class="<?php echo $pc_issuance_edit->RightColumnClass ?>"><div<?php echo $pc_issuance->hard_disk->CellAttributes() ?>>
+<span id="el_pc_issuance_hard_disk">
+<input type="text" data-table="pc_issuance" data-field="x_hard_disk" data-page="1" name="x_hard_disk" id="x_hard_disk" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance->hard_disk->getPlaceHolder()) ?>" value="<?php echo $pc_issuance->hard_disk->EditValue ?>"<?php echo $pc_issuance->hard_disk->EditAttributes() ?>>
+</span>
+<?php echo $pc_issuance->hard_disk->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
 <?php if ($pc_issuance->color->Visible) { // color ?>
 	<div id="r_color" class="form-group">
 		<label id="elh_pc_issuance_color" for="x_color" class="<?php echo $pc_issuance_edit->LeftColumnClass ?>"><?php echo $pc_issuance->color->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
@@ -2262,7 +2356,7 @@ $wrkonchange = trim(" " . @$pc_issuance->staff_id->EditAttrs["onchange"]);
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $pc_issuance->staff_id->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_staff_id" style="white-space: nowrap; z-index: 8810">
+<span id="as_x_staff_id" style="white-space: nowrap; z-index: 8790">
 	<input type="text" name="sv_x_staff_id" id="sv_x_staff_id" value="<?php echo $pc_issuance->staff_id->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($pc_issuance->staff_id->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($pc_issuance->staff_id->getPlaceHolder()) ?>"<?php echo $pc_issuance->staff_id->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="pc_issuance" data-field="x_staff_id" data-page="1" data-value-separator="<?php echo $pc_issuance->staff_id->DisplayValueSeparatorAttribute() ?>" name="x_staff_id" id="x_staff_id" value="<?php echo ew_HtmlEncode($pc_issuance->staff_id->CurrentValue) ?>"<?php echo $wrkonchange ?>>

@@ -456,6 +456,8 @@ class cpc_issuance_list extends cpc_issuance {
 		$this->reference_id->SetVisibility();
 		$this->asset_tag->SetVisibility();
 		$this->make->SetVisibility();
+		$this->ram->SetVisibility();
+		$this->hard_disk->SetVisibility();
 		$this->color->SetVisibility();
 		$this->department->SetVisibility();
 		$this->designation->SetVisibility();
@@ -826,6 +828,8 @@ class cpc_issuance_list extends cpc_issuance {
 		$sFilterList = ew_Concat($sFilterList, $this->reference_id->AdvancedSearch->ToJson(), ","); // Field reference_id
 		$sFilterList = ew_Concat($sFilterList, $this->asset_tag->AdvancedSearch->ToJson(), ","); // Field asset_tag
 		$sFilterList = ew_Concat($sFilterList, $this->make->AdvancedSearch->ToJson(), ","); // Field make
+		$sFilterList = ew_Concat($sFilterList, $this->ram->AdvancedSearch->ToJson(), ","); // Field ram
+		$sFilterList = ew_Concat($sFilterList, $this->hard_disk->AdvancedSearch->ToJson(), ","); // Field hard_disk
 		$sFilterList = ew_Concat($sFilterList, $this->color->AdvancedSearch->ToJson(), ","); // Field color
 		$sFilterList = ew_Concat($sFilterList, $this->department->AdvancedSearch->ToJson(), ","); // Field department
 		$sFilterList = ew_Concat($sFilterList, $this->designation->AdvancedSearch->ToJson(), ","); // Field designation
@@ -923,6 +927,22 @@ class cpc_issuance_list extends cpc_issuance {
 		$this->make->AdvancedSearch->SearchValue2 = @$filter["y_make"];
 		$this->make->AdvancedSearch->SearchOperator2 = @$filter["w_make"];
 		$this->make->AdvancedSearch->Save();
+
+		// Field ram
+		$this->ram->AdvancedSearch->SearchValue = @$filter["x_ram"];
+		$this->ram->AdvancedSearch->SearchOperator = @$filter["z_ram"];
+		$this->ram->AdvancedSearch->SearchCondition = @$filter["v_ram"];
+		$this->ram->AdvancedSearch->SearchValue2 = @$filter["y_ram"];
+		$this->ram->AdvancedSearch->SearchOperator2 = @$filter["w_ram"];
+		$this->ram->AdvancedSearch->Save();
+
+		// Field hard_disk
+		$this->hard_disk->AdvancedSearch->SearchValue = @$filter["x_hard_disk"];
+		$this->hard_disk->AdvancedSearch->SearchOperator = @$filter["z_hard_disk"];
+		$this->hard_disk->AdvancedSearch->SearchCondition = @$filter["v_hard_disk"];
+		$this->hard_disk->AdvancedSearch->SearchValue2 = @$filter["y_hard_disk"];
+		$this->hard_disk->AdvancedSearch->SearchOperator2 = @$filter["w_hard_disk"];
+		$this->hard_disk->AdvancedSearch->Save();
 
 		// Field color
 		$this->color->AdvancedSearch->SearchValue = @$filter["x_color"];
@@ -1045,6 +1065,8 @@ class cpc_issuance_list extends cpc_issuance {
 		$this->BuildBasicSearchSQL($sWhere, $this->reference_id, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->asset_tag, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->make, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->ram, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->hard_disk, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->color, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->assign_comment, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->statuse, $arKeywords, $type);
@@ -1199,6 +1221,8 @@ class cpc_issuance_list extends cpc_issuance {
 			$this->UpdateSort($this->reference_id); // reference_id
 			$this->UpdateSort($this->asset_tag); // asset_tag
 			$this->UpdateSort($this->make); // make
+			$this->UpdateSort($this->ram); // ram
+			$this->UpdateSort($this->hard_disk); // hard_disk
 			$this->UpdateSort($this->color); // color
 			$this->UpdateSort($this->department); // department
 			$this->UpdateSort($this->designation); // designation
@@ -1244,6 +1268,8 @@ class cpc_issuance_list extends cpc_issuance {
 				$this->reference_id->setSort("");
 				$this->asset_tag->setSort("");
 				$this->make->setSort("");
+				$this->ram->setSort("");
+				$this->hard_disk->setSort("");
 				$this->color->setSort("");
 				$this->department->setSort("");
 				$this->designation->setSort("");
@@ -1715,6 +1741,8 @@ class cpc_issuance_list extends cpc_issuance {
 		$this->reference_id->setDbValue($row['reference_id']);
 		$this->asset_tag->setDbValue($row['asset_tag']);
 		$this->make->setDbValue($row['make']);
+		$this->ram->setDbValue($row['ram']);
+		$this->hard_disk->setDbValue($row['hard_disk']);
 		$this->color->setDbValue($row['color']);
 		$this->department->setDbValue($row['department']);
 		$this->designation->setDbValue($row['designation']);
@@ -1739,6 +1767,8 @@ class cpc_issuance_list extends cpc_issuance {
 		$row['reference_id'] = NULL;
 		$row['asset_tag'] = NULL;
 		$row['make'] = NULL;
+		$row['ram'] = NULL;
+		$row['hard_disk'] = NULL;
 		$row['color'] = NULL;
 		$row['department'] = NULL;
 		$row['designation'] = NULL;
@@ -1766,6 +1796,8 @@ class cpc_issuance_list extends cpc_issuance {
 		$this->reference_id->DbValue = $row['reference_id'];
 		$this->asset_tag->DbValue = $row['asset_tag'];
 		$this->make->DbValue = $row['make'];
+		$this->ram->DbValue = $row['ram'];
+		$this->hard_disk->DbValue = $row['hard_disk'];
 		$this->color->DbValue = $row['color'];
 		$this->department->DbValue = $row['department'];
 		$this->designation->DbValue = $row['designation'];
@@ -1825,6 +1857,8 @@ class cpc_issuance_list extends cpc_issuance {
 		// reference_id
 		// asset_tag
 		// make
+		// ram
+		// hard_disk
 		// color
 		// department
 		// designation
@@ -1862,6 +1896,14 @@ class cpc_issuance_list extends cpc_issuance {
 		// make
 		$this->make->ViewValue = $this->make->CurrentValue;
 		$this->make->ViewCustomAttributes = "";
+
+		// ram
+		$this->ram->ViewValue = $this->ram->CurrentValue;
+		$this->ram->ViewCustomAttributes = "";
+
+		// hard_disk
+		$this->hard_disk->ViewValue = $this->hard_disk->CurrentValue;
+		$this->hard_disk->ViewCustomAttributes = "";
 
 		// color
 		$this->color->ViewValue = $this->color->CurrentValue;
@@ -2092,6 +2134,16 @@ class cpc_issuance_list extends cpc_issuance {
 			$this->make->LinkCustomAttributes = "";
 			$this->make->HrefValue = "";
 			$this->make->TooltipValue = "";
+
+			// ram
+			$this->ram->LinkCustomAttributes = "";
+			$this->ram->HrefValue = "";
+			$this->ram->TooltipValue = "";
+
+			// hard_disk
+			$this->hard_disk->LinkCustomAttributes = "";
+			$this->hard_disk->HrefValue = "";
+			$this->hard_disk->TooltipValue = "";
 
 			// color
 			$this->color->LinkCustomAttributes = "";
@@ -2718,6 +2770,24 @@ $pc_issuance_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
+<?php if ($pc_issuance->ram->Visible) { // ram ?>
+	<?php if ($pc_issuance->SortUrl($pc_issuance->ram) == "") { ?>
+		<th data-name="ram" class="<?php echo $pc_issuance->ram->HeaderCellClass() ?>"><div id="elh_pc_issuance_ram" class="pc_issuance_ram"><div class="ewTableHeaderCaption"><?php echo $pc_issuance->ram->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="ram" class="<?php echo $pc_issuance->ram->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $pc_issuance->SortUrl($pc_issuance->ram) ?>',1);"><div id="elh_pc_issuance_ram" class="pc_issuance_ram">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $pc_issuance->ram->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($pc_issuance->ram->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($pc_issuance->ram->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($pc_issuance->hard_disk->Visible) { // hard_disk ?>
+	<?php if ($pc_issuance->SortUrl($pc_issuance->hard_disk) == "") { ?>
+		<th data-name="hard_disk" class="<?php echo $pc_issuance->hard_disk->HeaderCellClass() ?>"><div id="elh_pc_issuance_hard_disk" class="pc_issuance_hard_disk"><div class="ewTableHeaderCaption"><?php echo $pc_issuance->hard_disk->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="hard_disk" class="<?php echo $pc_issuance->hard_disk->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $pc_issuance->SortUrl($pc_issuance->hard_disk) ?>',1);"><div id="elh_pc_issuance_hard_disk" class="pc_issuance_hard_disk">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $pc_issuance->hard_disk->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($pc_issuance->hard_disk->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($pc_issuance->hard_disk->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
 <?php if ($pc_issuance->color->Visible) { // color ?>
 	<?php if ($pc_issuance->SortUrl($pc_issuance->color) == "") { ?>
 		<th data-name="color" class="<?php echo $pc_issuance->color->HeaderCellClass() ?>"><div id="elh_pc_issuance_color" class="pc_issuance_color"><div class="ewTableHeaderCaption"><?php echo $pc_issuance->color->FldCaption() ?></div></div></th>
@@ -2893,6 +2963,22 @@ $pc_issuance_list->ListOptions->Render("body", "left", $pc_issuance_list->RowCnt
 <span id="el<?php echo $pc_issuance_list->RowCnt ?>_pc_issuance_make" class="pc_issuance_make">
 <span<?php echo $pc_issuance->make->ViewAttributes() ?>>
 <?php echo $pc_issuance->make->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($pc_issuance->ram->Visible) { // ram ?>
+		<td data-name="ram"<?php echo $pc_issuance->ram->CellAttributes() ?>>
+<span id="el<?php echo $pc_issuance_list->RowCnt ?>_pc_issuance_ram" class="pc_issuance_ram">
+<span<?php echo $pc_issuance->ram->ViewAttributes() ?>>
+<?php echo $pc_issuance->ram->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($pc_issuance->hard_disk->Visible) { // hard_disk ?>
+		<td data-name="hard_disk"<?php echo $pc_issuance->hard_disk->CellAttributes() ?>>
+<span id="el<?php echo $pc_issuance_list->RowCnt ?>_pc_issuance_hard_disk" class="pc_issuance_hard_disk">
+<span<?php echo $pc_issuance->hard_disk->ViewAttributes() ?>>
+<?php echo $pc_issuance->hard_disk->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

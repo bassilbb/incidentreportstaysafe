@@ -429,6 +429,8 @@ class cpc_issuance_report_view extends cpc_issuance_report {
 		$this->reference_id->SetVisibility();
 		$this->asset_tag->SetVisibility();
 		$this->make->SetVisibility();
+		$this->ram->SetVisibility();
+		$this->hard_disk->SetVisibility();
 		$this->color->SetVisibility();
 		$this->department->SetVisibility();
 		$this->designation->SetVisibility();
@@ -745,6 +747,8 @@ class cpc_issuance_report_view extends cpc_issuance_report {
 		$this->reference_id->setDbValue($row['reference_id']);
 		$this->asset_tag->setDbValue($row['asset_tag']);
 		$this->make->setDbValue($row['make']);
+		$this->ram->setDbValue($row['ram']);
+		$this->hard_disk->setDbValue($row['hard_disk']);
 		$this->color->setDbValue($row['color']);
 		$this->department->setDbValue($row['department']);
 		$this->designation->setDbValue($row['designation']);
@@ -769,6 +773,8 @@ class cpc_issuance_report_view extends cpc_issuance_report {
 		$row['reference_id'] = NULL;
 		$row['asset_tag'] = NULL;
 		$row['make'] = NULL;
+		$row['ram'] = NULL;
+		$row['hard_disk'] = NULL;
 		$row['color'] = NULL;
 		$row['department'] = NULL;
 		$row['designation'] = NULL;
@@ -796,6 +802,8 @@ class cpc_issuance_report_view extends cpc_issuance_report {
 		$this->reference_id->DbValue = $row['reference_id'];
 		$this->asset_tag->DbValue = $row['asset_tag'];
 		$this->make->DbValue = $row['make'];
+		$this->ram->DbValue = $row['ram'];
+		$this->hard_disk->DbValue = $row['hard_disk'];
 		$this->color->DbValue = $row['color'];
 		$this->department->DbValue = $row['department'];
 		$this->designation->DbValue = $row['designation'];
@@ -833,6 +841,8 @@ class cpc_issuance_report_view extends cpc_issuance_report {
 		// reference_id
 		// asset_tag
 		// make
+		// ram
+		// hard_disk
 		// color
 		// department
 		// designation
@@ -870,6 +880,14 @@ class cpc_issuance_report_view extends cpc_issuance_report {
 		// make
 		$this->make->ViewValue = $this->make->CurrentValue;
 		$this->make->ViewCustomAttributes = "";
+
+		// ram
+		$this->ram->ViewValue = $this->ram->CurrentValue;
+		$this->ram->ViewCustomAttributes = "";
+
+		// hard_disk
+		$this->hard_disk->ViewValue = $this->hard_disk->CurrentValue;
+		$this->hard_disk->ViewCustomAttributes = "";
 
 		// color
 		$this->color->ViewValue = $this->color->CurrentValue;
@@ -1113,6 +1131,16 @@ class cpc_issuance_report_view extends cpc_issuance_report {
 			$this->make->LinkCustomAttributes = "";
 			$this->make->HrefValue = "";
 			$this->make->TooltipValue = "";
+
+			// ram
+			$this->ram->LinkCustomAttributes = "";
+			$this->ram->HrefValue = "";
+			$this->ram->TooltipValue = "";
+
+			// hard_disk
+			$this->hard_disk->LinkCustomAttributes = "";
+			$this->hard_disk->HrefValue = "";
+			$this->hard_disk->TooltipValue = "";
 
 			// color
 			$this->color->LinkCustomAttributes = "";
@@ -1649,6 +1677,28 @@ $pc_issuance_report_view->ShowMessage();
 <span id="el_pc_issuance_report_make" data-page="1">
 <span<?php echo $pc_issuance_report->make->ViewAttributes() ?>>
 <?php echo $pc_issuance_report->make->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($pc_issuance_report->ram->Visible) { // ram ?>
+	<tr id="r_ram">
+		<td class="col-sm-2"><span id="elh_pc_issuance_report_ram"><?php echo $pc_issuance_report->ram->FldCaption() ?></span></td>
+		<td data-name="ram"<?php echo $pc_issuance_report->ram->CellAttributes() ?>>
+<span id="el_pc_issuance_report_ram" data-page="1">
+<span<?php echo $pc_issuance_report->ram->ViewAttributes() ?>>
+<?php echo $pc_issuance_report->ram->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($pc_issuance_report->hard_disk->Visible) { // hard_disk ?>
+	<tr id="r_hard_disk">
+		<td class="col-sm-2"><span id="elh_pc_issuance_report_hard_disk"><?php echo $pc_issuance_report->hard_disk->FldCaption() ?></span></td>
+		<td data-name="hard_disk"<?php echo $pc_issuance_report->hard_disk->CellAttributes() ?>>
+<span id="el_pc_issuance_report_hard_disk" data-page="1">
+<span<?php echo $pc_issuance_report->hard_disk->ViewAttributes() ?>>
+<?php echo $pc_issuance_report->hard_disk->ViewValue ?></span>
 </span>
 </td>
 	</tr>

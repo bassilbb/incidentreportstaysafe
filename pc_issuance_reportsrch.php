@@ -329,6 +329,8 @@ class cpc_issuance_report_search extends cpc_issuance_report {
 		$this->reference_id->SetVisibility();
 		$this->asset_tag->SetVisibility();
 		$this->make->SetVisibility();
+		$this->ram->SetVisibility();
+		$this->hard_disk->SetVisibility();
 		$this->color->SetVisibility();
 		$this->department->SetVisibility();
 		$this->designation->SetVisibility();
@@ -484,6 +486,8 @@ class cpc_issuance_report_search extends cpc_issuance_report {
 		$this->BuildSearchUrl($sSrchUrl, $this->reference_id); // reference_id
 		$this->BuildSearchUrl($sSrchUrl, $this->asset_tag); // asset_tag
 		$this->BuildSearchUrl($sSrchUrl, $this->make); // make
+		$this->BuildSearchUrl($sSrchUrl, $this->ram); // ram
+		$this->BuildSearchUrl($sSrchUrl, $this->hard_disk); // hard_disk
 		$this->BuildSearchUrl($sSrchUrl, $this->color); // color
 		$this->BuildSearchUrl($sSrchUrl, $this->department); // department
 		$this->BuildSearchUrl($sSrchUrl, $this->designation); // designation
@@ -587,6 +591,14 @@ class cpc_issuance_report_search extends cpc_issuance_report {
 		$this->make->AdvancedSearch->SearchValue = $objForm->GetValue("x_make");
 		$this->make->AdvancedSearch->SearchOperator = $objForm->GetValue("z_make");
 
+		// ram
+		$this->ram->AdvancedSearch->SearchValue = $objForm->GetValue("x_ram");
+		$this->ram->AdvancedSearch->SearchOperator = $objForm->GetValue("z_ram");
+
+		// hard_disk
+		$this->hard_disk->AdvancedSearch->SearchValue = $objForm->GetValue("x_hard_disk");
+		$this->hard_disk->AdvancedSearch->SearchOperator = $objForm->GetValue("z_hard_disk");
+
 		// color
 		$this->color->AdvancedSearch->SearchValue = $objForm->GetValue("x_color");
 		$this->color->AdvancedSearch->SearchOperator = $objForm->GetValue("z_color");
@@ -661,6 +673,8 @@ class cpc_issuance_report_search extends cpc_issuance_report {
 		// reference_id
 		// asset_tag
 		// make
+		// ram
+		// hard_disk
 		// color
 		// department
 		// designation
@@ -698,6 +712,14 @@ class cpc_issuance_report_search extends cpc_issuance_report {
 		// make
 		$this->make->ViewValue = $this->make->CurrentValue;
 		$this->make->ViewCustomAttributes = "";
+
+		// ram
+		$this->ram->ViewValue = $this->ram->CurrentValue;
+		$this->ram->ViewCustomAttributes = "";
+
+		// hard_disk
+		$this->hard_disk->ViewValue = $this->hard_disk->CurrentValue;
+		$this->hard_disk->ViewCustomAttributes = "";
 
 		// color
 		$this->color->ViewValue = $this->color->CurrentValue;
@@ -942,6 +964,16 @@ class cpc_issuance_report_search extends cpc_issuance_report {
 			$this->make->HrefValue = "";
 			$this->make->TooltipValue = "";
 
+			// ram
+			$this->ram->LinkCustomAttributes = "";
+			$this->ram->HrefValue = "";
+			$this->ram->TooltipValue = "";
+
+			// hard_disk
+			$this->hard_disk->LinkCustomAttributes = "";
+			$this->hard_disk->HrefValue = "";
+			$this->hard_disk->TooltipValue = "";
+
 			// color
 			$this->color->LinkCustomAttributes = "";
 			$this->color->HrefValue = "";
@@ -1046,6 +1078,18 @@ class cpc_issuance_report_search extends cpc_issuance_report {
 			$this->make->EditCustomAttributes = "";
 			$this->make->EditValue = ew_HtmlEncode($this->make->AdvancedSearch->SearchValue);
 			$this->make->PlaceHolder = ew_RemoveHtml($this->make->FldCaption());
+
+			// ram
+			$this->ram->EditAttrs["class"] = "form-control";
+			$this->ram->EditCustomAttributes = "";
+			$this->ram->EditValue = ew_HtmlEncode($this->ram->AdvancedSearch->SearchValue);
+			$this->ram->PlaceHolder = ew_RemoveHtml($this->ram->FldCaption());
+
+			// hard_disk
+			$this->hard_disk->EditAttrs["class"] = "form-control";
+			$this->hard_disk->EditCustomAttributes = "";
+			$this->hard_disk->EditValue = ew_HtmlEncode($this->hard_disk->AdvancedSearch->SearchValue);
+			$this->hard_disk->PlaceHolder = ew_RemoveHtml($this->hard_disk->FldCaption());
 
 			// color
 			$this->color->EditAttrs["class"] = "form-control";
@@ -1310,6 +1354,8 @@ class cpc_issuance_report_search extends cpc_issuance_report {
 		$this->reference_id->AdvancedSearch->Load();
 		$this->asset_tag->AdvancedSearch->Load();
 		$this->make->AdvancedSearch->Load();
+		$this->ram->AdvancedSearch->Load();
+		$this->hard_disk->AdvancedSearch->Load();
 		$this->color->AdvancedSearch->Load();
 		$this->department->AdvancedSearch->Load();
 		$this->designation->AdvancedSearch->Load();
@@ -1717,6 +1763,30 @@ ew_CreateDateTimePicker("fpc_issuance_reportsearch", "y_issued_date", {"ignoreRe
 		</div></div>
 	</div>
 <?php } ?>
+<?php if ($pc_issuance_report->ram->Visible) { // ram ?>
+	<div id="r_ram" class="form-group">
+		<label for="x_ram" class="<?php echo $pc_issuance_report_search->LeftColumnClass ?>"><span id="elh_pc_issuance_report_ram"><?php echo $pc_issuance_report->ram->FldCaption() ?></span>
+		<p class="form-control-static ewSearchOperator"><?php echo $Language->Phrase("LIKE") ?><input type="hidden" name="z_ram" id="z_ram" value="LIKE"></p>
+		</label>
+		<div class="<?php echo $pc_issuance_report_search->RightColumnClass ?>"><div<?php echo $pc_issuance_report->ram->CellAttributes() ?>>
+			<span id="el_pc_issuance_report_ram">
+<input type="text" data-table="pc_issuance_report" data-field="x_ram" data-page="1" name="x_ram" id="x_ram" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance_report->ram->getPlaceHolder()) ?>" value="<?php echo $pc_issuance_report->ram->EditValue ?>"<?php echo $pc_issuance_report->ram->EditAttributes() ?>>
+</span>
+		</div></div>
+	</div>
+<?php } ?>
+<?php if ($pc_issuance_report->hard_disk->Visible) { // hard_disk ?>
+	<div id="r_hard_disk" class="form-group">
+		<label for="x_hard_disk" class="<?php echo $pc_issuance_report_search->LeftColumnClass ?>"><span id="elh_pc_issuance_report_hard_disk"><?php echo $pc_issuance_report->hard_disk->FldCaption() ?></span>
+		<p class="form-control-static ewSearchOperator"><?php echo $Language->Phrase("LIKE") ?><input type="hidden" name="z_hard_disk" id="z_hard_disk" value="LIKE"></p>
+		</label>
+		<div class="<?php echo $pc_issuance_report_search->RightColumnClass ?>"><div<?php echo $pc_issuance_report->hard_disk->CellAttributes() ?>>
+			<span id="el_pc_issuance_report_hard_disk">
+<input type="text" data-table="pc_issuance_report" data-field="x_hard_disk" data-page="1" name="x_hard_disk" id="x_hard_disk" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($pc_issuance_report->hard_disk->getPlaceHolder()) ?>" value="<?php echo $pc_issuance_report->hard_disk->EditValue ?>"<?php echo $pc_issuance_report->hard_disk->EditAttributes() ?>>
+</span>
+		</div></div>
+	</div>
+<?php } ?>
 <?php if ($pc_issuance_report->color->Visible) { // color ?>
 	<div id="r_color" class="form-group">
 		<label for="x_color" class="<?php echo $pc_issuance_report_search->LeftColumnClass ?>"><span id="elh_pc_issuance_report_color"><?php echo $pc_issuance_report->color->FldCaption() ?></span>
@@ -1842,7 +1912,7 @@ $wrkonchange = trim(" " . @$pc_issuance_report->staff_id->EditAttrs["onchange"])
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $pc_issuance_report->staff_id->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_staff_id" style="white-space: nowrap; z-index: 8810">
+<span id="as_x_staff_id" style="white-space: nowrap; z-index: 8790">
 	<input type="text" name="sv_x_staff_id" id="sv_x_staff_id" value="<?php echo $pc_issuance_report->staff_id->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($pc_issuance_report->staff_id->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($pc_issuance_report->staff_id->getPlaceHolder()) ?>"<?php echo $pc_issuance_report->staff_id->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="pc_issuance_report" data-field="x_staff_id" data-page="1" data-value-separator="<?php echo $pc_issuance_report->staff_id->DisplayValueSeparatorAttribute() ?>" name="x_staff_id" id="x_staff_id" value="<?php echo ew_HtmlEncode($pc_issuance_report->staff_id->AdvancedSearch->SearchValue) ?>"<?php echo $wrkonchange ?>>

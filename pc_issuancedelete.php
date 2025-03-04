@@ -327,6 +327,8 @@ class cpc_issuance_delete extends cpc_issuance {
 		$this->reference_id->SetVisibility();
 		$this->asset_tag->SetVisibility();
 		$this->make->SetVisibility();
+		$this->ram->SetVisibility();
+		$this->hard_disk->SetVisibility();
 		$this->color->SetVisibility();
 		$this->department->SetVisibility();
 		$this->designation->SetVisibility();
@@ -520,6 +522,8 @@ class cpc_issuance_delete extends cpc_issuance {
 		$this->reference_id->setDbValue($row['reference_id']);
 		$this->asset_tag->setDbValue($row['asset_tag']);
 		$this->make->setDbValue($row['make']);
+		$this->ram->setDbValue($row['ram']);
+		$this->hard_disk->setDbValue($row['hard_disk']);
 		$this->color->setDbValue($row['color']);
 		$this->department->setDbValue($row['department']);
 		$this->designation->setDbValue($row['designation']);
@@ -544,6 +548,8 @@ class cpc_issuance_delete extends cpc_issuance {
 		$row['reference_id'] = NULL;
 		$row['asset_tag'] = NULL;
 		$row['make'] = NULL;
+		$row['ram'] = NULL;
+		$row['hard_disk'] = NULL;
 		$row['color'] = NULL;
 		$row['department'] = NULL;
 		$row['designation'] = NULL;
@@ -571,6 +577,8 @@ class cpc_issuance_delete extends cpc_issuance {
 		$this->reference_id->DbValue = $row['reference_id'];
 		$this->asset_tag->DbValue = $row['asset_tag'];
 		$this->make->DbValue = $row['make'];
+		$this->ram->DbValue = $row['ram'];
+		$this->hard_disk->DbValue = $row['hard_disk'];
 		$this->color->DbValue = $row['color'];
 		$this->department->DbValue = $row['department'];
 		$this->designation->DbValue = $row['designation'];
@@ -602,6 +610,8 @@ class cpc_issuance_delete extends cpc_issuance {
 		// reference_id
 		// asset_tag
 		// make
+		// ram
+		// hard_disk
 		// color
 		// department
 		// designation
@@ -639,6 +649,14 @@ class cpc_issuance_delete extends cpc_issuance {
 		// make
 		$this->make->ViewValue = $this->make->CurrentValue;
 		$this->make->ViewCustomAttributes = "";
+
+		// ram
+		$this->ram->ViewValue = $this->ram->CurrentValue;
+		$this->ram->ViewCustomAttributes = "";
+
+		// hard_disk
+		$this->hard_disk->ViewValue = $this->hard_disk->CurrentValue;
+		$this->hard_disk->ViewCustomAttributes = "";
 
 		// color
 		$this->color->ViewValue = $this->color->CurrentValue;
@@ -869,6 +887,16 @@ class cpc_issuance_delete extends cpc_issuance {
 			$this->make->LinkCustomAttributes = "";
 			$this->make->HrefValue = "";
 			$this->make->TooltipValue = "";
+
+			// ram
+			$this->ram->LinkCustomAttributes = "";
+			$this->ram->HrefValue = "";
+			$this->ram->TooltipValue = "";
+
+			// hard_disk
+			$this->hard_disk->LinkCustomAttributes = "";
+			$this->hard_disk->HrefValue = "";
+			$this->hard_disk->TooltipValue = "";
 
 			// color
 			$this->color->LinkCustomAttributes = "";
@@ -1181,6 +1209,12 @@ $pc_issuance_delete->ShowMessage();
 <?php if ($pc_issuance->make->Visible) { // make ?>
 		<th class="<?php echo $pc_issuance->make->HeaderCellClass() ?>"><span id="elh_pc_issuance_make" class="pc_issuance_make"><?php echo $pc_issuance->make->FldCaption() ?></span></th>
 <?php } ?>
+<?php if ($pc_issuance->ram->Visible) { // ram ?>
+		<th class="<?php echo $pc_issuance->ram->HeaderCellClass() ?>"><span id="elh_pc_issuance_ram" class="pc_issuance_ram"><?php echo $pc_issuance->ram->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($pc_issuance->hard_disk->Visible) { // hard_disk ?>
+		<th class="<?php echo $pc_issuance->hard_disk->HeaderCellClass() ?>"><span id="elh_pc_issuance_hard_disk" class="pc_issuance_hard_disk"><?php echo $pc_issuance->hard_disk->FldCaption() ?></span></th>
+<?php } ?>
 <?php if ($pc_issuance->color->Visible) { // color ?>
 		<th class="<?php echo $pc_issuance->color->HeaderCellClass() ?>"><span id="elh_pc_issuance_color" class="pc_issuance_color"><?php echo $pc_issuance->color->FldCaption() ?></span></th>
 <?php } ?>
@@ -1258,6 +1292,22 @@ while (!$pc_issuance_delete->Recordset->EOF) {
 <span id="el<?php echo $pc_issuance_delete->RowCnt ?>_pc_issuance_make" class="pc_issuance_make">
 <span<?php echo $pc_issuance->make->ViewAttributes() ?>>
 <?php echo $pc_issuance->make->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($pc_issuance->ram->Visible) { // ram ?>
+		<td<?php echo $pc_issuance->ram->CellAttributes() ?>>
+<span id="el<?php echo $pc_issuance_delete->RowCnt ?>_pc_issuance_ram" class="pc_issuance_ram">
+<span<?php echo $pc_issuance->ram->ViewAttributes() ?>>
+<?php echo $pc_issuance->ram->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($pc_issuance->hard_disk->Visible) { // hard_disk ?>
+		<td<?php echo $pc_issuance->hard_disk->CellAttributes() ?>>
+<span id="el<?php echo $pc_issuance_delete->RowCnt ?>_pc_issuance_hard_disk" class="pc_issuance_hard_disk">
+<span<?php echo $pc_issuance->hard_disk->ViewAttributes() ?>>
+<?php echo $pc_issuance->hard_disk->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

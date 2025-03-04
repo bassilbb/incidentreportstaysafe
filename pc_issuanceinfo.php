@@ -18,6 +18,8 @@ class cpc_issuance extends cTable {
 	var $reference_id;
 	var $asset_tag;
 	var $make;
+	var $ram;
+	var $hard_disk;
 	var $color;
 	var $department;
 	var $designation;
@@ -90,6 +92,16 @@ class cpc_issuance extends cTable {
 		$this->make = new cField('pc_issuance', 'pc_issuance', 'x_make', 'make', '`make`', '`make`', 200, -1, FALSE, '`make`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->make->Sortable = TRUE; // Allow sort
 		$this->fields['make'] = &$this->make;
+
+		// ram
+		$this->ram = new cField('pc_issuance', 'pc_issuance', 'x_ram', 'ram', '`ram`', '`ram`', 200, -1, FALSE, '`ram`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->ram->Sortable = TRUE; // Allow sort
+		$this->fields['ram'] = &$this->ram;
+
+		// hard_disk
+		$this->hard_disk = new cField('pc_issuance', 'pc_issuance', 'x_hard_disk', 'hard_disk', '`hard_disk`', '`hard_disk`', 200, -1, FALSE, '`hard_disk`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->hard_disk->Sortable = TRUE; // Allow sort
+		$this->fields['hard_disk'] = &$this->hard_disk;
 
 		// color
 		$this->color = new cField('pc_issuance', 'pc_issuance', 'x_color', 'color', '`color`', '`color`', 200, -1, FALSE, '`color`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
@@ -722,6 +734,8 @@ class cpc_issuance extends cTable {
 		$this->reference_id->setDbValue($rs->fields('reference_id'));
 		$this->asset_tag->setDbValue($rs->fields('asset_tag'));
 		$this->make->setDbValue($rs->fields('make'));
+		$this->ram->setDbValue($rs->fields('ram'));
+		$this->hard_disk->setDbValue($rs->fields('hard_disk'));
 		$this->color->setDbValue($rs->fields('color'));
 		$this->department->setDbValue($rs->fields('department'));
 		$this->designation->setDbValue($rs->fields('designation'));
@@ -751,6 +765,8 @@ class cpc_issuance extends cTable {
 		// reference_id
 		// asset_tag
 		// make
+		// ram
+		// hard_disk
 		// color
 		// department
 		// designation
@@ -786,6 +802,14 @@ class cpc_issuance extends cTable {
 		// make
 		$this->make->ViewValue = $this->make->CurrentValue;
 		$this->make->ViewCustomAttributes = "";
+
+		// ram
+		$this->ram->ViewValue = $this->ram->CurrentValue;
+		$this->ram->ViewCustomAttributes = "";
+
+		// hard_disk
+		$this->hard_disk->ViewValue = $this->hard_disk->CurrentValue;
+		$this->hard_disk->ViewCustomAttributes = "";
 
 		// color
 		$this->color->ViewValue = $this->color->CurrentValue;
@@ -1030,6 +1054,16 @@ class cpc_issuance extends cTable {
 		$this->make->HrefValue = "";
 		$this->make->TooltipValue = "";
 
+		// ram
+		$this->ram->LinkCustomAttributes = "";
+		$this->ram->HrefValue = "";
+		$this->ram->TooltipValue = "";
+
+		// hard_disk
+		$this->hard_disk->LinkCustomAttributes = "";
+		$this->hard_disk->HrefValue = "";
+		$this->hard_disk->TooltipValue = "";
+
 		// color
 		$this->color->LinkCustomAttributes = "";
 		$this->color->HrefValue = "";
@@ -1144,6 +1178,18 @@ class cpc_issuance extends cTable {
 		$this->make->EditValue = $this->make->CurrentValue;
 		$this->make->PlaceHolder = ew_RemoveHtml($this->make->FldCaption());
 
+		// ram
+		$this->ram->EditAttrs["class"] = "form-control";
+		$this->ram->EditCustomAttributes = "";
+		$this->ram->EditValue = $this->ram->CurrentValue;
+		$this->ram->PlaceHolder = ew_RemoveHtml($this->ram->FldCaption());
+
+		// hard_disk
+		$this->hard_disk->EditAttrs["class"] = "form-control";
+		$this->hard_disk->EditCustomAttributes = "";
+		$this->hard_disk->EditValue = $this->hard_disk->CurrentValue;
+		$this->hard_disk->PlaceHolder = ew_RemoveHtml($this->hard_disk->FldCaption());
+
 		// color
 		$this->color->EditAttrs["class"] = "form-control";
 		$this->color->EditCustomAttributes = "";
@@ -1244,6 +1290,8 @@ class cpc_issuance extends cTable {
 					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
 					if ($this->asset_tag->Exportable) $Doc->ExportCaption($this->asset_tag);
 					if ($this->make->Exportable) $Doc->ExportCaption($this->make);
+					if ($this->ram->Exportable) $Doc->ExportCaption($this->ram);
+					if ($this->hard_disk->Exportable) $Doc->ExportCaption($this->hard_disk);
 					if ($this->color->Exportable) $Doc->ExportCaption($this->color);
 					if ($this->department->Exportable) $Doc->ExportCaption($this->department);
 					if ($this->designation->Exportable) $Doc->ExportCaption($this->designation);
@@ -1264,6 +1312,8 @@ class cpc_issuance extends cTable {
 					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
 					if ($this->asset_tag->Exportable) $Doc->ExportCaption($this->asset_tag);
 					if ($this->make->Exportable) $Doc->ExportCaption($this->make);
+					if ($this->ram->Exportable) $Doc->ExportCaption($this->ram);
+					if ($this->hard_disk->Exportable) $Doc->ExportCaption($this->hard_disk);
 					if ($this->color->Exportable) $Doc->ExportCaption($this->color);
 					if ($this->department->Exportable) $Doc->ExportCaption($this->department);
 					if ($this->designation->Exportable) $Doc->ExportCaption($this->designation);
@@ -1312,6 +1362,8 @@ class cpc_issuance extends cTable {
 						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
 						if ($this->asset_tag->Exportable) $Doc->ExportField($this->asset_tag);
 						if ($this->make->Exportable) $Doc->ExportField($this->make);
+						if ($this->ram->Exportable) $Doc->ExportField($this->ram);
+						if ($this->hard_disk->Exportable) $Doc->ExportField($this->hard_disk);
 						if ($this->color->Exportable) $Doc->ExportField($this->color);
 						if ($this->department->Exportable) $Doc->ExportField($this->department);
 						if ($this->designation->Exportable) $Doc->ExportField($this->designation);
@@ -1332,6 +1384,8 @@ class cpc_issuance extends cTable {
 						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
 						if ($this->asset_tag->Exportable) $Doc->ExportField($this->asset_tag);
 						if ($this->make->Exportable) $Doc->ExportField($this->make);
+						if ($this->ram->Exportable) $Doc->ExportField($this->ram);
+						if ($this->hard_disk->Exportable) $Doc->ExportField($this->hard_disk);
 						if ($this->color->Exportable) $Doc->ExportField($this->color);
 						if ($this->department->Exportable) $Doc->ExportField($this->department);
 						if ($this->designation->Exportable) $Doc->ExportField($this->designation);
@@ -1755,6 +1809,8 @@ class cpc_issuance extends cTable {
 			$rsnew["assign_to"] = $rsold["assign_to"];
 			$rsnew["department"] = $rsold["department"];
 			$rsnew["designation"] = $rsold["designation"];
+			$rsnew["ram"] = $rsold["ram"];
+			$rsnew["hard_disk"] = $rsold["hard_disk"];
 
 			//$rsnew["status"] = $rsold["status"];
 			$rsnew["assign_action"] = $rsold["recieved_action"];
@@ -1784,9 +1840,14 @@ class cpc_issuance extends cTable {
 			$rsnew["assign_to"] = $rsold["assign_to"];
 			$rsnew["department"] = $rsold["department"];
 			$rsnew["designation"] = $rsold["designation"];
+			$rsnew["ram"] = $rsold["ram"];
+			$rsnew["hard_disk"] = $rsold["hard_disk"];
 
+			//$rsnew["assign_action"] = $rsold["assign_action"];
+			//$rsnew["assign_comment"] = $rsold["assign_comment"];
 			//$rsnew["status"] = $rsold["status"];
-			$rsnew["assign_action"] = $rsold["recieved_action"];
+
+			$rsnew["assign_action"] = $rsold["assign_action"];
 			$rsnew["assign_comment"] = $rsold["assign_comment"];
 
 			//$rsnew["reviewed_action"] = $rsold["reviewed_action"];
@@ -2059,6 +2120,8 @@ class cpc_issuance extends cTable {
 					$this->asset_tag->ReadOnly = TRUE;
 					$this->make->ReadOnly = TRUE;
 					$this->color->ReadOnly = TRUE;
+					$this->ram->ReadOnly = TRUE;
+					$this->hard_disk->ReadOnly = TRUE;
 					$this->department->ReadOnly = TRUE;
 					$this->designation->ReadOnly = TRUE;
 					$this->assign_to->ReadOnly = TRUE;
@@ -2081,6 +2144,8 @@ class cpc_issuance extends cTable {
 					$this->asset_tag->ReadOnly = TRUE;
 					$this->make->ReadOnly = TRUE;
 					$this->color->ReadOnly = TRUE;
+					$this->ram->ReadOnly = TRUE;
+					$this->hard_disk->ReadOnly = TRUE;
 					$this->department->ReadOnly = TRUE;
 					$this->designation->ReadOnly = TRUE;
 					$this->assign_to->ReadOnly = TRUE;
@@ -2103,6 +2168,8 @@ class cpc_issuance extends cTable {
 					$this->asset_tag->ReadOnly = TRUE;
 					$this->make->ReadOnly = TRUE;
 					$this->color->ReadOnly = TRUE;
+					$this->ram->ReadOnly = TRUE;
+					$this->hard_disk->ReadOnly = TRUE;
 					$this->department->ReadOnly = TRUE;
 					$this->designation->ReadOnly = TRUE;
 					$this->assign_to->ReadOnly = TRUE;
@@ -2125,6 +2192,8 @@ class cpc_issuance extends cTable {
 					$this->asset_tag->ReadOnly = TRUE;
 					$this->make->ReadOnly = TRUE;
 					$this->color->ReadOnly = TRUE;
+					$this->ram->ReadOnly = TRUE;
+					$this->hard_disk->ReadOnly = TRUE;
 					$this->department->ReadOnly = TRUE;
 					$this->designation->ReadOnly = TRUE;
 					$this->assign_to->ReadOnly = TRUE;
@@ -2147,6 +2216,8 @@ class cpc_issuance extends cTable {
 					$this->asset_tag->ReadOnly = TRUE;
 					$this->make->ReadOnly = TRUE;
 					$this->color->ReadOnly = TRUE;
+					$this->ram->ReadOnly = TRUE;
+					$this->hard_disk->ReadOnly = TRUE;
 					$this->department->ReadOnly = TRUE;
 					$this->designation->ReadOnly = TRUE;
 					$this->assign_to->ReadOnly = TRUE;
@@ -2169,6 +2240,8 @@ class cpc_issuance extends cTable {
 					$this->asset_tag->ReadOnly = TRUE;
 					$this->make->ReadOnly = TRUE;
 					$this->color->ReadOnly = TRUE;
+					$this->ram->ReadOnly = TRUE;
+					$this->hard_disk->ReadOnly = TRUE;
 					$this->department->ReadOnly = TRUE;
 					$this->designation->ReadOnly = TRUE;
 					$this->assign_to->ReadOnly = TRUE;
@@ -2226,10 +2299,8 @@ class cpc_issuance extends cTable {
 				$this->assign_to->CellCssStyle = "color: orange; text-align: left;";
 				$this->statuse->CellCssStyle = "color: orange; text-align: left;";
 				$this->date_assign->CellCssStyle = "color: orange; text-align: left;";
-
-				//$this->approver_action->CellCssStyle = "color: orange; text-align: left;";
-				//$this->approver_comment->CellCssStyle = "color: orange; text-align: left;";
-
+				$this->ram->CellCssStyle = "color: orange; text-align: left;";
+				$this->hard_disk->CellCssStyle = "color: orange; text-align: left;";
 				$this->assign_by->CellCssStyle = "color: orange; text-align: left;";
 				$this->retrieved_by->CellCssStyle = "color: orange; text-align: left;";
 			}
@@ -2246,10 +2317,8 @@ class cpc_issuance extends cTable {
 				$this->assign_to->CellCssStyle = "color: red; text-align: left;";
 				$this->statuse->CellCssStyle = "color: red; text-align: left;";
 				$this->date_assign->CellCssStyle = "color: red; text-align: left;";
-
-				//$this->approver_action->CellCssStyle = "color: red; text-align: left;";
-				//$this->approver_comment->CellCssStyle = "color: red; text-align: left;";
-
+				$this->ram->CellCssStyle = "color: red; text-align: left;";
+				$this->hard_disk->CellCssStyle = "color: red; text-align: left;";
 				$this->assign_by->CellCssStyle = "color: red; text-align: left;";
 				$this->retrieved_by->CellCssStyle = "color: red; text-align: left;";
 			}
@@ -2266,10 +2335,8 @@ class cpc_issuance extends cTable {
 				$this->assign_to->CellCssStyle = "color: blue; text-align: left;";
 				$this->statuse->CellCssStyle = "color: blue; text-align: left;";
 				$this->date_assign->CellCssStyle = "color: blue; text-align: left;";
-
-				//$this->approver_action->CellCssStyle = "color: blue; text-align: left;";
-				//$this->approver_comment->CellCssStyle = "color: blue; text-align: left;";
-
+				$this->ram->CellCssStyle = "color: blue; text-align: left;";
+				$this->hard_disk->CellCssStyle = "color: blue; text-align: left;";
 				$this->assign_by->CellCssStyle = "color: blue; text-align: left;";
 				$this->retrieved_by->CellCssStyle = "color: blue; text-align: left;";
 			}
@@ -2286,10 +2353,8 @@ class cpc_issuance extends cTable {
 				$this->assign_to->CellCssStyle = "color: green; text-align: left;";
 				$this->statuse->CellCssStyle = "color: green; text-align: left;";
 				$this->date_assign->CellCssStyle = "color: green; text-align: left;";
-
-				//$this->approver_action->CellCssStyle = "color: green; text-align: left;";
-				//$this->approver_comment->CellCssStyle = "color: green; text-align: left;";
-
+				$this->ram->CellCssStyle = "color: green; text-align: left;";
+				$this->hard_disk->CellCssStyle = "color: green; text-align: left;";
 				$this->assign_by->CellCssStyle = "color: green; text-align: left;";
 				$this->retrieved_by->CellCssStyle = "color: green; text-align: left;";
 			}
