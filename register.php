@@ -421,22 +421,6 @@ class cregister extends cusers {
 				if (!$bUserExists) {
 					$this->SendEmail = TRUE; // Send email on add success
 					if ($this->AddRow()) { // Add record
-						$Email = $this->PrepareRegisterEmail();
-
-						// Get new recordset
-						$this->CurrentFilter = $this->KeyFilter();
-						$sSql = $this->SQL();
-						$rsnew = $UserTableConn->Execute($sSql);
-						$row = $rsnew->fields;
-						$Args = array();
-						$Args["rs"] = $row;
-						$bEmailSent = FALSE;
-						if ($this->Email_Sending($Email, $Args))
-							$bEmailSent = $Email->Send();
-
-						// Send email failed
-						if (!$bEmailSent)
-							$this->setFailureMessage($Email->SendErrDescription);
 						if ($this->getSuccessMessage() == "")
 							$this->setSuccessMessage($Language->Phrase("RegisterSuccessActivate")); // Activate success
 						$this->Page_Terminate("login.php"); // Return
