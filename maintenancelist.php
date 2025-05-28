@@ -316,11 +316,11 @@ class cmaintenance_list extends cmaintenance {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'list', TRUE);
+			define("EW_PAGE_ID", 'list');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'maintenance', TRUE);
+			define("EW_TABLE_NAME", 'maintenance');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))

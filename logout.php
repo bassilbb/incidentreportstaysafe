@@ -210,7 +210,7 @@ class clogout {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'logout', TRUE);
+			define("EW_PAGE_ID", 'logout');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))

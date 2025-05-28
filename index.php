@@ -209,7 +209,7 @@ class cdefault {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'default', TRUE);
+			define("EW_PAGE_ID", 'default');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))

@@ -244,7 +244,7 @@ class cregister extends cusers {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'register', TRUE);
+			define("EW_PAGE_ID", 'register');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))

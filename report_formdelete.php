@@ -267,11 +267,11 @@ class creport_form_delete extends creport_form {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'delete', TRUE);
+			define("EW_PAGE_ID", 'delete');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'report_form', TRUE);
+			define("EW_TABLE_NAME", 'report_form');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -341,6 +341,7 @@ class creport_form_delete extends creport_form {
 		$this->last_updated_date->SetVisibility();
 		$this->last_updated_by->SetVisibility();
 		$this->job_assessment->SetVisibility();
+		$this->organization->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -571,6 +572,7 @@ class creport_form_delete extends creport_form {
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
 		$this->remainder->setDbValue($row['remainder']);
+		$this->organization->setDbValue($row['organization']);
 	}
 
 	// Return a row with default values
@@ -626,6 +628,7 @@ class creport_form_delete extends creport_form {
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
 		$row['remainder'] = NULL;
+		$row['organization'] = NULL;
 		return $row;
 	}
 
@@ -684,6 +687,7 @@ class creport_form_delete extends creport_form {
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
 		$this->remainder->DbValue = $row['remainder'];
+		$this->organization->DbValue = $row['organization'];
 	}
 
 	// Render row values based on field settings
@@ -746,6 +750,7 @@ class creport_form_delete extends creport_form {
 		// verified_comment
 		// verified_by
 		// remainder
+		// organization
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1475,6 +1480,10 @@ class creport_form_delete extends creport_form {
 		}
 		$this->remainder->ViewCustomAttributes = "";
 
+		// organization
+		$this->organization->ViewValue = $this->organization->CurrentValue;
+		$this->organization->ViewCustomAttributes = "";
+
 			// datetime_initiated
 			$this->datetime_initiated->LinkCustomAttributes = "";
 			$this->datetime_initiated->HrefValue = "";
@@ -1564,6 +1573,11 @@ class creport_form_delete extends creport_form {
 			$this->job_assessment->LinkCustomAttributes = "";
 			$this->job_assessment->HrefValue = "";
 			$this->job_assessment->TooltipValue = "";
+
+			// organization
+			$this->organization->LinkCustomAttributes = "";
+			$this->organization->HrefValue = "";
+			$this->organization->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1897,6 +1911,9 @@ $report_form_delete->ShowMessage();
 <?php if ($report_form->job_assessment->Visible) { // job_assessment ?>
 		<th class="<?php echo $report_form->job_assessment->HeaderCellClass() ?>"><span id="elh_report_form_job_assessment" class="report_form_job_assessment"><?php echo $report_form->job_assessment->FldCaption() ?></span></th>
 <?php } ?>
+<?php if ($report_form->organization->Visible) { // organization ?>
+		<th class="<?php echo $report_form->organization->HeaderCellClass() ?>"><span id="elh_report_form_organization" class="report_form_organization"><?php echo $report_form->organization->FldCaption() ?></span></th>
+<?php } ?>
 	</tr>
 	</thead>
 	<tbody>
@@ -2059,6 +2076,14 @@ while (!$report_form_delete->Recordset->EOF) {
 <span id="el<?php echo $report_form_delete->RowCnt ?>_report_form_job_assessment" class="report_form_job_assessment">
 <span<?php echo $report_form->job_assessment->ViewAttributes() ?>>
 <?php echo $report_form->job_assessment->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($report_form->organization->Visible) { // organization ?>
+		<td<?php echo $report_form->organization->CellAttributes() ?>>
+<span id="el<?php echo $report_form_delete->RowCnt ?>_report_form_organization" class="report_form_organization">
+<span<?php echo $report_form->organization->ViewAttributes() ?>>
+<?php echo $report_form->organization->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

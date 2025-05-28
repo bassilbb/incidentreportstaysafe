@@ -1522,6 +1522,9 @@ class cmaintenance extends cTable {
 		if (CurrentUserLevel() == 3) {
 					ew_AddFilter($filter, "`status` in (2)OR (`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."')");
 				}
+		if (CurrentUserLevel() == 4) {
+				ew_AddFilter($filter, "`status` in (2) AND `branch` = '".$_SESSION['Branch']."' OR `status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
+			}
 
 		/*	if (CurrentUserLevel() == 3) {
 			ew_AddFilter($filter, "`status` in (2)");
@@ -1630,6 +1633,28 @@ class cmaintenance extends cTable {
 				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
 			}			
 		}
+
+			// Supervisor Only
+		if (CurrentPageID() == "add" && CurrentUserLevel() == 4) {
+
+			// Save and forward
+			if ($this->maintenance_action->CurrentValue == 1) {
+				$rsnew["status"] = 2;
+				$rsnew["maintenance_action"] = 1;
+
+				//$rsnew["resolved_by"] = $_SESSION['Staff_ID'];
+				//$this->setSuccessMessage("&#x25C9; Recharged Reviewd and Confirmed &#x2714;"); 					
+
+			}
+
+			// Saved only
+			if ($this->maintenance_action->CurrentValue == 0) {
+				$rsnew["status"] = 0;			
+				$rsnew["maintenance_action"] = 0; 
+
+				//$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}			
+		}
 		return TRUE;
 	}
 
@@ -1714,6 +1739,30 @@ class cmaintenance extends cTable {
 
 		}
 
+		// Administartor - Don't change field values captured by tenant
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 4) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+			$rsnew["id"] = $rsold["id"];
+			$rsnew["date_initiated"] = $rsold["date_initiated"];
+			$rsnew["staff_id"] = $rsold["staff_id"];
+			$rsnew["branch"] = $rsold["branch"];
+			$rsnew["department"] = $rsold["department"];
+			$rsnew["buildings"] = $rsold["buildings"];
+			$rsnew["floors"] = $rsold["floors"];
+			$rsnew["items"] = $rsold["items"];
+			$rsnew["priority"] = $rsold["priority"];
+			$rsnew["description"] = $rsold["description"];
+			$rsnew["maintained_by"] = $rsold["maintained_by"];
+			$rsnew["date_maintained"] = $rsold["date_maintained"];
+
+			//$rsnew["status"] = $rsold["status"];
+			$rsnew["maintenance_action"] = $rsold["maintenance_action"];
+			$rsnew["maintenance_comment"] = $rsold["maintenance_comment"];
+
+			//$rsnew["reviewed_action"] = $rsold["reviewed_action"];
+			//$rsnew["reviewed_comment"] = $rsold["reviewed_comment"];
+
+		}
+
 			// Confirmed by Administrators
 			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
 				$rsnew["reviewed_date"] = $now->format('Y-m-d H:i:s');
@@ -1751,6 +1800,48 @@ class cmaintenance extends cTable {
 						$rsnew["reviewed_action"] = 2;
 					}
 					$this->setSuccessMessage("&#x25C9; Ticket successfully Reviewed and Closed &#x2714;");
+				}
+
+				// Confirmed by HOD
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 4) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+				$rsnew["reviewed_date"] = $now->format('Y-m-d H:i:s');
+				$rsnew["reviewed_by"] = $_SESSION['Staff_ID'];
+			  }
+
+			   	// Confirmed by Administrators
+				if ($this->reviewed_action->CurrentValue == 0 && $this->status->CurrentValue == 2 ) {
+
+					// New
+					if ($this->status->CurrentValue == 2) {
+						$rsnew["status"] = 0;					
+						$rsnew["reviewed_action"] = 0;
+					}
+
+					//$this->setSuccessMessage("&#x25C9; Ticket Save Only &#x2714;");
+				}
+
+					// Return for rework by Administrators
+				if ($this->reviewed_action->CurrentValue == 1 && $this->status->CurrentValue == 2 ) {
+
+					// New
+					if ($this->status->CurrentValue == 2) {
+						$rsnew["status"] = 1;					
+						$rsnew["reviewed_action"] = 1;
+					}
+
+					//$this->setSuccessMessage("&#x25C9; Ticket was return for rework &#x2714;");
+				}
+
+				// Confirmed by Administrators
+				if ($this->reviewed_action->CurrentValue == 2 ) {
+
+					// New
+					if ($this->status->CurrentValue == 2) {
+						$rsnew["status"] = 3;					
+						$rsnew["reviewed_action"] = 2;
+					}
+
+					//$this->setSuccessMessage("&#x25C9; Ticket successfully Reviewed and Closed &#x2714;");
 				}
 		return TRUE;
 	}
@@ -1937,6 +2028,28 @@ class cmaintenance extends cTable {
 					$this->reviewed_comment->Visible = FALSE;
 					$this->reviewed_by->Visible = FALSE;
 				}
+				if (CurrentUserLevel() == 4 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+					$this->date_initiated->ReadOnly = TRUE;
+
+					//$this->id->Visible = FALSE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->staff_name->ReadOnly = TRUE;
+					$this->department->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->buildings->Visible = TRUE;
+					$this->floors->Visible = TRUE;
+					$this->items->Visible = TRUE;
+					$this->description->Visible = TRUE;
+					$this->date_maintained->Visible = FALSE;
+					$this->maintenance_action->Visible = TRUE;
+					$this->maintenance_comment->Visible = TRUE;
+					$this->maintained_by->Visible = FALSE;
+					$this->reviewed_date->Visible = FALSE;
+					$this->reviewed_action->Visible = FALSE;
+					$this->reviewed_comment->Visible = FALSE;
+					$this->reviewed_by->Visible = FALSE;
+				}
 			}
 
 		  // Edit Page
@@ -2007,7 +2120,30 @@ class cmaintenance extends cTable {
 					$this->reviewed_action->Visible = TRUE;
 					$this->reviewed_comment->Visible = TRUE;
 					$this->reviewed_by->Visible = FALSE;
-				}		
+				}
+				if (CurrentUserLevel() == 4 && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+					$this->date_initiated->ReadOnly = TRUE;
+
+					//$this->id->Visible = FALSE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->staff_name->ReadOnly = TRUE;
+					$this->department->ReadOnly = TRUE;
+					$this->branch->ReadOnly = TRUE;
+					$this->buildings->ReadOnly = TRUE;
+					$this->floors->ReadOnly = TRUE;
+					$this->items->ReadOnly = TRUE;
+					$this->description->ReadOnly = TRUE;
+					$this->priority->ReadOnly = TRUE;
+					$this->date_maintained->Visible = FALSE;
+					$this->maintenance_action->ReadOnly = TRUE;
+					$this->maintenance_comment->ReadOnly = TRUE;
+					$this->maintained_by->Visible = FALSE;
+					$this->reviewed_date->Visible = FALSE;
+					$this->reviewed_action->Visible = TRUE;
+					$this->reviewed_comment->Visible = TRUE;
+					$this->reviewed_by->Visible = FALSE;
+				}
 		}
 
 		// Highligh rows in color based on the status

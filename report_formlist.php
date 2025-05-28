@@ -322,11 +322,11 @@ class creport_form_list extends creport_form {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'list', TRUE);
+			define("EW_PAGE_ID", 'list');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'report_form', TRUE);
+			define("EW_TABLE_NAME", 'report_form');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -470,6 +470,7 @@ class creport_form_list extends creport_form {
 		$this->last_updated_date->SetVisibility();
 		$this->last_updated_by->SetVisibility();
 		$this->job_assessment->SetVisibility();
+		$this->organization->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -891,6 +892,7 @@ class creport_form_list extends creport_form {
 		$sFilterList = ew_Concat($sFilterList, $this->verified_comment->AdvancedSearch->ToJson(), ","); // Field verified_comment
 		$sFilterList = ew_Concat($sFilterList, $this->verified_by->AdvancedSearch->ToJson(), ","); // Field verified_by
 		$sFilterList = ew_Concat($sFilterList, $this->remainder->AdvancedSearch->ToJson(), ","); // Field remainder
+		$sFilterList = ew_Concat($sFilterList, $this->organization->AdvancedSearch->ToJson(), ","); // Field organization
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -1334,6 +1336,14 @@ class creport_form_list extends creport_form {
 		$this->remainder->AdvancedSearch->SearchValue2 = @$filter["y_remainder"];
 		$this->remainder->AdvancedSearch->SearchOperator2 = @$filter["w_remainder"];
 		$this->remainder->AdvancedSearch->Save();
+
+		// Field organization
+		$this->organization->AdvancedSearch->SearchValue = @$filter["x_organization"];
+		$this->organization->AdvancedSearch->SearchOperator = @$filter["z_organization"];
+		$this->organization->AdvancedSearch->SearchCondition = @$filter["v_organization"];
+		$this->organization->AdvancedSearch->SearchValue2 = @$filter["y_organization"];
+		$this->organization->AdvancedSearch->SearchOperator2 = @$filter["w_organization"];
+		$this->organization->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
@@ -1393,6 +1403,7 @@ class creport_form_list extends creport_form {
 		$this->BuildSearchSql($sWhere, $this->verified_comment, $Default, FALSE); // verified_comment
 		$this->BuildSearchSql($sWhere, $this->verified_by, $Default, FALSE); // verified_by
 		$this->BuildSearchSql($sWhere, $this->remainder, $Default, FALSE); // remainder
+		$this->BuildSearchSql($sWhere, $this->organization, $Default, FALSE); // organization
 
 		// Set up search parm
 		if (!$Default && $sWhere <> "" && in_array($this->Command, array("", "reset", "resetall"))) {
@@ -1449,6 +1460,7 @@ class creport_form_list extends creport_form {
 			$this->verified_comment->AdvancedSearch->Save(); // verified_comment
 			$this->verified_by->AdvancedSearch->Save(); // verified_by
 			$this->remainder->AdvancedSearch->Save(); // remainder
+			$this->organization->AdvancedSearch->Save(); // organization
 		}
 		return $sWhere;
 	}
@@ -1720,6 +1732,8 @@ class creport_form_list extends creport_form {
 			return TRUE;
 		if ($this->remainder->AdvancedSearch->IssetSession())
 			return TRUE;
+		if ($this->organization->AdvancedSearch->IssetSession())
+			return TRUE;
 		return FALSE;
 	}
 
@@ -1799,6 +1813,7 @@ class creport_form_list extends creport_form {
 		$this->verified_comment->AdvancedSearch->UnsetSession();
 		$this->verified_by->AdvancedSearch->UnsetSession();
 		$this->remainder->AdvancedSearch->UnsetSession();
+		$this->organization->AdvancedSearch->UnsetSession();
 	}
 
 	// Restore all search parameters
@@ -1859,6 +1874,7 @@ class creport_form_list extends creport_form {
 		$this->verified_comment->AdvancedSearch->Load();
 		$this->verified_by->AdvancedSearch->Load();
 		$this->remainder->AdvancedSearch->Load();
+		$this->organization->AdvancedSearch->Load();
 	}
 
 	// Set up sort parameters
@@ -1886,6 +1902,7 @@ class creport_form_list extends creport_form {
 			$this->UpdateSort($this->last_updated_date); // last_updated_date
 			$this->UpdateSort($this->last_updated_by); // last_updated_by
 			$this->UpdateSort($this->job_assessment); // job_assessment
+			$this->UpdateSort($this->organization); // organization
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1936,6 +1953,7 @@ class creport_form_list extends creport_form {
 				$this->last_updated_date->setSort("");
 				$this->last_updated_by->setSort("");
 				$this->job_assessment->setSort("");
+				$this->organization->setSort("");
 			}
 
 			// Reset start position
@@ -2578,6 +2596,11 @@ class creport_form_list extends creport_form {
 		$this->remainder->AdvancedSearch->SearchValue = @$_GET["x_remainder"];
 		if ($this->remainder->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
 		$this->remainder->AdvancedSearch->SearchOperator = @$_GET["z_remainder"];
+
+		// organization
+		$this->organization->AdvancedSearch->SearchValue = @$_GET["x_organization"];
+		if ($this->organization->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->organization->AdvancedSearch->SearchOperator = @$_GET["z_organization"];
 	}
 
 	// Load recordset
@@ -2690,6 +2713,7 @@ class creport_form_list extends creport_form {
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
 		$this->remainder->setDbValue($row['remainder']);
+		$this->organization->setDbValue($row['organization']);
 	}
 
 	// Return a row with default values
@@ -2745,6 +2769,7 @@ class creport_form_list extends creport_form {
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
 		$row['remainder'] = NULL;
+		$row['organization'] = NULL;
 		return $row;
 	}
 
@@ -2803,6 +2828,7 @@ class creport_form_list extends creport_form {
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
 		$this->remainder->DbValue = $row['remainder'];
+		$this->organization->DbValue = $row['organization'];
 	}
 
 	// Load old record
@@ -2893,6 +2919,7 @@ class creport_form_list extends creport_form {
 		// verified_comment
 		// verified_by
 		// remainder
+		// organization
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -3622,6 +3649,10 @@ class creport_form_list extends creport_form {
 		}
 		$this->remainder->ViewCustomAttributes = "";
 
+		// organization
+		$this->organization->ViewValue = $this->organization->CurrentValue;
+		$this->organization->ViewCustomAttributes = "";
+
 			// datetime_initiated
 			$this->datetime_initiated->LinkCustomAttributes = "";
 			$this->datetime_initiated->HrefValue = "";
@@ -3711,6 +3742,11 @@ class creport_form_list extends creport_form {
 			$this->job_assessment->LinkCustomAttributes = "";
 			$this->job_assessment->HrefValue = "";
 			$this->job_assessment->TooltipValue = "";
+
+			// organization
+			$this->organization->LinkCustomAttributes = "";
+			$this->organization->HrefValue = "";
+			$this->organization->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_SEARCH) { // Search row
 
 			// datetime_initiated
@@ -3813,6 +3849,12 @@ class creport_form_list extends creport_form {
 			// job_assessment
 			$this->job_assessment->EditCustomAttributes = "";
 			$this->job_assessment->EditValue = $this->job_assessment->Options(FALSE);
+
+			// organization
+			$this->organization->EditAttrs["class"] = "form-control";
+			$this->organization->EditCustomAttributes = "";
+			$this->organization->EditValue = ew_HtmlEncode($this->organization->AdvancedSearch->SearchValue);
+			$this->organization->PlaceHolder = ew_RemoveHtml($this->organization->FldCaption());
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD || $this->RowType == EW_ROWTYPE_EDIT || $this->RowType == EW_ROWTYPE_SEARCH) // Add/Edit/Search row
 			$this->SetupFieldTitles();
@@ -3897,6 +3939,7 @@ class creport_form_list extends creport_form {
 		$this->verified_comment->AdvancedSearch->Load();
 		$this->verified_by->AdvancedSearch->Load();
 		$this->remainder->AdvancedSearch->Load();
+		$this->organization->AdvancedSearch->Load();
 	}
 
 	// Set up export options
@@ -4693,6 +4736,15 @@ $report_form_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
+<?php if ($report_form->organization->Visible) { // organization ?>
+	<?php if ($report_form->SortUrl($report_form->organization) == "") { ?>
+		<th data-name="organization" class="<?php echo $report_form->organization->HeaderCellClass() ?>"><div id="elh_report_form_organization" class="report_form_organization"><div class="ewTableHeaderCaption"><?php echo $report_form->organization->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="organization" class="<?php echo $report_form->organization->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $report_form->SortUrl($report_form->organization) ?>',1);"><div id="elh_report_form_organization" class="report_form_organization">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $report_form->organization->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($report_form->organization->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($report_form->organization->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
 <?php
 
 // Render list options (header, right)
@@ -4899,6 +4951,14 @@ $report_form_list->ListOptions->Render("body", "left", $report_form_list->RowCnt
 <span id="el<?php echo $report_form_list->RowCnt ?>_report_form_job_assessment" class="report_form_job_assessment">
 <span<?php echo $report_form->job_assessment->ViewAttributes() ?>>
 <?php echo $report_form->job_assessment->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($report_form->organization->Visible) { // organization ?>
+		<td data-name="organization"<?php echo $report_form->organization->CellAttributes() ?>>
+<span id="el<?php echo $report_form_list->RowCnt ?>_report_form_organization" class="report_form_organization">
+<span<?php echo $report_form->organization->ViewAttributes() ?>>
+<?php echo $report_form->organization->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

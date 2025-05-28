@@ -267,11 +267,11 @@ class creport_form_edit extends creport_form {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'edit', TRUE);
+			define("EW_PAGE_ID", 'edit');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'report_form', TRUE);
+			define("EW_TABLE_NAME", 'report_form');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -376,6 +376,7 @@ class creport_form_edit extends creport_form {
 		$this->verified_comment->SetVisibility();
 		$this->verified_by->SetVisibility();
 		$this->remainder->SetVisibility();
+		$this->organization->SetVisibility();
 
 		// Set up multi page object
 		$this->SetupMultiPages();
@@ -820,6 +821,9 @@ class creport_form_edit extends creport_form {
 		if (!$this->remainder->FldIsDetailKey) {
 			$this->remainder->setFormValue($objForm->GetValue("x_remainder"));
 		}
+		if (!$this->organization->FldIsDetailKey) {
+			$this->organization->setFormValue($objForm->GetValue("x_organization"));
+		}
 		if (!$this->id->FldIsDetailKey)
 			$this->id->setFormValue($objForm->GetValue("x_id"));
 	}
@@ -882,6 +886,7 @@ class creport_form_edit extends creport_form {
 		$this->verified_comment->CurrentValue = $this->verified_comment->FormValue;
 		$this->verified_by->CurrentValue = $this->verified_by->FormValue;
 		$this->remainder->CurrentValue = $this->remainder->FormValue;
+		$this->organization->CurrentValue = $this->organization->FormValue;
 	}
 
 	// Load recordset
@@ -994,6 +999,7 @@ class creport_form_edit extends creport_form {
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
 		$this->remainder->setDbValue($row['remainder']);
+		$this->organization->setDbValue($row['organization']);
 	}
 
 	// Return a row with default values
@@ -1049,6 +1055,7 @@ class creport_form_edit extends creport_form {
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
 		$row['remainder'] = NULL;
+		$row['organization'] = NULL;
 		return $row;
 	}
 
@@ -1107,6 +1114,7 @@ class creport_form_edit extends creport_form {
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
 		$this->remainder->DbValue = $row['remainder'];
+		$this->organization->DbValue = $row['organization'];
 	}
 
 	// Load old record
@@ -1195,6 +1203,7 @@ class creport_form_edit extends creport_form {
 		// verified_comment
 		// verified_by
 		// remainder
+		// organization
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1940,6 +1949,10 @@ class creport_form_edit extends creport_form {
 		}
 		$this->remainder->ViewCustomAttributes = "";
 
+		// organization
+		$this->organization->ViewValue = $this->organization->CurrentValue;
+		$this->organization->ViewCustomAttributes = "";
+
 			// datetime_initiated
 			$this->datetime_initiated->LinkCustomAttributes = "";
 			$this->datetime_initiated->HrefValue = "";
@@ -2193,6 +2206,11 @@ class creport_form_edit extends creport_form {
 			$this->remainder->LinkCustomAttributes = "";
 			$this->remainder->HrefValue = "";
 			$this->remainder->TooltipValue = "";
+
+			// organization
+			$this->organization->LinkCustomAttributes = "";
+			$this->organization->HrefValue = "";
+			$this->organization->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_EDIT) { // Edit row
 
 			// datetime_initiated
@@ -2943,6 +2961,12 @@ class creport_form_edit extends creport_form {
 			if ($rswrk) $rswrk->Close();
 			$this->remainder->EditValue = $arwrk;
 
+			// organization
+			$this->organization->EditAttrs["class"] = "form-control";
+			$this->organization->EditCustomAttributes = "";
+			$this->organization->EditValue = ew_HtmlEncode($this->organization->CurrentValue);
+			$this->organization->PlaceHolder = ew_RemoveHtml($this->organization->FldCaption());
+
 			// Edit refer script
 			// datetime_initiated
 
@@ -3144,6 +3168,10 @@ class creport_form_edit extends creport_form {
 			// remainder
 			$this->remainder->LinkCustomAttributes = "";
 			$this->remainder->HrefValue = "";
+
+			// organization
+			$this->organization->LinkCustomAttributes = "";
+			$this->organization->HrefValue = "";
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD || $this->RowType == EW_ROWTYPE_EDIT || $this->RowType == EW_ROWTYPE_SEARCH) // Add/Edit/Search row
 			$this->SetupFieldTitles();
@@ -3294,6 +3322,9 @@ class creport_form_edit extends creport_form {
 		}
 		if (!ew_CheckInteger($this->verified_by->FormValue)) {
 			ew_AddMessage($gsFormError, $this->verified_by->FldErrMsg());
+		}
+		if (!ew_CheckInteger($this->organization->FormValue)) {
+			ew_AddMessage($gsFormError, $this->organization->FldErrMsg());
 		}
 
 		// Return validate result
@@ -3485,6 +3516,9 @@ class creport_form_edit extends creport_form {
 
 			// remainder
 			$this->remainder->SetDbValueDef($rsnew, $this->remainder->CurrentValue, NULL, $this->remainder->ReadOnly);
+
+			// organization
+			$this->organization->SetDbValueDef($rsnew, $this->organization->CurrentValue, NULL, $this->organization->ReadOnly);
 			if ($this->_upload->Visible && !$this->_upload->Upload->KeepFile) {
 				$this->_upload->UploadPath = "picture/";
 				$OldFiles = ew_Empty($this->_upload->Upload->DbValue) ? array() : explode(EW_MULTIPLE_UPLOAD_SEPARATOR, strval($this->_upload->Upload->DbValue));
@@ -4275,6 +4309,9 @@ freport_formedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_verified_by");
 			if (elm && !ew_CheckInteger(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($report_form->verified_by->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_organization");
+			if (elm && !ew_CheckInteger(elm.value))
+				return this.OnError(elm, "<?php echo ew_JsEncode2($report_form->organization->FldErrMsg()) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -5360,6 +5397,24 @@ ew_CreateDateTimePicker("freport_formedit", "x_end_date", {"ignoreReadonly":true
 <table id="ft_x__upload" class="table table-condensed pull-left ewUploadTable"><tbody class="files"></tbody></table>
 </span>
 <?php echo $report_form->_upload->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($report_form->organization->Visible) { // organization ?>
+	<div id="r_organization" class="form-group">
+		<label id="elh_report_form_organization" for="x_organization" class="<?php echo $report_form_edit->LeftColumnClass ?>"><?php echo $report_form->organization->FldCaption() ?></label>
+		<div class="<?php echo $report_form_edit->RightColumnClass ?>"><div<?php echo $report_form->organization->CellAttributes() ?>>
+<?php if ($report_form->CurrentAction <> "F") { ?>
+<span id="el_report_form_organization">
+<input type="text" data-table="report_form" data-field="x_organization" data-page="1" name="x_organization" id="x_organization" size="30" placeholder="<?php echo ew_HtmlEncode($report_form->organization->getPlaceHolder()) ?>" value="<?php echo $report_form->organization->EditValue ?>"<?php echo $report_form->organization->EditAttributes() ?>>
+</span>
+<?php } else { ?>
+<span id="el_report_form_organization">
+<span<?php echo $report_form->organization->ViewAttributes() ?>>
+<p class="form-control-static"><?php echo $report_form->organization->ViewValue ?></p></span>
+</span>
+<input type="hidden" data-table="report_form" data-field="x_organization" data-page="1" name="x_organization" id="x_organization" value="<?php echo ew_HtmlEncode($report_form->organization->FormValue) ?>">
+<?php } ?>
+<?php echo $report_form->organization->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 </div><!-- /page* -->

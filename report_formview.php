@@ -311,11 +311,11 @@ class creport_form_view extends creport_form {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'view', TRUE);
+			define("EW_PAGE_ID", 'view');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'report_form', TRUE);
+			define("EW_TABLE_NAME", 'report_form');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -476,6 +476,7 @@ class creport_form_view extends creport_form {
 		$this->verified_comment->SetVisibility();
 		$this->verified_by->SetVisibility();
 		$this->remainder->SetVisibility();
+		$this->organization->SetVisibility();
 
 		// Set up multi page object
 		$this->SetupMultiPages();
@@ -851,6 +852,7 @@ class creport_form_view extends creport_form {
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
 		$this->remainder->setDbValue($row['remainder']);
+		$this->organization->setDbValue($row['organization']);
 	}
 
 	// Return a row with default values
@@ -906,6 +908,7 @@ class creport_form_view extends creport_form {
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
 		$row['remainder'] = NULL;
+		$row['organization'] = NULL;
 		return $row;
 	}
 
@@ -964,6 +967,7 @@ class creport_form_view extends creport_form {
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
 		$this->remainder->DbValue = $row['remainder'];
+		$this->organization->DbValue = $row['organization'];
 	}
 
 	// Render row values based on field settings
@@ -1036,6 +1040,7 @@ class creport_form_view extends creport_form {
 		// verified_comment
 		// verified_by
 		// remainder
+		// organization
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1781,6 +1786,10 @@ class creport_form_view extends creport_form {
 		}
 		$this->remainder->ViewCustomAttributes = "";
 
+		// organization
+		$this->organization->ViewValue = $this->organization->CurrentValue;
+		$this->organization->ViewCustomAttributes = "";
+
 			// datetime_initiated
 			$this->datetime_initiated->LinkCustomAttributes = "";
 			$this->datetime_initiated->HrefValue = "";
@@ -2034,6 +2043,11 @@ class creport_form_view extends creport_form {
 			$this->remainder->LinkCustomAttributes = "";
 			$this->remainder->HrefValue = "";
 			$this->remainder->TooltipValue = "";
+
+			// organization
+			$this->organization->LinkCustomAttributes = "";
+			$this->organization->HrefValue = "";
+			$this->organization->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2745,6 +2759,17 @@ $report_form_view->ShowMessage();
 <span>
 <?php echo ew_GetFileViewTag($report_form->_upload, $report_form->_upload->ViewValue) ?>
 </span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($report_form->organization->Visible) { // organization ?>
+	<tr id="r_organization">
+		<td class="col-sm-2"><span id="elh_report_form_organization"><?php echo $report_form->organization->FldCaption() ?></span></td>
+		<td data-name="organization"<?php echo $report_form->organization->CellAttributes() ?>>
+<span id="el_report_form_organization" data-page="1">
+<span<?php echo $report_form->organization->ViewAttributes() ?>>
+<?php echo $report_form->organization->ViewValue ?></span>
 </span>
 </td>
 	</tr>

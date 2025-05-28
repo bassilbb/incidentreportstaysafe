@@ -305,11 +305,11 @@ class cmaintenance_view extends cmaintenance {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'view', TRUE);
+			define("EW_PAGE_ID", 'view');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'maintenance', TRUE);
+			define("EW_TABLE_NAME", 'maintenance');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))

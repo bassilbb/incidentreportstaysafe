@@ -6734,29 +6734,23 @@ function ew_CleanPath($folder, $delete = FALSE) {
 	$folder = ew_IncludeTrailingDelimiter($folder, TRUE);
 	try {
 		if (@is_dir($folder)) {
-
-			// Delete files in the folder
-			if ($ar = glob($folder . '*.*')) {
-				foreach ($ar as $v) {
-					@unlink($v);
-				}
-			}
-
-			// Clear sub folders
 			if ($dir_handle = @opendir($folder)) {
-				while (FALSE !== ($subfolder = readdir($dir_handle))) {
-					$tempfolder = ew_PathCombine($folder, $subfolder, TRUE);
-					if ($subfolder == "." || $subfolder == ".." || !@is_dir($tempfolder))
+				while (($entry = readdir($dir_handle)) !== FALSE) {
+					if ($entry == "." || $entry == "..")
 						continue;
-					ew_CleanPath($tempfolder, $delete);
+					if (@is_file($folder . $entry)) { // File
+						@gc_collect_cycles(); // Forces garbase collection (for S3)
+						@unlink($folder . $entry);
+					} elseif (@is_dir($folder . $entry)) { // Folder
+						ew_CleanPath($folder . $entry, $delete);
+					}
 				}
-			}
-			if ($delete) {
 				@closedir($dir_handle);
-				@rmdir($folder);
 			}
+			if ($delete)
+				@rmdir($folder);
 		}
-	} catch (Exception $e) {
+	} catch (\Exception $e) {
 		if (EW_DEBUG_ENABLED)
 			throw $e;
 	}

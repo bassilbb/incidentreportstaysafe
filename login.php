@@ -244,7 +244,7 @@ class clogin extends cusers {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'login', TRUE);
+			define("EW_PAGE_ID", 'login');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))

@@ -63,6 +63,7 @@ class creport_form extends cTable {
 	var $verified_comment;
 	var $verified_by;
 	var $remainder;
+	var $organization;
 
 	//
 	// Table class constructor
@@ -421,6 +422,12 @@ class creport_form extends cTable {
 		$this->remainder->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->remainder->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['remainder'] = &$this->remainder;
+
+		// organization
+		$this->organization = new cField('report_form', 'report_form', 'x_organization', 'organization', '`organization`', '`organization`', 3, -1, FALSE, '`organization`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->organization->Sortable = TRUE; // Allow sort
+		$this->organization->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->fields['organization'] = &$this->organization;
 	}
 
 	// Field Visibility
@@ -1008,6 +1015,7 @@ class creport_form extends cTable {
 		$this->verified_comment->setDbValue($rs->fields('verified_comment'));
 		$this->verified_by->setDbValue($rs->fields('verified_by'));
 		$this->remainder->setDbValue($rs->fields('remainder'));
+		$this->organization->setDbValue($rs->fields('organization'));
 	}
 
 	// Render list row values
@@ -1068,6 +1076,7 @@ class creport_form extends cTable {
 		// verified_comment
 		// verified_by
 		// remainder
+		// organization
 		// id
 
 		$this->id->ViewValue = $this->id->CurrentValue;
@@ -1811,6 +1820,10 @@ class creport_form extends cTable {
 		}
 		$this->remainder->ViewCustomAttributes = "";
 
+		// organization
+		$this->organization->ViewValue = $this->organization->CurrentValue;
+		$this->organization->ViewCustomAttributes = "";
+
 		// id
 		$this->id->LinkCustomAttributes = "";
 		$this->id->HrefValue = "";
@@ -2074,6 +2087,11 @@ class creport_form extends cTable {
 		$this->remainder->LinkCustomAttributes = "";
 		$this->remainder->HrefValue = "";
 		$this->remainder->TooltipValue = "";
+
+		// organization
+		$this->organization->LinkCustomAttributes = "";
+		$this->organization->HrefValue = "";
+		$this->organization->TooltipValue = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -2343,6 +2361,12 @@ class creport_form extends cTable {
 		$this->remainder->EditAttrs["class"] = "form-control";
 		$this->remainder->EditCustomAttributes = "";
 
+		// organization
+		$this->organization->EditAttrs["class"] = "form-control";
+		$this->organization->EditCustomAttributes = "";
+		$this->organization->EditValue = $this->organization->CurrentValue;
+		$this->organization->PlaceHolder = ew_RemoveHtml($this->organization->FldCaption());
+
 		// Call Row Rendered event
 		$this->Row_Rendered();
 	}
@@ -2418,6 +2442,7 @@ class creport_form extends cTable {
 					if ($this->verified_comment->Exportable) $Doc->ExportCaption($this->verified_comment);
 					if ($this->verified_by->Exportable) $Doc->ExportCaption($this->verified_by);
 					if ($this->remainder->Exportable) $Doc->ExportCaption($this->remainder);
+					if ($this->organization->Exportable) $Doc->ExportCaption($this->organization);
 				} else {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->datetime_initiated->Exportable) $Doc->ExportCaption($this->datetime_initiated);
@@ -2465,6 +2490,7 @@ class creport_form extends cTable {
 					if ($this->verified_comment->Exportable) $Doc->ExportCaption($this->verified_comment);
 					if ($this->verified_by->Exportable) $Doc->ExportCaption($this->verified_by);
 					if ($this->remainder->Exportable) $Doc->ExportCaption($this->remainder);
+					if ($this->organization->Exportable) $Doc->ExportCaption($this->organization);
 				}
 				$Doc->EndExportRow();
 			}
@@ -2544,6 +2570,7 @@ class creport_form extends cTable {
 						if ($this->verified_comment->Exportable) $Doc->ExportField($this->verified_comment);
 						if ($this->verified_by->Exportable) $Doc->ExportField($this->verified_by);
 						if ($this->remainder->Exportable) $Doc->ExportField($this->remainder);
+						if ($this->organization->Exportable) $Doc->ExportField($this->organization);
 					} else {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->datetime_initiated->Exportable) $Doc->ExportField($this->datetime_initiated);
@@ -2591,6 +2618,7 @@ class creport_form extends cTable {
 						if ($this->verified_comment->Exportable) $Doc->ExportField($this->verified_comment);
 						if ($this->verified_by->Exportable) $Doc->ExportField($this->verified_by);
 						if ($this->remainder->Exportable) $Doc->ExportField($this->remainder);
+						if ($this->organization->Exportable) $Doc->ExportField($this->organization);
 					}
 					$Doc->EndExportRow($RowCnt);
 				}
