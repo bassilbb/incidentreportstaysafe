@@ -476,7 +476,7 @@ Page_Rendering();
 		</div>
 		</a>
 
-	<a href="assignlist.php" class="small-box-footer">
+	<a href="report_formlist.php" class="small-box-footer">
 		<div class="col-md-3 col-sm-6 col-xs-12">
 			<div class="info-box bg-blue-gradient">
 				<span class="info-box-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
