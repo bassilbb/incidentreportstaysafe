@@ -912,9 +912,9 @@ if (IsLoggedIn()) {
 			if (CurrentUserLevel() == 3) {
 				$_SESSION['MyMaintenanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2)OR (`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."')");
 			}
-			/*if (CurrentUserLevel() == 3) {
-				$_SESSION['MyMaintenanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3,6)");
-			}*/
+			if (CurrentUserLevel() == 4) {
+				$_SESSION['MyMaintenanceCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2)AND `branch` = '".$_SESSION['Branch']."'");
+			}
 		if ($Item->Text == "Initiate Maintenance") {
 			$MyMaintenanceCount = $_SESSION['MyMaintenanceCount'];
 			if ($MyMaintenanceCount > 0) {
