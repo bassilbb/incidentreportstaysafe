@@ -6014,6 +6014,7 @@ if(currlevel == 2 && departments == 6){
 }
 $('#x_status').attr('readonly',true);
 $("#r_remainder").hide();
+$("#r_orgnization").hide();
 </script>
 <?php include_once "footer.php" ?>
 <?php
