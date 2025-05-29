@@ -887,7 +887,7 @@ if (IsLoggedIn()) {
 				$_SESSION['MyReportCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE (`status` in (4) AND `department` = '".$_SESSION['Department']."') OR (`status` in (0) AND `staff_id` = '".$_SESSION['Staff_ID']."')");
 			}*/		
 			if (CurrentUserLevel() == 4) {
-				$_SESSION['MyReportCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (3,4)AND `branch` = '".$_SESSION['Branch']."' OR `status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
+				$_SESSION['MyReportCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (3,4)AND `branch` = '".$_SESSION['Branch']."'");
 			}
 		if ($Item->Text == "Initiate Incident") {
 			$MyReportCount = $_SESSION['MyReportCount'];

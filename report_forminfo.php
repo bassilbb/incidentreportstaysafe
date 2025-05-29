@@ -2802,7 +2802,7 @@ class creport_form extends cTable {
 		   ew_AddFilter($filter, "`status` in (3,6,7) OR (`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."') OR (`status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."')");
 		}
 		if (CurrentUserLevel() == 4) {
-				ew_AddFilter($filter, "`status` in (3,6,7) AND `branch` = '".$_SESSION['Branch']."' OR `status` in (0,1,3) AND `staff_id` = '".$_SESSION['Staff_ID']."' OR `status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."'");
+				ew_AddFilter($filter, "`status` in (3,6,7) AND `branch` = '".$_SESSION['Branch']."' OR `status` in (0,1,3,6,7) AND `staff_id` = '".$_SESSION['Staff_ID']."' OR `status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."'");
 			 }
 		/*if (CurrentUserLevel() == 2) {
 			ew_AddFilter($filter, "(`status` in (3) AND `department` = '".$_SESSION['Department']."') OR (`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."')");
