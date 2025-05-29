@@ -886,9 +886,9 @@ if (IsLoggedIn()) {
 			/*if (CurrentUserLevel() == 3) {
 				$_SESSION['MyReportCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE (`status` in (4) AND `department` = '".$_SESSION['Department']."') OR (`status` in (0) AND `staff_id` = '".$_SESSION['Staff_ID']."')");
 			}*/		
-			/*if (CurrentUserLevel() == 4) {
-				$_SESSION['MyReportCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (5)");
-			}*/
+			if (CurrentUserLevel() == 4) {
+				$_SESSION['MyReportCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4)AND `branch` = '".$_SESSION['Branch']."'");
+			}
 		if ($Item->Text == "Initiate Incident") {
 			$MyReportCount = $_SESSION['MyReportCount'];
 			if ($MyReportCount > 0) {
@@ -924,7 +924,8 @@ if (IsLoggedIn()) {
 	}
 
 	//----------INVENTORY STORE-----------------------------------
-	if (IsLoggedIn()) {
+
+/*	if (IsLoggedIn()) {
 		$MyInventoryCount = 0;
 			if (CurrentUserLevel() == IsAdmin()) {
 			$_SESSION['MyInventoryCount'] = NULL;
@@ -955,7 +956,7 @@ if (IsLoggedIn()) {
 				$Item->Text.= "&nbsp;<span class='badge'>$MyInventoryCount </span>";
 			}
 		}
-	}
+	}*/
 
 	//----------INVENTORY ISSUANCE-----------------------------------
 	if (IsLoggedIn()) {
