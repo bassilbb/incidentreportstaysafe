@@ -5108,12 +5108,14 @@ class cAdvancedSecurity {
 		$_SESSION['REFN_ID'] = "";
 		$_SESSION['INS_ID'] = "";
 		$_SESSION['SYS_ID'] = "";
+		$_SESSION['LAP_ID'] = "";
 
 		//$_SESSION['STAffNO'] = "";
 		$_SESSION['MyReportCount'] = 0;
 		$_SESSION['MyMaintenanceCount'] = 0;
 		$_SESSION['$MyInventoryCount'] = 0;
 		$_SESSION['$MyIssuanceCount'] = 0;
+		$_SESSION['$MyLoanCount'] = 0;
 
 		//FetchMenuBadges("ALL");
 	}

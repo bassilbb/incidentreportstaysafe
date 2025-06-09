@@ -407,6 +407,18 @@ class cdefault {
 			$this->Page_Terminate("system_statuslist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'pc_issuance_report'))
 			$this->Page_Terminate("pc_issuance_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'loan_application'))
+			$this->Page_Terminate("loan_applicationlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'duration_months'))
+			$this->Page_Terminate("duration_monthslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'loan_status'))
+			$this->Page_Terminate("loan_statuslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'banks_list'))
+			$this->Page_Terminate("banks_listlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'document_checklist'))
+			$this->Page_Terminate("document_checklistlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'loan_report'))
+			$this->Page_Terminate("loan_reportlist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

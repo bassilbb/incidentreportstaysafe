@@ -132,6 +132,11 @@ $randStrs =	mt_rand(0000001,9999999);
 return "SYS".$randStrs;
 }
 
+function generateLAPKey(){
+$randStrs =	mt_rand(000000011,999999999);
+return "LAP".$randStrs;
+}
+
 //
 //$conn = mysqli_connect("localhost", "root","","incident_report");
 

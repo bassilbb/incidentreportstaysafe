@@ -32,6 +32,10 @@ $RootMenu->AddMenuItem(195, "mi_action_taken", $Language->MenuPhrase("195", "Men
 $RootMenu->AddMenuItem(148, "mi_dispenser_type", $Language->MenuPhrase("148", "MenuText"), "dispenser_typelist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}dispenser_type'), FALSE, FALSE, "");
 $RootMenu->AddMenuItem(147, "mi_dispenser_status", $Language->MenuPhrase("147", "MenuText"), "dispenser_statuslist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}dispenser_status'), FALSE, FALSE, "fas fa-hourglass-start");
 $RootMenu->AddMenuItem(196, "mi_statuss", $Language->MenuPhrase("196", "MenuText"), "statusslist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}statuss'), FALSE, FALSE, "fas fa-hourglass-start");
+$RootMenu->AddMenuItem(274, "mi_duration_months", $Language->MenuPhrase("274", "MenuText"), "duration_monthslist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}duration_months'), FALSE, FALSE, "");
+$RootMenu->AddMenuItem(275, "mi_loan_status", $Language->MenuPhrase("275", "MenuText"), "loan_statuslist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}loan_status'), FALSE, FALSE, "");
+$RootMenu->AddMenuItem(276, "mi_banks_list", $Language->MenuPhrase("276", "MenuText"), "banks_listlist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}banks_list'), FALSE, FALSE, "");
+$RootMenu->AddMenuItem(277, "mi_document_checklist", $Language->MenuPhrase("277", "MenuText"), "document_checklistlist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}document_checklist'), FALSE, FALSE, "");
 $RootMenu->AddMenuItem(34, "mci_Incidents", $Language->MenuPhrase("34", "MenuText"), "", -1, "", IsLoggedIn(), FALSE, TRUE, "fas fa-indent");
 $RootMenu->AddMenuItem(8, "mi_report_form", $Language->MenuPhrase("8", "MenuText"), "report_formlist.php", 34, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}report_form'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(54, "mi_report", $Language->MenuPhrase("54", "MenuText"), "reportlist.php", 34, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}report'), FALSE, FALSE, "fas fa-indent");
@@ -63,6 +67,9 @@ $RootMenu->AddMenuItem(257, "mi_system_issues", $Language->MenuPhrase("257", "Me
 $RootMenu->AddMenuItem(259, "mi_pc_issuance", $Language->MenuPhrase("259", "MenuText"), "pc_issuancelist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}pc_issuance'), FALSE, FALSE, "fa fa-laptop");
 $RootMenu->AddMenuItem(271, "mi_system_status", $Language->MenuPhrase("271", "MenuText"), "system_statuslist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}system_status'), FALSE, FALSE, "fas fa-hourglass-start");
 $RootMenu->AddMenuItem(272, "mi_pc_issuance_report", $Language->MenuPhrase("272", "MenuText"), "pc_issuance_reportlist.php", 256, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}pc_issuance_report'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(312, "mci_Loan_Module", $Language->MenuPhrase("312", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "");
+$RootMenu->AddMenuItem(273, "mi_loan_application", $Language->MenuPhrase("273", "MenuText"), "loan_applicationlist.php", 312, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}loan_application'), FALSE, FALSE, "");
+$RootMenu->AddMenuItem(278, "mi_loan_report", $Language->MenuPhrase("278", "MenuText"), "loan_reportlist.php", 312, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}loan_report'), FALSE, FALSE, "");
 echo $RootMenu->ToScript();
 ?>
 <div class="ewVertical" id="ewMenu"></div>

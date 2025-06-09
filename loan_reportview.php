@@ -1,0 +1,2587 @@
+<?php
+if (session_id() == "") session_start(); // Init session data
+ob_start(); // Turn on output buffering
+?>
+<?php include_once "ewcfg14.php" ?>
+<?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
+<?php include_once "phpfn14.php" ?>
+<?php include_once "loan_reportinfo.php" ?>
+<?php include_once "usersinfo.php" ?>
+<?php include_once "userfn14.php" ?>
+<?php
+
+//
+// Page class
+//
+
+$loan_report_view = NULL; // Initialize page object first
+
+class cloan_report_view extends cloan_report {
+
+	// Page ID
+	var $PageID = 'view';
+
+	// Project ID
+	var $ProjectID = '{DD9080C0-D1CA-431F-831F-CAC8FA61260C}';
+
+	// Table name
+	var $TableName = 'loan_report';
+
+	// Page object name
+	var $PageObjName = 'loan_report_view';
+
+	// Page headings
+	var $Heading = '';
+	var $Subheading = '';
+
+	// Page heading
+	function PageHeading() {
+		global $Language;
+		if ($this->Heading <> "")
+			return $this->Heading;
+		if (method_exists($this, "TableCaption"))
+			return $this->TableCaption();
+		return "";
+	}
+
+	// Page subheading
+	function PageSubheading() {
+		global $Language;
+		if ($this->Subheading <> "")
+			return $this->Subheading;
+		if ($this->TableName)
+			return $Language->Phrase($this->PageID);
+		return "";
+	}
+
+	// Page name
+	function PageName() {
+		return ew_CurrentPage();
+	}
+
+	// Page URL
+	function PageUrl() {
+		$PageUrl = ew_CurrentPage() . "?";
+		if ($this->UseTokenInUrl) $PageUrl .= "t=" . $this->TableVar . "&"; // Add page token
+		return $PageUrl;
+	}
+
+	// Page URLs
+	var $AddUrl;
+	var $EditUrl;
+	var $CopyUrl;
+	var $DeleteUrl;
+	var $ViewUrl;
+	var $ListUrl;
+
+	// Export URLs
+	var $ExportPrintUrl;
+	var $ExportHtmlUrl;
+	var $ExportExcelUrl;
+	var $ExportWordUrl;
+	var $ExportXmlUrl;
+	var $ExportCsvUrl;
+	var $ExportPdfUrl;
+
+	// Custom export
+	var $ExportExcelCustom = FALSE;
+	var $ExportWordCustom = FALSE;
+	var $ExportPdfCustom = FALSE;
+	var $ExportEmailCustom = FALSE;
+
+	// Update URLs
+	var $InlineAddUrl;
+	var $InlineCopyUrl;
+	var $InlineEditUrl;
+	var $GridAddUrl;
+	var $GridEditUrl;
+	var $MultiDeleteUrl;
+	var $MultiUpdateUrl;
+	var $AuditTrailOnAdd = TRUE;
+	var $AuditTrailOnEdit = TRUE;
+	var $AuditTrailOnDelete = TRUE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
+
+	// Message
+	function getMessage() {
+		return @$_SESSION[EW_SESSION_MESSAGE];
+	}
+
+	function setMessage($v) {
+		ew_AddMessage($_SESSION[EW_SESSION_MESSAGE], $v);
+	}
+
+	function getFailureMessage() {
+		return @$_SESSION[EW_SESSION_FAILURE_MESSAGE];
+	}
+
+	function setFailureMessage($v) {
+		ew_AddMessage($_SESSION[EW_SESSION_FAILURE_MESSAGE], $v);
+	}
+
+	function getSuccessMessage() {
+		return @$_SESSION[EW_SESSION_SUCCESS_MESSAGE];
+	}
+
+	function setSuccessMessage($v) {
+		ew_AddMessage($_SESSION[EW_SESSION_SUCCESS_MESSAGE], $v);
+	}
+
+	function getWarningMessage() {
+		return @$_SESSION[EW_SESSION_WARNING_MESSAGE];
+	}
+
+	function setWarningMessage($v) {
+		ew_AddMessage($_SESSION[EW_SESSION_WARNING_MESSAGE], $v);
+	}
+
+	// Methods to clear message
+	function ClearMessage() {
+		$_SESSION[EW_SESSION_MESSAGE] = "";
+	}
+
+	function ClearFailureMessage() {
+		$_SESSION[EW_SESSION_FAILURE_MESSAGE] = "";
+	}
+
+	function ClearSuccessMessage() {
+		$_SESSION[EW_SESSION_SUCCESS_MESSAGE] = "";
+	}
+
+	function ClearWarningMessage() {
+		$_SESSION[EW_SESSION_WARNING_MESSAGE] = "";
+	}
+
+	function ClearMessages() {
+		$_SESSION[EW_SESSION_MESSAGE] = "";
+		$_SESSION[EW_SESSION_FAILURE_MESSAGE] = "";
+		$_SESSION[EW_SESSION_SUCCESS_MESSAGE] = "";
+		$_SESSION[EW_SESSION_WARNING_MESSAGE] = "";
+	}
+
+	// Show message
+	function ShowMessage() {
+		$hidden = FALSE;
+		$html = "";
+
+		// Message
+		$sMessage = $this->getMessage();
+		if (method_exists($this, "Message_Showing"))
+			$this->Message_Showing($sMessage, "");
+		if ($sMessage <> "") { // Message in Session, display
+			if (!$hidden)
+				$sMessage = "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>" . $sMessage;
+			$html .= "<div class=\"alert alert-info ewInfo\">" . $sMessage . "</div>";
+			$_SESSION[EW_SESSION_MESSAGE] = ""; // Clear message in Session
+		}
+
+		// Warning message
+		$sWarningMessage = $this->getWarningMessage();
+		if (method_exists($this, "Message_Showing"))
+			$this->Message_Showing($sWarningMessage, "warning");
+		if ($sWarningMessage <> "") { // Message in Session, display
+			if (!$hidden)
+				$sWarningMessage = "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>" . $sWarningMessage;
+			$html .= "<div class=\"alert alert-warning ewWarning\">" . $sWarningMessage . "</div>";
+			$_SESSION[EW_SESSION_WARNING_MESSAGE] = ""; // Clear message in Session
+		}
+
+		// Success message
+		$sSuccessMessage = $this->getSuccessMessage();
+		if (method_exists($this, "Message_Showing"))
+			$this->Message_Showing($sSuccessMessage, "success");
+		if ($sSuccessMessage <> "") { // Message in Session, display
+			if (!$hidden)
+				$sSuccessMessage = "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>" . $sSuccessMessage;
+			$html .= "<div class=\"alert alert-success ewSuccess\">" . $sSuccessMessage . "</div>";
+			$_SESSION[EW_SESSION_SUCCESS_MESSAGE] = ""; // Clear message in Session
+		}
+
+		// Failure message
+		$sErrorMessage = $this->getFailureMessage();
+		if (method_exists($this, "Message_Showing"))
+			$this->Message_Showing($sErrorMessage, "failure");
+		if ($sErrorMessage <> "") { // Message in Session, display
+			if (!$hidden)
+				$sErrorMessage = "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>" . $sErrorMessage;
+			$html .= "<div class=\"alert alert-danger ewError\">" . $sErrorMessage . "</div>";
+			$_SESSION[EW_SESSION_FAILURE_MESSAGE] = ""; // Clear message in Session
+		}
+		echo "<div class=\"ewMessageDialog\"" . (($hidden) ? " style=\"display: none;\"" : "") . ">" . $html . "</div>";
+	}
+	var $PageHeader;
+	var $PageFooter;
+
+	// Show Page Header
+	function ShowPageHeader() {
+		$sHeader = $this->PageHeader;
+		$this->Page_DataRendering($sHeader);
+		if ($sHeader <> "") { // Header exists, display
+			echo "<p>" . $sHeader . "</p>";
+		}
+	}
+
+	// Show Page Footer
+	function ShowPageFooter() {
+		$sFooter = $this->PageFooter;
+		$this->Page_DataRendered($sFooter);
+		if ($sFooter <> "") { // Footer exists, display
+			echo "<p>" . $sFooter . "</p>";
+		}
+	}
+
+	// Validate page request
+	function IsPageRequest() {
+		global $objForm;
+		if ($this->UseTokenInUrl) {
+			if ($objForm)
+				return ($this->TableVar == $objForm->GetValue("t"));
+			if (@$_GET["t"] <> "")
+				return ($this->TableVar == $_GET["t"]);
+		} else {
+			return TRUE;
+		}
+	}
+	var $Token = "";
+	var $TokenTimeout = 0;
+	var $CheckToken = EW_CHECK_TOKEN;
+	var $CheckTokenFn = "ew_CheckToken";
+	var $CreateTokenFn = "ew_CreateToken";
+
+	// Valid Post
+	function ValidPost() {
+		if (!$this->CheckToken || !ew_IsPost())
+			return TRUE;
+		if (!isset($_POST[EW_TOKEN_NAME]))
+			return FALSE;
+		$fn = $this->CheckTokenFn;
+		if (is_callable($fn))
+			return $fn($_POST[EW_TOKEN_NAME], $this->TokenTimeout);
+		return FALSE;
+	}
+
+	// Create Token
+	function CreateToken() {
+		global $gsToken;
+		if ($this->CheckToken) {
+			$fn = $this->CreateTokenFn;
+			if ($this->Token == "" && is_callable($fn)) // Create token
+				$this->Token = $fn();
+			$gsToken = $this->Token; // Save to global variable
+		}
+	}
+
+	//
+	// Page class constructor
+	//
+	function __construct() {
+		global $conn, $Language;
+		global $UserTable, $UserTableConn;
+		$GLOBALS["Page"] = &$this;
+		$this->TokenTimeout = ew_SessionTimeoutTime();
+
+		// Language object
+		if (!isset($Language)) $Language = new cLanguage();
+
+		// Parent constuctor
+		parent::__construct();
+
+		// Table object (loan_report)
+		if (!isset($GLOBALS["loan_report"]) || get_class($GLOBALS["loan_report"]) == "cloan_report") {
+			$GLOBALS["loan_report"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["loan_report"];
+		}
+		$KeyUrl = "";
+		if (@$_GET["code"] <> "") {
+			$this->RecKey["code"] = $_GET["code"];
+			$KeyUrl .= "&amp;code=" . urlencode($this->RecKey["code"]);
+		}
+		$this->ExportPrintUrl = $this->PageUrl() . "export=print" . $KeyUrl;
+		$this->ExportHtmlUrl = $this->PageUrl() . "export=html" . $KeyUrl;
+		$this->ExportExcelUrl = $this->PageUrl() . "export=excel" . $KeyUrl;
+		$this->ExportWordUrl = $this->PageUrl() . "export=word" . $KeyUrl;
+		$this->ExportXmlUrl = $this->PageUrl() . "export=xml" . $KeyUrl;
+		$this->ExportCsvUrl = $this->PageUrl() . "export=csv" . $KeyUrl;
+		$this->ExportPdfUrl = $this->PageUrl() . "export=pdf" . $KeyUrl;
+
+		// Table object (users)
+		if (!isset($GLOBALS['users'])) $GLOBALS['users'] = new cusers();
+
+		// Page ID
+		if (!defined("EW_PAGE_ID"))
+			define("EW_PAGE_ID", 'view');
+
+		// Table name (for backward compatibility)
+		if (!defined("EW_TABLE_NAME"))
+			define("EW_TABLE_NAME", 'loan_report');
+
+		// Start timer
+		if (!isset($GLOBALS["gTimer"]))
+			$GLOBALS["gTimer"] = new cTimer();
+
+		// Debug message
+		ew_LoadDebugMsg();
+
+		// Open connection
+		if (!isset($conn))
+			$conn = ew_Connect($this->DBID);
+
+		// User table object (users)
+		if (!isset($UserTable)) {
+			$UserTable = new cusers();
+			$UserTableConn = Conn($UserTable->DBID);
+		}
+
+		// Export options
+		$this->ExportOptions = new cListOptions();
+		$this->ExportOptions->Tag = "div";
+		$this->ExportOptions->TagClassName = "ewExportOption";
+
+		// Other options
+		$this->OtherOptions['action'] = new cListOptions();
+		$this->OtherOptions['action']->Tag = "div";
+		$this->OtherOptions['action']->TagClassName = "ewActionOption";
+		$this->OtherOptions['detail'] = new cListOptions();
+		$this->OtherOptions['detail']->Tag = "div";
+		$this->OtherOptions['detail']->TagClassName = "ewDetailOption";
+	}
+
+	//
+	//  Page_Init
+	//
+	function Page_Init() {
+		global $gsExport, $gsCustomExport, $gsExportFile, $UserProfile, $Language, $Security, $objForm;
+
+		// Is modal
+		$this->IsModal = (@$_GET["modal"] == "1" || @$_POST["modal"] == "1");
+
+		// User profile
+		$UserProfile = new cUserProfile();
+
+		// Security
+		$Security = new cAdvancedSecurity();
+		if (IsPasswordExpired())
+			$this->Page_Terminate(ew_GetUrl("changepwd.php"));
+		if (!$Security->IsLoggedIn()) $Security->AutoLogin();
+		if ($Security->IsLoggedIn()) $Security->TablePermission_Loading();
+		$Security->LoadCurrentUserLevel($this->ProjectID . $this->TableName);
+		if ($Security->IsLoggedIn()) $Security->TablePermission_Loaded();
+		if (!$Security->CanView()) {
+			$Security->SaveLastUrl();
+			$this->setFailureMessage(ew_DeniedMsg()); // Set no permission
+			if ($Security->CanList())
+				$this->Page_Terminate(ew_GetUrl("loan_reportlist.php"));
+			else
+				$this->Page_Terminate(ew_GetUrl("login.php"));
+		}
+
+		// NOTE: Security object may be needed in other part of the script, skip set to Nothing
+		// 
+		// Security = null;
+		// 
+		// Get export parameters
+
+		$custom = "";
+		if (@$_GET["export"] <> "") {
+			$this->Export = $_GET["export"];
+			$custom = @$_GET["custom"];
+		} elseif (@$_POST["export"] <> "") {
+			$this->Export = $_POST["export"];
+			$custom = @$_POST["custom"];
+		} elseif (ew_IsPost()) {
+			if (@$_POST["exporttype"] <> "")
+				$this->Export = $_POST["exporttype"];
+			$custom = @$_POST["custom"];
+		} elseif (@$_GET["cmd"] == "json") {
+			$this->Export = $_GET["cmd"];
+		} else {
+			$this->setExportReturnUrl(ew_CurrentUrl());
+		}
+		$gsExportFile = $this->TableVar; // Get export file, used in header
+		if (@$_GET["code"] <> "") {
+			if ($gsExportFile <> "") $gsExportFile .= "_";
+			$gsExportFile .= $_GET["code"];
+		}
+
+		// Get custom export parameters
+		if ($this->Export <> "" && $custom <> "") {
+			$this->CustomExport = $this->Export;
+			$this->Export = "print";
+		}
+		$gsCustomExport = $this->CustomExport;
+		$gsExport = $this->Export; // Get export parameter, used in header
+
+		// Update Export URLs
+		if (defined("EW_USE_PHPEXCEL"))
+			$this->ExportExcelCustom = FALSE;
+		if ($this->ExportExcelCustom)
+			$this->ExportExcelUrl .= "&amp;custom=1";
+		if (defined("EW_USE_PHPWORD"))
+			$this->ExportWordCustom = FALSE;
+		if ($this->ExportWordCustom)
+			$this->ExportWordUrl .= "&amp;custom=1";
+		if ($this->ExportPdfCustom)
+			$this->ExportPdfUrl .= "&amp;custom=1";
+		$this->CurrentAction = (@$_GET["a"] <> "") ? $_GET["a"] : @$_POST["a_list"]; // Set up current action
+
+		// Setup export options
+		$this->SetupExportOptions();
+		$this->code->SetVisibility();
+		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
+			$this->code->Visible = FALSE;
+		$this->date_initiated->SetVisibility();
+		$this->refernce_id->SetVisibility();
+		$this->employee_name->SetVisibility();
+		$this->address->SetVisibility();
+		$this->mobile->SetVisibility();
+		$this->department->SetVisibility();
+		$this->loan_amount->SetVisibility();
+		$this->amount_inwords->SetVisibility();
+		$this->purpose->SetVisibility();
+		$this->repayment_period->SetVisibility();
+		$this->salary_permonth->SetVisibility();
+		$this->previous_loan->SetVisibility();
+		$this->date_collected->SetVisibility();
+		$this->date_liquidated->SetVisibility();
+		$this->balance_remaining->SetVisibility();
+		$this->applicant_date->SetVisibility();
+		$this->applicant_passport->SetVisibility();
+		$this->guarantor_name->SetVisibility();
+		$this->guarantor_address->SetVisibility();
+		$this->guarantor_mobile->SetVisibility();
+		$this->guarantor_department->SetVisibility();
+		$this->account_no->SetVisibility();
+		$this->bank_name->SetVisibility();
+		$this->employers_name->SetVisibility();
+		$this->employers_address->SetVisibility();
+		$this->employers_mobile->SetVisibility();
+		$this->guarantor_date->SetVisibility();
+		$this->guarantor_passport->SetVisibility();
+		$this->status->SetVisibility();
+		$this->initiator_action->SetVisibility();
+		$this->initiator_comment->SetVisibility();
+		$this->recommended_date->SetVisibility();
+		$this->document_checklist->SetVisibility();
+		$this->recommender_action->SetVisibility();
+		$this->recommender_comment->SetVisibility();
+		$this->recommended_by->SetVisibility();
+		$this->application_status->SetVisibility();
+		$this->approved_amount->SetVisibility();
+		$this->duration_approved->SetVisibility();
+		$this->approval_date->SetVisibility();
+		$this->approval_action->SetVisibility();
+		$this->approval_comment->SetVisibility();
+		$this->approved_by->SetVisibility();
+
+		// Set up multi page object
+		$this->SetupMultiPages();
+
+		// Global Page Loading event (in userfn*.php)
+		Page_Loading();
+
+		// Page Load event
+		$this->Page_Load();
+
+		// Check token
+		if (!$this->ValidPost()) {
+			echo $Language->Phrase("InvalidPostRequest");
+			$this->Page_Terminate();
+			exit();
+		}
+
+		// Create Token
+		$this->CreateToken();
+	}
+
+	//
+	// Page_Terminate
+	//
+	function Page_Terminate($url = "") {
+		global $gsExportFile, $gTmpImages;
+
+		// Page Unload event
+		$this->Page_Unload();
+
+		// Global Page Unloaded event (in userfn*.php)
+		Page_Unloaded();
+
+		// Export
+		global $EW_EXPORT, $loan_report;
+		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
+				$sContent = ob_get_contents();
+			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
+			$class = $EW_EXPORT[$this->CustomExport];
+			if (class_exists($class)) {
+				$doc = new $class($loan_report);
+				$doc->Text = $sContent;
+				if ($this->Export == "email")
+					echo $this->ExportEmail($doc->Text);
+				else
+					$doc->Export();
+				ew_DeleteTmpImages(); // Delete temp images
+				exit();
+			}
+		}
+		$this->Page_Redirecting($url);
+
+		// Close connection
+		ew_CloseConn();
+
+		// Go to URL if specified
+		if ($url <> "") {
+			if (!EW_DEBUG_ENABLED && ob_get_length())
+				ob_end_clean();
+
+			// Handle modal response
+			if ($this->IsModal) { // Show as modal
+				$row = array("url" => $url, "modal" => "1");
+				$pageName = ew_GetPageName($url);
+				if ($pageName != $this->GetListUrl()) { // Not List page
+					$row["caption"] = $this->GetModalCaption($pageName);
+					if ($pageName == "loan_reportview.php")
+						$row["view"] = "1";
+				} else { // List page should not be shown as modal => error
+					$row["error"] = $this->getFailureMessage();
+					$this->clearFailureMessage();
+				}
+				header("Content-Type: application/json; charset=utf-8");
+				echo ew_ConvertToUtf8(ew_ArrayToJson(array($row)));
+			} else {
+				ew_SaveDebugMsg();
+				header("Location: " . $url);
+			}
+		}
+		exit();
+	}
+	var $ExportOptions; // Export options
+	var $OtherOptions = array(); // Other options
+	var $DisplayRecs = 1;
+	var $DbMasterFilter;
+	var $DbDetailFilter;
+	var $StartRec;
+	var $StopRec;
+	var $TotalRecs = 0;
+	var $RecRange = 10;
+	var $Pager;
+	var $AutoHidePager = EW_AUTO_HIDE_PAGER;
+	var $RecCnt;
+	var $RecKey = array();
+	var $IsModal = FALSE;
+	var $Recordset;
+	var $MultiPages; // Multi pages object
+
+	//
+	// Page main
+	//
+	function Page_Main() {
+		global $Language, $gbSkipHeaderFooter, $EW_EXPORT;
+
+		// Check modal
+		if ($this->IsModal)
+			$gbSkipHeaderFooter = TRUE;
+
+		// Load current record
+		$bLoadCurrentRecord = FALSE;
+		$sReturnUrl = "";
+		$bMatchRecord = FALSE;
+		if ($this->IsPageRequest()) { // Validate request
+			if (@$_GET["code"] <> "") {
+				$this->code->setQueryStringValue($_GET["code"]);
+				$this->RecKey["code"] = $this->code->QueryStringValue;
+			} elseif (@$_POST["code"] <> "") {
+				$this->code->setFormValue($_POST["code"]);
+				$this->RecKey["code"] = $this->code->FormValue;
+			} else {
+				$bLoadCurrentRecord = TRUE;
+			}
+
+			// Get action
+			$this->CurrentAction = "I"; // Display form
+			switch ($this->CurrentAction) {
+				case "I": // Get a record to display
+					$this->StartRec = 1; // Initialize start position
+					if ($this->Recordset = $this->LoadRecordset()) // Load records
+						$this->TotalRecs = $this->Recordset->RecordCount(); // Get record count
+					if ($this->TotalRecs <= 0) { // No record found
+						if ($this->getSuccessMessage() == "" && $this->getFailureMessage() == "")
+							$this->setFailureMessage($Language->Phrase("NoRecord")); // Set no record message
+						$this->Page_Terminate("loan_reportlist.php"); // Return to list page
+					} elseif ($bLoadCurrentRecord) { // Load current record position
+						$this->SetupStartRec(); // Set up start record position
+
+						// Point to current record
+						if (intval($this->StartRec) <= intval($this->TotalRecs)) {
+							$bMatchRecord = TRUE;
+							$this->Recordset->Move($this->StartRec-1);
+						}
+					} else { // Match key values
+						while (!$this->Recordset->EOF) {
+							if (strval($this->code->CurrentValue) == strval($this->Recordset->fields('code'))) {
+								$this->setStartRecordNumber($this->StartRec); // Save record position
+								$bMatchRecord = TRUE;
+								break;
+							} else {
+								$this->StartRec++;
+								$this->Recordset->MoveNext();
+							}
+						}
+					}
+					if (!$bMatchRecord) {
+						if ($this->getSuccessMessage() == "" && $this->getFailureMessage() == "")
+							$this->setFailureMessage($Language->Phrase("NoRecord")); // Set no record message
+						$sReturnUrl = "loan_reportlist.php"; // No matching record, return to list
+					} else {
+						$this->LoadRowValues($this->Recordset); // Load row values
+					}
+			}
+
+			// Export data only
+			if ($this->CustomExport == "" && in_array($this->Export, array_keys($EW_EXPORT))) {
+				$this->ExportData();
+				$this->Page_Terminate(); // Terminate response
+				exit();
+			}
+		} else {
+			$sReturnUrl = "loan_reportlist.php"; // Not page request, return to list
+		}
+		if ($sReturnUrl <> "")
+			$this->Page_Terminate($sReturnUrl);
+
+		// Set up Breadcrumb
+		if ($this->Export == "")
+			$this->SetupBreadcrumb();
+
+		// Render row
+		$this->RowType = EW_ROWTYPE_VIEW;
+		$this->ResetAttrs();
+		$this->RenderRow();
+	}
+
+	// Set up other options
+	function SetupOtherOptions() {
+		global $Language, $Security;
+		$options = &$this->OtherOptions;
+		$option = &$options["action"];
+
+		// Set up action default
+		$option = &$options["action"];
+		$option->DropDownButtonPhrase = $Language->Phrase("ButtonActions");
+		$option->UseImageAndText = TRUE;
+		$option->UseDropDownButton = TRUE;
+		$option->UseButtonGroup = TRUE;
+		$item = &$option->Add($option->GroupOptionName);
+		$item->Body = "";
+		$item->Visible = FALSE;
+	}
+
+	// Set up starting record parameters
+	function SetupStartRec() {
+		if ($this->DisplayRecs == 0)
+			return;
+		if ($this->IsPageRequest()) { // Validate request
+			if (@$_GET[EW_TABLE_START_REC] <> "") { // Check for "start" parameter
+				$this->StartRec = $_GET[EW_TABLE_START_REC];
+				$this->setStartRecordNumber($this->StartRec);
+			} elseif (@$_GET[EW_TABLE_PAGE_NO] <> "") {
+				$PageNo = $_GET[EW_TABLE_PAGE_NO];
+				if (is_numeric($PageNo)) {
+					$this->StartRec = ($PageNo-1)*$this->DisplayRecs+1;
+					if ($this->StartRec <= 0) {
+						$this->StartRec = 1;
+					} elseif ($this->StartRec >= intval(($this->TotalRecs-1)/$this->DisplayRecs)*$this->DisplayRecs+1) {
+						$this->StartRec = intval(($this->TotalRecs-1)/$this->DisplayRecs)*$this->DisplayRecs+1;
+					}
+					$this->setStartRecordNumber($this->StartRec);
+				}
+			}
+		}
+		$this->StartRec = $this->getStartRecordNumber();
+
+		// Check if correct start record counter
+		if (!is_numeric($this->StartRec) || $this->StartRec == "") { // Avoid invalid start record counter
+			$this->StartRec = 1; // Reset start record counter
+			$this->setStartRecordNumber($this->StartRec);
+		} elseif (intval($this->StartRec) > intval($this->TotalRecs)) { // Avoid starting record > total records
+			$this->StartRec = intval(($this->TotalRecs-1)/$this->DisplayRecs)*$this->DisplayRecs+1; // Point to last page first record
+			$this->setStartRecordNumber($this->StartRec);
+		} elseif (($this->StartRec-1) % $this->DisplayRecs <> 0) {
+			$this->StartRec = intval(($this->StartRec-1)/$this->DisplayRecs)*$this->DisplayRecs+1; // Point to page boundary
+			$this->setStartRecordNumber($this->StartRec);
+		}
+	}
+
+	// Load recordset
+	function LoadRecordset($offset = -1, $rowcnt = -1) {
+
+		// Load List page SQL
+		$sSql = $this->ListSQL();
+		$conn = &$this->Connection();
+
+		// Load recordset
+		$dbtype = ew_GetConnectionType($this->DBID);
+		if ($this->UseSelectLimit) {
+			$conn->raiseErrorFn = $GLOBALS["EW_ERROR_FN"];
+			if ($dbtype == "MSSQL") {
+				$rs = $conn->SelectLimit($sSql, $rowcnt, $offset, array("_hasOrderBy" => trim($this->getOrderBy()) || trim($this->getSessionOrderBy())));
+			} else {
+				$rs = $conn->SelectLimit($sSql, $rowcnt, $offset);
+			}
+			$conn->raiseErrorFn = '';
+		} else {
+			$rs = ew_LoadRecordset($sSql, $conn);
+		}
+
+		// Call Recordset Selected event
+		$this->Recordset_Selected($rs);
+		return $rs;
+	}
+
+	// Load row based on key values
+	function LoadRow() {
+		global $Security, $Language;
+		$sFilter = $this->KeyFilter();
+
+		// Call Row Selecting event
+		$this->Row_Selecting($sFilter);
+
+		// Load SQL based on filter
+		$this->CurrentFilter = $sFilter;
+		$sSql = $this->SQL();
+		$conn = &$this->Connection();
+		$res = FALSE;
+		$rs = ew_LoadRecordset($sSql, $conn);
+		if ($rs && !$rs->EOF) {
+			$res = TRUE;
+			$this->LoadRowValues($rs); // Load row values
+			$rs->Close();
+		}
+		return $res;
+	}
+
+	// Load row values from recordset
+	function LoadRowValues($rs = NULL) {
+		if ($rs && !$rs->EOF)
+			$row = $rs->fields;
+		else
+			$row = $this->NewRow(); 
+
+		// Call Row Selected event
+		$this->Row_Selected($row);
+		if (!$rs || $rs->EOF)
+			return;
+		if ($this->AuditTrailOnView) $this->WriteAuditTrailOnView($row);
+		$this->code->setDbValue($row['code']);
+		$this->date_initiated->setDbValue($row['date_initiated']);
+		$this->refernce_id->setDbValue($row['refernce_id']);
+		$this->employee_name->setDbValue($row['employee_name']);
+		$this->address->setDbValue($row['address']);
+		$this->mobile->setDbValue($row['mobile']);
+		$this->department->setDbValue($row['department']);
+		$this->loan_amount->setDbValue($row['loan_amount']);
+		$this->amount_inwords->setDbValue($row['amount_inwords']);
+		$this->purpose->setDbValue($row['purpose']);
+		$this->repayment_period->setDbValue($row['repayment_period']);
+		$this->salary_permonth->setDbValue($row['salary_permonth']);
+		$this->previous_loan->setDbValue($row['previous_loan']);
+		$this->date_collected->setDbValue($row['date_collected']);
+		$this->date_liquidated->setDbValue($row['date_liquidated']);
+		$this->balance_remaining->setDbValue($row['balance_remaining']);
+		$this->applicant_date->setDbValue($row['applicant_date']);
+		$this->applicant_passport->Upload->DbValue = $row['applicant_passport'];
+		$this->applicant_passport->setDbValue($this->applicant_passport->Upload->DbValue);
+		$this->guarantor_name->setDbValue($row['guarantor_name']);
+		$this->guarantor_address->setDbValue($row['guarantor_address']);
+		$this->guarantor_mobile->setDbValue($row['guarantor_mobile']);
+		$this->guarantor_department->setDbValue($row['guarantor_department']);
+		$this->account_no->setDbValue($row['account_no']);
+		$this->bank_name->setDbValue($row['bank_name']);
+		$this->employers_name->setDbValue($row['employers_name']);
+		$this->employers_address->setDbValue($row['employers_address']);
+		$this->employers_mobile->setDbValue($row['employers_mobile']);
+		$this->guarantor_date->setDbValue($row['guarantor_date']);
+		$this->guarantor_passport->Upload->DbValue = $row['guarantor_passport'];
+		$this->guarantor_passport->setDbValue($this->guarantor_passport->Upload->DbValue);
+		$this->status->setDbValue($row['status']);
+		$this->initiator_action->setDbValue($row['initiator_action']);
+		$this->initiator_comment->setDbValue($row['initiator_comment']);
+		$this->recommended_date->setDbValue($row['recommended_date']);
+		$this->document_checklist->setDbValue($row['document_checklist']);
+		$this->recommender_action->setDbValue($row['recommender_action']);
+		$this->recommender_comment->setDbValue($row['recommender_comment']);
+		$this->recommended_by->setDbValue($row['recommended_by']);
+		$this->application_status->setDbValue($row['application_status']);
+		$this->approved_amount->setDbValue($row['approved_amount']);
+		$this->duration_approved->setDbValue($row['duration_approved']);
+		$this->approval_date->setDbValue($row['approval_date']);
+		$this->approval_action->setDbValue($row['approval_action']);
+		$this->approval_comment->setDbValue($row['approval_comment']);
+		$this->approved_by->setDbValue($row['approved_by']);
+	}
+
+	// Return a row with default values
+	function NewRow() {
+		$row = array();
+		$row['code'] = NULL;
+		$row['date_initiated'] = NULL;
+		$row['refernce_id'] = NULL;
+		$row['employee_name'] = NULL;
+		$row['address'] = NULL;
+		$row['mobile'] = NULL;
+		$row['department'] = NULL;
+		$row['loan_amount'] = NULL;
+		$row['amount_inwords'] = NULL;
+		$row['purpose'] = NULL;
+		$row['repayment_period'] = NULL;
+		$row['salary_permonth'] = NULL;
+		$row['previous_loan'] = NULL;
+		$row['date_collected'] = NULL;
+		$row['date_liquidated'] = NULL;
+		$row['balance_remaining'] = NULL;
+		$row['applicant_date'] = NULL;
+		$row['applicant_passport'] = NULL;
+		$row['guarantor_name'] = NULL;
+		$row['guarantor_address'] = NULL;
+		$row['guarantor_mobile'] = NULL;
+		$row['guarantor_department'] = NULL;
+		$row['account_no'] = NULL;
+		$row['bank_name'] = NULL;
+		$row['employers_name'] = NULL;
+		$row['employers_address'] = NULL;
+		$row['employers_mobile'] = NULL;
+		$row['guarantor_date'] = NULL;
+		$row['guarantor_passport'] = NULL;
+		$row['status'] = NULL;
+		$row['initiator_action'] = NULL;
+		$row['initiator_comment'] = NULL;
+		$row['recommended_date'] = NULL;
+		$row['document_checklist'] = NULL;
+		$row['recommender_action'] = NULL;
+		$row['recommender_comment'] = NULL;
+		$row['recommended_by'] = NULL;
+		$row['application_status'] = NULL;
+		$row['approved_amount'] = NULL;
+		$row['duration_approved'] = NULL;
+		$row['approval_date'] = NULL;
+		$row['approval_action'] = NULL;
+		$row['approval_comment'] = NULL;
+		$row['approved_by'] = NULL;
+		return $row;
+	}
+
+	// Load DbValue from recordset
+	function LoadDbValues(&$rs) {
+		if (!$rs || !is_array($rs) && $rs->EOF)
+			return;
+		$row = is_array($rs) ? $rs : $rs->fields;
+		$this->code->DbValue = $row['code'];
+		$this->date_initiated->DbValue = $row['date_initiated'];
+		$this->refernce_id->DbValue = $row['refernce_id'];
+		$this->employee_name->DbValue = $row['employee_name'];
+		$this->address->DbValue = $row['address'];
+		$this->mobile->DbValue = $row['mobile'];
+		$this->department->DbValue = $row['department'];
+		$this->loan_amount->DbValue = $row['loan_amount'];
+		$this->amount_inwords->DbValue = $row['amount_inwords'];
+		$this->purpose->DbValue = $row['purpose'];
+		$this->repayment_period->DbValue = $row['repayment_period'];
+		$this->salary_permonth->DbValue = $row['salary_permonth'];
+		$this->previous_loan->DbValue = $row['previous_loan'];
+		$this->date_collected->DbValue = $row['date_collected'];
+		$this->date_liquidated->DbValue = $row['date_liquidated'];
+		$this->balance_remaining->DbValue = $row['balance_remaining'];
+		$this->applicant_date->DbValue = $row['applicant_date'];
+		$this->applicant_passport->Upload->DbValue = $row['applicant_passport'];
+		$this->guarantor_name->DbValue = $row['guarantor_name'];
+		$this->guarantor_address->DbValue = $row['guarantor_address'];
+		$this->guarantor_mobile->DbValue = $row['guarantor_mobile'];
+		$this->guarantor_department->DbValue = $row['guarantor_department'];
+		$this->account_no->DbValue = $row['account_no'];
+		$this->bank_name->DbValue = $row['bank_name'];
+		$this->employers_name->DbValue = $row['employers_name'];
+		$this->employers_address->DbValue = $row['employers_address'];
+		$this->employers_mobile->DbValue = $row['employers_mobile'];
+		$this->guarantor_date->DbValue = $row['guarantor_date'];
+		$this->guarantor_passport->Upload->DbValue = $row['guarantor_passport'];
+		$this->status->DbValue = $row['status'];
+		$this->initiator_action->DbValue = $row['initiator_action'];
+		$this->initiator_comment->DbValue = $row['initiator_comment'];
+		$this->recommended_date->DbValue = $row['recommended_date'];
+		$this->document_checklist->DbValue = $row['document_checklist'];
+		$this->recommender_action->DbValue = $row['recommender_action'];
+		$this->recommender_comment->DbValue = $row['recommender_comment'];
+		$this->recommended_by->DbValue = $row['recommended_by'];
+		$this->application_status->DbValue = $row['application_status'];
+		$this->approved_amount->DbValue = $row['approved_amount'];
+		$this->duration_approved->DbValue = $row['duration_approved'];
+		$this->approval_date->DbValue = $row['approval_date'];
+		$this->approval_action->DbValue = $row['approval_action'];
+		$this->approval_comment->DbValue = $row['approval_comment'];
+		$this->approved_by->DbValue = $row['approved_by'];
+	}
+
+	// Render row values based on field settings
+	function RenderRow() {
+		global $Security, $Language, $gsLanguage;
+
+		// Initialize URLs
+		$this->AddUrl = $this->GetAddUrl();
+		$this->EditUrl = $this->GetEditUrl();
+		$this->CopyUrl = $this->GetCopyUrl();
+		$this->DeleteUrl = $this->GetDeleteUrl();
+		$this->ListUrl = $this->GetListUrl();
+		$this->SetupOtherOptions();
+
+		// Convert decimal values if posted back
+		if ($this->loan_amount->FormValue == $this->loan_amount->CurrentValue && is_numeric(ew_StrToFloat($this->loan_amount->CurrentValue)))
+			$this->loan_amount->CurrentValue = ew_StrToFloat($this->loan_amount->CurrentValue);
+
+		// Convert decimal values if posted back
+		if ($this->salary_permonth->FormValue == $this->salary_permonth->CurrentValue && is_numeric(ew_StrToFloat($this->salary_permonth->CurrentValue)))
+			$this->salary_permonth->CurrentValue = ew_StrToFloat($this->salary_permonth->CurrentValue);
+
+		// Convert decimal values if posted back
+		if ($this->previous_loan->FormValue == $this->previous_loan->CurrentValue && is_numeric(ew_StrToFloat($this->previous_loan->CurrentValue)))
+			$this->previous_loan->CurrentValue = ew_StrToFloat($this->previous_loan->CurrentValue);
+
+		// Convert decimal values if posted back
+		if ($this->balance_remaining->FormValue == $this->balance_remaining->CurrentValue && is_numeric(ew_StrToFloat($this->balance_remaining->CurrentValue)))
+			$this->balance_remaining->CurrentValue = ew_StrToFloat($this->balance_remaining->CurrentValue);
+
+		// Convert decimal values if posted back
+		if ($this->approved_amount->FormValue == $this->approved_amount->CurrentValue && is_numeric(ew_StrToFloat($this->approved_amount->CurrentValue)))
+			$this->approved_amount->CurrentValue = ew_StrToFloat($this->approved_amount->CurrentValue);
+
+		// Call Row_Rendering event
+		$this->Row_Rendering();
+
+		// Common render codes for all row types
+		// code
+		// date_initiated
+		// refernce_id
+		// employee_name
+		// address
+		// mobile
+		// department
+		// loan_amount
+		// amount_inwords
+		// purpose
+		// repayment_period
+		// salary_permonth
+		// previous_loan
+		// date_collected
+		// date_liquidated
+		// balance_remaining
+		// applicant_date
+		// applicant_passport
+		// guarantor_name
+		// guarantor_address
+		// guarantor_mobile
+		// guarantor_department
+		// account_no
+		// bank_name
+		// employers_name
+		// employers_address
+		// employers_mobile
+		// guarantor_date
+		// guarantor_passport
+		// status
+		// initiator_action
+		// initiator_comment
+		// recommended_date
+		// document_checklist
+		// recommender_action
+		// recommender_comment
+		// recommended_by
+		// application_status
+		// approved_amount
+		// duration_approved
+		// approval_date
+		// approval_action
+		// approval_comment
+		// approved_by
+
+		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
+
+		// code
+		$this->code->ViewValue = $this->code->CurrentValue;
+		$this->code->ViewCustomAttributes = "";
+
+		// date_initiated
+		$this->date_initiated->ViewValue = $this->date_initiated->CurrentValue;
+		$this->date_initiated->ViewValue = ew_FormatDateTime($this->date_initiated->ViewValue, 0);
+		$this->date_initiated->ViewCustomAttributes = "";
+
+		// refernce_id
+		$this->refernce_id->ViewValue = $this->refernce_id->CurrentValue;
+		$this->refernce_id->ViewCustomAttributes = "";
+
+		// employee_name
+		$this->employee_name->ViewValue = $this->employee_name->CurrentValue;
+		$this->employee_name->ViewCustomAttributes = "";
+
+		// address
+		$this->address->ViewValue = $this->address->CurrentValue;
+		$this->address->ViewCustomAttributes = "";
+
+		// mobile
+		$this->mobile->ViewValue = $this->mobile->CurrentValue;
+		$this->mobile->ViewCustomAttributes = "";
+
+		// department
+		if (strval($this->department->CurrentValue) <> "") {
+			$sFilterWrk = "`department_id`" . ew_SearchString("=", $this->department->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
+		$sWhereWrk = "";
+		$this->department->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->department->ViewValue = $this->department->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->department->ViewValue = $this->department->CurrentValue;
+			}
+		} else {
+			$this->department->ViewValue = NULL;
+		}
+		$this->department->ViewCustomAttributes = "";
+
+		// loan_amount
+		$this->loan_amount->ViewValue = $this->loan_amount->CurrentValue;
+		$this->loan_amount->ViewValue = ew_FormatNumber($this->loan_amount->ViewValue, 0, -2, -2, -2);
+		$this->loan_amount->ViewCustomAttributes = "";
+
+		// amount_inwords
+		$this->amount_inwords->ViewValue = $this->amount_inwords->CurrentValue;
+		$this->amount_inwords->ViewCustomAttributes = "";
+
+		// purpose
+		$this->purpose->ViewValue = $this->purpose->CurrentValue;
+		$this->purpose->ViewCustomAttributes = "";
+
+		// repayment_period
+		if (strval($this->repayment_period->CurrentValue) <> "") {
+			$sFilterWrk = "`code`" . ew_SearchString("=", $this->repayment_period->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `code`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `duration_months`";
+		$sWhereWrk = "";
+		$this->repayment_period->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->repayment_period, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->repayment_period->ViewValue = $this->repayment_period->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->repayment_period->ViewValue = $this->repayment_period->CurrentValue;
+			}
+		} else {
+			$this->repayment_period->ViewValue = NULL;
+		}
+		$this->repayment_period->ViewCustomAttributes = "";
+
+		// salary_permonth
+		$this->salary_permonth->ViewValue = $this->salary_permonth->CurrentValue;
+		$this->salary_permonth->ViewValue = ew_FormatNumber($this->salary_permonth->ViewValue, 0, -2, -2, -2);
+		$this->salary_permonth->ViewCustomAttributes = "";
+
+		// previous_loan
+		$this->previous_loan->ViewValue = $this->previous_loan->CurrentValue;
+		$this->previous_loan->ViewValue = ew_FormatNumber($this->previous_loan->ViewValue, 0, -2, -2, -2);
+		$this->previous_loan->ViewCustomAttributes = "";
+
+		// date_collected
+		$this->date_collected->ViewValue = $this->date_collected->CurrentValue;
+		$this->date_collected->ViewValue = ew_FormatDateTime($this->date_collected->ViewValue, 0);
+		$this->date_collected->ViewCustomAttributes = "";
+
+		// date_liquidated
+		$this->date_liquidated->ViewValue = $this->date_liquidated->CurrentValue;
+		$this->date_liquidated->ViewValue = ew_FormatDateTime($this->date_liquidated->ViewValue, 0);
+		$this->date_liquidated->ViewCustomAttributes = "";
+
+		// balance_remaining
+		$this->balance_remaining->ViewValue = $this->balance_remaining->CurrentValue;
+		$this->balance_remaining->ViewValue = ew_FormatNumber($this->balance_remaining->ViewValue, 0, -2, -2, -2);
+		$this->balance_remaining->ViewCustomAttributes = "";
+
+		// applicant_date
+		$this->applicant_date->ViewValue = $this->applicant_date->CurrentValue;
+		$this->applicant_date->ViewValue = ew_FormatDateTime($this->applicant_date->ViewValue, 14);
+		$this->applicant_date->ViewCustomAttributes = "";
+
+		// applicant_passport
+		if (!ew_Empty($this->applicant_passport->Upload->DbValue)) {
+			$this->applicant_passport->ViewValue = $this->applicant_passport->Upload->DbValue;
+		} else {
+			$this->applicant_passport->ViewValue = "";
+		}
+		$this->applicant_passport->ViewCustomAttributes = "";
+
+		// guarantor_name
+		$this->guarantor_name->ViewValue = $this->guarantor_name->CurrentValue;
+		$this->guarantor_name->ViewCustomAttributes = "";
+
+		// guarantor_address
+		$this->guarantor_address->ViewValue = $this->guarantor_address->CurrentValue;
+		$this->guarantor_address->ViewCustomAttributes = "";
+
+		// guarantor_mobile
+		$this->guarantor_mobile->ViewValue = $this->guarantor_mobile->CurrentValue;
+		$this->guarantor_mobile->ViewCustomAttributes = "";
+
+		// guarantor_department
+		if (strval($this->guarantor_department->CurrentValue) <> "") {
+			$sFilterWrk = "`department_id`" . ew_SearchString("=", $this->guarantor_department->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
+		$sWhereWrk = "";
+		$this->guarantor_department->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->guarantor_department, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->guarantor_department->ViewValue = $this->guarantor_department->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->guarantor_department->ViewValue = $this->guarantor_department->CurrentValue;
+			}
+		} else {
+			$this->guarantor_department->ViewValue = NULL;
+		}
+		$this->guarantor_department->ViewCustomAttributes = "";
+
+		// account_no
+		$this->account_no->ViewValue = $this->account_no->CurrentValue;
+		$this->account_no->ViewCustomAttributes = "";
+
+		// bank_name
+		if (strval($this->bank_name->CurrentValue) <> "") {
+			$sFilterWrk = "`code`" . ew_SearchString("=", $this->bank_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `code`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `banks_list`";
+		$sWhereWrk = "";
+		$this->bank_name->LookupFilters = array("dx1" => '`description`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->bank_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->bank_name->ViewValue = $this->bank_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->bank_name->ViewValue = $this->bank_name->CurrentValue;
+			}
+		} else {
+			$this->bank_name->ViewValue = NULL;
+		}
+		$this->bank_name->ViewCustomAttributes = "";
+
+		// employers_name
+		$this->employers_name->ViewValue = $this->employers_name->CurrentValue;
+		$this->employers_name->ViewCustomAttributes = "";
+
+		// employers_address
+		$this->employers_address->ViewValue = $this->employers_address->CurrentValue;
+		$this->employers_address->ViewCustomAttributes = "";
+
+		// employers_mobile
+		$this->employers_mobile->ViewValue = $this->employers_mobile->CurrentValue;
+		$this->employers_mobile->ViewCustomAttributes = "";
+
+		// guarantor_date
+		$this->guarantor_date->ViewValue = $this->guarantor_date->CurrentValue;
+		$this->guarantor_date->ViewValue = ew_FormatDateTime($this->guarantor_date->ViewValue, 14);
+		$this->guarantor_date->ViewCustomAttributes = "";
+
+		// guarantor_passport
+		if (!ew_Empty($this->guarantor_passport->Upload->DbValue)) {
+			$this->guarantor_passport->ViewValue = $this->guarantor_passport->Upload->DbValue;
+		} else {
+			$this->guarantor_passport->ViewValue = "";
+		}
+		$this->guarantor_passport->ViewCustomAttributes = "";
+
+		// status
+		$this->status->ViewValue = $this->status->CurrentValue;
+		if (strval($this->status->CurrentValue) <> "") {
+			$sFilterWrk = "`code`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `code`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `loan_status`";
+		$sWhereWrk = "";
+		$this->status->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->status->ViewValue = $this->status->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->status->ViewValue = $this->status->CurrentValue;
+			}
+		} else {
+			$this->status->ViewValue = NULL;
+		}
+		$this->status->ViewCustomAttributes = "";
+
+		// initiator_action
+		if (strval($this->initiator_action->CurrentValue) <> "") {
+			$this->initiator_action->ViewValue = $this->initiator_action->OptionCaption($this->initiator_action->CurrentValue);
+		} else {
+			$this->initiator_action->ViewValue = NULL;
+		}
+		$this->initiator_action->ViewCustomAttributes = "";
+
+		// initiator_comment
+		$this->initiator_comment->ViewValue = $this->initiator_comment->CurrentValue;
+		$this->initiator_comment->ViewCustomAttributes = "";
+
+		// recommended_date
+		$this->recommended_date->ViewValue = $this->recommended_date->CurrentValue;
+		$this->recommended_date->ViewValue = ew_FormatDateTime($this->recommended_date->ViewValue, 14);
+		$this->recommended_date->ViewCustomAttributes = "";
+
+		// document_checklist
+		if (strval($this->document_checklist->CurrentValue) <> "") {
+			$arwrk = explode(",", $this->document_checklist->CurrentValue);
+			$sFilterWrk = "";
+			foreach ($arwrk as $wrk) {
+				if ($sFilterWrk <> "") $sFilterWrk .= " OR ";
+				$sFilterWrk .= "`code`" . ew_SearchString("=", trim($wrk), EW_DATATYPE_NUMBER, "");
+			}
+		$sSqlWrk = "SELECT `code`, `discription` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `document_checklist`";
+		$sWhereWrk = "";
+		$this->document_checklist->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->document_checklist, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$this->document_checklist->ViewValue = "";
+				$ari = 0;
+				while (!$rswrk->EOF) {
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('DispFld');
+					$this->document_checklist->ViewValue .= $this->document_checklist->DisplayValue($arwrk);
+					$rswrk->MoveNext();
+					if (!$rswrk->EOF) $this->document_checklist->ViewValue .= ew_ViewOptionSeparator($ari); // Separate Options
+					$ari++;
+				}
+				$rswrk->Close();
+			} else {
+				$this->document_checklist->ViewValue = $this->document_checklist->CurrentValue;
+			}
+		} else {
+			$this->document_checklist->ViewValue = NULL;
+		}
+		$this->document_checklist->ViewCustomAttributes = "";
+
+		// recommender_action
+		if (strval($this->recommender_action->CurrentValue) <> "") {
+			$this->recommender_action->ViewValue = $this->recommender_action->OptionCaption($this->recommender_action->CurrentValue);
+		} else {
+			$this->recommender_action->ViewValue = NULL;
+		}
+		$this->recommender_action->ViewCustomAttributes = "";
+
+		// recommender_comment
+		$this->recommender_comment->ViewValue = $this->recommender_comment->CurrentValue;
+		$this->recommender_comment->ViewCustomAttributes = "";
+
+		// recommended_by
+		$this->recommended_by->ViewValue = $this->recommended_by->CurrentValue;
+		if (strval($this->recommended_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->recommended_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->recommended_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->recommended_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->recommended_by->ViewValue = $this->recommended_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->recommended_by->ViewValue = $this->recommended_by->CurrentValue;
+			}
+		} else {
+			$this->recommended_by->ViewValue = NULL;
+		}
+		$this->recommended_by->ViewCustomAttributes = "";
+
+		// application_status
+		if (strval($this->application_status->CurrentValue) <> "") {
+			$this->application_status->ViewValue = $this->application_status->OptionCaption($this->application_status->CurrentValue);
+		} else {
+			$this->application_status->ViewValue = NULL;
+		}
+		$this->application_status->ViewCustomAttributes = "";
+
+		// approved_amount
+		$this->approved_amount->ViewValue = $this->approved_amount->CurrentValue;
+		$this->approved_amount->ViewValue = ew_FormatNumber($this->approved_amount->ViewValue, 0, -2, -2, -2);
+		$this->approved_amount->ViewCustomAttributes = "";
+
+		// duration_approved
+		if (strval($this->duration_approved->CurrentValue) <> "") {
+			$sFilterWrk = "`code`" . ew_SearchString("=", $this->duration_approved->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `code`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `duration_months`";
+		$sWhereWrk = "";
+		$this->duration_approved->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->duration_approved, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->duration_approved->ViewValue = $this->duration_approved->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->duration_approved->ViewValue = $this->duration_approved->CurrentValue;
+			}
+		} else {
+			$this->duration_approved->ViewValue = NULL;
+		}
+		$this->duration_approved->ViewValue = ew_FormatDateTime($this->duration_approved->ViewValue, 0);
+		$this->duration_approved->ViewCustomAttributes = "";
+
+		// approval_date
+		$this->approval_date->ViewValue = $this->approval_date->CurrentValue;
+		$this->approval_date->ViewValue = ew_FormatDateTime($this->approval_date->ViewValue, 17);
+		$this->approval_date->ViewCustomAttributes = "";
+
+		// approval_action
+		if (strval($this->approval_action->CurrentValue) <> "") {
+			$this->approval_action->ViewValue = $this->approval_action->OptionCaption($this->approval_action->CurrentValue);
+		} else {
+			$this->approval_action->ViewValue = NULL;
+		}
+		$this->approval_action->ViewCustomAttributes = "";
+
+		// approval_comment
+		$this->approval_comment->ViewValue = $this->approval_comment->CurrentValue;
+		$this->approval_comment->ViewCustomAttributes = "";
+
+		// approved_by
+		if (strval($this->approved_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->approved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->approved_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->approved_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->approved_by->ViewValue = $this->approved_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
+			}
+		} else {
+			$this->approved_by->ViewValue = NULL;
+		}
+		$this->approved_by->ViewCustomAttributes = "";
+
+			// code
+			$this->code->LinkCustomAttributes = "";
+			$this->code->HrefValue = "";
+			$this->code->TooltipValue = "";
+
+			// date_initiated
+			$this->date_initiated->LinkCustomAttributes = "";
+			$this->date_initiated->HrefValue = "";
+			$this->date_initiated->TooltipValue = "";
+
+			// refernce_id
+			$this->refernce_id->LinkCustomAttributes = "";
+			$this->refernce_id->HrefValue = "";
+			$this->refernce_id->TooltipValue = "";
+
+			// employee_name
+			$this->employee_name->LinkCustomAttributes = "";
+			$this->employee_name->HrefValue = "";
+			$this->employee_name->TooltipValue = "";
+
+			// address
+			$this->address->LinkCustomAttributes = "";
+			$this->address->HrefValue = "";
+			$this->address->TooltipValue = "";
+
+			// mobile
+			$this->mobile->LinkCustomAttributes = "";
+			$this->mobile->HrefValue = "";
+			$this->mobile->TooltipValue = "";
+
+			// department
+			$this->department->LinkCustomAttributes = "";
+			$this->department->HrefValue = "";
+			$this->department->TooltipValue = "";
+
+			// loan_amount
+			$this->loan_amount->LinkCustomAttributes = "";
+			$this->loan_amount->HrefValue = "";
+			$this->loan_amount->TooltipValue = "";
+
+			// amount_inwords
+			$this->amount_inwords->LinkCustomAttributes = "";
+			$this->amount_inwords->HrefValue = "";
+			$this->amount_inwords->TooltipValue = "";
+
+			// purpose
+			$this->purpose->LinkCustomAttributes = "";
+			$this->purpose->HrefValue = "";
+			$this->purpose->TooltipValue = "";
+
+			// repayment_period
+			$this->repayment_period->LinkCustomAttributes = "";
+			$this->repayment_period->HrefValue = "";
+			$this->repayment_period->TooltipValue = "";
+
+			// salary_permonth
+			$this->salary_permonth->LinkCustomAttributes = "";
+			$this->salary_permonth->HrefValue = "";
+			$this->salary_permonth->TooltipValue = "";
+
+			// previous_loan
+			$this->previous_loan->LinkCustomAttributes = "";
+			$this->previous_loan->HrefValue = "";
+			$this->previous_loan->TooltipValue = "";
+
+			// date_collected
+			$this->date_collected->LinkCustomAttributes = "";
+			$this->date_collected->HrefValue = "";
+			$this->date_collected->TooltipValue = "";
+
+			// date_liquidated
+			$this->date_liquidated->LinkCustomAttributes = "";
+			$this->date_liquidated->HrefValue = "";
+			$this->date_liquidated->TooltipValue = "";
+
+			// balance_remaining
+			$this->balance_remaining->LinkCustomAttributes = "";
+			$this->balance_remaining->HrefValue = "";
+			$this->balance_remaining->TooltipValue = "";
+
+			// applicant_date
+			$this->applicant_date->LinkCustomAttributes = "";
+			$this->applicant_date->HrefValue = "";
+			$this->applicant_date->TooltipValue = "";
+
+			// applicant_passport
+			$this->applicant_passport->LinkCustomAttributes = "";
+			$this->applicant_passport->HrefValue = "";
+			$this->applicant_passport->HrefValue2 = $this->applicant_passport->UploadPath . $this->applicant_passport->Upload->DbValue;
+			$this->applicant_passport->TooltipValue = "";
+
+			// guarantor_name
+			$this->guarantor_name->LinkCustomAttributes = "";
+			$this->guarantor_name->HrefValue = "";
+			$this->guarantor_name->TooltipValue = "";
+
+			// guarantor_address
+			$this->guarantor_address->LinkCustomAttributes = "";
+			$this->guarantor_address->HrefValue = "";
+			$this->guarantor_address->TooltipValue = "";
+
+			// guarantor_mobile
+			$this->guarantor_mobile->LinkCustomAttributes = "";
+			$this->guarantor_mobile->HrefValue = "";
+			$this->guarantor_mobile->TooltipValue = "";
+
+			// guarantor_department
+			$this->guarantor_department->LinkCustomAttributes = "";
+			$this->guarantor_department->HrefValue = "";
+			$this->guarantor_department->TooltipValue = "";
+
+			// account_no
+			$this->account_no->LinkCustomAttributes = "";
+			$this->account_no->HrefValue = "";
+			$this->account_no->TooltipValue = "";
+
+			// bank_name
+			$this->bank_name->LinkCustomAttributes = "";
+			$this->bank_name->HrefValue = "";
+			$this->bank_name->TooltipValue = "";
+
+			// employers_name
+			$this->employers_name->LinkCustomAttributes = "";
+			$this->employers_name->HrefValue = "";
+			$this->employers_name->TooltipValue = "";
+
+			// employers_address
+			$this->employers_address->LinkCustomAttributes = "";
+			$this->employers_address->HrefValue = "";
+			$this->employers_address->TooltipValue = "";
+
+			// employers_mobile
+			$this->employers_mobile->LinkCustomAttributes = "";
+			$this->employers_mobile->HrefValue = "";
+			$this->employers_mobile->TooltipValue = "";
+
+			// guarantor_date
+			$this->guarantor_date->LinkCustomAttributes = "";
+			$this->guarantor_date->HrefValue = "";
+			$this->guarantor_date->TooltipValue = "";
+
+			// guarantor_passport
+			$this->guarantor_passport->LinkCustomAttributes = "";
+			$this->guarantor_passport->HrefValue = "";
+			$this->guarantor_passport->HrefValue2 = $this->guarantor_passport->UploadPath . $this->guarantor_passport->Upload->DbValue;
+			$this->guarantor_passport->TooltipValue = "";
+
+			// status
+			$this->status->LinkCustomAttributes = "";
+			$this->status->HrefValue = "";
+			$this->status->TooltipValue = "";
+
+			// initiator_action
+			$this->initiator_action->LinkCustomAttributes = "";
+			$this->initiator_action->HrefValue = "";
+			$this->initiator_action->TooltipValue = "";
+
+			// initiator_comment
+			$this->initiator_comment->LinkCustomAttributes = "";
+			$this->initiator_comment->HrefValue = "";
+			$this->initiator_comment->TooltipValue = "";
+
+			// recommended_date
+			$this->recommended_date->LinkCustomAttributes = "";
+			$this->recommended_date->HrefValue = "";
+			$this->recommended_date->TooltipValue = "";
+
+			// document_checklist
+			$this->document_checklist->LinkCustomAttributes = "";
+			$this->document_checklist->HrefValue = "";
+			$this->document_checklist->TooltipValue = "";
+
+			// recommender_action
+			$this->recommender_action->LinkCustomAttributes = "";
+			$this->recommender_action->HrefValue = "";
+			$this->recommender_action->TooltipValue = "";
+
+			// recommender_comment
+			$this->recommender_comment->LinkCustomAttributes = "";
+			$this->recommender_comment->HrefValue = "";
+			$this->recommender_comment->TooltipValue = "";
+
+			// recommended_by
+			$this->recommended_by->LinkCustomAttributes = "";
+			$this->recommended_by->HrefValue = "";
+			$this->recommended_by->TooltipValue = "";
+
+			// application_status
+			$this->application_status->LinkCustomAttributes = "";
+			$this->application_status->HrefValue = "";
+			$this->application_status->TooltipValue = "";
+
+			// approved_amount
+			$this->approved_amount->LinkCustomAttributes = "";
+			$this->approved_amount->HrefValue = "";
+			$this->approved_amount->TooltipValue = "";
+
+			// duration_approved
+			$this->duration_approved->LinkCustomAttributes = "";
+			$this->duration_approved->HrefValue = "";
+			$this->duration_approved->TooltipValue = "";
+
+			// approval_date
+			$this->approval_date->LinkCustomAttributes = "";
+			$this->approval_date->HrefValue = "";
+			$this->approval_date->TooltipValue = "";
+
+			// approval_action
+			$this->approval_action->LinkCustomAttributes = "";
+			$this->approval_action->HrefValue = "";
+			$this->approval_action->TooltipValue = "";
+
+			// approval_comment
+			$this->approval_comment->LinkCustomAttributes = "";
+			$this->approval_comment->HrefValue = "";
+			$this->approval_comment->TooltipValue = "";
+
+			// approved_by
+			$this->approved_by->LinkCustomAttributes = "";
+			$this->approved_by->HrefValue = "";
+			$this->approved_by->TooltipValue = "";
+		}
+
+		// Call Row Rendered event
+		if ($this->RowType <> EW_ROWTYPE_AGGREGATEINIT)
+			$this->Row_Rendered();
+	}
+
+	// Set up export options
+	function SetupExportOptions() {
+		global $Language;
+
+		// Printer friendly
+		$item = &$this->ExportOptions->Add("print");
+		$item->Body = "<a href=\"" . $this->ExportPrintUrl . "\" class=\"ewExportLink ewPrint\" title=\"" . ew_HtmlEncode($Language->Phrase("PrinterFriendlyText")) . "\" data-caption=\"" . ew_HtmlEncode($Language->Phrase("PrinterFriendlyText")) . "\">" . $Language->Phrase("PrinterFriendly") . "</a>";
+		$item->Visible = TRUE;
+
+		// Export to Excel
+		$item = &$this->ExportOptions->Add("excel");
+		$item->Body = "<a href=\"" . $this->ExportExcelUrl . "\" class=\"ewExportLink ewExcel\" title=\"" . ew_HtmlEncode($Language->Phrase("ExportToExcelText")) . "\" data-caption=\"" . ew_HtmlEncode($Language->Phrase("ExportToExcelText")) . "\">" . $Language->Phrase("ExportToExcel") . "</a>";
+		$item->Visible = TRUE;
+
+		// Export to Word
+		$item = &$this->ExportOptions->Add("word");
+		$item->Body = "<a href=\"" . $this->ExportWordUrl . "\" class=\"ewExportLink ewWord\" title=\"" . ew_HtmlEncode($Language->Phrase("ExportToWordText")) . "\" data-caption=\"" . ew_HtmlEncode($Language->Phrase("ExportToWordText")) . "\">" . $Language->Phrase("ExportToWord") . "</a>";
+		$item->Visible = FALSE;
+
+		// Export to Html
+		$item = &$this->ExportOptions->Add("html");
+		$item->Body = "<a href=\"" . $this->ExportHtmlUrl . "\" class=\"ewExportLink ewHtml\" title=\"" . ew_HtmlEncode($Language->Phrase("ExportToHtmlText")) . "\" data-caption=\"" . ew_HtmlEncode($Language->Phrase("ExportToHtmlText")) . "\">" . $Language->Phrase("ExportToHtml") . "</a>";
+		$item->Visible = FALSE;
+
+		// Export to Xml
+		$item = &$this->ExportOptions->Add("xml");
+		$item->Body = "<a href=\"" . $this->ExportXmlUrl . "\" class=\"ewExportLink ewXml\" title=\"" . ew_HtmlEncode($Language->Phrase("ExportToXmlText")) . "\" data-caption=\"" . ew_HtmlEncode($Language->Phrase("ExportToXmlText")) . "\">" . $Language->Phrase("ExportToXml") . "</a>";
+		$item->Visible = FALSE;
+
+		// Export to Csv
+		$item = &$this->ExportOptions->Add("csv");
+		$item->Body = "<a href=\"" . $this->ExportCsvUrl . "\" class=\"ewExportLink ewCsv\" title=\"" . ew_HtmlEncode($Language->Phrase("ExportToCsvText")) . "\" data-caption=\"" . ew_HtmlEncode($Language->Phrase("ExportToCsvText")) . "\">" . $Language->Phrase("ExportToCsv") . "</a>";
+		$item->Visible = TRUE;
+
+		// Export to Pdf
+		$item = &$this->ExportOptions->Add("pdf");
+		$item->Body = "<a href=\"" . $this->ExportPdfUrl . "\" class=\"ewExportLink ewPdf\" title=\"" . ew_HtmlEncode($Language->Phrase("ExportToPDFText")) . "\" data-caption=\"" . ew_HtmlEncode($Language->Phrase("ExportToPDFText")) . "\">" . $Language->Phrase("ExportToPDF") . "</a>";
+		$item->Visible = TRUE;
+
+		// Export to Email
+		$item = &$this->ExportOptions->Add("email");
+		$url = "";
+		$item->Body = "<button id=\"emf_loan_report\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_loan_report',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.floan_reportview,key:" . ew_ArrayToJsonAttr($this->RecKey) . ",sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
+		$item->Visible = FALSE;
+
+		// Drop down button for export
+		$this->ExportOptions->UseButtonGroup = TRUE;
+		$this->ExportOptions->UseImageAndText = TRUE;
+		$this->ExportOptions->UseDropDownButton = TRUE;
+		if ($this->ExportOptions->UseButtonGroup && ew_IsMobile())
+			$this->ExportOptions->UseDropDownButton = TRUE;
+		$this->ExportOptions->DropDownButtonPhrase = $Language->Phrase("ButtonExport");
+
+		// Add group option item
+		$item = &$this->ExportOptions->Add($this->ExportOptions->GroupOptionName);
+		$item->Body = "";
+		$item->Visible = FALSE;
+
+		// Hide options for export
+		if ($this->Export <> "")
+			$this->ExportOptions->HideAllOptions();
+	}
+
+	// Export data in HTML/CSV/Word/Excel/XML/Email/PDF format
+	function ExportData() {
+		$utf8 = (strtolower(EW_CHARSET) == "utf-8");
+		$bSelectLimit = FALSE;
+
+		// Load recordset
+		if ($bSelectLimit) {
+			$this->TotalRecs = $this->ListRecordCount();
+		} else {
+			if (!$this->Recordset)
+				$this->Recordset = $this->LoadRecordset();
+			$rs = &$this->Recordset;
+			if ($rs)
+				$this->TotalRecs = $rs->RecordCount();
+		}
+		$this->StartRec = 1;
+		$this->SetupStartRec(); // Set up start record position
+
+		// Set the last record to display
+		if ($this->DisplayRecs <= 0) {
+			$this->StopRec = $this->TotalRecs;
+		} else {
+			$this->StopRec = $this->StartRec + $this->DisplayRecs - 1;
+		}
+		if (!$rs) {
+			header("Content-Type:"); // Remove header
+			header("Content-Disposition:");
+			$this->ShowMessage();
+			return;
+		}
+		$this->ExportDoc = ew_ExportDocument($this, "v");
+		$Doc = &$this->ExportDoc;
+		if ($bSelectLimit) {
+			$this->StartRec = 1;
+			$this->StopRec = $this->DisplayRecs <= 0 ? $this->TotalRecs : $this->DisplayRecs;
+		} else {
+
+			//$this->StartRec = $this->StartRec;
+			//$this->StopRec = $this->StopRec;
+
+		}
+
+		// Call Page Exporting server event
+		$this->ExportDoc->ExportCustom = !$this->Page_Exporting();
+		$ParentTable = "";
+		$sHeader = $this->PageHeader;
+		$this->Page_DataRendering($sHeader);
+		$Doc->Text .= $sHeader;
+		$this->ExportDocument($Doc, $rs, $this->StartRec, $this->StopRec, "view");
+		$sFooter = $this->PageFooter;
+		$this->Page_DataRendered($sFooter);
+		$Doc->Text .= $sFooter;
+
+		// Close recordset
+		$rs->Close();
+
+		// Call Page Exported server event
+		$this->Page_Exported();
+
+		// Export header and footer
+		$Doc->ExportHeaderAndFooter();
+
+		// Clean output buffer
+		if (!EW_DEBUG_ENABLED && ob_get_length())
+			ob_end_clean();
+
+		// Write debug message if enabled
+		if (EW_DEBUG_ENABLED && $this->Export <> "pdf")
+			echo ew_DebugMsg();
+
+		// Output data
+		$Doc->Export();
+	}
+
+	// Set up Breadcrumb
+	function SetupBreadcrumb() {
+		global $Breadcrumb, $Language;
+		$Breadcrumb = new cBreadcrumb();
+		$url = substr(ew_CurrentUrl(), strrpos(ew_CurrentUrl(), "/")+1);
+		$Breadcrumb->Add("list", $this->TableVar, $this->AddMasterUrl("loan_reportlist.php"), "", $this->TableVar, TRUE);
+		$PageId = "view";
+		$Breadcrumb->Add("view", $PageId, $url);
+	}
+
+	// Set up multi pages
+	function SetupMultiPages() {
+		$pages = new cSubPages();
+		$pages->Style = "tabs";
+		$pages->Add(0);
+		$pages->Add(1);
+		$pages->Add(2);
+		$pages->Add(3);
+		$this->MultiPages = $pages;
+	}
+
+	// Setup lookup filters of a field
+	function SetupLookupFilters($fld, $pageId = null) {
+		global $gsLanguage;
+		$pageId = $pageId ?: $this->PageID;
+		switch ($fld->FldVar) {
+		}
+	}
+
+	// Setup AutoSuggest filters of a field
+	function SetupAutoSuggestFilters($fld, $pageId = null) {
+		global $gsLanguage;
+		$pageId = $pageId ?: $this->PageID;
+		switch ($fld->FldVar) {
+		}
+	}
+
+	// Page Load event
+	function Page_Load() {
+
+		//echo "Page Load";
+	}
+
+	// Page Unload event
+	function Page_Unload() {
+
+		//echo "Page Unload";
+	}
+
+	// Page Redirecting event
+	function Page_Redirecting(&$url) {
+
+		// Example:
+		//$url = "your URL";
+
+	}
+
+	// Message Showing event
+	// $type = ''|'success'|'failure'|'warning'
+	function Message_Showing(&$msg, $type) {
+		if ($type == 'success') {
+
+			//$msg = "your success message";
+		} elseif ($type == 'failure') {
+
+			//$msg = "your failure message";
+		} elseif ($type == 'warning') {
+
+			//$msg = "your warning message";
+		} else {
+
+			//$msg = "your message";
+		}
+	}
+
+	// Page Render event
+	function Page_Render() {
+
+		//echo "Page Render";
+	}
+
+	// Page Data Rendering event
+	function Page_DataRendering(&$header) {
+
+		// Example:
+		//$header = "your header";
+
+	}
+
+	// Page Data Rendered event
+	function Page_DataRendered(&$footer) {
+
+		// Example:
+		//$footer = "your footer";
+
+	}
+
+	// Page Exporting event
+	// $this->ExportDoc = export document object
+	function Page_Exporting() {
+
+		//$this->ExportDoc->Text = "my header"; // Export header
+		//return FALSE; // Return FALSE to skip default export and use Row_Export event
+
+		return TRUE; // Return TRUE to use default export and skip Row_Export event
+	}
+
+	// Row Export event
+	// $this->ExportDoc = export document object
+	function Row_Export($rs) {
+
+		//$this->ExportDoc->Text .= "my content"; // Build HTML with field value: $rs["MyField"] or $this->MyField->ViewValue
+	}
+
+	// Page Exported event
+	// $this->ExportDoc = export document object
+	function Page_Exported() {
+
+		//$this->ExportDoc->Text .= "my footer"; // Export footer
+		//echo $this->ExportDoc->Text;
+
+	}
+}
+?>
+<?php ew_Header(FALSE) ?>
+<?php
+
+// Create page object
+if (!isset($loan_report_view)) $loan_report_view = new cloan_report_view();
+
+// Page init
+$loan_report_view->Page_Init();
+
+// Page main
+$loan_report_view->Page_Main();
+
+// Global Page Rendering event (in userfn*.php)
+Page_Rendering();
+
+// Page Rendering event
+$loan_report_view->Page_Render();
+?>
+<?php include_once "header.php" ?>
+<?php if ($loan_report->Export == "") { ?>
+<script type="text/javascript">
+
+// Form object
+var CurrentPageID = EW_PAGE_ID = "view";
+var CurrentForm = floan_reportview = new ew_Form("floan_reportview", "view");
+
+// Form_CustomValidate event
+floan_reportview.Form_CustomValidate = 
+ function(fobj) { // DO NOT CHANGE THIS LINE!
+
+ 	// Your custom validation code here, return false if invalid.
+ 	return true;
+ }
+
+// Use JavaScript validation or not
+floan_reportview.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+
+// Multi-Page
+floan_reportview.MultiPage = new ew_MultiPage("floan_reportview");
+
+// Dynamic selection lists
+floan_reportview.Lists["x_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
+floan_reportview.Lists["x_department"].Data = "<?php echo $loan_report_view->department->LookupFilterQuery(FALSE, "view") ?>";
+floan_reportview.Lists["x_repayment_period"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"duration_months"};
+floan_reportview.Lists["x_repayment_period"].Data = "<?php echo $loan_report_view->repayment_period->LookupFilterQuery(FALSE, "view") ?>";
+floan_reportview.Lists["x_guarantor_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
+floan_reportview.Lists["x_guarantor_department"].Data = "<?php echo $loan_report_view->guarantor_department->LookupFilterQuery(FALSE, "view") ?>";
+floan_reportview.Lists["x_bank_name"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"banks_list"};
+floan_reportview.Lists["x_bank_name"].Data = "<?php echo $loan_report_view->bank_name->LookupFilterQuery(FALSE, "view") ?>";
+floan_reportview.Lists["x_status"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"loan_status"};
+floan_reportview.Lists["x_status"].Data = "<?php echo $loan_report_view->status->LookupFilterQuery(FALSE, "view") ?>";
+floan_reportview.AutoSuggests["x_status"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $loan_report_view->status->LookupFilterQuery(TRUE, "view"))) ?>;
+floan_reportview.Lists["x_initiator_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+floan_reportview.Lists["x_initiator_action"].Options = <?php echo json_encode($loan_report_view->initiator_action->Options()) ?>;
+floan_reportview.Lists["x_document_checklist[]"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_discription","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"document_checklist"};
+floan_reportview.Lists["x_document_checklist[]"].Data = "<?php echo $loan_report_view->document_checklist->LookupFilterQuery(FALSE, "view") ?>";
+floan_reportview.Lists["x_recommender_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+floan_reportview.Lists["x_recommender_action"].Options = <?php echo json_encode($loan_report_view->recommender_action->Options()) ?>;
+floan_reportview.Lists["x_recommended_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+floan_reportview.Lists["x_recommended_by"].Data = "<?php echo $loan_report_view->recommended_by->LookupFilterQuery(FALSE, "view") ?>";
+floan_reportview.AutoSuggests["x_recommended_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $loan_report_view->recommended_by->LookupFilterQuery(TRUE, "view"))) ?>;
+floan_reportview.Lists["x_application_status"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+floan_reportview.Lists["x_application_status"].Options = <?php echo json_encode($loan_report_view->application_status->Options()) ?>;
+floan_reportview.Lists["x_duration_approved"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"duration_months"};
+floan_reportview.Lists["x_duration_approved"].Data = "<?php echo $loan_report_view->duration_approved->LookupFilterQuery(FALSE, "view") ?>";
+floan_reportview.Lists["x_approval_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+floan_reportview.Lists["x_approval_action"].Options = <?php echo json_encode($loan_report_view->approval_action->Options()) ?>;
+floan_reportview.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+floan_reportview.Lists["x_approved_by"].Data = "<?php echo $loan_report_view->approved_by->LookupFilterQuery(FALSE, "view") ?>";
+
+// Form object for search
+</script>
+<script type="text/javascript">
+
+// Write your client script here, no need to add script tags.
+</script>
+<?php } ?>
+<?php if ($loan_report->Export == "") { ?>
+<div class="ewToolbar">
+<?php $loan_report_view->ExportOptions->Render("body") ?>
+<?php
+	foreach ($loan_report_view->OtherOptions as &$option)
+		$option->Render("body");
+?>
+<div class="clearfix"></div>
+</div>
+<?php } ?>
+<?php $loan_report_view->ShowPageHeader(); ?>
+<?php
+$loan_report_view->ShowMessage();
+?>
+<?php if (!$loan_report_view->IsModal) { ?>
+<?php if ($loan_report->Export == "") { ?>
+<form name="ewPagerForm" class="form-inline ewForm ewPagerForm" action="<?php echo ew_CurrentPage() ?>">
+<?php if (!isset($loan_report_view->Pager)) $loan_report_view->Pager = new cPrevNextPager($loan_report_view->StartRec, $loan_report_view->DisplayRecs, $loan_report_view->TotalRecs, $loan_report_view->AutoHidePager) ?>
+<?php if ($loan_report_view->Pager->RecordCount > 0 && $loan_report_view->Pager->Visible) { ?>
+<div class="ewPager">
+<span><?php echo $Language->Phrase("Page") ?>&nbsp;</span>
+<div class="ewPrevNext"><div class="input-group">
+<div class="input-group-btn">
+<!--first page button-->
+	<?php if ($loan_report_view->Pager->FirstButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $loan_report_view->PageUrl() ?>start=<?php echo $loan_report_view->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
+	<?php } else { ?>
+	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerFirst") ?>"><span class="icon-first ewIcon"></span></a>
+	<?php } ?>
+<!--previous page button-->
+	<?php if ($loan_report_view->Pager->PrevButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $loan_report_view->PageUrl() ?>start=<?php echo $loan_report_view->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php } else { ?>
+	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerPrevious") ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php } ?>
+</div>
+<!--current page number-->
+	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $loan_report_view->Pager->CurrentPage ?>">
+<div class="input-group-btn">
+<!--next page button-->
+	<?php if ($loan_report_view->Pager->NextButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $loan_report_view->PageUrl() ?>start=<?php echo $loan_report_view->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
+	<?php } else { ?>
+	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerNext") ?>"><span class="icon-next ewIcon"></span></a>
+	<?php } ?>
+<!--last page button-->
+	<?php if ($loan_report_view->Pager->LastButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $loan_report_view->PageUrl() ?>start=<?php echo $loan_report_view->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
+	<?php } else { ?>
+	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerLast") ?>"><span class="icon-last ewIcon"></span></a>
+	<?php } ?>
+</div>
+</div>
+</div>
+<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $loan_report_view->Pager->PageCount ?></span>
+</div>
+<?php } ?>
+<div class="clearfix"></div>
+</form>
+<?php } ?>
+<?php } ?>
+<form name="floan_reportview" id="floan_reportview" class="form-inline ewForm ewViewForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($loan_report_view->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $loan_report_view->Token ?>">
+<?php } ?>
+<input type="hidden" name="t" value="loan_report">
+<input type="hidden" name="modal" value="<?php echo intval($loan_report_view->IsModal) ?>">
+<?php if ($loan_report->Export == "") { ?>
+<div class="ewMultiPage">
+<div class="nav-tabs-custom" id="loan_report_view">
+	<ul class="nav<?php echo $loan_report_view->MultiPages->NavStyle() ?>">
+		<li<?php echo $loan_report_view->MultiPages->TabStyle("1") ?>><a href="#tab_loan_report1" data-toggle="tab"><?php echo $loan_report->PageCaption(1) ?></a></li>
+		<li<?php echo $loan_report_view->MultiPages->TabStyle("2") ?>><a href="#tab_loan_report2" data-toggle="tab"><?php echo $loan_report->PageCaption(2) ?></a></li>
+		<li<?php echo $loan_report_view->MultiPages->TabStyle("3") ?>><a href="#tab_loan_report3" data-toggle="tab"><?php echo $loan_report->PageCaption(3) ?></a></li>
+	</ul>
+	<div class="tab-content">
+<?php } ?>
+<?php if ($loan_report->Export == "") { ?>
+		<div class="tab-pane<?php echo $loan_report_view->MultiPages->PageStyle("1") ?>" id="tab_loan_report1">
+<?php } ?>
+<table class="table table-striped table-bordered table-hover table-condensed ewViewTable">
+<?php if ($loan_report->code->Visible) { // code ?>
+	<tr id="r_code">
+		<td class="col-sm-2"><span id="elh_loan_report_code"><?php echo $loan_report->code->FldCaption() ?></span></td>
+		<td data-name="code"<?php echo $loan_report->code->CellAttributes() ?>>
+<span id="el_loan_report_code" data-page="1">
+<span<?php echo $loan_report->code->ViewAttributes() ?>>
+<?php echo $loan_report->code->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->date_initiated->Visible) { // date_initiated ?>
+	<tr id="r_date_initiated">
+		<td class="col-sm-2"><span id="elh_loan_report_date_initiated"><?php echo $loan_report->date_initiated->FldCaption() ?></span></td>
+		<td data-name="date_initiated"<?php echo $loan_report->date_initiated->CellAttributes() ?>>
+<span id="el_loan_report_date_initiated" data-page="1">
+<span<?php echo $loan_report->date_initiated->ViewAttributes() ?>>
+<?php echo $loan_report->date_initiated->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->refernce_id->Visible) { // refernce_id ?>
+	<tr id="r_refernce_id">
+		<td class="col-sm-2"><span id="elh_loan_report_refernce_id"><?php echo $loan_report->refernce_id->FldCaption() ?></span></td>
+		<td data-name="refernce_id"<?php echo $loan_report->refernce_id->CellAttributes() ?>>
+<span id="el_loan_report_refernce_id" data-page="1">
+<span<?php echo $loan_report->refernce_id->ViewAttributes() ?>>
+<?php echo $loan_report->refernce_id->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->employee_name->Visible) { // employee_name ?>
+	<tr id="r_employee_name">
+		<td class="col-sm-2"><span id="elh_loan_report_employee_name"><?php echo $loan_report->employee_name->FldCaption() ?></span></td>
+		<td data-name="employee_name"<?php echo $loan_report->employee_name->CellAttributes() ?>>
+<span id="el_loan_report_employee_name" data-page="1">
+<span<?php echo $loan_report->employee_name->ViewAttributes() ?>>
+<?php echo $loan_report->employee_name->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->address->Visible) { // address ?>
+	<tr id="r_address">
+		<td class="col-sm-2"><span id="elh_loan_report_address"><?php echo $loan_report->address->FldCaption() ?></span></td>
+		<td data-name="address"<?php echo $loan_report->address->CellAttributes() ?>>
+<span id="el_loan_report_address" data-page="1">
+<span<?php echo $loan_report->address->ViewAttributes() ?>>
+<?php echo $loan_report->address->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->mobile->Visible) { // mobile ?>
+	<tr id="r_mobile">
+		<td class="col-sm-2"><span id="elh_loan_report_mobile"><?php echo $loan_report->mobile->FldCaption() ?></span></td>
+		<td data-name="mobile"<?php echo $loan_report->mobile->CellAttributes() ?>>
+<span id="el_loan_report_mobile" data-page="1">
+<span<?php echo $loan_report->mobile->ViewAttributes() ?>>
+<?php echo $loan_report->mobile->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->department->Visible) { // department ?>
+	<tr id="r_department">
+		<td class="col-sm-2"><span id="elh_loan_report_department"><?php echo $loan_report->department->FldCaption() ?></span></td>
+		<td data-name="department"<?php echo $loan_report->department->CellAttributes() ?>>
+<span id="el_loan_report_department" data-page="1">
+<span<?php echo $loan_report->department->ViewAttributes() ?>>
+<?php echo $loan_report->department->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->loan_amount->Visible) { // loan_amount ?>
+	<tr id="r_loan_amount">
+		<td class="col-sm-2"><span id="elh_loan_report_loan_amount"><?php echo $loan_report->loan_amount->FldCaption() ?></span></td>
+		<td data-name="loan_amount"<?php echo $loan_report->loan_amount->CellAttributes() ?>>
+<span id="el_loan_report_loan_amount" data-page="1">
+<span<?php echo $loan_report->loan_amount->ViewAttributes() ?>>
+<?php echo $loan_report->loan_amount->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->amount_inwords->Visible) { // amount_inwords ?>
+	<tr id="r_amount_inwords">
+		<td class="col-sm-2"><span id="elh_loan_report_amount_inwords"><?php echo $loan_report->amount_inwords->FldCaption() ?></span></td>
+		<td data-name="amount_inwords"<?php echo $loan_report->amount_inwords->CellAttributes() ?>>
+<span id="el_loan_report_amount_inwords" data-page="1">
+<span<?php echo $loan_report->amount_inwords->ViewAttributes() ?>>
+<?php echo $loan_report->amount_inwords->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->purpose->Visible) { // purpose ?>
+	<tr id="r_purpose">
+		<td class="col-sm-2"><span id="elh_loan_report_purpose"><?php echo $loan_report->purpose->FldCaption() ?></span></td>
+		<td data-name="purpose"<?php echo $loan_report->purpose->CellAttributes() ?>>
+<span id="el_loan_report_purpose" data-page="1">
+<span<?php echo $loan_report->purpose->ViewAttributes() ?>>
+<?php echo $loan_report->purpose->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->repayment_period->Visible) { // repayment_period ?>
+	<tr id="r_repayment_period">
+		<td class="col-sm-2"><span id="elh_loan_report_repayment_period"><?php echo $loan_report->repayment_period->FldCaption() ?></span></td>
+		<td data-name="repayment_period"<?php echo $loan_report->repayment_period->CellAttributes() ?>>
+<span id="el_loan_report_repayment_period" data-page="1">
+<span<?php echo $loan_report->repayment_period->ViewAttributes() ?>>
+<?php echo $loan_report->repayment_period->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->salary_permonth->Visible) { // salary_permonth ?>
+	<tr id="r_salary_permonth">
+		<td class="col-sm-2"><span id="elh_loan_report_salary_permonth"><?php echo $loan_report->salary_permonth->FldCaption() ?></span></td>
+		<td data-name="salary_permonth"<?php echo $loan_report->salary_permonth->CellAttributes() ?>>
+<span id="el_loan_report_salary_permonth" data-page="1">
+<span<?php echo $loan_report->salary_permonth->ViewAttributes() ?>>
+<?php echo $loan_report->salary_permonth->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->previous_loan->Visible) { // previous_loan ?>
+	<tr id="r_previous_loan">
+		<td class="col-sm-2"><span id="elh_loan_report_previous_loan"><?php echo $loan_report->previous_loan->FldCaption() ?></span></td>
+		<td data-name="previous_loan"<?php echo $loan_report->previous_loan->CellAttributes() ?>>
+<span id="el_loan_report_previous_loan" data-page="1">
+<span<?php echo $loan_report->previous_loan->ViewAttributes() ?>>
+<?php echo $loan_report->previous_loan->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->date_collected->Visible) { // date_collected ?>
+	<tr id="r_date_collected">
+		<td class="col-sm-2"><span id="elh_loan_report_date_collected"><?php echo $loan_report->date_collected->FldCaption() ?></span></td>
+		<td data-name="date_collected"<?php echo $loan_report->date_collected->CellAttributes() ?>>
+<span id="el_loan_report_date_collected" data-page="1">
+<span<?php echo $loan_report->date_collected->ViewAttributes() ?>>
+<?php echo $loan_report->date_collected->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->date_liquidated->Visible) { // date_liquidated ?>
+	<tr id="r_date_liquidated">
+		<td class="col-sm-2"><span id="elh_loan_report_date_liquidated"><?php echo $loan_report->date_liquidated->FldCaption() ?></span></td>
+		<td data-name="date_liquidated"<?php echo $loan_report->date_liquidated->CellAttributes() ?>>
+<span id="el_loan_report_date_liquidated" data-page="1">
+<span<?php echo $loan_report->date_liquidated->ViewAttributes() ?>>
+<?php echo $loan_report->date_liquidated->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->balance_remaining->Visible) { // balance_remaining ?>
+	<tr id="r_balance_remaining">
+		<td class="col-sm-2"><span id="elh_loan_report_balance_remaining"><?php echo $loan_report->balance_remaining->FldCaption() ?></span></td>
+		<td data-name="balance_remaining"<?php echo $loan_report->balance_remaining->CellAttributes() ?>>
+<span id="el_loan_report_balance_remaining" data-page="1">
+<span<?php echo $loan_report->balance_remaining->ViewAttributes() ?>>
+<?php echo $loan_report->balance_remaining->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->applicant_date->Visible) { // applicant_date ?>
+	<tr id="r_applicant_date">
+		<td class="col-sm-2"><span id="elh_loan_report_applicant_date"><?php echo $loan_report->applicant_date->FldCaption() ?></span></td>
+		<td data-name="applicant_date"<?php echo $loan_report->applicant_date->CellAttributes() ?>>
+<span id="el_loan_report_applicant_date" data-page="1">
+<span<?php echo $loan_report->applicant_date->ViewAttributes() ?>>
+<?php echo $loan_report->applicant_date->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->applicant_passport->Visible) { // applicant_passport ?>
+	<tr id="r_applicant_passport">
+		<td class="col-sm-2"><span id="elh_loan_report_applicant_passport"><?php echo $loan_report->applicant_passport->FldCaption() ?></span></td>
+		<td data-name="applicant_passport"<?php echo $loan_report->applicant_passport->CellAttributes() ?>>
+<span id="el_loan_report_applicant_passport" data-page="1">
+<span<?php echo $loan_report->applicant_passport->ViewAttributes() ?>>
+<?php echo ew_GetFileViewTag($loan_report->applicant_passport, $loan_report->applicant_passport->ViewValue) ?>
+</span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+</table>
+<?php if ($loan_report->Export == "") { ?>
+		</div>
+<?php } ?>
+<?php if ($loan_report->Export == "") { ?>
+		<div class="tab-pane<?php echo $loan_report_view->MultiPages->PageStyle("2") ?>" id="tab_loan_report2">
+<?php } ?>
+<table class="table table-striped table-bordered table-hover table-condensed ewViewTable">
+<?php if ($loan_report->guarantor_name->Visible) { // guarantor_name ?>
+	<tr id="r_guarantor_name">
+		<td class="col-sm-2"><span id="elh_loan_report_guarantor_name"><?php echo $loan_report->guarantor_name->FldCaption() ?></span></td>
+		<td data-name="guarantor_name"<?php echo $loan_report->guarantor_name->CellAttributes() ?>>
+<span id="el_loan_report_guarantor_name" data-page="2">
+<span<?php echo $loan_report->guarantor_name->ViewAttributes() ?>>
+<?php echo $loan_report->guarantor_name->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->guarantor_address->Visible) { // guarantor_address ?>
+	<tr id="r_guarantor_address">
+		<td class="col-sm-2"><span id="elh_loan_report_guarantor_address"><?php echo $loan_report->guarantor_address->FldCaption() ?></span></td>
+		<td data-name="guarantor_address"<?php echo $loan_report->guarantor_address->CellAttributes() ?>>
+<span id="el_loan_report_guarantor_address" data-page="2">
+<span<?php echo $loan_report->guarantor_address->ViewAttributes() ?>>
+<?php echo $loan_report->guarantor_address->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->guarantor_mobile->Visible) { // guarantor_mobile ?>
+	<tr id="r_guarantor_mobile">
+		<td class="col-sm-2"><span id="elh_loan_report_guarantor_mobile"><?php echo $loan_report->guarantor_mobile->FldCaption() ?></span></td>
+		<td data-name="guarantor_mobile"<?php echo $loan_report->guarantor_mobile->CellAttributes() ?>>
+<span id="el_loan_report_guarantor_mobile" data-page="2">
+<span<?php echo $loan_report->guarantor_mobile->ViewAttributes() ?>>
+<?php echo $loan_report->guarantor_mobile->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->guarantor_department->Visible) { // guarantor_department ?>
+	<tr id="r_guarantor_department">
+		<td class="col-sm-2"><span id="elh_loan_report_guarantor_department"><?php echo $loan_report->guarantor_department->FldCaption() ?></span></td>
+		<td data-name="guarantor_department"<?php echo $loan_report->guarantor_department->CellAttributes() ?>>
+<span id="el_loan_report_guarantor_department" data-page="2">
+<span<?php echo $loan_report->guarantor_department->ViewAttributes() ?>>
+<?php echo $loan_report->guarantor_department->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->account_no->Visible) { // account_no ?>
+	<tr id="r_account_no">
+		<td class="col-sm-2"><span id="elh_loan_report_account_no"><?php echo $loan_report->account_no->FldCaption() ?></span></td>
+		<td data-name="account_no"<?php echo $loan_report->account_no->CellAttributes() ?>>
+<span id="el_loan_report_account_no" data-page="2">
+<span<?php echo $loan_report->account_no->ViewAttributes() ?>>
+<?php echo $loan_report->account_no->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->bank_name->Visible) { // bank_name ?>
+	<tr id="r_bank_name">
+		<td class="col-sm-2"><span id="elh_loan_report_bank_name"><?php echo $loan_report->bank_name->FldCaption() ?></span></td>
+		<td data-name="bank_name"<?php echo $loan_report->bank_name->CellAttributes() ?>>
+<span id="el_loan_report_bank_name" data-page="2">
+<span<?php echo $loan_report->bank_name->ViewAttributes() ?>>
+<?php echo $loan_report->bank_name->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->employers_name->Visible) { // employers_name ?>
+	<tr id="r_employers_name">
+		<td class="col-sm-2"><span id="elh_loan_report_employers_name"><?php echo $loan_report->employers_name->FldCaption() ?></span></td>
+		<td data-name="employers_name"<?php echo $loan_report->employers_name->CellAttributes() ?>>
+<span id="el_loan_report_employers_name" data-page="2">
+<span<?php echo $loan_report->employers_name->ViewAttributes() ?>>
+<?php echo $loan_report->employers_name->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->employers_address->Visible) { // employers_address ?>
+	<tr id="r_employers_address">
+		<td class="col-sm-2"><span id="elh_loan_report_employers_address"><?php echo $loan_report->employers_address->FldCaption() ?></span></td>
+		<td data-name="employers_address"<?php echo $loan_report->employers_address->CellAttributes() ?>>
+<span id="el_loan_report_employers_address" data-page="2">
+<span<?php echo $loan_report->employers_address->ViewAttributes() ?>>
+<?php echo $loan_report->employers_address->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->employers_mobile->Visible) { // employers_mobile ?>
+	<tr id="r_employers_mobile">
+		<td class="col-sm-2"><span id="elh_loan_report_employers_mobile"><?php echo $loan_report->employers_mobile->FldCaption() ?></span></td>
+		<td data-name="employers_mobile"<?php echo $loan_report->employers_mobile->CellAttributes() ?>>
+<span id="el_loan_report_employers_mobile" data-page="2">
+<span<?php echo $loan_report->employers_mobile->ViewAttributes() ?>>
+<?php echo $loan_report->employers_mobile->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->guarantor_date->Visible) { // guarantor_date ?>
+	<tr id="r_guarantor_date">
+		<td class="col-sm-2"><span id="elh_loan_report_guarantor_date"><?php echo $loan_report->guarantor_date->FldCaption() ?></span></td>
+		<td data-name="guarantor_date"<?php echo $loan_report->guarantor_date->CellAttributes() ?>>
+<span id="el_loan_report_guarantor_date" data-page="2">
+<span<?php echo $loan_report->guarantor_date->ViewAttributes() ?>>
+<?php echo $loan_report->guarantor_date->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->guarantor_passport->Visible) { // guarantor_passport ?>
+	<tr id="r_guarantor_passport">
+		<td class="col-sm-2"><span id="elh_loan_report_guarantor_passport"><?php echo $loan_report->guarantor_passport->FldCaption() ?></span></td>
+		<td data-name="guarantor_passport"<?php echo $loan_report->guarantor_passport->CellAttributes() ?>>
+<span id="el_loan_report_guarantor_passport" data-page="2">
+<span<?php echo $loan_report->guarantor_passport->ViewAttributes() ?>>
+<?php echo ew_GetFileViewTag($loan_report->guarantor_passport, $loan_report->guarantor_passport->ViewValue) ?>
+</span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+</table>
+<?php if ($loan_report->Export == "") { ?>
+		</div>
+<?php } ?>
+<?php if ($loan_report->Export == "") { ?>
+		<div class="tab-pane<?php echo $loan_report_view->MultiPages->PageStyle("3") ?>" id="tab_loan_report3">
+<?php } ?>
+<table class="table table-striped table-bordered table-hover table-condensed ewViewTable">
+<?php if ($loan_report->status->Visible) { // status ?>
+	<tr id="r_status">
+		<td class="col-sm-2"><span id="elh_loan_report_status"><?php echo $loan_report->status->FldCaption() ?></span></td>
+		<td data-name="status"<?php echo $loan_report->status->CellAttributes() ?>>
+<span id="el_loan_report_status" data-page="3">
+<span<?php echo $loan_report->status->ViewAttributes() ?>>
+<?php echo $loan_report->status->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->initiator_action->Visible) { // initiator_action ?>
+	<tr id="r_initiator_action">
+		<td class="col-sm-2"><span id="elh_loan_report_initiator_action"><?php echo $loan_report->initiator_action->FldCaption() ?></span></td>
+		<td data-name="initiator_action"<?php echo $loan_report->initiator_action->CellAttributes() ?>>
+<span id="el_loan_report_initiator_action" data-page="3">
+<span<?php echo $loan_report->initiator_action->ViewAttributes() ?>>
+<?php echo $loan_report->initiator_action->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->initiator_comment->Visible) { // initiator_comment ?>
+	<tr id="r_initiator_comment">
+		<td class="col-sm-2"><span id="elh_loan_report_initiator_comment"><?php echo $loan_report->initiator_comment->FldCaption() ?></span></td>
+		<td data-name="initiator_comment"<?php echo $loan_report->initiator_comment->CellAttributes() ?>>
+<span id="el_loan_report_initiator_comment" data-page="3">
+<span<?php echo $loan_report->initiator_comment->ViewAttributes() ?>>
+<?php echo $loan_report->initiator_comment->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->recommended_date->Visible) { // recommended_date ?>
+	<tr id="r_recommended_date">
+		<td class="col-sm-2"><span id="elh_loan_report_recommended_date"><?php echo $loan_report->recommended_date->FldCaption() ?></span></td>
+		<td data-name="recommended_date"<?php echo $loan_report->recommended_date->CellAttributes() ?>>
+<span id="el_loan_report_recommended_date" data-page="3">
+<span<?php echo $loan_report->recommended_date->ViewAttributes() ?>>
+<?php echo $loan_report->recommended_date->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->document_checklist->Visible) { // document_checklist ?>
+	<tr id="r_document_checklist">
+		<td class="col-sm-2"><span id="elh_loan_report_document_checklist"><?php echo $loan_report->document_checklist->FldCaption() ?></span></td>
+		<td data-name="document_checklist"<?php echo $loan_report->document_checklist->CellAttributes() ?>>
+<span id="el_loan_report_document_checklist" data-page="3">
+<span<?php echo $loan_report->document_checklist->ViewAttributes() ?>>
+<?php echo $loan_report->document_checklist->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->recommender_action->Visible) { // recommender_action ?>
+	<tr id="r_recommender_action">
+		<td class="col-sm-2"><span id="elh_loan_report_recommender_action"><?php echo $loan_report->recommender_action->FldCaption() ?></span></td>
+		<td data-name="recommender_action"<?php echo $loan_report->recommender_action->CellAttributes() ?>>
+<span id="el_loan_report_recommender_action" data-page="3">
+<span<?php echo $loan_report->recommender_action->ViewAttributes() ?>>
+<?php echo $loan_report->recommender_action->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->recommender_comment->Visible) { // recommender_comment ?>
+	<tr id="r_recommender_comment">
+		<td class="col-sm-2"><span id="elh_loan_report_recommender_comment"><?php echo $loan_report->recommender_comment->FldCaption() ?></span></td>
+		<td data-name="recommender_comment"<?php echo $loan_report->recommender_comment->CellAttributes() ?>>
+<span id="el_loan_report_recommender_comment" data-page="3">
+<span<?php echo $loan_report->recommender_comment->ViewAttributes() ?>>
+<?php echo $loan_report->recommender_comment->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->recommended_by->Visible) { // recommended_by ?>
+	<tr id="r_recommended_by">
+		<td class="col-sm-2"><span id="elh_loan_report_recommended_by"><?php echo $loan_report->recommended_by->FldCaption() ?></span></td>
+		<td data-name="recommended_by"<?php echo $loan_report->recommended_by->CellAttributes() ?>>
+<span id="el_loan_report_recommended_by" data-page="3">
+<span<?php echo $loan_report->recommended_by->ViewAttributes() ?>>
+<?php echo $loan_report->recommended_by->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->application_status->Visible) { // application_status ?>
+	<tr id="r_application_status">
+		<td class="col-sm-2"><span id="elh_loan_report_application_status"><?php echo $loan_report->application_status->FldCaption() ?></span></td>
+		<td data-name="application_status"<?php echo $loan_report->application_status->CellAttributes() ?>>
+<span id="el_loan_report_application_status" data-page="3">
+<span<?php echo $loan_report->application_status->ViewAttributes() ?>>
+<?php echo $loan_report->application_status->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->approved_amount->Visible) { // approved_amount ?>
+	<tr id="r_approved_amount">
+		<td class="col-sm-2"><span id="elh_loan_report_approved_amount"><?php echo $loan_report->approved_amount->FldCaption() ?></span></td>
+		<td data-name="approved_amount"<?php echo $loan_report->approved_amount->CellAttributes() ?>>
+<span id="el_loan_report_approved_amount" data-page="3">
+<span<?php echo $loan_report->approved_amount->ViewAttributes() ?>>
+<?php echo $loan_report->approved_amount->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->duration_approved->Visible) { // duration_approved ?>
+	<tr id="r_duration_approved">
+		<td class="col-sm-2"><span id="elh_loan_report_duration_approved"><?php echo $loan_report->duration_approved->FldCaption() ?></span></td>
+		<td data-name="duration_approved"<?php echo $loan_report->duration_approved->CellAttributes() ?>>
+<span id="el_loan_report_duration_approved" data-page="3">
+<span<?php echo $loan_report->duration_approved->ViewAttributes() ?>>
+<?php echo $loan_report->duration_approved->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->approval_date->Visible) { // approval_date ?>
+	<tr id="r_approval_date">
+		<td class="col-sm-2"><span id="elh_loan_report_approval_date"><?php echo $loan_report->approval_date->FldCaption() ?></span></td>
+		<td data-name="approval_date"<?php echo $loan_report->approval_date->CellAttributes() ?>>
+<span id="el_loan_report_approval_date" data-page="3">
+<span<?php echo $loan_report->approval_date->ViewAttributes() ?>>
+<?php echo $loan_report->approval_date->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->approval_action->Visible) { // approval_action ?>
+	<tr id="r_approval_action">
+		<td class="col-sm-2"><span id="elh_loan_report_approval_action"><?php echo $loan_report->approval_action->FldCaption() ?></span></td>
+		<td data-name="approval_action"<?php echo $loan_report->approval_action->CellAttributes() ?>>
+<span id="el_loan_report_approval_action" data-page="3">
+<span<?php echo $loan_report->approval_action->ViewAttributes() ?>>
+<?php echo $loan_report->approval_action->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->approval_comment->Visible) { // approval_comment ?>
+	<tr id="r_approval_comment">
+		<td class="col-sm-2"><span id="elh_loan_report_approval_comment"><?php echo $loan_report->approval_comment->FldCaption() ?></span></td>
+		<td data-name="approval_comment"<?php echo $loan_report->approval_comment->CellAttributes() ?>>
+<span id="el_loan_report_approval_comment" data-page="3">
+<span<?php echo $loan_report->approval_comment->ViewAttributes() ?>>
+<?php echo $loan_report->approval_comment->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_report->approved_by->Visible) { // approved_by ?>
+	<tr id="r_approved_by">
+		<td class="col-sm-2"><span id="elh_loan_report_approved_by"><?php echo $loan_report->approved_by->FldCaption() ?></span></td>
+		<td data-name="approved_by"<?php echo $loan_report->approved_by->CellAttributes() ?>>
+<span id="el_loan_report_approved_by" data-page="3">
+<span<?php echo $loan_report->approved_by->ViewAttributes() ?>>
+<?php echo $loan_report->approved_by->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+</table>
+<?php if ($loan_report->Export == "") { ?>
+		</div>
+<?php } ?>
+<?php if ($loan_report->Export == "") { ?>
+	</div>
+</div>
+</div>
+<?php } ?>
+</form>
+<?php if ($loan_report->Export == "") { ?>
+<script type="text/javascript">
+floan_reportview.Init();
+</script>
+<?php } ?>
+<?php
+$loan_report_view->ShowPageFooter();
+if (EW_DEBUG_ENABLED)
+	echo ew_DebugMsg();
+?>
+<?php if ($loan_report->Export == "") { ?>
+<script type="text/javascript">
+
+// Write your table-specific startup script here
+// document.write("page loaded");
+
+</script>
+<?php } ?>
+<?php include_once "footer.php" ?>
+<?php
+$loan_report_view->Page_Terminate();
+?>
