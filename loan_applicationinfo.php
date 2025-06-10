@@ -2275,7 +2275,7 @@ class cloan_application extends cTable {
 		if (CurrentUserLevel() == -2) {
 			ew_AddFilter($filter, "`status` in (6)");
 		}
-		if (CurrentUserLevel() == 2) {
+		if (CurrentUserLevel() == 7) {
 			ew_AddFilter($filter, "`status` in (1)");
 		}
 		if (CurrentUserLevel() == 3) {
@@ -2343,7 +2343,7 @@ class cloan_application extends cTable {
 		}
 
 		// Supervisor Only
-		if (CurrentPageID() == "add" && CurrentUserLevel() == 2) {
+		if (CurrentPageID() == "add" && CurrentUserLevel() == 7) {
 
 			// Save and forward
 			if ($this->initiator_action->CurrentValue == 1) {
@@ -2398,7 +2398,7 @@ class cloan_application extends cTable {
 			$now = new DateTime();
 
 		// Supervisor
-		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 7) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$rsnew["datetime_resolved"] = $now->format('Y-m-d H:i:s');
@@ -2406,7 +2406,7 @@ class cloan_application extends cTable {
 		}
 
 		// Supervisor - Don't change field values captured by Officer
-		if (CurrentPageID() == "edit" && CurrentUserLevel() == 2  && $this->status->CurrentValue == 1) {
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3  && $this->status->CurrentValue == 1) {
 			$rsnew["code"] = $rsold["code"];
 			$rsnew["date_initiated"] = $rsold["date_initiated"];
 			$rsnew["refernce_id"] = $rsold["refernce_id"];
@@ -2499,7 +2499,7 @@ class cloan_application extends cTable {
 		}
 
 		// Confirmed by RECOMMENDER
-			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) ) {
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 7) ) {
 				$rsnew["recommended_date"] = $now->format('Y-m-d H:i:s');
 				$rsnew["recommended_by"] = $_SESSION['Staff_ID'];
 			  }
@@ -2643,7 +2643,7 @@ class cloan_application extends cTable {
 			$this->refernce_id->CurrentValue = $_SESSION['LAP_ID'];
 			$this->refernce_id->EditValue = $this->refernce_id->CurrentValue;
 		}
-		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 2 )) {
+		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 7 )) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$this->recommended_date->CurrentValue = $now->Format('Y-m-d H:i:s');
@@ -2687,7 +2687,7 @@ class cloan_application extends cTable {
 
 			// Edit Page
 			   if (CurrentPageID() == "edit") {
-					if (CurrentUserLevel() == 2 && ($this->status->CurrentValue == 7 || $this->status->CurrentValue == 1)) {
+					if (CurrentUserLevel() == 7 && ($this->status->CurrentValue == 7 || $this->status->CurrentValue == 1)) {
 					$this->date_initiated->ReadOnly = TRUE;
 					$this->refernce_id->ReadOnly = TRUE;
 					$this->employee_name->ReadOnly = TRUE;
