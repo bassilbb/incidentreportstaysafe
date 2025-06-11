@@ -71,7 +71,7 @@ class cloan_status_report extends cTable {
 		$this->TableType = 'VIEW';
 
 		// Update Table
-		$this->UpdateTable = "loan_application";
+		$this->UpdateTable = "`loan_status_report`";
 		$this->DBID = 'DB';
 		$this->ExportAll = TRUE;
 		$this->ExportPageBreakCount = 0; // Page break per every n record (PDF only)

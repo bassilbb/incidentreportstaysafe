@@ -817,13 +817,13 @@
       <phrase id="menutext" value="System Issuance Report" />
     </menu>
     <menu id="312">
-      <phrase id="menutext" value="Loan Module" />
+      <phrase id="menutext" value="Salary Advance Module" />
     </menu>
     <menu id="273">
-      <phrase id="menutext" value="Loan Application" />
+      <phrase id="menutext" value="Salary Advance Application" />
     </menu>
     <menu id="278">
-      <phrase id="menutext" value="Loan Application Report" />
+      <phrase id="menutext" value="Salary Advance Report" />
     </menu>
     <menu id="313">
       <phrase id="menutext" value="Check Loan  Status" />
@@ -2851,7 +2851,7 @@
       </field>
     </table>
     <table id="loan_application">
-      <phrase id="tblcaption" value="Loan Application" />
+      <phrase id="tblcaption" value="Salary Advance Application" />
       <phrase id="tblpagecaption1" value="Loan Appication Info" />
       <phrase id="tblpagecaption2" value="Guarantor Info" />
       <phrase id="tblpagecaption3" value="Action" />
