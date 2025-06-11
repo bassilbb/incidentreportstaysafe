@@ -729,7 +729,7 @@ class cloan_application_add extends cloan_application {
 		}
 		if (!$this->applicant_date->FldIsDetailKey) {
 			$this->applicant_date->setFormValue($objForm->GetValue("x_applicant_date"));
-			$this->applicant_date->CurrentValue = ew_UnFormatDateTime($this->applicant_date->CurrentValue, 14);
+			$this->applicant_date->CurrentValue = ew_UnFormatDateTime($this->applicant_date->CurrentValue, 17);
 		}
 		if (!$this->guarantor_name->FldIsDetailKey) {
 			$this->guarantor_name->setFormValue($objForm->GetValue("x_guarantor_name"));
@@ -760,7 +760,7 @@ class cloan_application_add extends cloan_application {
 		}
 		if (!$this->guarantor_date->FldIsDetailKey) {
 			$this->guarantor_date->setFormValue($objForm->GetValue("x_guarantor_date"));
-			$this->guarantor_date->CurrentValue = ew_UnFormatDateTime($this->guarantor_date->CurrentValue, 14);
+			$this->guarantor_date->CurrentValue = ew_UnFormatDateTime($this->guarantor_date->CurrentValue, 17);
 		}
 		if (!$this->status->FldIsDetailKey) {
 			$this->status->setFormValue($objForm->GetValue("x_status"));
@@ -834,7 +834,7 @@ class cloan_application_add extends cloan_application {
 		$this->date_liquidated->CurrentValue = ew_UnFormatDateTime($this->date_liquidated->CurrentValue, 0);
 		$this->balance_remaining->CurrentValue = $this->balance_remaining->FormValue;
 		$this->applicant_date->CurrentValue = $this->applicant_date->FormValue;
-		$this->applicant_date->CurrentValue = ew_UnFormatDateTime($this->applicant_date->CurrentValue, 14);
+		$this->applicant_date->CurrentValue = ew_UnFormatDateTime($this->applicant_date->CurrentValue, 17);
 		$this->guarantor_name->CurrentValue = $this->guarantor_name->FormValue;
 		$this->guarantor_address->CurrentValue = $this->guarantor_address->FormValue;
 		$this->guarantor_mobile->CurrentValue = $this->guarantor_mobile->FormValue;
@@ -845,7 +845,7 @@ class cloan_application_add extends cloan_application {
 		$this->employers_address->CurrentValue = $this->employers_address->FormValue;
 		$this->employers_mobile->CurrentValue = $this->employers_mobile->FormValue;
 		$this->guarantor_date->CurrentValue = $this->guarantor_date->FormValue;
-		$this->guarantor_date->CurrentValue = ew_UnFormatDateTime($this->guarantor_date->CurrentValue, 14);
+		$this->guarantor_date->CurrentValue = ew_UnFormatDateTime($this->guarantor_date->CurrentValue, 17);
 		$this->status->CurrentValue = $this->status->FormValue;
 		$this->initiator_action->CurrentValue = $this->initiator_action->FormValue;
 		$this->initiator_comment->CurrentValue = $this->initiator_comment->FormValue;
@@ -1162,7 +1162,28 @@ class cloan_application_add extends cloan_application {
 		$this->refernce_id->ViewCustomAttributes = "";
 
 		// employee_name
-		$this->employee_name->ViewValue = $this->employee_name->CurrentValue;
+		if (strval($this->employee_name->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->employee_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->employee_name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->employee_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->employee_name->ViewValue = $this->employee_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->employee_name->ViewValue = $this->employee_name->CurrentValue;
+			}
+		} else {
+			$this->employee_name->ViewValue = NULL;
+		}
 		$this->employee_name->ViewCustomAttributes = "";
 
 		// address
@@ -1259,7 +1280,7 @@ class cloan_application_add extends cloan_application {
 
 		// applicant_date
 		$this->applicant_date->ViewValue = $this->applicant_date->CurrentValue;
-		$this->applicant_date->ViewValue = ew_FormatDateTime($this->applicant_date->ViewValue, 14);
+		$this->applicant_date->ViewValue = ew_FormatDateTime($this->applicant_date->ViewValue, 17);
 		$this->applicant_date->ViewCustomAttributes = "";
 
 		// applicant_passport
@@ -1346,7 +1367,7 @@ class cloan_application_add extends cloan_application {
 
 		// guarantor_date
 		$this->guarantor_date->ViewValue = $this->guarantor_date->CurrentValue;
-		$this->guarantor_date->ViewValue = ew_FormatDateTime($this->guarantor_date->ViewValue, 14);
+		$this->guarantor_date->ViewValue = ew_FormatDateTime($this->guarantor_date->ViewValue, 17);
 		$this->guarantor_date->ViewCustomAttributes = "";
 
 		// guarantor_passport
@@ -1779,10 +1800,31 @@ class cloan_application_add extends cloan_application {
 			$this->refernce_id->PlaceHolder = ew_RemoveHtml($this->refernce_id->FldCaption());
 
 			// employee_name
-			$this->employee_name->EditAttrs["class"] = "form-control";
 			$this->employee_name->EditCustomAttributes = "";
-			$this->employee_name->EditValue = ew_HtmlEncode($this->employee_name->CurrentValue);
-			$this->employee_name->PlaceHolder = ew_RemoveHtml($this->employee_name->FldCaption());
+			if (trim(strval($this->employee_name->CurrentValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->employee_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+			}
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
+			$sWhereWrk = "";
+			$this->employee_name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->employee_name, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+				$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
+				$arwrk[3] = ew_HtmlEncode($rswrk->fields('Disp3Fld'));
+				$this->employee_name->ViewValue = $this->employee_name->DisplayValue($arwrk);
+			} else {
+				$this->employee_name->ViewValue = $Language->Phrase("PleaseSelect");
+			}
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->employee_name->EditValue = $arwrk;
 
 			// address
 			$this->address->EditAttrs["class"] = "form-control";
@@ -1889,7 +1931,7 @@ class cloan_application_add extends cloan_application {
 			// applicant_date
 			$this->applicant_date->EditAttrs["class"] = "form-control";
 			$this->applicant_date->EditCustomAttributes = "";
-			$this->applicant_date->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->applicant_date->CurrentValue, 14));
+			$this->applicant_date->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->applicant_date->CurrentValue, 17));
 			$this->applicant_date->PlaceHolder = ew_RemoveHtml($this->applicant_date->FldCaption());
 
 			// applicant_passport
@@ -1993,7 +2035,7 @@ class cloan_application_add extends cloan_application {
 			// guarantor_date
 			$this->guarantor_date->EditAttrs["class"] = "form-control";
 			$this->guarantor_date->EditCustomAttributes = "";
-			$this->guarantor_date->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->guarantor_date->CurrentValue, 14));
+			$this->guarantor_date->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->guarantor_date->CurrentValue, 17));
 			$this->guarantor_date->PlaceHolder = ew_RemoveHtml($this->guarantor_date->FldCaption());
 
 			// guarantor_passport
@@ -2369,11 +2411,41 @@ class cloan_application_add extends cloan_application {
 		// Check if validation required
 		if (!EW_SERVER_VALIDATE)
 			return ($gsFormError == "");
+		if (!$this->date_initiated->FldIsDetailKey && !is_null($this->date_initiated->FormValue) && $this->date_initiated->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->date_initiated->FldCaption(), $this->date_initiated->ReqErrMsg));
+		}
 		if (!ew_CheckDateDef($this->date_initiated->FormValue)) {
 			ew_AddMessage($gsFormError, $this->date_initiated->FldErrMsg());
 		}
+		if (!$this->refernce_id->FldIsDetailKey && !is_null($this->refernce_id->FormValue) && $this->refernce_id->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->refernce_id->FldCaption(), $this->refernce_id->ReqErrMsg));
+		}
+		if (!$this->employee_name->FldIsDetailKey && !is_null($this->employee_name->FormValue) && $this->employee_name->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->employee_name->FldCaption(), $this->employee_name->ReqErrMsg));
+		}
+		if (!$this->address->FldIsDetailKey && !is_null($this->address->FormValue) && $this->address->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->address->FldCaption(), $this->address->ReqErrMsg));
+		}
+		if (!$this->mobile->FldIsDetailKey && !is_null($this->mobile->FormValue) && $this->mobile->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->mobile->FldCaption(), $this->mobile->ReqErrMsg));
+		}
+		if (!$this->department->FldIsDetailKey && !is_null($this->department->FormValue) && $this->department->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->department->FldCaption(), $this->department->ReqErrMsg));
+		}
+		if (!$this->loan_amount->FldIsDetailKey && !is_null($this->loan_amount->FormValue) && $this->loan_amount->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->loan_amount->FldCaption(), $this->loan_amount->ReqErrMsg));
+		}
 		if (!ew_CheckNumber($this->loan_amount->FormValue)) {
 			ew_AddMessage($gsFormError, $this->loan_amount->FldErrMsg());
+		}
+		if (!$this->amount_inwords->FldIsDetailKey && !is_null($this->amount_inwords->FormValue) && $this->amount_inwords->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->amount_inwords->FldCaption(), $this->amount_inwords->ReqErrMsg));
+		}
+		if (!$this->purpose->FldIsDetailKey && !is_null($this->purpose->FormValue) && $this->purpose->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->purpose->FldCaption(), $this->purpose->ReqErrMsg));
+		}
+		if (!$this->salary_permonth->FldIsDetailKey && !is_null($this->salary_permonth->FormValue) && $this->salary_permonth->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->salary_permonth->FldCaption(), $this->salary_permonth->ReqErrMsg));
 		}
 		if (!ew_CheckNumber($this->salary_permonth->FormValue)) {
 			ew_AddMessage($gsFormError, $this->salary_permonth->FldErrMsg());
@@ -2390,20 +2462,101 @@ class cloan_application_add extends cloan_application {
 		if (!ew_CheckNumber($this->balance_remaining->FormValue)) {
 			ew_AddMessage($gsFormError, $this->balance_remaining->FldErrMsg());
 		}
+		if (!$this->applicant_date->FldIsDetailKey && !is_null($this->applicant_date->FormValue) && $this->applicant_date->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->applicant_date->FldCaption(), $this->applicant_date->ReqErrMsg));
+		}
 		if (!ew_CheckShortEuroDate($this->applicant_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->applicant_date->FldErrMsg());
+		}
+		if ($this->applicant_passport->Upload->FileName == "" && !$this->applicant_passport->Upload->KeepFile) {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->applicant_passport->FldCaption(), $this->applicant_passport->ReqErrMsg));
+		}
+		if (!$this->guarantor_name->FldIsDetailKey && !is_null($this->guarantor_name->FormValue) && $this->guarantor_name->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->guarantor_name->FldCaption(), $this->guarantor_name->ReqErrMsg));
+		}
+		if (!$this->guarantor_address->FldIsDetailKey && !is_null($this->guarantor_address->FormValue) && $this->guarantor_address->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->guarantor_address->FldCaption(), $this->guarantor_address->ReqErrMsg));
+		}
+		if (!$this->guarantor_mobile->FldIsDetailKey && !is_null($this->guarantor_mobile->FormValue) && $this->guarantor_mobile->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->guarantor_mobile->FldCaption(), $this->guarantor_mobile->ReqErrMsg));
+		}
+		if (!$this->guarantor_department->FldIsDetailKey && !is_null($this->guarantor_department->FormValue) && $this->guarantor_department->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->guarantor_department->FldCaption(), $this->guarantor_department->ReqErrMsg));
+		}
+		if (!$this->account_no->FldIsDetailKey && !is_null($this->account_no->FormValue) && $this->account_no->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->account_no->FldCaption(), $this->account_no->ReqErrMsg));
+		}
+		if (!$this->bank_name->FldIsDetailKey && !is_null($this->bank_name->FormValue) && $this->bank_name->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->bank_name->FldCaption(), $this->bank_name->ReqErrMsg));
+		}
+		if (!$this->employers_name->FldIsDetailKey && !is_null($this->employers_name->FormValue) && $this->employers_name->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->employers_name->FldCaption(), $this->employers_name->ReqErrMsg));
+		}
+		if (!$this->employers_address->FldIsDetailKey && !is_null($this->employers_address->FormValue) && $this->employers_address->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->employers_address->FldCaption(), $this->employers_address->ReqErrMsg));
+		}
+		if (!$this->employers_mobile->FldIsDetailKey && !is_null($this->employers_mobile->FormValue) && $this->employers_mobile->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->employers_mobile->FldCaption(), $this->employers_mobile->ReqErrMsg));
+		}
+		if (!$this->guarantor_date->FldIsDetailKey && !is_null($this->guarantor_date->FormValue) && $this->guarantor_date->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->guarantor_date->FldCaption(), $this->guarantor_date->ReqErrMsg));
 		}
 		if (!ew_CheckShortEuroDate($this->guarantor_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->guarantor_date->FldErrMsg());
 		}
+		if ($this->guarantor_passport->Upload->FileName == "" && !$this->guarantor_passport->Upload->KeepFile) {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->guarantor_passport->FldCaption(), $this->guarantor_passport->ReqErrMsg));
+		}
+		if (!$this->status->FldIsDetailKey && !is_null($this->status->FormValue) && $this->status->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->status->FldCaption(), $this->status->ReqErrMsg));
+		}
+		if ($this->initiator_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->initiator_action->FldCaption(), $this->initiator_action->ReqErrMsg));
+		}
+		if (!$this->initiator_comment->FldIsDetailKey && !is_null($this->initiator_comment->FormValue) && $this->initiator_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->initiator_comment->FldCaption(), $this->initiator_comment->ReqErrMsg));
+		}
+		if (!$this->recommended_date->FldIsDetailKey && !is_null($this->recommended_date->FormValue) && $this->recommended_date->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->recommended_date->FldCaption(), $this->recommended_date->ReqErrMsg));
+		}
 		if (!ew_CheckShortEuroDate($this->recommended_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->recommended_date->FldErrMsg());
+		}
+		if ($this->document_checklist->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->document_checklist->FldCaption(), $this->document_checklist->ReqErrMsg));
+		}
+		if ($this->recommender_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->recommender_action->FldCaption(), $this->recommender_action->ReqErrMsg));
+		}
+		if (!$this->recommender_comment->FldIsDetailKey && !is_null($this->recommender_comment->FormValue) && $this->recommender_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->recommender_comment->FldCaption(), $this->recommender_comment->ReqErrMsg));
+		}
+		if (!$this->recommended_by->FldIsDetailKey && !is_null($this->recommended_by->FormValue) && $this->recommended_by->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->recommended_by->FldCaption(), $this->recommended_by->ReqErrMsg));
+		}
+		if ($this->application_status->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->application_status->FldCaption(), $this->application_status->ReqErrMsg));
+		}
+		if (!$this->approved_amount->FldIsDetailKey && !is_null($this->approved_amount->FormValue) && $this->approved_amount->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->approved_amount->FldCaption(), $this->approved_amount->ReqErrMsg));
 		}
 		if (!ew_CheckNumber($this->approved_amount->FormValue)) {
 			ew_AddMessage($gsFormError, $this->approved_amount->FldErrMsg());
 		}
+		if (!$this->duration_approved->FldIsDetailKey && !is_null($this->duration_approved->FormValue) && $this->duration_approved->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->duration_approved->FldCaption(), $this->duration_approved->ReqErrMsg));
+		}
 		if (!ew_CheckShortEuroDate($this->approval_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->approval_date->FldErrMsg());
+		}
+		if ($this->approval_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->approval_action->FldCaption(), $this->approval_action->ReqErrMsg));
+		}
+		if (!$this->approval_comment->FldIsDetailKey && !is_null($this->approval_comment->FormValue) && $this->approval_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->approval_comment->FldCaption(), $this->approval_comment->ReqErrMsg));
+		}
+		if (!$this->approved_by->FldIsDetailKey && !is_null($this->approved_by->FormValue) && $this->approved_by->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->approved_by->FldCaption(), $this->approved_by->ReqErrMsg));
 		}
 
 		// Return validate result
@@ -2475,7 +2628,7 @@ class cloan_application_add extends cloan_application {
 		$this->balance_remaining->SetDbValueDef($rsnew, $this->balance_remaining->CurrentValue, NULL, FALSE);
 
 		// applicant_date
-		$this->applicant_date->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->applicant_date->CurrentValue, 14), NULL, FALSE);
+		$this->applicant_date->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->applicant_date->CurrentValue, 17), NULL, FALSE);
 
 		// applicant_passport
 		if ($this->applicant_passport->Visible && !$this->applicant_passport->Upload->KeepFile) {
@@ -2515,7 +2668,7 @@ class cloan_application_add extends cloan_application {
 		$this->employers_mobile->SetDbValueDef($rsnew, $this->employers_mobile->CurrentValue, NULL, FALSE);
 
 		// guarantor_date
-		$this->guarantor_date->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->guarantor_date->CurrentValue, 14), NULL, FALSE);
+		$this->guarantor_date->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->guarantor_date->CurrentValue, 17), NULL, FALSE);
 
 		// guarantor_passport
 		if ($this->guarantor_passport->Visible && !$this->guarantor_passport->Upload->KeepFile) {
@@ -2766,6 +2919,18 @@ class cloan_application_add extends cloan_application {
 		global $gsLanguage;
 		$pageId = $pageId ?: $this->PageID;
 		switch ($fld->FldVar) {
+		case "x_employee_name":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sWhereWrk = "{filter}";
+			$fld->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->employee_name, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
 		case "x_department":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `department_id` AS `LinkFld`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
@@ -3018,11 +3183,41 @@ floan_applicationadd.Validate = function() {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
 			elm = this.GetElements("x" + infix + "_date_initiated");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->date_initiated->FldCaption(), $loan_application->date_initiated->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_date_initiated");
 			if (elm && !ew_CheckDateDef(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($loan_application->date_initiated->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_refernce_id");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->refernce_id->FldCaption(), $loan_application->refernce_id->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_employee_name");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->employee_name->FldCaption(), $loan_application->employee_name->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_address");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->address->FldCaption(), $loan_application->address->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_mobile");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->mobile->FldCaption(), $loan_application->mobile->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_department");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->department->FldCaption(), $loan_application->department->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_loan_amount");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->loan_amount->FldCaption(), $loan_application->loan_amount->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_loan_amount");
 			if (elm && !ew_CheckNumber(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($loan_application->loan_amount->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_amount_inwords");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->amount_inwords->FldCaption(), $loan_application->amount_inwords->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_purpose");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->purpose->FldCaption(), $loan_application->purpose->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_salary_permonth");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->salary_permonth->FldCaption(), $loan_application->salary_permonth->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_salary_permonth");
 			if (elm && !ew_CheckNumber(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($loan_application->salary_permonth->FldErrMsg()) ?>");
@@ -3039,20 +3234,103 @@ floan_applicationadd.Validate = function() {
 			if (elm && !ew_CheckNumber(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($loan_application->balance_remaining->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_applicant_date");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->applicant_date->FldCaption(), $loan_application->applicant_date->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_applicant_date");
 			if (elm && !ew_CheckShortEuroDate(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($loan_application->applicant_date->FldErrMsg()) ?>");
+			felm = this.GetElements("x" + infix + "_applicant_passport");
+			elm = this.GetElements("fn_x" + infix + "_applicant_passport");
+			if (felm && elm && !ew_HasValue(elm))
+				return this.OnError(felm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->applicant_passport->FldCaption(), $loan_application->applicant_passport->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_guarantor_name");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->guarantor_name->FldCaption(), $loan_application->guarantor_name->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_guarantor_address");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->guarantor_address->FldCaption(), $loan_application->guarantor_address->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_guarantor_mobile");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->guarantor_mobile->FldCaption(), $loan_application->guarantor_mobile->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_guarantor_department");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->guarantor_department->FldCaption(), $loan_application->guarantor_department->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_account_no");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->account_no->FldCaption(), $loan_application->account_no->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_bank_name");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->bank_name->FldCaption(), $loan_application->bank_name->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_employers_name");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->employers_name->FldCaption(), $loan_application->employers_name->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_employers_address");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->employers_address->FldCaption(), $loan_application->employers_address->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_employers_mobile");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->employers_mobile->FldCaption(), $loan_application->employers_mobile->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_guarantor_date");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->guarantor_date->FldCaption(), $loan_application->guarantor_date->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_guarantor_date");
 			if (elm && !ew_CheckShortEuroDate(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($loan_application->guarantor_date->FldErrMsg()) ?>");
+			felm = this.GetElements("x" + infix + "_guarantor_passport");
+			elm = this.GetElements("fn_x" + infix + "_guarantor_passport");
+			if (felm && elm && !ew_HasValue(elm))
+				return this.OnError(felm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->guarantor_passport->FldCaption(), $loan_application->guarantor_passport->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_status");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->status->FldCaption(), $loan_application->status->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_initiator_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->initiator_action->FldCaption(), $loan_application->initiator_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_initiator_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->initiator_comment->FldCaption(), $loan_application->initiator_comment->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_recommended_date");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->recommended_date->FldCaption(), $loan_application->recommended_date->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_recommended_date");
 			if (elm && !ew_CheckShortEuroDate(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($loan_application->recommended_date->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_document_checklist[]");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->document_checklist->FldCaption(), $loan_application->document_checklist->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_recommender_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->recommender_action->FldCaption(), $loan_application->recommender_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_recommender_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->recommender_comment->FldCaption(), $loan_application->recommender_comment->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_recommended_by");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->recommended_by->FldCaption(), $loan_application->recommended_by->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_application_status");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->application_status->FldCaption(), $loan_application->application_status->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_approved_amount");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->approved_amount->FldCaption(), $loan_application->approved_amount->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_approved_amount");
 			if (elm && !ew_CheckNumber(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($loan_application->approved_amount->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_duration_approved");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->duration_approved->FldCaption(), $loan_application->duration_approved->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_approval_date");
 			if (elm && !ew_CheckShortEuroDate(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($loan_application->approval_date->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_approval_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->approval_action->FldCaption(), $loan_application->approval_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_approval_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->approval_comment->FldCaption(), $loan_application->approval_comment->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_approved_by");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->approved_by->FldCaption(), $loan_application->approved_by->ReqErrMsg)) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -3085,6 +3363,8 @@ floan_applicationadd.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDAT
 floan_applicationadd.MultiPage = new ew_MultiPage("floan_applicationadd");
 
 // Dynamic selection lists
+floan_applicationadd.Lists["x_employee_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+floan_applicationadd.Lists["x_employee_name"].Data = "<?php echo $loan_application_add->employee_name->LookupFilterQuery(FALSE, "add") ?>";
 floan_applicationadd.Lists["x_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
 floan_applicationadd.Lists["x_department"].Data = "<?php echo $loan_application_add->department->LookupFilterQuery(FALSE, "add") ?>";
 floan_applicationadd.Lists["x_repayment_period"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"duration_months"};
@@ -3143,7 +3423,7 @@ $loan_application_add->ShowMessage();
 <div class="ewAddDiv"><!-- page* -->
 <?php if ($loan_application->date_initiated->Visible) { // date_initiated ?>
 	<div id="r_date_initiated" class="form-group">
-		<label id="elh_loan_application_date_initiated" for="x_date_initiated" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->date_initiated->FldCaption() ?></label>
+		<label id="elh_loan_application_date_initiated" for="x_date_initiated" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->date_initiated->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->date_initiated->CellAttributes() ?>>
 <span id="el_loan_application_date_initiated">
 <input type="text" data-table="loan_application" data-field="x_date_initiated" data-page="1" name="x_date_initiated" id="x_date_initiated" size="30" placeholder="<?php echo ew_HtmlEncode($loan_application->date_initiated->getPlaceHolder()) ?>" value="<?php echo $loan_application->date_initiated->EditValue ?>"<?php echo $loan_application->date_initiated->EditAttributes() ?>>
@@ -3153,7 +3433,7 @@ $loan_application_add->ShowMessage();
 <?php } ?>
 <?php if ($loan_application->refernce_id->Visible) { // refernce_id ?>
 	<div id="r_refernce_id" class="form-group">
-		<label id="elh_loan_application_refernce_id" for="x_refernce_id" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->refernce_id->FldCaption() ?></label>
+		<label id="elh_loan_application_refernce_id" for="x_refernce_id" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->refernce_id->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->refernce_id->CellAttributes() ?>>
 <span id="el_loan_application_refernce_id">
 <input type="text" data-table="loan_application" data-field="x_refernce_id" data-page="1" name="x_refernce_id" id="x_refernce_id" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($loan_application->refernce_id->getPlaceHolder()) ?>" value="<?php echo $loan_application->refernce_id->EditValue ?>"<?php echo $loan_application->refernce_id->EditAttributes() ?>>
@@ -3163,27 +3443,31 @@ $loan_application_add->ShowMessage();
 <?php } ?>
 <?php if ($loan_application->employee_name->Visible) { // employee_name ?>
 	<div id="r_employee_name" class="form-group">
-		<label id="elh_loan_application_employee_name" for="x_employee_name" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->employee_name->FldCaption() ?></label>
+		<label id="elh_loan_application_employee_name" for="x_employee_name" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->employee_name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->employee_name->CellAttributes() ?>>
 <span id="el_loan_application_employee_name">
-<input type="text" data-table="loan_application" data-field="x_employee_name" data-page="1" name="x_employee_name" id="x_employee_name" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($loan_application->employee_name->getPlaceHolder()) ?>" value="<?php echo $loan_application->employee_name->EditValue ?>"<?php echo $loan_application->employee_name->EditAttributes() ?>>
+<span class="ewLookupList">
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_employee_name"><?php echo (strval($loan_application->employee_name->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $loan_application->employee_name->ViewValue); ?></span>
+</span>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($loan_application->employee_name->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_employee_name',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($loan_application->employee_name->ReadOnly || $loan_application->employee_name->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="loan_application" data-field="x_employee_name" data-page="1" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $loan_application->employee_name->DisplayValueSeparatorAttribute() ?>" name="x_employee_name" id="x_employee_name" value="<?php echo $loan_application->employee_name->CurrentValue ?>"<?php echo $loan_application->employee_name->EditAttributes() ?>>
 </span>
 <?php echo $loan_application->employee_name->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($loan_application->address->Visible) { // address ?>
 	<div id="r_address" class="form-group">
-		<label id="elh_loan_application_address" for="x_address" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->address->FldCaption() ?></label>
+		<label id="elh_loan_application_address" for="x_address" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->address->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->address->CellAttributes() ?>>
 <span id="el_loan_application_address">
-<input type="text" data-table="loan_application" data-field="x_address" data-page="1" name="x_address" id="x_address" size="30" maxlength="128" placeholder="<?php echo ew_HtmlEncode($loan_application->address->getPlaceHolder()) ?>" value="<?php echo $loan_application->address->EditValue ?>"<?php echo $loan_application->address->EditAttributes() ?>>
+<textarea data-table="loan_application" data-field="x_address" data-page="1" name="x_address" id="x_address" cols="30" rows="2" placeholder="<?php echo ew_HtmlEncode($loan_application->address->getPlaceHolder()) ?>"<?php echo $loan_application->address->EditAttributes() ?>><?php echo $loan_application->address->EditValue ?></textarea>
 </span>
 <?php echo $loan_application->address->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($loan_application->mobile->Visible) { // mobile ?>
 	<div id="r_mobile" class="form-group">
-		<label id="elh_loan_application_mobile" for="x_mobile" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->mobile->FldCaption() ?></label>
+		<label id="elh_loan_application_mobile" for="x_mobile" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->mobile->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->mobile->CellAttributes() ?>>
 <span id="el_loan_application_mobile">
 <input type="text" data-table="loan_application" data-field="x_mobile" data-page="1" name="x_mobile" id="x_mobile" size="30" maxlength="11" placeholder="<?php echo ew_HtmlEncode($loan_application->mobile->getPlaceHolder()) ?>" value="<?php echo $loan_application->mobile->EditValue ?>"<?php echo $loan_application->mobile->EditAttributes() ?>>
@@ -3193,7 +3477,7 @@ $loan_application_add->ShowMessage();
 <?php } ?>
 <?php if ($loan_application->department->Visible) { // department ?>
 	<div id="r_department" class="form-group">
-		<label id="elh_loan_application_department" for="x_department" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->department->FldCaption() ?></label>
+		<label id="elh_loan_application_department" for="x_department" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->department->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->department->CellAttributes() ?>>
 <span id="el_loan_application_department">
 <select data-table="loan_application" data-field="x_department" data-page="1" data-value-separator="<?php echo $loan_application->department->DisplayValueSeparatorAttribute() ?>" id="x_department" name="x_department"<?php echo $loan_application->department->EditAttributes() ?>>
@@ -3205,7 +3489,7 @@ $loan_application_add->ShowMessage();
 <?php } ?>
 <?php if ($loan_application->loan_amount->Visible) { // loan_amount ?>
 	<div id="r_loan_amount" class="form-group">
-		<label id="elh_loan_application_loan_amount" for="x_loan_amount" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->loan_amount->FldCaption() ?></label>
+		<label id="elh_loan_application_loan_amount" for="x_loan_amount" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->loan_amount->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->loan_amount->CellAttributes() ?>>
 <span id="el_loan_application_loan_amount">
 <input type="text" data-table="loan_application" data-field="x_loan_amount" data-page="1" name="x_loan_amount" id="x_loan_amount" size="30" placeholder="<?php echo ew_HtmlEncode($loan_application->loan_amount->getPlaceHolder()) ?>" value="<?php echo $loan_application->loan_amount->EditValue ?>"<?php echo $loan_application->loan_amount->EditAttributes() ?>>
@@ -3215,7 +3499,7 @@ $loan_application_add->ShowMessage();
 <?php } ?>
 <?php if ($loan_application->amount_inwords->Visible) { // amount_inwords ?>
 	<div id="r_amount_inwords" class="form-group">
-		<label id="elh_loan_application_amount_inwords" for="x_amount_inwords" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->amount_inwords->FldCaption() ?></label>
+		<label id="elh_loan_application_amount_inwords" for="x_amount_inwords" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->amount_inwords->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->amount_inwords->CellAttributes() ?>>
 <span id="el_loan_application_amount_inwords">
 <textarea data-table="loan_application" data-field="x_amount_inwords" data-page="1" name="x_amount_inwords" id="x_amount_inwords" cols="30" rows="2" placeholder="<?php echo ew_HtmlEncode($loan_application->amount_inwords->getPlaceHolder()) ?>"<?php echo $loan_application->amount_inwords->EditAttributes() ?>><?php echo $loan_application->amount_inwords->EditValue ?></textarea>
@@ -3225,7 +3509,7 @@ $loan_application_add->ShowMessage();
 <?php } ?>
 <?php if ($loan_application->purpose->Visible) { // purpose ?>
 	<div id="r_purpose" class="form-group">
-		<label id="elh_loan_application_purpose" for="x_purpose" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->purpose->FldCaption() ?></label>
+		<label id="elh_loan_application_purpose" for="x_purpose" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->purpose->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->purpose->CellAttributes() ?>>
 <span id="el_loan_application_purpose">
 <textarea data-table="loan_application" data-field="x_purpose" data-page="1" name="x_purpose" id="x_purpose" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($loan_application->purpose->getPlaceHolder()) ?>"<?php echo $loan_application->purpose->EditAttributes() ?>><?php echo $loan_application->purpose->EditValue ?></textarea>
@@ -3247,7 +3531,7 @@ $loan_application_add->ShowMessage();
 <?php } ?>
 <?php if ($loan_application->salary_permonth->Visible) { // salary_permonth ?>
 	<div id="r_salary_permonth" class="form-group">
-		<label id="elh_loan_application_salary_permonth" for="x_salary_permonth" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->salary_permonth->FldCaption() ?></label>
+		<label id="elh_loan_application_salary_permonth" for="x_salary_permonth" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->salary_permonth->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->salary_permonth->CellAttributes() ?>>
 <span id="el_loan_application_salary_permonth">
 <input type="text" data-table="loan_application" data-field="x_salary_permonth" data-page="1" name="x_salary_permonth" id="x_salary_permonth" size="30" placeholder="<?php echo ew_HtmlEncode($loan_application->salary_permonth->getPlaceHolder()) ?>" value="<?php echo $loan_application->salary_permonth->EditValue ?>"<?php echo $loan_application->salary_permonth->EditAttributes() ?>>
@@ -3307,17 +3591,17 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <?php } ?>
 <?php if ($loan_application->applicant_date->Visible) { // applicant_date ?>
 	<div id="r_applicant_date" class="form-group">
-		<label id="elh_loan_application_applicant_date" for="x_applicant_date" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->applicant_date->FldCaption() ?></label>
+		<label id="elh_loan_application_applicant_date" for="x_applicant_date" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->applicant_date->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->applicant_date->CellAttributes() ?>>
 <span id="el_loan_application_applicant_date">
-<input type="text" data-table="loan_application" data-field="x_applicant_date" data-page="1" data-format="14" name="x_applicant_date" id="x_applicant_date" size="30" placeholder="<?php echo ew_HtmlEncode($loan_application->applicant_date->getPlaceHolder()) ?>" value="<?php echo $loan_application->applicant_date->EditValue ?>"<?php echo $loan_application->applicant_date->EditAttributes() ?>>
+<input type="text" data-table="loan_application" data-field="x_applicant_date" data-page="1" data-format="17" name="x_applicant_date" id="x_applicant_date" size="30" placeholder="<?php echo ew_HtmlEncode($loan_application->applicant_date->getPlaceHolder()) ?>" value="<?php echo $loan_application->applicant_date->EditValue ?>"<?php echo $loan_application->applicant_date->EditAttributes() ?>>
 </span>
 <?php echo $loan_application->applicant_date->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($loan_application->applicant_passport->Visible) { // applicant_passport ?>
 	<div id="r_applicant_passport" class="form-group">
-		<label id="elh_loan_application_applicant_passport" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->applicant_passport->FldCaption() ?></label>
+		<label id="elh_loan_application_applicant_passport" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->applicant_passport->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->applicant_passport->CellAttributes() ?>>
 <span id="el_loan_application_applicant_passport">
 <div id="fd_x_applicant_passport">
@@ -3342,7 +3626,7 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <div class="ewAddDiv"><!-- page* -->
 <?php if ($loan_application->guarantor_name->Visible) { // guarantor_name ?>
 	<div id="r_guarantor_name" class="form-group">
-		<label id="elh_loan_application_guarantor_name" for="x_guarantor_name" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->guarantor_name->FldCaption() ?></label>
+		<label id="elh_loan_application_guarantor_name" for="x_guarantor_name" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->guarantor_name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->guarantor_name->CellAttributes() ?>>
 <span id="el_loan_application_guarantor_name">
 <input type="text" data-table="loan_application" data-field="x_guarantor_name" data-page="2" name="x_guarantor_name" id="x_guarantor_name" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($loan_application->guarantor_name->getPlaceHolder()) ?>" value="<?php echo $loan_application->guarantor_name->EditValue ?>"<?php echo $loan_application->guarantor_name->EditAttributes() ?>>
@@ -3352,7 +3636,7 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <?php } ?>
 <?php if ($loan_application->guarantor_address->Visible) { // guarantor_address ?>
 	<div id="r_guarantor_address" class="form-group">
-		<label id="elh_loan_application_guarantor_address" for="x_guarantor_address" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->guarantor_address->FldCaption() ?></label>
+		<label id="elh_loan_application_guarantor_address" for="x_guarantor_address" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->guarantor_address->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->guarantor_address->CellAttributes() ?>>
 <span id="el_loan_application_guarantor_address">
 <input type="text" data-table="loan_application" data-field="x_guarantor_address" data-page="2" name="x_guarantor_address" id="x_guarantor_address" size="30" maxlength="150" placeholder="<?php echo ew_HtmlEncode($loan_application->guarantor_address->getPlaceHolder()) ?>" value="<?php echo $loan_application->guarantor_address->EditValue ?>"<?php echo $loan_application->guarantor_address->EditAttributes() ?>>
@@ -3362,7 +3646,7 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <?php } ?>
 <?php if ($loan_application->guarantor_mobile->Visible) { // guarantor_mobile ?>
 	<div id="r_guarantor_mobile" class="form-group">
-		<label id="elh_loan_application_guarantor_mobile" for="x_guarantor_mobile" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->guarantor_mobile->FldCaption() ?></label>
+		<label id="elh_loan_application_guarantor_mobile" for="x_guarantor_mobile" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->guarantor_mobile->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->guarantor_mobile->CellAttributes() ?>>
 <span id="el_loan_application_guarantor_mobile">
 <input type="text" data-table="loan_application" data-field="x_guarantor_mobile" data-page="2" name="x_guarantor_mobile" id="x_guarantor_mobile" size="30" maxlength="11" placeholder="<?php echo ew_HtmlEncode($loan_application->guarantor_mobile->getPlaceHolder()) ?>" value="<?php echo $loan_application->guarantor_mobile->EditValue ?>"<?php echo $loan_application->guarantor_mobile->EditAttributes() ?>>
@@ -3372,7 +3656,7 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <?php } ?>
 <?php if ($loan_application->guarantor_department->Visible) { // guarantor_department ?>
 	<div id="r_guarantor_department" class="form-group">
-		<label id="elh_loan_application_guarantor_department" for="x_guarantor_department" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->guarantor_department->FldCaption() ?></label>
+		<label id="elh_loan_application_guarantor_department" for="x_guarantor_department" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->guarantor_department->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->guarantor_department->CellAttributes() ?>>
 <span id="el_loan_application_guarantor_department">
 <select data-table="loan_application" data-field="x_guarantor_department" data-page="2" data-value-separator="<?php echo $loan_application->guarantor_department->DisplayValueSeparatorAttribute() ?>" id="x_guarantor_department" name="x_guarantor_department"<?php echo $loan_application->guarantor_department->EditAttributes() ?>>
@@ -3384,7 +3668,7 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <?php } ?>
 <?php if ($loan_application->account_no->Visible) { // account_no ?>
 	<div id="r_account_no" class="form-group">
-		<label id="elh_loan_application_account_no" for="x_account_no" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->account_no->FldCaption() ?></label>
+		<label id="elh_loan_application_account_no" for="x_account_no" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->account_no->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->account_no->CellAttributes() ?>>
 <span id="el_loan_application_account_no">
 <input type="text" data-table="loan_application" data-field="x_account_no" data-page="2" name="x_account_no" id="x_account_no" size="30" maxlength="10" placeholder="<?php echo ew_HtmlEncode($loan_application->account_no->getPlaceHolder()) ?>" value="<?php echo $loan_application->account_no->EditValue ?>"<?php echo $loan_application->account_no->EditAttributes() ?>>
@@ -3394,7 +3678,7 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <?php } ?>
 <?php if ($loan_application->bank_name->Visible) { // bank_name ?>
 	<div id="r_bank_name" class="form-group">
-		<label id="elh_loan_application_bank_name" for="x_bank_name" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->bank_name->FldCaption() ?></label>
+		<label id="elh_loan_application_bank_name" for="x_bank_name" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->bank_name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->bank_name->CellAttributes() ?>>
 <span id="el_loan_application_bank_name">
 <span class="ewLookupList">
@@ -3408,7 +3692,7 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <?php } ?>
 <?php if ($loan_application->employers_name->Visible) { // employers_name ?>
 	<div id="r_employers_name" class="form-group">
-		<label id="elh_loan_application_employers_name" for="x_employers_name" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->employers_name->FldCaption() ?></label>
+		<label id="elh_loan_application_employers_name" for="x_employers_name" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->employers_name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->employers_name->CellAttributes() ?>>
 <span id="el_loan_application_employers_name">
 <input type="text" data-table="loan_application" data-field="x_employers_name" data-page="2" name="x_employers_name" id="x_employers_name" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($loan_application->employers_name->getPlaceHolder()) ?>" value="<?php echo $loan_application->employers_name->EditValue ?>"<?php echo $loan_application->employers_name->EditAttributes() ?>>
@@ -3418,7 +3702,7 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <?php } ?>
 <?php if ($loan_application->employers_address->Visible) { // employers_address ?>
 	<div id="r_employers_address" class="form-group">
-		<label id="elh_loan_application_employers_address" for="x_employers_address" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->employers_address->FldCaption() ?></label>
+		<label id="elh_loan_application_employers_address" for="x_employers_address" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->employers_address->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->employers_address->CellAttributes() ?>>
 <span id="el_loan_application_employers_address">
 <textarea data-table="loan_application" data-field="x_employers_address" data-page="2" name="x_employers_address" id="x_employers_address" cols="30" rows="2" placeholder="<?php echo ew_HtmlEncode($loan_application->employers_address->getPlaceHolder()) ?>"<?php echo $loan_application->employers_address->EditAttributes() ?>><?php echo $loan_application->employers_address->EditValue ?></textarea>
@@ -3428,7 +3712,7 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <?php } ?>
 <?php if ($loan_application->employers_mobile->Visible) { // employers_mobile ?>
 	<div id="r_employers_mobile" class="form-group">
-		<label id="elh_loan_application_employers_mobile" for="x_employers_mobile" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->employers_mobile->FldCaption() ?></label>
+		<label id="elh_loan_application_employers_mobile" for="x_employers_mobile" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->employers_mobile->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->employers_mobile->CellAttributes() ?>>
 <span id="el_loan_application_employers_mobile">
 <input type="text" data-table="loan_application" data-field="x_employers_mobile" data-page="2" name="x_employers_mobile" id="x_employers_mobile" size="30" maxlength="11" placeholder="<?php echo ew_HtmlEncode($loan_application->employers_mobile->getPlaceHolder()) ?>" value="<?php echo $loan_application->employers_mobile->EditValue ?>"<?php echo $loan_application->employers_mobile->EditAttributes() ?>>
@@ -3438,17 +3722,17 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <?php } ?>
 <?php if ($loan_application->guarantor_date->Visible) { // guarantor_date ?>
 	<div id="r_guarantor_date" class="form-group">
-		<label id="elh_loan_application_guarantor_date" for="x_guarantor_date" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->guarantor_date->FldCaption() ?></label>
+		<label id="elh_loan_application_guarantor_date" for="x_guarantor_date" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->guarantor_date->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->guarantor_date->CellAttributes() ?>>
 <span id="el_loan_application_guarantor_date">
-<input type="text" data-table="loan_application" data-field="x_guarantor_date" data-page="2" data-format="14" name="x_guarantor_date" id="x_guarantor_date" size="30" placeholder="<?php echo ew_HtmlEncode($loan_application->guarantor_date->getPlaceHolder()) ?>" value="<?php echo $loan_application->guarantor_date->EditValue ?>"<?php echo $loan_application->guarantor_date->EditAttributes() ?>>
+<input type="text" data-table="loan_application" data-field="x_guarantor_date" data-page="2" data-format="17" name="x_guarantor_date" id="x_guarantor_date" size="30" placeholder="<?php echo ew_HtmlEncode($loan_application->guarantor_date->getPlaceHolder()) ?>" value="<?php echo $loan_application->guarantor_date->EditValue ?>"<?php echo $loan_application->guarantor_date->EditAttributes() ?>>
 </span>
 <?php echo $loan_application->guarantor_date->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($loan_application->guarantor_passport->Visible) { // guarantor_passport ?>
 	<div id="r_guarantor_passport" class="form-group">
-		<label id="elh_loan_application_guarantor_passport" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->guarantor_passport->FldCaption() ?></label>
+		<label id="elh_loan_application_guarantor_passport" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->guarantor_passport->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->guarantor_passport->CellAttributes() ?>>
 <span id="el_loan_application_guarantor_passport">
 <div id="fd_x_guarantor_passport">
@@ -3473,7 +3757,7 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <div class="ewAddDiv"><!-- page* -->
 <?php if ($loan_application->status->Visible) { // status ?>
 	<div id="r_status" class="form-group">
-		<label id="elh_loan_application_status" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->status->FldCaption() ?></label>
+		<label id="elh_loan_application_status" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->status->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->status->CellAttributes() ?>>
 <span id="el_loan_application_status">
 <?php
@@ -3494,7 +3778,7 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_status","forceSelect":false});
 <?php } ?>
 <?php if ($loan_application->initiator_action->Visible) { // initiator_action ?>
 	<div id="r_initiator_action" class="form-group">
-		<label id="elh_loan_application_initiator_action" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->initiator_action->FldCaption() ?></label>
+		<label id="elh_loan_application_initiator_action" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->initiator_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->initiator_action->CellAttributes() ?>>
 <span id="el_loan_application_initiator_action">
 <div id="tp_x_initiator_action" class="ewTemplate"><input type="radio" data-table="loan_application" data-field="x_initiator_action" data-page="3" data-value-separator="<?php echo $loan_application->initiator_action->DisplayValueSeparatorAttribute() ?>" name="x_initiator_action" id="x_initiator_action" value="{value}"<?php echo $loan_application->initiator_action->EditAttributes() ?>></div>
@@ -3507,7 +3791,7 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_status","forceSelect":false});
 <?php } ?>
 <?php if ($loan_application->initiator_comment->Visible) { // initiator_comment ?>
 	<div id="r_initiator_comment" class="form-group">
-		<label id="elh_loan_application_initiator_comment" for="x_initiator_comment" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->initiator_comment->FldCaption() ?></label>
+		<label id="elh_loan_application_initiator_comment" for="x_initiator_comment" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->initiator_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->initiator_comment->CellAttributes() ?>>
 <span id="el_loan_application_initiator_comment">
 <textarea data-table="loan_application" data-field="x_initiator_comment" data-page="3" name="x_initiator_comment" id="x_initiator_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($loan_application->initiator_comment->getPlaceHolder()) ?>"<?php echo $loan_application->initiator_comment->EditAttributes() ?>><?php echo $loan_application->initiator_comment->EditValue ?></textarea>
@@ -3517,7 +3801,7 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_status","forceSelect":false});
 <?php } ?>
 <?php if ($loan_application->recommended_date->Visible) { // recommended_date ?>
 	<div id="r_recommended_date" class="form-group">
-		<label id="elh_loan_application_recommended_date" for="x_recommended_date" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->recommended_date->FldCaption() ?></label>
+		<label id="elh_loan_application_recommended_date" for="x_recommended_date" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->recommended_date->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->recommended_date->CellAttributes() ?>>
 <span id="el_loan_application_recommended_date">
 <input type="text" data-table="loan_application" data-field="x_recommended_date" data-page="3" data-format="14" name="x_recommended_date" id="x_recommended_date" size="30" placeholder="<?php echo ew_HtmlEncode($loan_application->recommended_date->getPlaceHolder()) ?>" value="<?php echo $loan_application->recommended_date->EditValue ?>"<?php echo $loan_application->recommended_date->EditAttributes() ?>>
@@ -3527,7 +3811,7 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_status","forceSelect":false});
 <?php } ?>
 <?php if ($loan_application->document_checklist->Visible) { // document_checklist ?>
 	<div id="r_document_checklist" class="form-group">
-		<label id="elh_loan_application_document_checklist" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->document_checklist->FldCaption() ?></label>
+		<label id="elh_loan_application_document_checklist" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->document_checklist->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->document_checklist->CellAttributes() ?>>
 <span id="el_loan_application_document_checklist">
 <div id="tp_x_document_checklist" class="ewTemplate"><input type="checkbox" data-table="loan_application" data-field="x_document_checklist" data-page="3" data-value-separator="<?php echo $loan_application->document_checklist->DisplayValueSeparatorAttribute() ?>" name="x_document_checklist[]" id="x_document_checklist[]" value="{value}"<?php echo $loan_application->document_checklist->EditAttributes() ?>></div>
@@ -3540,7 +3824,7 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_status","forceSelect":false});
 <?php } ?>
 <?php if ($loan_application->recommender_action->Visible) { // recommender_action ?>
 	<div id="r_recommender_action" class="form-group">
-		<label id="elh_loan_application_recommender_action" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->recommender_action->FldCaption() ?></label>
+		<label id="elh_loan_application_recommender_action" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->recommender_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->recommender_action->CellAttributes() ?>>
 <span id="el_loan_application_recommender_action">
 <div id="tp_x_recommender_action" class="ewTemplate"><input type="radio" data-table="loan_application" data-field="x_recommender_action" data-page="3" data-value-separator="<?php echo $loan_application->recommender_action->DisplayValueSeparatorAttribute() ?>" name="x_recommender_action" id="x_recommender_action" value="{value}"<?php echo $loan_application->recommender_action->EditAttributes() ?>></div>
@@ -3553,7 +3837,7 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_status","forceSelect":false});
 <?php } ?>
 <?php if ($loan_application->recommender_comment->Visible) { // recommender_comment ?>
 	<div id="r_recommender_comment" class="form-group">
-		<label id="elh_loan_application_recommender_comment" for="x_recommender_comment" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->recommender_comment->FldCaption() ?></label>
+		<label id="elh_loan_application_recommender_comment" for="x_recommender_comment" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->recommender_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->recommender_comment->CellAttributes() ?>>
 <span id="el_loan_application_recommender_comment">
 <textarea data-table="loan_application" data-field="x_recommender_comment" data-page="3" name="x_recommender_comment" id="x_recommender_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($loan_application->recommender_comment->getPlaceHolder()) ?>"<?php echo $loan_application->recommender_comment->EditAttributes() ?>><?php echo $loan_application->recommender_comment->EditValue ?></textarea>
@@ -3563,7 +3847,7 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_status","forceSelect":false});
 <?php } ?>
 <?php if ($loan_application->recommended_by->Visible) { // recommended_by ?>
 	<div id="r_recommended_by" class="form-group">
-		<label id="elh_loan_application_recommended_by" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->recommended_by->FldCaption() ?></label>
+		<label id="elh_loan_application_recommended_by" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->recommended_by->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->recommended_by->CellAttributes() ?>>
 <span id="el_loan_application_recommended_by">
 <?php
@@ -3584,7 +3868,7 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_recommended_by","forceSelect":fa
 <?php } ?>
 <?php if ($loan_application->application_status->Visible) { // application_status ?>
 	<div id="r_application_status" class="form-group">
-		<label id="elh_loan_application_application_status" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->application_status->FldCaption() ?></label>
+		<label id="elh_loan_application_application_status" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->application_status->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->application_status->CellAttributes() ?>>
 <span id="el_loan_application_application_status">
 <div id="tp_x_application_status" class="ewTemplate"><input type="radio" data-table="loan_application" data-field="x_application_status" data-page="3" data-value-separator="<?php echo $loan_application->application_status->DisplayValueSeparatorAttribute() ?>" name="x_application_status" id="x_application_status" value="{value}"<?php echo $loan_application->application_status->EditAttributes() ?>></div>
@@ -3597,7 +3881,7 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_recommended_by","forceSelect":fa
 <?php } ?>
 <?php if ($loan_application->approved_amount->Visible) { // approved_amount ?>
 	<div id="r_approved_amount" class="form-group">
-		<label id="elh_loan_application_approved_amount" for="x_approved_amount" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->approved_amount->FldCaption() ?></label>
+		<label id="elh_loan_application_approved_amount" for="x_approved_amount" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->approved_amount->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->approved_amount->CellAttributes() ?>>
 <span id="el_loan_application_approved_amount">
 <input type="text" data-table="loan_application" data-field="x_approved_amount" data-page="3" name="x_approved_amount" id="x_approved_amount" size="30" placeholder="<?php echo ew_HtmlEncode($loan_application->approved_amount->getPlaceHolder()) ?>" value="<?php echo $loan_application->approved_amount->EditValue ?>"<?php echo $loan_application->approved_amount->EditAttributes() ?>>
@@ -3607,7 +3891,7 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_recommended_by","forceSelect":fa
 <?php } ?>
 <?php if ($loan_application->duration_approved->Visible) { // duration_approved ?>
 	<div id="r_duration_approved" class="form-group">
-		<label id="elh_loan_application_duration_approved" for="x_duration_approved" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->duration_approved->FldCaption() ?></label>
+		<label id="elh_loan_application_duration_approved" for="x_duration_approved" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->duration_approved->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->duration_approved->CellAttributes() ?>>
 <span id="el_loan_application_duration_approved">
 <select data-table="loan_application" data-field="x_duration_approved" data-page="3" data-value-separator="<?php echo $loan_application->duration_approved->DisplayValueSeparatorAttribute() ?>" id="x_duration_approved" name="x_duration_approved"<?php echo $loan_application->duration_approved->EditAttributes() ?>>
@@ -3623,13 +3907,18 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_recommended_by","forceSelect":fa
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->approval_date->CellAttributes() ?>>
 <span id="el_loan_application_approval_date">
 <input type="text" data-table="loan_application" data-field="x_approval_date" data-page="3" data-format="17" name="x_approval_date" id="x_approval_date" size="30" placeholder="<?php echo ew_HtmlEncode($loan_application->approval_date->getPlaceHolder()) ?>" value="<?php echo $loan_application->approval_date->EditValue ?>"<?php echo $loan_application->approval_date->EditAttributes() ?>>
+<?php if (!$loan_application->approval_date->ReadOnly && !$loan_application->approval_date->Disabled && !isset($loan_application->approval_date->EditAttrs["readonly"]) && !isset($loan_application->approval_date->EditAttrs["disabled"])) { ?>
+<script type="text/javascript">
+ew_CreateDateTimePicker("floan_applicationadd", "x_approval_date", {"ignoreReadonly":true,"useCurrent":false,"format":17});
+</script>
+<?php } ?>
 </span>
 <?php echo $loan_application->approval_date->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($loan_application->approval_action->Visible) { // approval_action ?>
 	<div id="r_approval_action" class="form-group">
-		<label id="elh_loan_application_approval_action" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->approval_action->FldCaption() ?></label>
+		<label id="elh_loan_application_approval_action" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->approval_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->approval_action->CellAttributes() ?>>
 <span id="el_loan_application_approval_action">
 <div id="tp_x_approval_action" class="ewTemplate"><input type="radio" data-table="loan_application" data-field="x_approval_action" data-page="3" data-value-separator="<?php echo $loan_application->approval_action->DisplayValueSeparatorAttribute() ?>" name="x_approval_action" id="x_approval_action" value="{value}"<?php echo $loan_application->approval_action->EditAttributes() ?>></div>
@@ -3642,7 +3931,7 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_recommended_by","forceSelect":fa
 <?php } ?>
 <?php if ($loan_application->approval_comment->Visible) { // approval_comment ?>
 	<div id="r_approval_comment" class="form-group">
-		<label id="elh_loan_application_approval_comment" for="x_approval_comment" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->approval_comment->FldCaption() ?></label>
+		<label id="elh_loan_application_approval_comment" for="x_approval_comment" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->approval_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->approval_comment->CellAttributes() ?>>
 <span id="el_loan_application_approval_comment">
 <textarea data-table="loan_application" data-field="x_approval_comment" data-page="3" name="x_approval_comment" id="x_approval_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($loan_application->approval_comment->getPlaceHolder()) ?>"<?php echo $loan_application->approval_comment->EditAttributes() ?>><?php echo $loan_application->approval_comment->EditValue ?></textarea>
@@ -3652,7 +3941,7 @@ floan_applicationadd.CreateAutoSuggest({"id":"x_recommended_by","forceSelect":fa
 <?php } ?>
 <?php if ($loan_application->approved_by->Visible) { // approved_by ?>
 	<div id="r_approved_by" class="form-group">
-		<label id="elh_loan_application_approved_by" for="x_approved_by" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->approved_by->FldCaption() ?></label>
+		<label id="elh_loan_application_approved_by" for="x_approved_by" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->approved_by->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->approved_by->CellAttributes() ?>>
 <span id="el_loan_application_approved_by">
 <select data-table="loan_application" data-field="x_approved_by" data-page="3" data-value-separator="<?php echo $loan_application->approved_by->DisplayValueSeparatorAttribute() ?>" id="x_approved_by" name="x_approved_by"<?php echo $loan_application->approved_by->EditAttributes() ?>>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2025/6/10" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2025/6/11" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -824,6 +824,9 @@
     </menu>
     <menu id="278">
       <phrase id="menutext" value="Loan Application Report" />
+    </menu>
+    <menu id="313">
+      <phrase id="menutext" value="Check Loan  Status" />
     </menu>
     <table id="branch">
       <phrase id="tblcaption" value="Organization" />
@@ -2934,7 +2937,7 @@
         <phrase id="fldcaption" value="Employers Mobile" />
       </field>
       <field id="guarantor_date">
-        <phrase id="fldcaption" value="Guarantor Date" />
+        <phrase id="fldcaption" value="Guarantor Application Date" />
       </field>
       <field id="guarantor_passport">
         <phrase id="fldcaption" value="Guarantor Passport" />
@@ -3045,6 +3048,166 @@
     </table>
     <table id="loan_report">
       <phrase id="tblcaption" value="Loan Application Report" />
+      <phrase id="tblpagecaption1" value="Loan Application Info" />
+      <phrase id="tblpagecaption2" value="Guarantor Info" />
+      <phrase id="tblpagecaption3" value="Action" />
+      <field id="code">
+        <phrase id="fldcaption" value="Code" />
+      </field>
+      <field id="date_initiated">
+        <phrase id="fldcaption" value="Date Initiated" />
+      </field>
+      <field id="refernce_id">
+        <phrase id="fldcaption" value="Reference ID" />
+      </field>
+      <field id="employee_name">
+        <phrase id="fldcaption" value="Employee Name" />
+      </field>
+      <field id="address">
+        <phrase id="fldcaption" value="Address" />
+      </field>
+      <field id="mobile">
+        <phrase id="fldcaption" value="Mobile" />
+      </field>
+      <field id="department">
+        <phrase id="fldcaption" value="Department" />
+      </field>
+      <field id="loan_amount">
+        <phrase id="fldcaption" value="Loan Amount" />
+      </field>
+      <field id="amount_inwords">
+        <phrase id="fldcaption" value="Amount in Words" />
+      </field>
+      <field id="purpose">
+        <phrase id="fldcaption" value="Purpose of Loan" />
+      </field>
+      <field id="repayment_period">
+        <phrase id="fldcaption" value="Repayment Period" />
+      </field>
+      <field id="salary_permonth">
+        <phrase id="fldcaption" value="Salary Per Month" />
+      </field>
+      <field id="previous_loan">
+        <phrase id="fldcaption" value="Previous Loan Collected" />
+      </field>
+      <field id="date_collected">
+        <phrase id="fldcaption" value="Date Collected" />
+      </field>
+      <field id="date_liquidated">
+        <phrase id="fldcaption" value="Date Liquidated" />
+      </field>
+      <field id="balance_remaining">
+        <phrase id="fldcaption" value="Balance Remaining" />
+      </field>
+      <field id="applicant_date">
+        <phrase id="fldcaption" value="Application Date" />
+      </field>
+      <field id="applicant_passport">
+        <phrase id="fldcaption" value="Applicant Passport" />
+      </field>
+      <field id="guarantor_name">
+        <phrase id="fldcaption" value="Guarantor Name" />
+      </field>
+      <field id="guarantor_address">
+        <phrase id="fldcaption" value="Guarantor Address" />
+      </field>
+      <field id="guarantor_mobile">
+        <phrase id="fldcaption" value="Guarantor Mobile" />
+      </field>
+      <field id="guarantor_department">
+        <phrase id="fldcaption" value="Guarantor Department" />
+      </field>
+      <field id="account_no">
+        <phrase id="fldcaption" value="Account No" />
+      </field>
+      <field id="bank_name">
+        <phrase id="fldcaption" value="Bank Name" />
+      </field>
+      <field id="employers_name">
+        <phrase id="fldcaption" value="Employers Name" />
+      </field>
+      <field id="employers_address">
+        <phrase id="fldcaption" value="Employers Address" />
+      </field>
+      <field id="employers_mobile">
+        <phrase id="fldcaption" value="Employers Mobile" />
+      </field>
+      <field id="guarantor_date">
+        <phrase id="fldcaption" value="Guarantor Date" />
+      </field>
+      <field id="guarantor_passport">
+        <phrase id="fldcaption" value="Guarantor Passport" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="Status" />
+      </field>
+      <field id="initiator_action">
+        <phrase id="fldcaption" value="Initiator Action" />
+        <phrase id="fldtagvalue1" value="1" />
+        <phrase id="fldtagcaption1" value="Loan Request" />
+      </field>
+      <field id="initiator_comment">
+        <phrase id="fldcaption" value="Initiator Comment" />
+      </field>
+      <field id="recommended_date">
+        <phrase id="fldcaption" value="Recommended Date" />
+      </field>
+      <field id="document_checklist">
+        <phrase id="fldcaption" value="Document Checklist" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Copy of Utility bill" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Applicant's passport photos" />
+        <phrase id="fldtagvalue3" value="2" />
+        <phrase id="fldtagcaption3" value="Passport photos of guarantor" />
+        <phrase id="fldtagvalue4" value="3" />
+        <phrase id="fldtagcaption4" value="Copy of Utility bill of guarantor" />
+      </field>
+      <field id="recommender_action">
+        <phrase id="fldcaption" value="Recommender Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Recommended" />
+      </field>
+      <field id="recommender_comment">
+        <phrase id="fldcaption" value="Recommender Comment" />
+      </field>
+      <field id="recommended_by">
+        <phrase id="fldcaption" value="Recommended By" />
+      </field>
+      <field id="application_status">
+        <phrase id="fldcaption" value="Application Status" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Not Approved" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Approved" />
+      </field>
+      <field id="approved_amount">
+        <phrase id="fldcaption" value="Approved Amount" />
+      </field>
+      <field id="duration_approved">
+        <phrase id="fldcaption" value="Duration Approved" />
+      </field>
+      <field id="approval_date">
+        <phrase id="fldcaption" value="Approval Date" />
+      </field>
+      <field id="approval_action">
+        <phrase id="fldcaption" value="Approval Action" />
+        <phrase id="fldtagvalue1" value="4" />
+        <phrase id="fldtagcaption1" value="Rejected" />
+        <phrase id="fldtagvalue2" value="2" />
+        <phrase id="fldtagcaption2" value="Authorized" />
+      </field>
+      <field id="approval_comment">
+        <phrase id="fldcaption" value="Approval Comment" />
+      </field>
+      <field id="approved_by">
+        <phrase id="fldcaption" value="Approved By" />
+      </field>
+    </table>
+    <table id="loan_status_report">
+      <phrase id="tblcaption" value="Check Loan  Status" />
       <phrase id="tblpagecaption1" value="Loan Application Info" />
       <phrase id="tblpagecaption2" value="Guarantor Info" />
       <phrase id="tblpagecaption3" value="Action" />

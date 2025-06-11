@@ -758,7 +758,28 @@ class cloan_application_delete extends cloan_application {
 		$this->refernce_id->ViewCustomAttributes = "";
 
 		// employee_name
-		$this->employee_name->ViewValue = $this->employee_name->CurrentValue;
+		if (strval($this->employee_name->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->employee_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->employee_name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->employee_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->employee_name->ViewValue = $this->employee_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->employee_name->ViewValue = $this->employee_name->CurrentValue;
+			}
+		} else {
+			$this->employee_name->ViewValue = NULL;
+		}
 		$this->employee_name->ViewCustomAttributes = "";
 
 		// address
@@ -851,7 +872,7 @@ class cloan_application_delete extends cloan_application {
 
 		// applicant_date
 		$this->applicant_date->ViewValue = $this->applicant_date->CurrentValue;
-		$this->applicant_date->ViewValue = ew_FormatDateTime($this->applicant_date->ViewValue, 14);
+		$this->applicant_date->ViewValue = ew_FormatDateTime($this->applicant_date->ViewValue, 17);
 		$this->applicant_date->ViewCustomAttributes = "";
 
 		// guarantor_name
@@ -930,7 +951,7 @@ class cloan_application_delete extends cloan_application {
 
 		// guarantor_date
 		$this->guarantor_date->ViewValue = $this->guarantor_date->CurrentValue;
-		$this->guarantor_date->ViewValue = ew_FormatDateTime($this->guarantor_date->ViewValue, 14);
+		$this->guarantor_date->ViewValue = ew_FormatDateTime($this->guarantor_date->ViewValue, 17);
 		$this->guarantor_date->ViewCustomAttributes = "";
 
 		// status
@@ -1452,6 +1473,8 @@ floan_applicationdelete.Form_CustomValidate =
 floan_applicationdelete.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+floan_applicationdelete.Lists["x_employee_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+floan_applicationdelete.Lists["x_employee_name"].Data = "<?php echo $loan_application_delete->employee_name->LookupFilterQuery(FALSE, "delete") ?>";
 floan_applicationdelete.Lists["x_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
 floan_applicationdelete.Lists["x_department"].Data = "<?php echo $loan_application_delete->department->LookupFilterQuery(FALSE, "delete") ?>";
 floan_applicationdelete.Lists["x_repayment_period"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"duration_months"};

@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg14.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
 <?php include_once "phpfn14.php" ?>
-<?php include_once "loan_applicationinfo.php" ?>
+<?php include_once "loan_status_reportinfo.php" ?>
 <?php include_once "usersinfo.php" ?>
 <?php include_once "userfn14.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$loan_application_view = NULL; // Initialize page object first
+$loan_status_report_view = NULL; // Initialize page object first
 
-class cloan_application_view extends cloan_application {
+class cloan_status_report_view extends cloan_status_report {
 
 	// Page ID
 	var $PageID = 'view';
@@ -25,10 +25,10 @@ class cloan_application_view extends cloan_application {
 	var $ProjectID = '{DD9080C0-D1CA-431F-831F-CAC8FA61260C}';
 
 	// Table name
-	var $TableName = 'loan_application';
+	var $TableName = 'loan_status_report';
 
 	// Page object name
-	var $PageObjName = 'loan_application_view';
+	var $PageObjName = 'loan_status_report_view';
 
 	// Page headings
 	var $Heading = '';
@@ -288,10 +288,10 @@ class cloan_application_view extends cloan_application {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (loan_application)
-		if (!isset($GLOBALS["loan_application"]) || get_class($GLOBALS["loan_application"]) == "cloan_application") {
-			$GLOBALS["loan_application"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["loan_application"];
+		// Table object (loan_status_report)
+		if (!isset($GLOBALS["loan_status_report"]) || get_class($GLOBALS["loan_status_report"]) == "cloan_status_report") {
+			$GLOBALS["loan_status_report"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["loan_status_report"];
 		}
 		$KeyUrl = "";
 		if (@$_GET["code"] <> "") {
@@ -315,7 +315,7 @@ class cloan_application_view extends cloan_application {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'loan_application');
+			define("EW_TABLE_NAME", 'loan_status_report');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -372,7 +372,7 @@ class cloan_application_view extends cloan_application {
 			$Security->SaveLastUrl();
 			$this->setFailureMessage(ew_DeniedMsg()); // Set no permission
 			if ($Security->CanList())
-				$this->Page_Terminate(ew_GetUrl("loan_applicationlist.php"));
+				$this->Page_Terminate(ew_GetUrl("loan_status_reportlist.php"));
 			else
 				$this->Page_Terminate(ew_GetUrl("login.php"));
 		}
@@ -508,13 +508,13 @@ class cloan_application_view extends cloan_application {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $loan_application;
+		global $EW_EXPORT, $loan_status_report;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($loan_application);
+				$doc = new $class($loan_status_report);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -540,7 +540,7 @@ class cloan_application_view extends cloan_application {
 				$pageName = ew_GetPageName($url);
 				if ($pageName != $this->GetListUrl()) { // Not List page
 					$row["caption"] = $this->GetModalCaption($pageName);
-					if ($pageName == "loan_applicationview.php")
+					if ($pageName == "loan_status_reportview.php")
 						$row["view"] = "1";
 				} else { // List page should not be shown as modal => error
 					$row["error"] = $this->getFailureMessage();
@@ -607,7 +607,7 @@ class cloan_application_view extends cloan_application {
 					if ($this->TotalRecs <= 0) { // No record found
 						if ($this->getSuccessMessage() == "" && $this->getFailureMessage() == "")
 							$this->setFailureMessage($Language->Phrase("NoRecord")); // Set no record message
-						$this->Page_Terminate("loan_applicationlist.php"); // Return to list page
+						$this->Page_Terminate("loan_status_reportlist.php"); // Return to list page
 					} elseif ($bLoadCurrentRecord) { // Load current record position
 						$this->SetupStartRec(); // Set up start record position
 
@@ -631,7 +631,7 @@ class cloan_application_view extends cloan_application {
 					if (!$bMatchRecord) {
 						if ($this->getSuccessMessage() == "" && $this->getFailureMessage() == "")
 							$this->setFailureMessage($Language->Phrase("NoRecord")); // Set no record message
-						$sReturnUrl = "loan_applicationlist.php"; // No matching record, return to list
+						$sReturnUrl = "loan_status_reportlist.php"; // No matching record, return to list
 					} else {
 						$this->LoadRowValues($this->Recordset); // Load row values
 					}
@@ -644,7 +644,7 @@ class cloan_application_view extends cloan_application {
 				exit();
 			}
 		} else {
-			$sReturnUrl = "loan_applicationlist.php"; // Not page request, return to list
+			$sReturnUrl = "loan_status_reportlist.php"; // Not page request, return to list
 		}
 		if ($sReturnUrl <> "")
 			$this->Page_Terminate($sReturnUrl);
@@ -664,41 +664,6 @@ class cloan_application_view extends cloan_application {
 		global $Language, $Security;
 		$options = &$this->OtherOptions;
 		$option = &$options["action"];
-
-		// Add
-		$item = &$option->Add("add");
-		$addcaption = ew_HtmlTitle($Language->Phrase("ViewPageAddLink"));
-		if ($this->IsModal) // Modal
-			$item->Body = "<a class=\"ewAction ewAdd\" title=\"" . $addcaption . "\" data-caption=\"" . $addcaption . "\" href=\"javascript:void(0);\" onclick=\"ew_ModalDialogShow({lnk:this,url:'" . ew_HtmlEncode($this->AddUrl) . "'});\">" . $Language->Phrase("ViewPageAddLink") . "</a>";
-		else
-			$item->Body = "<a class=\"ewAction ewAdd\" title=\"" . $addcaption . "\" data-caption=\"" . $addcaption . "\" href=\"" . ew_HtmlEncode($this->AddUrl) . "\">" . $Language->Phrase("ViewPageAddLink") . "</a>";
-		$item->Visible = ($this->AddUrl <> "" && $Security->CanAdd());
-
-		// Edit
-		$item = &$option->Add("edit");
-		$editcaption = ew_HtmlTitle($Language->Phrase("ViewPageEditLink"));
-		if ($this->IsModal) // Modal
-			$item->Body = "<a class=\"ewAction ewEdit\" title=\"" . $editcaption . "\" data-caption=\"" . $editcaption . "\" href=\"javascript:void(0);\" onclick=\"ew_ModalDialogShow({lnk:this,url:'" . ew_HtmlEncode($this->EditUrl) . "'});\">" . $Language->Phrase("ViewPageEditLink") . "</a>";
-		else
-			$item->Body = "<a class=\"ewAction ewEdit\" title=\"" . $editcaption . "\" data-caption=\"" . $editcaption . "\" href=\"" . ew_HtmlEncode($this->EditUrl) . "\">" . $Language->Phrase("ViewPageEditLink") . "</a>";
-		$item->Visible = ($this->EditUrl <> "" && $Security->CanEdit());
-
-		// Copy
-		$item = &$option->Add("copy");
-		$copycaption = ew_HtmlTitle($Language->Phrase("ViewPageCopyLink"));
-		if ($this->IsModal) // Modal
-			$item->Body = "<a class=\"ewAction ewCopy\" title=\"" . $copycaption . "\" data-caption=\"" . $copycaption . "\" href=\"javascript:void(0);\" onclick=\"ew_ModalDialogShow({lnk:this,btn:'AddBtn',url:'" . ew_HtmlEncode($this->CopyUrl) . "'});\">" . $Language->Phrase("ViewPageCopyLink") . "</a>";
-		else
-			$item->Body = "<a class=\"ewAction ewCopy\" title=\"" . $copycaption . "\" data-caption=\"" . $copycaption . "\" href=\"" . ew_HtmlEncode($this->CopyUrl) . "\">" . $Language->Phrase("ViewPageCopyLink") . "</a>";
-		$item->Visible = ($this->CopyUrl <> "" && $Security->CanAdd());
-
-		// Delete
-		$item = &$option->Add("delete");
-		if ($this->IsModal) // Handle as inline delete
-			$item->Body = "<a onclick=\"return ew_ConfirmDelete(this);\" class=\"ewAction ewDelete\" title=\"" . ew_HtmlTitle($Language->Phrase("ViewPageDeleteLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("ViewPageDeleteLink")) . "\" href=\"" . ew_HtmlEncode(ew_UrlAddQuery($this->DeleteUrl, "a_delete=1")) . "\">" . $Language->Phrase("ViewPageDeleteLink") . "</a>";
-		else
-			$item->Body = "<a class=\"ewAction ewDelete\" title=\"" . ew_HtmlTitle($Language->Phrase("ViewPageDeleteLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("ViewPageDeleteLink")) . "\" href=\"" . ew_HtmlEncode($this->DeleteUrl) . "\">" . $Language->Phrase("ViewPageDeleteLink") . "</a>";
-		$item->Visible = ($this->DeleteUrl <> "" && $Security->CanDelete());
 
 		// Set up action default
 		$option = &$options["action"];
@@ -1053,28 +1018,7 @@ class cloan_application_view extends cloan_application {
 		$this->refernce_id->ViewCustomAttributes = "";
 
 		// employee_name
-		if (strval($this->employee_name->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->employee_name->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->employee_name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->employee_name, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->employee_name->ViewValue = $this->employee_name->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->employee_name->ViewValue = $this->employee_name->CurrentValue;
-			}
-		} else {
-			$this->employee_name->ViewValue = NULL;
-		}
+		$this->employee_name->ViewValue = $this->employee_name->CurrentValue;
 		$this->employee_name->ViewCustomAttributes = "";
 
 		// address
@@ -1171,7 +1115,7 @@ class cloan_application_view extends cloan_application {
 
 		// applicant_date
 		$this->applicant_date->ViewValue = $this->applicant_date->CurrentValue;
-		$this->applicant_date->ViewValue = ew_FormatDateTime($this->applicant_date->ViewValue, 17);
+		$this->applicant_date->ViewValue = ew_FormatDateTime($this->applicant_date->ViewValue, 14);
 		$this->applicant_date->ViewCustomAttributes = "";
 
 		// applicant_passport
@@ -1258,7 +1202,7 @@ class cloan_application_view extends cloan_application {
 
 		// guarantor_date
 		$this->guarantor_date->ViewValue = $this->guarantor_date->CurrentValue;
-		$this->guarantor_date->ViewValue = ew_FormatDateTime($this->guarantor_date->ViewValue, 17);
+		$this->guarantor_date->ViewValue = ew_FormatDateTime($this->guarantor_date->ViewValue, 14);
 		$this->guarantor_date->ViewCustomAttributes = "";
 
 		// guarantor_passport
@@ -1730,7 +1674,7 @@ class cloan_application_view extends cloan_application {
 		// Export to Email
 		$item = &$this->ExportOptions->Add("email");
 		$url = "";
-		$item->Body = "<button id=\"emf_loan_application\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_loan_application',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.floan_applicationview,key:" . ew_ArrayToJsonAttr($this->RecKey) . ",sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
+		$item->Body = "<button id=\"emf_loan_status_report\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_loan_status_report',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.floan_status_reportview,key:" . ew_ArrayToJsonAttr($this->RecKey) . ",sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
 		$item->Visible = FALSE;
 
 		// Drop down button for export
@@ -1830,7 +1774,7 @@ class cloan_application_view extends cloan_application {
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new cBreadcrumb();
 		$url = substr(ew_CurrentUrl(), strrpos(ew_CurrentUrl(), "/")+1);
-		$Breadcrumb->Add("list", $this->TableVar, $this->AddMasterUrl("loan_applicationlist.php"), "", $this->TableVar, TRUE);
+		$Breadcrumb->Add("list", $this->TableVar, $this->AddMasterUrl("loan_status_reportlist.php"), "", $this->TableVar, TRUE);
 		$PageId = "view";
 		$Breadcrumb->Add("view", $PageId, $url);
 	}
@@ -1953,30 +1897,30 @@ class cloan_application_view extends cloan_application {
 <?php
 
 // Create page object
-if (!isset($loan_application_view)) $loan_application_view = new cloan_application_view();
+if (!isset($loan_status_report_view)) $loan_status_report_view = new cloan_status_report_view();
 
 // Page init
-$loan_application_view->Page_Init();
+$loan_status_report_view->Page_Init();
 
 // Page main
-$loan_application_view->Page_Main();
+$loan_status_report_view->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$loan_application_view->Page_Render();
+$loan_status_report_view->Page_Render();
 ?>
 <?php include_once "header.php" ?>
-<?php if ($loan_application->Export == "") { ?>
+<?php if ($loan_status_report->Export == "") { ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "view";
-var CurrentForm = floan_applicationview = new ew_Form("floan_applicationview", "view");
+var CurrentForm = floan_status_reportview = new ew_Form("floan_status_reportview", "view");
 
 // Form_CustomValidate event
-floan_applicationview.Form_CustomValidate = 
+floan_status_reportview.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid.
@@ -1984,42 +1928,40 @@ floan_applicationview.Form_CustomValidate =
  }
 
 // Use JavaScript validation or not
-floan_applicationview.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+floan_status_reportview.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Multi-Page
-floan_applicationview.MultiPage = new ew_MultiPage("floan_applicationview");
+floan_status_reportview.MultiPage = new ew_MultiPage("floan_status_reportview");
 
 // Dynamic selection lists
-floan_applicationview.Lists["x_employee_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-floan_applicationview.Lists["x_employee_name"].Data = "<?php echo $loan_application_view->employee_name->LookupFilterQuery(FALSE, "view") ?>";
-floan_applicationview.Lists["x_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
-floan_applicationview.Lists["x_department"].Data = "<?php echo $loan_application_view->department->LookupFilterQuery(FALSE, "view") ?>";
-floan_applicationview.Lists["x_repayment_period"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"duration_months"};
-floan_applicationview.Lists["x_repayment_period"].Data = "<?php echo $loan_application_view->repayment_period->LookupFilterQuery(FALSE, "view") ?>";
-floan_applicationview.Lists["x_guarantor_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
-floan_applicationview.Lists["x_guarantor_department"].Data = "<?php echo $loan_application_view->guarantor_department->LookupFilterQuery(FALSE, "view") ?>";
-floan_applicationview.Lists["x_bank_name"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"banks_list"};
-floan_applicationview.Lists["x_bank_name"].Data = "<?php echo $loan_application_view->bank_name->LookupFilterQuery(FALSE, "view") ?>";
-floan_applicationview.Lists["x_status"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"loan_status"};
-floan_applicationview.Lists["x_status"].Data = "<?php echo $loan_application_view->status->LookupFilterQuery(FALSE, "view") ?>";
-floan_applicationview.AutoSuggests["x_status"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $loan_application_view->status->LookupFilterQuery(TRUE, "view"))) ?>;
-floan_applicationview.Lists["x_initiator_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-floan_applicationview.Lists["x_initiator_action"].Options = <?php echo json_encode($loan_application_view->initiator_action->Options()) ?>;
-floan_applicationview.Lists["x_document_checklist[]"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_discription","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"document_checklist"};
-floan_applicationview.Lists["x_document_checklist[]"].Data = "<?php echo $loan_application_view->document_checklist->LookupFilterQuery(FALSE, "view") ?>";
-floan_applicationview.Lists["x_recommender_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-floan_applicationview.Lists["x_recommender_action"].Options = <?php echo json_encode($loan_application_view->recommender_action->Options()) ?>;
-floan_applicationview.Lists["x_recommended_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-floan_applicationview.Lists["x_recommended_by"].Data = "<?php echo $loan_application_view->recommended_by->LookupFilterQuery(FALSE, "view") ?>";
-floan_applicationview.AutoSuggests["x_recommended_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $loan_application_view->recommended_by->LookupFilterQuery(TRUE, "view"))) ?>;
-floan_applicationview.Lists["x_application_status"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-floan_applicationview.Lists["x_application_status"].Options = <?php echo json_encode($loan_application_view->application_status->Options()) ?>;
-floan_applicationview.Lists["x_duration_approved"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"duration_months"};
-floan_applicationview.Lists["x_duration_approved"].Data = "<?php echo $loan_application_view->duration_approved->LookupFilterQuery(FALSE, "view") ?>";
-floan_applicationview.Lists["x_approval_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-floan_applicationview.Lists["x_approval_action"].Options = <?php echo json_encode($loan_application_view->approval_action->Options()) ?>;
-floan_applicationview.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-floan_applicationview.Lists["x_approved_by"].Data = "<?php echo $loan_application_view->approved_by->LookupFilterQuery(FALSE, "view") ?>";
+floan_status_reportview.Lists["x_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
+floan_status_reportview.Lists["x_department"].Data = "<?php echo $loan_status_report_view->department->LookupFilterQuery(FALSE, "view") ?>";
+floan_status_reportview.Lists["x_repayment_period"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"duration_months"};
+floan_status_reportview.Lists["x_repayment_period"].Data = "<?php echo $loan_status_report_view->repayment_period->LookupFilterQuery(FALSE, "view") ?>";
+floan_status_reportview.Lists["x_guarantor_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
+floan_status_reportview.Lists["x_guarantor_department"].Data = "<?php echo $loan_status_report_view->guarantor_department->LookupFilterQuery(FALSE, "view") ?>";
+floan_status_reportview.Lists["x_bank_name"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"banks_list"};
+floan_status_reportview.Lists["x_bank_name"].Data = "<?php echo $loan_status_report_view->bank_name->LookupFilterQuery(FALSE, "view") ?>";
+floan_status_reportview.Lists["x_status"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"loan_status"};
+floan_status_reportview.Lists["x_status"].Data = "<?php echo $loan_status_report_view->status->LookupFilterQuery(FALSE, "view") ?>";
+floan_status_reportview.AutoSuggests["x_status"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $loan_status_report_view->status->LookupFilterQuery(TRUE, "view"))) ?>;
+floan_status_reportview.Lists["x_initiator_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+floan_status_reportview.Lists["x_initiator_action"].Options = <?php echo json_encode($loan_status_report_view->initiator_action->Options()) ?>;
+floan_status_reportview.Lists["x_document_checklist[]"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_discription","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"document_checklist"};
+floan_status_reportview.Lists["x_document_checklist[]"].Data = "<?php echo $loan_status_report_view->document_checklist->LookupFilterQuery(FALSE, "view") ?>";
+floan_status_reportview.Lists["x_recommender_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+floan_status_reportview.Lists["x_recommender_action"].Options = <?php echo json_encode($loan_status_report_view->recommender_action->Options()) ?>;
+floan_status_reportview.Lists["x_recommended_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+floan_status_reportview.Lists["x_recommended_by"].Data = "<?php echo $loan_status_report_view->recommended_by->LookupFilterQuery(FALSE, "view") ?>";
+floan_status_reportview.AutoSuggests["x_recommended_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $loan_status_report_view->recommended_by->LookupFilterQuery(TRUE, "view"))) ?>;
+floan_status_reportview.Lists["x_application_status"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+floan_status_reportview.Lists["x_application_status"].Options = <?php echo json_encode($loan_status_report_view->application_status->Options()) ?>;
+floan_status_reportview.Lists["x_duration_approved"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"duration_months"};
+floan_status_reportview.Lists["x_duration_approved"].Data = "<?php echo $loan_status_report_view->duration_approved->LookupFilterQuery(FALSE, "view") ?>";
+floan_status_reportview.Lists["x_approval_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+floan_status_reportview.Lists["x_approval_action"].Options = <?php echo json_encode($loan_status_report_view->approval_action->Options()) ?>;
+floan_status_reportview.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+floan_status_reportview.Lists["x_approved_by"].Data = "<?php echo $loan_status_report_view->approved_by->LookupFilterQuery(FALSE, "view") ?>";
 
 // Form object for search
 </script>
@@ -2028,610 +1970,610 @@ floan_applicationview.Lists["x_approved_by"].Data = "<?php echo $loan_applicatio
 // Write your client script here, no need to add script tags.
 </script>
 <?php } ?>
-<?php if ($loan_application->Export == "") { ?>
+<?php if ($loan_status_report->Export == "") { ?>
 <div class="ewToolbar">
-<?php $loan_application_view->ExportOptions->Render("body") ?>
+<?php $loan_status_report_view->ExportOptions->Render("body") ?>
 <?php
-	foreach ($loan_application_view->OtherOptions as &$option)
+	foreach ($loan_status_report_view->OtherOptions as &$option)
 		$option->Render("body");
 ?>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
-<?php $loan_application_view->ShowPageHeader(); ?>
+<?php $loan_status_report_view->ShowPageHeader(); ?>
 <?php
-$loan_application_view->ShowMessage();
+$loan_status_report_view->ShowMessage();
 ?>
-<?php if (!$loan_application_view->IsModal) { ?>
-<?php if ($loan_application->Export == "") { ?>
+<?php if (!$loan_status_report_view->IsModal) { ?>
+<?php if ($loan_status_report->Export == "") { ?>
 <form name="ewPagerForm" class="form-inline ewForm ewPagerForm" action="<?php echo ew_CurrentPage() ?>">
-<?php if (!isset($loan_application_view->Pager)) $loan_application_view->Pager = new cPrevNextPager($loan_application_view->StartRec, $loan_application_view->DisplayRecs, $loan_application_view->TotalRecs, $loan_application_view->AutoHidePager) ?>
-<?php if ($loan_application_view->Pager->RecordCount > 0 && $loan_application_view->Pager->Visible) { ?>
+<?php if (!isset($loan_status_report_view->Pager)) $loan_status_report_view->Pager = new cPrevNextPager($loan_status_report_view->StartRec, $loan_status_report_view->DisplayRecs, $loan_status_report_view->TotalRecs, $loan_status_report_view->AutoHidePager) ?>
+<?php if ($loan_status_report_view->Pager->RecordCount > 0 && $loan_status_report_view->Pager->Visible) { ?>
 <div class="ewPager">
 <span><?php echo $Language->Phrase("Page") ?>&nbsp;</span>
 <div class="ewPrevNext"><div class="input-group">
 <div class="input-group-btn">
 <!--first page button-->
-	<?php if ($loan_application_view->Pager->FirstButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $loan_application_view->PageUrl() ?>start=<?php echo $loan_application_view->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
+	<?php if ($loan_status_report_view->Pager->FirstButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $loan_status_report_view->PageUrl() ?>start=<?php echo $loan_status_report_view->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerFirst") ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } ?>
 <!--previous page button-->
-	<?php if ($loan_application_view->Pager->PrevButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $loan_application_view->PageUrl() ?>start=<?php echo $loan_application_view->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php if ($loan_status_report_view->Pager->PrevButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $loan_status_report_view->PageUrl() ?>start=<?php echo $loan_status_report_view->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerPrevious") ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } ?>
 </div>
 <!--current page number-->
-	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $loan_application_view->Pager->CurrentPage ?>">
+	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $loan_status_report_view->Pager->CurrentPage ?>">
 <div class="input-group-btn">
 <!--next page button-->
-	<?php if ($loan_application_view->Pager->NextButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $loan_application_view->PageUrl() ?>start=<?php echo $loan_application_view->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
+	<?php if ($loan_status_report_view->Pager->NextButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $loan_status_report_view->PageUrl() ?>start=<?php echo $loan_status_report_view->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerNext") ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } ?>
 <!--last page button-->
-	<?php if ($loan_application_view->Pager->LastButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $loan_application_view->PageUrl() ?>start=<?php echo $loan_application_view->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
+	<?php if ($loan_status_report_view->Pager->LastButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $loan_status_report_view->PageUrl() ?>start=<?php echo $loan_status_report_view->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerLast") ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } ?>
 </div>
 </div>
 </div>
-<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $loan_application_view->Pager->PageCount ?></span>
+<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $loan_status_report_view->Pager->PageCount ?></span>
 </div>
 <?php } ?>
 <div class="clearfix"></div>
 </form>
 <?php } ?>
 <?php } ?>
-<form name="floan_applicationview" id="floan_applicationview" class="form-inline ewForm ewViewForm" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($loan_application_view->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $loan_application_view->Token ?>">
+<form name="floan_status_reportview" id="floan_status_reportview" class="form-inline ewForm ewViewForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($loan_status_report_view->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $loan_status_report_view->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="loan_application">
-<input type="hidden" name="modal" value="<?php echo intval($loan_application_view->IsModal) ?>">
-<?php if ($loan_application->Export == "") { ?>
+<input type="hidden" name="t" value="loan_status_report">
+<input type="hidden" name="modal" value="<?php echo intval($loan_status_report_view->IsModal) ?>">
+<?php if ($loan_status_report->Export == "") { ?>
 <div class="ewMultiPage">
-<div class="nav-tabs-custom" id="loan_application_view">
-	<ul class="nav<?php echo $loan_application_view->MultiPages->NavStyle() ?>">
-		<li<?php echo $loan_application_view->MultiPages->TabStyle("1") ?>><a href="#tab_loan_application1" data-toggle="tab"><?php echo $loan_application->PageCaption(1) ?></a></li>
-		<li<?php echo $loan_application_view->MultiPages->TabStyle("2") ?>><a href="#tab_loan_application2" data-toggle="tab"><?php echo $loan_application->PageCaption(2) ?></a></li>
-		<li<?php echo $loan_application_view->MultiPages->TabStyle("3") ?>><a href="#tab_loan_application3" data-toggle="tab"><?php echo $loan_application->PageCaption(3) ?></a></li>
+<div class="nav-tabs-custom" id="loan_status_report_view">
+	<ul class="nav<?php echo $loan_status_report_view->MultiPages->NavStyle() ?>">
+		<li<?php echo $loan_status_report_view->MultiPages->TabStyle("1") ?>><a href="#tab_loan_status_report1" data-toggle="tab"><?php echo $loan_status_report->PageCaption(1) ?></a></li>
+		<li<?php echo $loan_status_report_view->MultiPages->TabStyle("2") ?>><a href="#tab_loan_status_report2" data-toggle="tab"><?php echo $loan_status_report->PageCaption(2) ?></a></li>
+		<li<?php echo $loan_status_report_view->MultiPages->TabStyle("3") ?>><a href="#tab_loan_status_report3" data-toggle="tab"><?php echo $loan_status_report->PageCaption(3) ?></a></li>
 	</ul>
 	<div class="tab-content">
 <?php } ?>
-<?php if ($loan_application->Export == "") { ?>
-		<div class="tab-pane<?php echo $loan_application_view->MultiPages->PageStyle("1") ?>" id="tab_loan_application1">
+<?php if ($loan_status_report->Export == "") { ?>
+		<div class="tab-pane<?php echo $loan_status_report_view->MultiPages->PageStyle("1") ?>" id="tab_loan_status_report1">
 <?php } ?>
 <table class="table table-striped table-bordered table-hover table-condensed ewViewTable">
-<?php if ($loan_application->code->Visible) { // code ?>
+<?php if ($loan_status_report->code->Visible) { // code ?>
 	<tr id="r_code">
-		<td class="col-sm-2"><span id="elh_loan_application_code"><?php echo $loan_application->code->FldCaption() ?></span></td>
-		<td data-name="code"<?php echo $loan_application->code->CellAttributes() ?>>
-<span id="el_loan_application_code" data-page="1">
-<span<?php echo $loan_application->code->ViewAttributes() ?>>
-<?php echo $loan_application->code->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_code"><?php echo $loan_status_report->code->FldCaption() ?></span></td>
+		<td data-name="code"<?php echo $loan_status_report->code->CellAttributes() ?>>
+<span id="el_loan_status_report_code" data-page="1">
+<span<?php echo $loan_status_report->code->ViewAttributes() ?>>
+<?php echo $loan_status_report->code->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->date_initiated->Visible) { // date_initiated ?>
+<?php if ($loan_status_report->date_initiated->Visible) { // date_initiated ?>
 	<tr id="r_date_initiated">
-		<td class="col-sm-2"><span id="elh_loan_application_date_initiated"><?php echo $loan_application->date_initiated->FldCaption() ?></span></td>
-		<td data-name="date_initiated"<?php echo $loan_application->date_initiated->CellAttributes() ?>>
-<span id="el_loan_application_date_initiated" data-page="1">
-<span<?php echo $loan_application->date_initiated->ViewAttributes() ?>>
-<?php echo $loan_application->date_initiated->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_date_initiated"><?php echo $loan_status_report->date_initiated->FldCaption() ?></span></td>
+		<td data-name="date_initiated"<?php echo $loan_status_report->date_initiated->CellAttributes() ?>>
+<span id="el_loan_status_report_date_initiated" data-page="1">
+<span<?php echo $loan_status_report->date_initiated->ViewAttributes() ?>>
+<?php echo $loan_status_report->date_initiated->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->refernce_id->Visible) { // refernce_id ?>
+<?php if ($loan_status_report->refernce_id->Visible) { // refernce_id ?>
 	<tr id="r_refernce_id">
-		<td class="col-sm-2"><span id="elh_loan_application_refernce_id"><?php echo $loan_application->refernce_id->FldCaption() ?></span></td>
-		<td data-name="refernce_id"<?php echo $loan_application->refernce_id->CellAttributes() ?>>
-<span id="el_loan_application_refernce_id" data-page="1">
-<span<?php echo $loan_application->refernce_id->ViewAttributes() ?>>
-<?php echo $loan_application->refernce_id->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_refernce_id"><?php echo $loan_status_report->refernce_id->FldCaption() ?></span></td>
+		<td data-name="refernce_id"<?php echo $loan_status_report->refernce_id->CellAttributes() ?>>
+<span id="el_loan_status_report_refernce_id" data-page="1">
+<span<?php echo $loan_status_report->refernce_id->ViewAttributes() ?>>
+<?php echo $loan_status_report->refernce_id->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->employee_name->Visible) { // employee_name ?>
+<?php if ($loan_status_report->employee_name->Visible) { // employee_name ?>
 	<tr id="r_employee_name">
-		<td class="col-sm-2"><span id="elh_loan_application_employee_name"><?php echo $loan_application->employee_name->FldCaption() ?></span></td>
-		<td data-name="employee_name"<?php echo $loan_application->employee_name->CellAttributes() ?>>
-<span id="el_loan_application_employee_name" data-page="1">
-<span<?php echo $loan_application->employee_name->ViewAttributes() ?>>
-<?php echo $loan_application->employee_name->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_employee_name"><?php echo $loan_status_report->employee_name->FldCaption() ?></span></td>
+		<td data-name="employee_name"<?php echo $loan_status_report->employee_name->CellAttributes() ?>>
+<span id="el_loan_status_report_employee_name" data-page="1">
+<span<?php echo $loan_status_report->employee_name->ViewAttributes() ?>>
+<?php echo $loan_status_report->employee_name->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->address->Visible) { // address ?>
+<?php if ($loan_status_report->address->Visible) { // address ?>
 	<tr id="r_address">
-		<td class="col-sm-2"><span id="elh_loan_application_address"><?php echo $loan_application->address->FldCaption() ?></span></td>
-		<td data-name="address"<?php echo $loan_application->address->CellAttributes() ?>>
-<span id="el_loan_application_address" data-page="1">
-<span<?php echo $loan_application->address->ViewAttributes() ?>>
-<?php echo $loan_application->address->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_address"><?php echo $loan_status_report->address->FldCaption() ?></span></td>
+		<td data-name="address"<?php echo $loan_status_report->address->CellAttributes() ?>>
+<span id="el_loan_status_report_address" data-page="1">
+<span<?php echo $loan_status_report->address->ViewAttributes() ?>>
+<?php echo $loan_status_report->address->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->mobile->Visible) { // mobile ?>
+<?php if ($loan_status_report->mobile->Visible) { // mobile ?>
 	<tr id="r_mobile">
-		<td class="col-sm-2"><span id="elh_loan_application_mobile"><?php echo $loan_application->mobile->FldCaption() ?></span></td>
-		<td data-name="mobile"<?php echo $loan_application->mobile->CellAttributes() ?>>
-<span id="el_loan_application_mobile" data-page="1">
-<span<?php echo $loan_application->mobile->ViewAttributes() ?>>
-<?php echo $loan_application->mobile->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_mobile"><?php echo $loan_status_report->mobile->FldCaption() ?></span></td>
+		<td data-name="mobile"<?php echo $loan_status_report->mobile->CellAttributes() ?>>
+<span id="el_loan_status_report_mobile" data-page="1">
+<span<?php echo $loan_status_report->mobile->ViewAttributes() ?>>
+<?php echo $loan_status_report->mobile->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->department->Visible) { // department ?>
+<?php if ($loan_status_report->department->Visible) { // department ?>
 	<tr id="r_department">
-		<td class="col-sm-2"><span id="elh_loan_application_department"><?php echo $loan_application->department->FldCaption() ?></span></td>
-		<td data-name="department"<?php echo $loan_application->department->CellAttributes() ?>>
-<span id="el_loan_application_department" data-page="1">
-<span<?php echo $loan_application->department->ViewAttributes() ?>>
-<?php echo $loan_application->department->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_department"><?php echo $loan_status_report->department->FldCaption() ?></span></td>
+		<td data-name="department"<?php echo $loan_status_report->department->CellAttributes() ?>>
+<span id="el_loan_status_report_department" data-page="1">
+<span<?php echo $loan_status_report->department->ViewAttributes() ?>>
+<?php echo $loan_status_report->department->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->loan_amount->Visible) { // loan_amount ?>
+<?php if ($loan_status_report->loan_amount->Visible) { // loan_amount ?>
 	<tr id="r_loan_amount">
-		<td class="col-sm-2"><span id="elh_loan_application_loan_amount"><?php echo $loan_application->loan_amount->FldCaption() ?></span></td>
-		<td data-name="loan_amount"<?php echo $loan_application->loan_amount->CellAttributes() ?>>
-<span id="el_loan_application_loan_amount" data-page="1">
-<span<?php echo $loan_application->loan_amount->ViewAttributes() ?>>
-<?php echo $loan_application->loan_amount->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_loan_amount"><?php echo $loan_status_report->loan_amount->FldCaption() ?></span></td>
+		<td data-name="loan_amount"<?php echo $loan_status_report->loan_amount->CellAttributes() ?>>
+<span id="el_loan_status_report_loan_amount" data-page="1">
+<span<?php echo $loan_status_report->loan_amount->ViewAttributes() ?>>
+<?php echo $loan_status_report->loan_amount->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->amount_inwords->Visible) { // amount_inwords ?>
+<?php if ($loan_status_report->amount_inwords->Visible) { // amount_inwords ?>
 	<tr id="r_amount_inwords">
-		<td class="col-sm-2"><span id="elh_loan_application_amount_inwords"><?php echo $loan_application->amount_inwords->FldCaption() ?></span></td>
-		<td data-name="amount_inwords"<?php echo $loan_application->amount_inwords->CellAttributes() ?>>
-<span id="el_loan_application_amount_inwords" data-page="1">
-<span<?php echo $loan_application->amount_inwords->ViewAttributes() ?>>
-<?php echo $loan_application->amount_inwords->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_amount_inwords"><?php echo $loan_status_report->amount_inwords->FldCaption() ?></span></td>
+		<td data-name="amount_inwords"<?php echo $loan_status_report->amount_inwords->CellAttributes() ?>>
+<span id="el_loan_status_report_amount_inwords" data-page="1">
+<span<?php echo $loan_status_report->amount_inwords->ViewAttributes() ?>>
+<?php echo $loan_status_report->amount_inwords->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->purpose->Visible) { // purpose ?>
+<?php if ($loan_status_report->purpose->Visible) { // purpose ?>
 	<tr id="r_purpose">
-		<td class="col-sm-2"><span id="elh_loan_application_purpose"><?php echo $loan_application->purpose->FldCaption() ?></span></td>
-		<td data-name="purpose"<?php echo $loan_application->purpose->CellAttributes() ?>>
-<span id="el_loan_application_purpose" data-page="1">
-<span<?php echo $loan_application->purpose->ViewAttributes() ?>>
-<?php echo $loan_application->purpose->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_purpose"><?php echo $loan_status_report->purpose->FldCaption() ?></span></td>
+		<td data-name="purpose"<?php echo $loan_status_report->purpose->CellAttributes() ?>>
+<span id="el_loan_status_report_purpose" data-page="1">
+<span<?php echo $loan_status_report->purpose->ViewAttributes() ?>>
+<?php echo $loan_status_report->purpose->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->repayment_period->Visible) { // repayment_period ?>
+<?php if ($loan_status_report->repayment_period->Visible) { // repayment_period ?>
 	<tr id="r_repayment_period">
-		<td class="col-sm-2"><span id="elh_loan_application_repayment_period"><?php echo $loan_application->repayment_period->FldCaption() ?></span></td>
-		<td data-name="repayment_period"<?php echo $loan_application->repayment_period->CellAttributes() ?>>
-<span id="el_loan_application_repayment_period" data-page="1">
-<span<?php echo $loan_application->repayment_period->ViewAttributes() ?>>
-<?php echo $loan_application->repayment_period->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_repayment_period"><?php echo $loan_status_report->repayment_period->FldCaption() ?></span></td>
+		<td data-name="repayment_period"<?php echo $loan_status_report->repayment_period->CellAttributes() ?>>
+<span id="el_loan_status_report_repayment_period" data-page="1">
+<span<?php echo $loan_status_report->repayment_period->ViewAttributes() ?>>
+<?php echo $loan_status_report->repayment_period->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->salary_permonth->Visible) { // salary_permonth ?>
+<?php if ($loan_status_report->salary_permonth->Visible) { // salary_permonth ?>
 	<tr id="r_salary_permonth">
-		<td class="col-sm-2"><span id="elh_loan_application_salary_permonth"><?php echo $loan_application->salary_permonth->FldCaption() ?></span></td>
-		<td data-name="salary_permonth"<?php echo $loan_application->salary_permonth->CellAttributes() ?>>
-<span id="el_loan_application_salary_permonth" data-page="1">
-<span<?php echo $loan_application->salary_permonth->ViewAttributes() ?>>
-<?php echo $loan_application->salary_permonth->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_salary_permonth"><?php echo $loan_status_report->salary_permonth->FldCaption() ?></span></td>
+		<td data-name="salary_permonth"<?php echo $loan_status_report->salary_permonth->CellAttributes() ?>>
+<span id="el_loan_status_report_salary_permonth" data-page="1">
+<span<?php echo $loan_status_report->salary_permonth->ViewAttributes() ?>>
+<?php echo $loan_status_report->salary_permonth->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->previous_loan->Visible) { // previous_loan ?>
+<?php if ($loan_status_report->previous_loan->Visible) { // previous_loan ?>
 	<tr id="r_previous_loan">
-		<td class="col-sm-2"><span id="elh_loan_application_previous_loan"><?php echo $loan_application->previous_loan->FldCaption() ?></span></td>
-		<td data-name="previous_loan"<?php echo $loan_application->previous_loan->CellAttributes() ?>>
-<span id="el_loan_application_previous_loan" data-page="1">
-<span<?php echo $loan_application->previous_loan->ViewAttributes() ?>>
-<?php echo $loan_application->previous_loan->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_previous_loan"><?php echo $loan_status_report->previous_loan->FldCaption() ?></span></td>
+		<td data-name="previous_loan"<?php echo $loan_status_report->previous_loan->CellAttributes() ?>>
+<span id="el_loan_status_report_previous_loan" data-page="1">
+<span<?php echo $loan_status_report->previous_loan->ViewAttributes() ?>>
+<?php echo $loan_status_report->previous_loan->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->date_collected->Visible) { // date_collected ?>
+<?php if ($loan_status_report->date_collected->Visible) { // date_collected ?>
 	<tr id="r_date_collected">
-		<td class="col-sm-2"><span id="elh_loan_application_date_collected"><?php echo $loan_application->date_collected->FldCaption() ?></span></td>
-		<td data-name="date_collected"<?php echo $loan_application->date_collected->CellAttributes() ?>>
-<span id="el_loan_application_date_collected" data-page="1">
-<span<?php echo $loan_application->date_collected->ViewAttributes() ?>>
-<?php echo $loan_application->date_collected->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_date_collected"><?php echo $loan_status_report->date_collected->FldCaption() ?></span></td>
+		<td data-name="date_collected"<?php echo $loan_status_report->date_collected->CellAttributes() ?>>
+<span id="el_loan_status_report_date_collected" data-page="1">
+<span<?php echo $loan_status_report->date_collected->ViewAttributes() ?>>
+<?php echo $loan_status_report->date_collected->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->date_liquidated->Visible) { // date_liquidated ?>
+<?php if ($loan_status_report->date_liquidated->Visible) { // date_liquidated ?>
 	<tr id="r_date_liquidated">
-		<td class="col-sm-2"><span id="elh_loan_application_date_liquidated"><?php echo $loan_application->date_liquidated->FldCaption() ?></span></td>
-		<td data-name="date_liquidated"<?php echo $loan_application->date_liquidated->CellAttributes() ?>>
-<span id="el_loan_application_date_liquidated" data-page="1">
-<span<?php echo $loan_application->date_liquidated->ViewAttributes() ?>>
-<?php echo $loan_application->date_liquidated->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_date_liquidated"><?php echo $loan_status_report->date_liquidated->FldCaption() ?></span></td>
+		<td data-name="date_liquidated"<?php echo $loan_status_report->date_liquidated->CellAttributes() ?>>
+<span id="el_loan_status_report_date_liquidated" data-page="1">
+<span<?php echo $loan_status_report->date_liquidated->ViewAttributes() ?>>
+<?php echo $loan_status_report->date_liquidated->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->balance_remaining->Visible) { // balance_remaining ?>
+<?php if ($loan_status_report->balance_remaining->Visible) { // balance_remaining ?>
 	<tr id="r_balance_remaining">
-		<td class="col-sm-2"><span id="elh_loan_application_balance_remaining"><?php echo $loan_application->balance_remaining->FldCaption() ?></span></td>
-		<td data-name="balance_remaining"<?php echo $loan_application->balance_remaining->CellAttributes() ?>>
-<span id="el_loan_application_balance_remaining" data-page="1">
-<span<?php echo $loan_application->balance_remaining->ViewAttributes() ?>>
-<?php echo $loan_application->balance_remaining->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_balance_remaining"><?php echo $loan_status_report->balance_remaining->FldCaption() ?></span></td>
+		<td data-name="balance_remaining"<?php echo $loan_status_report->balance_remaining->CellAttributes() ?>>
+<span id="el_loan_status_report_balance_remaining" data-page="1">
+<span<?php echo $loan_status_report->balance_remaining->ViewAttributes() ?>>
+<?php echo $loan_status_report->balance_remaining->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->applicant_date->Visible) { // applicant_date ?>
+<?php if ($loan_status_report->applicant_date->Visible) { // applicant_date ?>
 	<tr id="r_applicant_date">
-		<td class="col-sm-2"><span id="elh_loan_application_applicant_date"><?php echo $loan_application->applicant_date->FldCaption() ?></span></td>
-		<td data-name="applicant_date"<?php echo $loan_application->applicant_date->CellAttributes() ?>>
-<span id="el_loan_application_applicant_date" data-page="1">
-<span<?php echo $loan_application->applicant_date->ViewAttributes() ?>>
-<?php echo $loan_application->applicant_date->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_applicant_date"><?php echo $loan_status_report->applicant_date->FldCaption() ?></span></td>
+		<td data-name="applicant_date"<?php echo $loan_status_report->applicant_date->CellAttributes() ?>>
+<span id="el_loan_status_report_applicant_date" data-page="1">
+<span<?php echo $loan_status_report->applicant_date->ViewAttributes() ?>>
+<?php echo $loan_status_report->applicant_date->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->applicant_passport->Visible) { // applicant_passport ?>
+<?php if ($loan_status_report->applicant_passport->Visible) { // applicant_passport ?>
 	<tr id="r_applicant_passport">
-		<td class="col-sm-2"><span id="elh_loan_application_applicant_passport"><?php echo $loan_application->applicant_passport->FldCaption() ?></span></td>
-		<td data-name="applicant_passport"<?php echo $loan_application->applicant_passport->CellAttributes() ?>>
-<span id="el_loan_application_applicant_passport" data-page="1">
-<span<?php echo $loan_application->applicant_passport->ViewAttributes() ?>>
-<?php echo ew_GetFileViewTag($loan_application->applicant_passport, $loan_application->applicant_passport->ViewValue) ?>
+		<td class="col-sm-2"><span id="elh_loan_status_report_applicant_passport"><?php echo $loan_status_report->applicant_passport->FldCaption() ?></span></td>
+		<td data-name="applicant_passport"<?php echo $loan_status_report->applicant_passport->CellAttributes() ?>>
+<span id="el_loan_status_report_applicant_passport" data-page="1">
+<span<?php echo $loan_status_report->applicant_passport->ViewAttributes() ?>>
+<?php echo ew_GetFileViewTag($loan_status_report->applicant_passport, $loan_status_report->applicant_passport->ViewValue) ?>
 </span>
 </span>
 </td>
 	</tr>
 <?php } ?>
 </table>
-<?php if ($loan_application->Export == "") { ?>
+<?php if ($loan_status_report->Export == "") { ?>
 		</div>
 <?php } ?>
-<?php if ($loan_application->Export == "") { ?>
-		<div class="tab-pane<?php echo $loan_application_view->MultiPages->PageStyle("2") ?>" id="tab_loan_application2">
+<?php if ($loan_status_report->Export == "") { ?>
+		<div class="tab-pane<?php echo $loan_status_report_view->MultiPages->PageStyle("2") ?>" id="tab_loan_status_report2">
 <?php } ?>
 <table class="table table-striped table-bordered table-hover table-condensed ewViewTable">
-<?php if ($loan_application->guarantor_name->Visible) { // guarantor_name ?>
+<?php if ($loan_status_report->guarantor_name->Visible) { // guarantor_name ?>
 	<tr id="r_guarantor_name">
-		<td class="col-sm-2"><span id="elh_loan_application_guarantor_name"><?php echo $loan_application->guarantor_name->FldCaption() ?></span></td>
-		<td data-name="guarantor_name"<?php echo $loan_application->guarantor_name->CellAttributes() ?>>
-<span id="el_loan_application_guarantor_name" data-page="2">
-<span<?php echo $loan_application->guarantor_name->ViewAttributes() ?>>
-<?php echo $loan_application->guarantor_name->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_guarantor_name"><?php echo $loan_status_report->guarantor_name->FldCaption() ?></span></td>
+		<td data-name="guarantor_name"<?php echo $loan_status_report->guarantor_name->CellAttributes() ?>>
+<span id="el_loan_status_report_guarantor_name" data-page="2">
+<span<?php echo $loan_status_report->guarantor_name->ViewAttributes() ?>>
+<?php echo $loan_status_report->guarantor_name->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->guarantor_address->Visible) { // guarantor_address ?>
+<?php if ($loan_status_report->guarantor_address->Visible) { // guarantor_address ?>
 	<tr id="r_guarantor_address">
-		<td class="col-sm-2"><span id="elh_loan_application_guarantor_address"><?php echo $loan_application->guarantor_address->FldCaption() ?></span></td>
-		<td data-name="guarantor_address"<?php echo $loan_application->guarantor_address->CellAttributes() ?>>
-<span id="el_loan_application_guarantor_address" data-page="2">
-<span<?php echo $loan_application->guarantor_address->ViewAttributes() ?>>
-<?php echo $loan_application->guarantor_address->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_guarantor_address"><?php echo $loan_status_report->guarantor_address->FldCaption() ?></span></td>
+		<td data-name="guarantor_address"<?php echo $loan_status_report->guarantor_address->CellAttributes() ?>>
+<span id="el_loan_status_report_guarantor_address" data-page="2">
+<span<?php echo $loan_status_report->guarantor_address->ViewAttributes() ?>>
+<?php echo $loan_status_report->guarantor_address->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->guarantor_mobile->Visible) { // guarantor_mobile ?>
+<?php if ($loan_status_report->guarantor_mobile->Visible) { // guarantor_mobile ?>
 	<tr id="r_guarantor_mobile">
-		<td class="col-sm-2"><span id="elh_loan_application_guarantor_mobile"><?php echo $loan_application->guarantor_mobile->FldCaption() ?></span></td>
-		<td data-name="guarantor_mobile"<?php echo $loan_application->guarantor_mobile->CellAttributes() ?>>
-<span id="el_loan_application_guarantor_mobile" data-page="2">
-<span<?php echo $loan_application->guarantor_mobile->ViewAttributes() ?>>
-<?php echo $loan_application->guarantor_mobile->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_guarantor_mobile"><?php echo $loan_status_report->guarantor_mobile->FldCaption() ?></span></td>
+		<td data-name="guarantor_mobile"<?php echo $loan_status_report->guarantor_mobile->CellAttributes() ?>>
+<span id="el_loan_status_report_guarantor_mobile" data-page="2">
+<span<?php echo $loan_status_report->guarantor_mobile->ViewAttributes() ?>>
+<?php echo $loan_status_report->guarantor_mobile->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->guarantor_department->Visible) { // guarantor_department ?>
+<?php if ($loan_status_report->guarantor_department->Visible) { // guarantor_department ?>
 	<tr id="r_guarantor_department">
-		<td class="col-sm-2"><span id="elh_loan_application_guarantor_department"><?php echo $loan_application->guarantor_department->FldCaption() ?></span></td>
-		<td data-name="guarantor_department"<?php echo $loan_application->guarantor_department->CellAttributes() ?>>
-<span id="el_loan_application_guarantor_department" data-page="2">
-<span<?php echo $loan_application->guarantor_department->ViewAttributes() ?>>
-<?php echo $loan_application->guarantor_department->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_guarantor_department"><?php echo $loan_status_report->guarantor_department->FldCaption() ?></span></td>
+		<td data-name="guarantor_department"<?php echo $loan_status_report->guarantor_department->CellAttributes() ?>>
+<span id="el_loan_status_report_guarantor_department" data-page="2">
+<span<?php echo $loan_status_report->guarantor_department->ViewAttributes() ?>>
+<?php echo $loan_status_report->guarantor_department->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->account_no->Visible) { // account_no ?>
+<?php if ($loan_status_report->account_no->Visible) { // account_no ?>
 	<tr id="r_account_no">
-		<td class="col-sm-2"><span id="elh_loan_application_account_no"><?php echo $loan_application->account_no->FldCaption() ?></span></td>
-		<td data-name="account_no"<?php echo $loan_application->account_no->CellAttributes() ?>>
-<span id="el_loan_application_account_no" data-page="2">
-<span<?php echo $loan_application->account_no->ViewAttributes() ?>>
-<?php echo $loan_application->account_no->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_account_no"><?php echo $loan_status_report->account_no->FldCaption() ?></span></td>
+		<td data-name="account_no"<?php echo $loan_status_report->account_no->CellAttributes() ?>>
+<span id="el_loan_status_report_account_no" data-page="2">
+<span<?php echo $loan_status_report->account_no->ViewAttributes() ?>>
+<?php echo $loan_status_report->account_no->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->bank_name->Visible) { // bank_name ?>
+<?php if ($loan_status_report->bank_name->Visible) { // bank_name ?>
 	<tr id="r_bank_name">
-		<td class="col-sm-2"><span id="elh_loan_application_bank_name"><?php echo $loan_application->bank_name->FldCaption() ?></span></td>
-		<td data-name="bank_name"<?php echo $loan_application->bank_name->CellAttributes() ?>>
-<span id="el_loan_application_bank_name" data-page="2">
-<span<?php echo $loan_application->bank_name->ViewAttributes() ?>>
-<?php echo $loan_application->bank_name->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_bank_name"><?php echo $loan_status_report->bank_name->FldCaption() ?></span></td>
+		<td data-name="bank_name"<?php echo $loan_status_report->bank_name->CellAttributes() ?>>
+<span id="el_loan_status_report_bank_name" data-page="2">
+<span<?php echo $loan_status_report->bank_name->ViewAttributes() ?>>
+<?php echo $loan_status_report->bank_name->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->employers_name->Visible) { // employers_name ?>
+<?php if ($loan_status_report->employers_name->Visible) { // employers_name ?>
 	<tr id="r_employers_name">
-		<td class="col-sm-2"><span id="elh_loan_application_employers_name"><?php echo $loan_application->employers_name->FldCaption() ?></span></td>
-		<td data-name="employers_name"<?php echo $loan_application->employers_name->CellAttributes() ?>>
-<span id="el_loan_application_employers_name" data-page="2">
-<span<?php echo $loan_application->employers_name->ViewAttributes() ?>>
-<?php echo $loan_application->employers_name->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_employers_name"><?php echo $loan_status_report->employers_name->FldCaption() ?></span></td>
+		<td data-name="employers_name"<?php echo $loan_status_report->employers_name->CellAttributes() ?>>
+<span id="el_loan_status_report_employers_name" data-page="2">
+<span<?php echo $loan_status_report->employers_name->ViewAttributes() ?>>
+<?php echo $loan_status_report->employers_name->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->employers_address->Visible) { // employers_address ?>
+<?php if ($loan_status_report->employers_address->Visible) { // employers_address ?>
 	<tr id="r_employers_address">
-		<td class="col-sm-2"><span id="elh_loan_application_employers_address"><?php echo $loan_application->employers_address->FldCaption() ?></span></td>
-		<td data-name="employers_address"<?php echo $loan_application->employers_address->CellAttributes() ?>>
-<span id="el_loan_application_employers_address" data-page="2">
-<span<?php echo $loan_application->employers_address->ViewAttributes() ?>>
-<?php echo $loan_application->employers_address->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_employers_address"><?php echo $loan_status_report->employers_address->FldCaption() ?></span></td>
+		<td data-name="employers_address"<?php echo $loan_status_report->employers_address->CellAttributes() ?>>
+<span id="el_loan_status_report_employers_address" data-page="2">
+<span<?php echo $loan_status_report->employers_address->ViewAttributes() ?>>
+<?php echo $loan_status_report->employers_address->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->employers_mobile->Visible) { // employers_mobile ?>
+<?php if ($loan_status_report->employers_mobile->Visible) { // employers_mobile ?>
 	<tr id="r_employers_mobile">
-		<td class="col-sm-2"><span id="elh_loan_application_employers_mobile"><?php echo $loan_application->employers_mobile->FldCaption() ?></span></td>
-		<td data-name="employers_mobile"<?php echo $loan_application->employers_mobile->CellAttributes() ?>>
-<span id="el_loan_application_employers_mobile" data-page="2">
-<span<?php echo $loan_application->employers_mobile->ViewAttributes() ?>>
-<?php echo $loan_application->employers_mobile->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_employers_mobile"><?php echo $loan_status_report->employers_mobile->FldCaption() ?></span></td>
+		<td data-name="employers_mobile"<?php echo $loan_status_report->employers_mobile->CellAttributes() ?>>
+<span id="el_loan_status_report_employers_mobile" data-page="2">
+<span<?php echo $loan_status_report->employers_mobile->ViewAttributes() ?>>
+<?php echo $loan_status_report->employers_mobile->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->guarantor_date->Visible) { // guarantor_date ?>
+<?php if ($loan_status_report->guarantor_date->Visible) { // guarantor_date ?>
 	<tr id="r_guarantor_date">
-		<td class="col-sm-2"><span id="elh_loan_application_guarantor_date"><?php echo $loan_application->guarantor_date->FldCaption() ?></span></td>
-		<td data-name="guarantor_date"<?php echo $loan_application->guarantor_date->CellAttributes() ?>>
-<span id="el_loan_application_guarantor_date" data-page="2">
-<span<?php echo $loan_application->guarantor_date->ViewAttributes() ?>>
-<?php echo $loan_application->guarantor_date->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_guarantor_date"><?php echo $loan_status_report->guarantor_date->FldCaption() ?></span></td>
+		<td data-name="guarantor_date"<?php echo $loan_status_report->guarantor_date->CellAttributes() ?>>
+<span id="el_loan_status_report_guarantor_date" data-page="2">
+<span<?php echo $loan_status_report->guarantor_date->ViewAttributes() ?>>
+<?php echo $loan_status_report->guarantor_date->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->guarantor_passport->Visible) { // guarantor_passport ?>
+<?php if ($loan_status_report->guarantor_passport->Visible) { // guarantor_passport ?>
 	<tr id="r_guarantor_passport">
-		<td class="col-sm-2"><span id="elh_loan_application_guarantor_passport"><?php echo $loan_application->guarantor_passport->FldCaption() ?></span></td>
-		<td data-name="guarantor_passport"<?php echo $loan_application->guarantor_passport->CellAttributes() ?>>
-<span id="el_loan_application_guarantor_passport" data-page="2">
-<span<?php echo $loan_application->guarantor_passport->ViewAttributes() ?>>
-<?php echo ew_GetFileViewTag($loan_application->guarantor_passport, $loan_application->guarantor_passport->ViewValue) ?>
+		<td class="col-sm-2"><span id="elh_loan_status_report_guarantor_passport"><?php echo $loan_status_report->guarantor_passport->FldCaption() ?></span></td>
+		<td data-name="guarantor_passport"<?php echo $loan_status_report->guarantor_passport->CellAttributes() ?>>
+<span id="el_loan_status_report_guarantor_passport" data-page="2">
+<span<?php echo $loan_status_report->guarantor_passport->ViewAttributes() ?>>
+<?php echo ew_GetFileViewTag($loan_status_report->guarantor_passport, $loan_status_report->guarantor_passport->ViewValue) ?>
 </span>
 </span>
 </td>
 	</tr>
 <?php } ?>
 </table>
-<?php if ($loan_application->Export == "") { ?>
+<?php if ($loan_status_report->Export == "") { ?>
 		</div>
 <?php } ?>
-<?php if ($loan_application->Export == "") { ?>
-		<div class="tab-pane<?php echo $loan_application_view->MultiPages->PageStyle("3") ?>" id="tab_loan_application3">
+<?php if ($loan_status_report->Export == "") { ?>
+		<div class="tab-pane<?php echo $loan_status_report_view->MultiPages->PageStyle("3") ?>" id="tab_loan_status_report3">
 <?php } ?>
 <table class="table table-striped table-bordered table-hover table-condensed ewViewTable">
-<?php if ($loan_application->status->Visible) { // status ?>
+<?php if ($loan_status_report->status->Visible) { // status ?>
 	<tr id="r_status">
-		<td class="col-sm-2"><span id="elh_loan_application_status"><?php echo $loan_application->status->FldCaption() ?></span></td>
-		<td data-name="status"<?php echo $loan_application->status->CellAttributes() ?>>
-<span id="el_loan_application_status" data-page="3">
-<span<?php echo $loan_application->status->ViewAttributes() ?>>
-<?php echo $loan_application->status->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_status"><?php echo $loan_status_report->status->FldCaption() ?></span></td>
+		<td data-name="status"<?php echo $loan_status_report->status->CellAttributes() ?>>
+<span id="el_loan_status_report_status" data-page="3">
+<span<?php echo $loan_status_report->status->ViewAttributes() ?>>
+<?php echo $loan_status_report->status->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->initiator_action->Visible) { // initiator_action ?>
+<?php if ($loan_status_report->initiator_action->Visible) { // initiator_action ?>
 	<tr id="r_initiator_action">
-		<td class="col-sm-2"><span id="elh_loan_application_initiator_action"><?php echo $loan_application->initiator_action->FldCaption() ?></span></td>
-		<td data-name="initiator_action"<?php echo $loan_application->initiator_action->CellAttributes() ?>>
-<span id="el_loan_application_initiator_action" data-page="3">
-<span<?php echo $loan_application->initiator_action->ViewAttributes() ?>>
-<?php echo $loan_application->initiator_action->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_initiator_action"><?php echo $loan_status_report->initiator_action->FldCaption() ?></span></td>
+		<td data-name="initiator_action"<?php echo $loan_status_report->initiator_action->CellAttributes() ?>>
+<span id="el_loan_status_report_initiator_action" data-page="3">
+<span<?php echo $loan_status_report->initiator_action->ViewAttributes() ?>>
+<?php echo $loan_status_report->initiator_action->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->initiator_comment->Visible) { // initiator_comment ?>
+<?php if ($loan_status_report->initiator_comment->Visible) { // initiator_comment ?>
 	<tr id="r_initiator_comment">
-		<td class="col-sm-2"><span id="elh_loan_application_initiator_comment"><?php echo $loan_application->initiator_comment->FldCaption() ?></span></td>
-		<td data-name="initiator_comment"<?php echo $loan_application->initiator_comment->CellAttributes() ?>>
-<span id="el_loan_application_initiator_comment" data-page="3">
-<span<?php echo $loan_application->initiator_comment->ViewAttributes() ?>>
-<?php echo $loan_application->initiator_comment->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_initiator_comment"><?php echo $loan_status_report->initiator_comment->FldCaption() ?></span></td>
+		<td data-name="initiator_comment"<?php echo $loan_status_report->initiator_comment->CellAttributes() ?>>
+<span id="el_loan_status_report_initiator_comment" data-page="3">
+<span<?php echo $loan_status_report->initiator_comment->ViewAttributes() ?>>
+<?php echo $loan_status_report->initiator_comment->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->recommended_date->Visible) { // recommended_date ?>
+<?php if ($loan_status_report->recommended_date->Visible) { // recommended_date ?>
 	<tr id="r_recommended_date">
-		<td class="col-sm-2"><span id="elh_loan_application_recommended_date"><?php echo $loan_application->recommended_date->FldCaption() ?></span></td>
-		<td data-name="recommended_date"<?php echo $loan_application->recommended_date->CellAttributes() ?>>
-<span id="el_loan_application_recommended_date" data-page="3">
-<span<?php echo $loan_application->recommended_date->ViewAttributes() ?>>
-<?php echo $loan_application->recommended_date->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_recommended_date"><?php echo $loan_status_report->recommended_date->FldCaption() ?></span></td>
+		<td data-name="recommended_date"<?php echo $loan_status_report->recommended_date->CellAttributes() ?>>
+<span id="el_loan_status_report_recommended_date" data-page="3">
+<span<?php echo $loan_status_report->recommended_date->ViewAttributes() ?>>
+<?php echo $loan_status_report->recommended_date->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->document_checklist->Visible) { // document_checklist ?>
+<?php if ($loan_status_report->document_checklist->Visible) { // document_checklist ?>
 	<tr id="r_document_checklist">
-		<td class="col-sm-2"><span id="elh_loan_application_document_checklist"><?php echo $loan_application->document_checklist->FldCaption() ?></span></td>
-		<td data-name="document_checklist"<?php echo $loan_application->document_checklist->CellAttributes() ?>>
-<span id="el_loan_application_document_checklist" data-page="3">
-<span<?php echo $loan_application->document_checklist->ViewAttributes() ?>>
-<?php echo $loan_application->document_checklist->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_document_checklist"><?php echo $loan_status_report->document_checklist->FldCaption() ?></span></td>
+		<td data-name="document_checklist"<?php echo $loan_status_report->document_checklist->CellAttributes() ?>>
+<span id="el_loan_status_report_document_checklist" data-page="3">
+<span<?php echo $loan_status_report->document_checklist->ViewAttributes() ?>>
+<?php echo $loan_status_report->document_checklist->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->recommender_action->Visible) { // recommender_action ?>
+<?php if ($loan_status_report->recommender_action->Visible) { // recommender_action ?>
 	<tr id="r_recommender_action">
-		<td class="col-sm-2"><span id="elh_loan_application_recommender_action"><?php echo $loan_application->recommender_action->FldCaption() ?></span></td>
-		<td data-name="recommender_action"<?php echo $loan_application->recommender_action->CellAttributes() ?>>
-<span id="el_loan_application_recommender_action" data-page="3">
-<span<?php echo $loan_application->recommender_action->ViewAttributes() ?>>
-<?php echo $loan_application->recommender_action->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_recommender_action"><?php echo $loan_status_report->recommender_action->FldCaption() ?></span></td>
+		<td data-name="recommender_action"<?php echo $loan_status_report->recommender_action->CellAttributes() ?>>
+<span id="el_loan_status_report_recommender_action" data-page="3">
+<span<?php echo $loan_status_report->recommender_action->ViewAttributes() ?>>
+<?php echo $loan_status_report->recommender_action->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->recommender_comment->Visible) { // recommender_comment ?>
+<?php if ($loan_status_report->recommender_comment->Visible) { // recommender_comment ?>
 	<tr id="r_recommender_comment">
-		<td class="col-sm-2"><span id="elh_loan_application_recommender_comment"><?php echo $loan_application->recommender_comment->FldCaption() ?></span></td>
-		<td data-name="recommender_comment"<?php echo $loan_application->recommender_comment->CellAttributes() ?>>
-<span id="el_loan_application_recommender_comment" data-page="3">
-<span<?php echo $loan_application->recommender_comment->ViewAttributes() ?>>
-<?php echo $loan_application->recommender_comment->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_recommender_comment"><?php echo $loan_status_report->recommender_comment->FldCaption() ?></span></td>
+		<td data-name="recommender_comment"<?php echo $loan_status_report->recommender_comment->CellAttributes() ?>>
+<span id="el_loan_status_report_recommender_comment" data-page="3">
+<span<?php echo $loan_status_report->recommender_comment->ViewAttributes() ?>>
+<?php echo $loan_status_report->recommender_comment->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->recommended_by->Visible) { // recommended_by ?>
+<?php if ($loan_status_report->recommended_by->Visible) { // recommended_by ?>
 	<tr id="r_recommended_by">
-		<td class="col-sm-2"><span id="elh_loan_application_recommended_by"><?php echo $loan_application->recommended_by->FldCaption() ?></span></td>
-		<td data-name="recommended_by"<?php echo $loan_application->recommended_by->CellAttributes() ?>>
-<span id="el_loan_application_recommended_by" data-page="3">
-<span<?php echo $loan_application->recommended_by->ViewAttributes() ?>>
-<?php echo $loan_application->recommended_by->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_recommended_by"><?php echo $loan_status_report->recommended_by->FldCaption() ?></span></td>
+		<td data-name="recommended_by"<?php echo $loan_status_report->recommended_by->CellAttributes() ?>>
+<span id="el_loan_status_report_recommended_by" data-page="3">
+<span<?php echo $loan_status_report->recommended_by->ViewAttributes() ?>>
+<?php echo $loan_status_report->recommended_by->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->application_status->Visible) { // application_status ?>
+<?php if ($loan_status_report->application_status->Visible) { // application_status ?>
 	<tr id="r_application_status">
-		<td class="col-sm-2"><span id="elh_loan_application_application_status"><?php echo $loan_application->application_status->FldCaption() ?></span></td>
-		<td data-name="application_status"<?php echo $loan_application->application_status->CellAttributes() ?>>
-<span id="el_loan_application_application_status" data-page="3">
-<span<?php echo $loan_application->application_status->ViewAttributes() ?>>
-<?php echo $loan_application->application_status->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_application_status"><?php echo $loan_status_report->application_status->FldCaption() ?></span></td>
+		<td data-name="application_status"<?php echo $loan_status_report->application_status->CellAttributes() ?>>
+<span id="el_loan_status_report_application_status" data-page="3">
+<span<?php echo $loan_status_report->application_status->ViewAttributes() ?>>
+<?php echo $loan_status_report->application_status->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->approved_amount->Visible) { // approved_amount ?>
+<?php if ($loan_status_report->approved_amount->Visible) { // approved_amount ?>
 	<tr id="r_approved_amount">
-		<td class="col-sm-2"><span id="elh_loan_application_approved_amount"><?php echo $loan_application->approved_amount->FldCaption() ?></span></td>
-		<td data-name="approved_amount"<?php echo $loan_application->approved_amount->CellAttributes() ?>>
-<span id="el_loan_application_approved_amount" data-page="3">
-<span<?php echo $loan_application->approved_amount->ViewAttributes() ?>>
-<?php echo $loan_application->approved_amount->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_approved_amount"><?php echo $loan_status_report->approved_amount->FldCaption() ?></span></td>
+		<td data-name="approved_amount"<?php echo $loan_status_report->approved_amount->CellAttributes() ?>>
+<span id="el_loan_status_report_approved_amount" data-page="3">
+<span<?php echo $loan_status_report->approved_amount->ViewAttributes() ?>>
+<?php echo $loan_status_report->approved_amount->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->duration_approved->Visible) { // duration_approved ?>
+<?php if ($loan_status_report->duration_approved->Visible) { // duration_approved ?>
 	<tr id="r_duration_approved">
-		<td class="col-sm-2"><span id="elh_loan_application_duration_approved"><?php echo $loan_application->duration_approved->FldCaption() ?></span></td>
-		<td data-name="duration_approved"<?php echo $loan_application->duration_approved->CellAttributes() ?>>
-<span id="el_loan_application_duration_approved" data-page="3">
-<span<?php echo $loan_application->duration_approved->ViewAttributes() ?>>
-<?php echo $loan_application->duration_approved->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_duration_approved"><?php echo $loan_status_report->duration_approved->FldCaption() ?></span></td>
+		<td data-name="duration_approved"<?php echo $loan_status_report->duration_approved->CellAttributes() ?>>
+<span id="el_loan_status_report_duration_approved" data-page="3">
+<span<?php echo $loan_status_report->duration_approved->ViewAttributes() ?>>
+<?php echo $loan_status_report->duration_approved->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->approval_date->Visible) { // approval_date ?>
+<?php if ($loan_status_report->approval_date->Visible) { // approval_date ?>
 	<tr id="r_approval_date">
-		<td class="col-sm-2"><span id="elh_loan_application_approval_date"><?php echo $loan_application->approval_date->FldCaption() ?></span></td>
-		<td data-name="approval_date"<?php echo $loan_application->approval_date->CellAttributes() ?>>
-<span id="el_loan_application_approval_date" data-page="3">
-<span<?php echo $loan_application->approval_date->ViewAttributes() ?>>
-<?php echo $loan_application->approval_date->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_approval_date"><?php echo $loan_status_report->approval_date->FldCaption() ?></span></td>
+		<td data-name="approval_date"<?php echo $loan_status_report->approval_date->CellAttributes() ?>>
+<span id="el_loan_status_report_approval_date" data-page="3">
+<span<?php echo $loan_status_report->approval_date->ViewAttributes() ?>>
+<?php echo $loan_status_report->approval_date->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->approval_action->Visible) { // approval_action ?>
+<?php if ($loan_status_report->approval_action->Visible) { // approval_action ?>
 	<tr id="r_approval_action">
-		<td class="col-sm-2"><span id="elh_loan_application_approval_action"><?php echo $loan_application->approval_action->FldCaption() ?></span></td>
-		<td data-name="approval_action"<?php echo $loan_application->approval_action->CellAttributes() ?>>
-<span id="el_loan_application_approval_action" data-page="3">
-<span<?php echo $loan_application->approval_action->ViewAttributes() ?>>
-<?php echo $loan_application->approval_action->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_approval_action"><?php echo $loan_status_report->approval_action->FldCaption() ?></span></td>
+		<td data-name="approval_action"<?php echo $loan_status_report->approval_action->CellAttributes() ?>>
+<span id="el_loan_status_report_approval_action" data-page="3">
+<span<?php echo $loan_status_report->approval_action->ViewAttributes() ?>>
+<?php echo $loan_status_report->approval_action->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->approval_comment->Visible) { // approval_comment ?>
+<?php if ($loan_status_report->approval_comment->Visible) { // approval_comment ?>
 	<tr id="r_approval_comment">
-		<td class="col-sm-2"><span id="elh_loan_application_approval_comment"><?php echo $loan_application->approval_comment->FldCaption() ?></span></td>
-		<td data-name="approval_comment"<?php echo $loan_application->approval_comment->CellAttributes() ?>>
-<span id="el_loan_application_approval_comment" data-page="3">
-<span<?php echo $loan_application->approval_comment->ViewAttributes() ?>>
-<?php echo $loan_application->approval_comment->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_approval_comment"><?php echo $loan_status_report->approval_comment->FldCaption() ?></span></td>
+		<td data-name="approval_comment"<?php echo $loan_status_report->approval_comment->CellAttributes() ?>>
+<span id="el_loan_status_report_approval_comment" data-page="3">
+<span<?php echo $loan_status_report->approval_comment->ViewAttributes() ?>>
+<?php echo $loan_status_report->approval_comment->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->approved_by->Visible) { // approved_by ?>
+<?php if ($loan_status_report->approved_by->Visible) { // approved_by ?>
 	<tr id="r_approved_by">
-		<td class="col-sm-2"><span id="elh_loan_application_approved_by"><?php echo $loan_application->approved_by->FldCaption() ?></span></td>
-		<td data-name="approved_by"<?php echo $loan_application->approved_by->CellAttributes() ?>>
-<span id="el_loan_application_approved_by" data-page="3">
-<span<?php echo $loan_application->approved_by->ViewAttributes() ?>>
-<?php echo $loan_application->approved_by->ViewValue ?></span>
+		<td class="col-sm-2"><span id="elh_loan_status_report_approved_by"><?php echo $loan_status_report->approved_by->FldCaption() ?></span></td>
+		<td data-name="approved_by"<?php echo $loan_status_report->approved_by->CellAttributes() ?>>
+<span id="el_loan_status_report_approved_by" data-page="3">
+<span<?php echo $loan_status_report->approved_by->ViewAttributes() ?>>
+<?php echo $loan_status_report->approved_by->ViewValue ?></span>
 </span>
 </td>
 	</tr>
 <?php } ?>
 </table>
-<?php if ($loan_application->Export == "") { ?>
+<?php if ($loan_status_report->Export == "") { ?>
 		</div>
 <?php } ?>
-<?php if ($loan_application->Export == "") { ?>
+<?php if ($loan_status_report->Export == "") { ?>
 	</div>
 </div>
 </div>
 <?php } ?>
 </form>
-<?php if ($loan_application->Export == "") { ?>
+<?php if ($loan_status_report->Export == "") { ?>
 <script type="text/javascript">
-floan_applicationview.Init();
+floan_status_reportview.Init();
 </script>
 <?php } ?>
 <?php
-$loan_application_view->ShowPageFooter();
+$loan_status_report_view->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
-<?php if ($loan_application->Export == "") { ?>
+<?php if ($loan_status_report->Export == "") { ?>
 <script type="text/javascript">
 
 // Write your table-specific startup script here
@@ -2641,5 +2583,5 @@ if (EW_DEBUG_ENABLED)
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php
-$loan_application_view->Page_Terminate();
+$loan_status_report_view->Page_Terminate();
 ?>

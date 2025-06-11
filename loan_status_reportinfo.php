@@ -1,12 +1,12 @@
 <?php
 
 // Global variable for table object
-$loan_application = NULL;
+$loan_status_report = NULL;
 
 //
-// Table class for loan_application
+// Table class for loan_status_report
 //
-class cloan_application extends cTable {
+class cloan_status_report extends cTable {
 	var $AuditTrailOnAdd = TRUE;
 	var $AuditTrailOnEdit = TRUE;
 	var $AuditTrailOnDelete = TRUE;
@@ -66,12 +66,12 @@ class cloan_application extends cTable {
 
 		// Language object
 		if (!isset($Language)) $Language = new cLanguage();
-		$this->TableVar = 'loan_application';
-		$this->TableName = 'loan_application';
-		$this->TableType = 'TABLE';
+		$this->TableVar = 'loan_status_report';
+		$this->TableName = 'loan_status_report';
+		$this->TableType = 'VIEW';
 
 		// Update Table
-		$this->UpdateTable = "`loan_application`";
+		$this->UpdateTable = "loan_application";
 		$this->DBID = 'DB';
 		$this->ExportAll = TRUE;
 		$this->ExportPageBreakCount = 0; // Page break per every n record (PDF only)
@@ -91,41 +91,39 @@ class cloan_application extends cTable {
 		$this->BasicSearch = new cBasicSearch($this->TableVar);
 
 		// code
-		$this->code = new cField('loan_application', 'loan_application', 'x_code', 'code', '`code`', '`code`', 3, -1, FALSE, '`code`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
+		$this->code = new cField('loan_status_report', 'loan_status_report', 'x_code', 'code', '`code`', '`code`', 3, -1, FALSE, '`code`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
 		$this->code->Sortable = TRUE; // Allow sort
 		$this->code->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['code'] = &$this->code;
 
 		// date_initiated
-		$this->date_initiated = new cField('loan_application', 'loan_application', 'x_date_initiated', 'date_initiated', '`date_initiated`', ew_CastDateFieldForLike('`date_initiated`', 0, "DB"), 135, 0, FALSE, '`date_initiated`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date_initiated = new cField('loan_status_report', 'loan_status_report', 'x_date_initiated', 'date_initiated', '`date_initiated`', ew_CastDateFieldForLike('`date_initiated`', 0, "DB"), 135, 0, FALSE, '`date_initiated`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->date_initiated->Sortable = TRUE; // Allow sort
 		$this->date_initiated->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['date_initiated'] = &$this->date_initiated;
 
 		// refernce_id
-		$this->refernce_id = new cField('loan_application', 'loan_application', 'x_refernce_id', 'refernce_id', '`refernce_id`', '`refernce_id`', 200, -1, FALSE, '`refernce_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->refernce_id = new cField('loan_status_report', 'loan_status_report', 'x_refernce_id', 'refernce_id', '`refernce_id`', '`refernce_id`', 200, -1, FALSE, '`refernce_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->refernce_id->Sortable = TRUE; // Allow sort
 		$this->fields['refernce_id'] = &$this->refernce_id;
 
 		// employee_name
-		$this->employee_name = new cField('loan_application', 'loan_application', 'x_employee_name', 'employee_name', '`employee_name`', '`employee_name`', 200, -1, FALSE, '`employee_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->employee_name = new cField('loan_status_report', 'loan_status_report', 'x_employee_name', 'employee_name', '`employee_name`', '`employee_name`', 200, -1, FALSE, '`employee_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->employee_name->Sortable = TRUE; // Allow sort
-		$this->employee_name->UsePleaseSelect = TRUE; // Use PleaseSelect by default
-		$this->employee_name->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['employee_name'] = &$this->employee_name;
 
 		// address
-		$this->address = new cField('loan_application', 'loan_application', 'x_address', 'address', '`address`', '`address`', 200, -1, FALSE, '`address`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->address = new cField('loan_status_report', 'loan_status_report', 'x_address', 'address', '`address`', '`address`', 200, -1, FALSE, '`address`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->address->Sortable = TRUE; // Allow sort
 		$this->fields['address'] = &$this->address;
 
 		// mobile
-		$this->mobile = new cField('loan_application', 'loan_application', 'x_mobile', 'mobile', '`mobile`', '`mobile`', 200, -1, FALSE, '`mobile`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->mobile = new cField('loan_status_report', 'loan_status_report', 'x_mobile', 'mobile', '`mobile`', '`mobile`', 200, -1, FALSE, '`mobile`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->mobile->Sortable = TRUE; // Allow sort
 		$this->fields['mobile'] = &$this->mobile;
 
 		// department
-		$this->department = new cField('loan_application', 'loan_application', 'x_department', 'department', '`department`', '`department`', 3, -1, FALSE, '`department`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->department = new cField('loan_status_report', 'loan_status_report', 'x_department', 'department', '`department`', '`department`', 3, -1, FALSE, '`department`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->department->Sortable = TRUE; // Allow sort
 		$this->department->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->department->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
@@ -133,86 +131,86 @@ class cloan_application extends cTable {
 		$this->fields['department'] = &$this->department;
 
 		// loan_amount
-		$this->loan_amount = new cField('loan_application', 'loan_application', 'x_loan_amount', 'loan_amount', '`loan_amount`', '`loan_amount`', 131, -1, FALSE, '`loan_amount`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->loan_amount = new cField('loan_status_report', 'loan_status_report', 'x_loan_amount', 'loan_amount', '`loan_amount`', '`loan_amount`', 131, -1, FALSE, '`loan_amount`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->loan_amount->Sortable = TRUE; // Allow sort
 		$this->loan_amount->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
 		$this->fields['loan_amount'] = &$this->loan_amount;
 
 		// amount_inwords
-		$this->amount_inwords = new cField('loan_application', 'loan_application', 'x_amount_inwords', 'amount_inwords', '`amount_inwords`', '`amount_inwords`', 200, -1, FALSE, '`amount_inwords`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->amount_inwords = new cField('loan_status_report', 'loan_status_report', 'x_amount_inwords', 'amount_inwords', '`amount_inwords`', '`amount_inwords`', 200, -1, FALSE, '`amount_inwords`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->amount_inwords->Sortable = TRUE; // Allow sort
 		$this->fields['amount_inwords'] = &$this->amount_inwords;
 
 		// purpose
-		$this->purpose = new cField('loan_application', 'loan_application', 'x_purpose', 'purpose', '`purpose`', '`purpose`', 201, -1, FALSE, '`purpose`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->purpose = new cField('loan_status_report', 'loan_status_report', 'x_purpose', 'purpose', '`purpose`', '`purpose`', 201, -1, FALSE, '`purpose`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->purpose->Sortable = TRUE; // Allow sort
 		$this->fields['purpose'] = &$this->purpose;
 
 		// repayment_period
-		$this->repayment_period = new cField('loan_application', 'loan_application', 'x_repayment_period', 'repayment_period', '`repayment_period`', '`repayment_period`', 200, -1, FALSE, '`repayment_period`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->repayment_period = new cField('loan_status_report', 'loan_status_report', 'x_repayment_period', 'repayment_period', '`repayment_period`', '`repayment_period`', 200, -1, FALSE, '`repayment_period`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->repayment_period->Sortable = TRUE; // Allow sort
 		$this->repayment_period->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->repayment_period->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['repayment_period'] = &$this->repayment_period;
 
 		// salary_permonth
-		$this->salary_permonth = new cField('loan_application', 'loan_application', 'x_salary_permonth', 'salary_permonth', '`salary_permonth`', '`salary_permonth`', 131, -1, FALSE, '`salary_permonth`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->salary_permonth = new cField('loan_status_report', 'loan_status_report', 'x_salary_permonth', 'salary_permonth', '`salary_permonth`', '`salary_permonth`', 131, -1, FALSE, '`salary_permonth`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->salary_permonth->Sortable = TRUE; // Allow sort
 		$this->salary_permonth->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
 		$this->fields['salary_permonth'] = &$this->salary_permonth;
 
 		// previous_loan
-		$this->previous_loan = new cField('loan_application', 'loan_application', 'x_previous_loan', 'previous_loan', '`previous_loan`', '`previous_loan`', 131, -1, FALSE, '`previous_loan`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->previous_loan = new cField('loan_status_report', 'loan_status_report', 'x_previous_loan', 'previous_loan', '`previous_loan`', '`previous_loan`', 131, -1, FALSE, '`previous_loan`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->previous_loan->Sortable = TRUE; // Allow sort
 		$this->previous_loan->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
 		$this->fields['previous_loan'] = &$this->previous_loan;
 
 		// date_collected
-		$this->date_collected = new cField('loan_application', 'loan_application', 'x_date_collected', 'date_collected', '`date_collected`', ew_CastDateFieldForLike('`date_collected`', 0, "DB"), 135, 0, FALSE, '`date_collected`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date_collected = new cField('loan_status_report', 'loan_status_report', 'x_date_collected', 'date_collected', '`date_collected`', ew_CastDateFieldForLike('`date_collected`', 0, "DB"), 135, 0, FALSE, '`date_collected`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->date_collected->Sortable = TRUE; // Allow sort
 		$this->date_collected->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['date_collected'] = &$this->date_collected;
 
 		// date_liquidated
-		$this->date_liquidated = new cField('loan_application', 'loan_application', 'x_date_liquidated', 'date_liquidated', '`date_liquidated`', ew_CastDateFieldForLike('`date_liquidated`', 0, "DB"), 135, 0, FALSE, '`date_liquidated`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date_liquidated = new cField('loan_status_report', 'loan_status_report', 'x_date_liquidated', 'date_liquidated', '`date_liquidated`', ew_CastDateFieldForLike('`date_liquidated`', 0, "DB"), 135, 0, FALSE, '`date_liquidated`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->date_liquidated->Sortable = TRUE; // Allow sort
 		$this->date_liquidated->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['date_liquidated'] = &$this->date_liquidated;
 
 		// balance_remaining
-		$this->balance_remaining = new cField('loan_application', 'loan_application', 'x_balance_remaining', 'balance_remaining', '`balance_remaining`', '`balance_remaining`', 131, -1, FALSE, '`balance_remaining`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->balance_remaining = new cField('loan_status_report', 'loan_status_report', 'x_balance_remaining', 'balance_remaining', '`balance_remaining`', '`balance_remaining`', 131, -1, FALSE, '`balance_remaining`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->balance_remaining->Sortable = TRUE; // Allow sort
 		$this->balance_remaining->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
 		$this->fields['balance_remaining'] = &$this->balance_remaining;
 
 		// applicant_date
-		$this->applicant_date = new cField('loan_application', 'loan_application', 'x_applicant_date', 'applicant_date', '`applicant_date`', ew_CastDateFieldForLike('`applicant_date`', 17, "DB"), 135, 17, FALSE, '`applicant_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->applicant_date = new cField('loan_status_report', 'loan_status_report', 'x_applicant_date', 'applicant_date', '`applicant_date`', ew_CastDateFieldForLike('`applicant_date`', 14, "DB"), 135, 14, FALSE, '`applicant_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->applicant_date->Sortable = TRUE; // Allow sort
 		$this->applicant_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
 		$this->fields['applicant_date'] = &$this->applicant_date;
 
 		// applicant_passport
-		$this->applicant_passport = new cField('loan_application', 'loan_application', 'x_applicant_passport', 'applicant_passport', '`applicant_passport`', '`applicant_passport`', 201, -1, TRUE, '`applicant_passport`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'FILE');
+		$this->applicant_passport = new cField('loan_status_report', 'loan_status_report', 'x_applicant_passport', 'applicant_passport', '`applicant_passport`', '`applicant_passport`', 201, -1, TRUE, '`applicant_passport`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'FILE');
 		$this->applicant_passport->Sortable = TRUE; // Allow sort
 		$this->fields['applicant_passport'] = &$this->applicant_passport;
 
 		// guarantor_name
-		$this->guarantor_name = new cField('loan_application', 'loan_application', 'x_guarantor_name', 'guarantor_name', '`guarantor_name`', '`guarantor_name`', 200, -1, FALSE, '`guarantor_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->guarantor_name = new cField('loan_status_report', 'loan_status_report', 'x_guarantor_name', 'guarantor_name', '`guarantor_name`', '`guarantor_name`', 200, -1, FALSE, '`guarantor_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->guarantor_name->Sortable = TRUE; // Allow sort
 		$this->fields['guarantor_name'] = &$this->guarantor_name;
 
 		// guarantor_address
-		$this->guarantor_address = new cField('loan_application', 'loan_application', 'x_guarantor_address', 'guarantor_address', '`guarantor_address`', '`guarantor_address`', 200, -1, FALSE, '`guarantor_address`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->guarantor_address = new cField('loan_status_report', 'loan_status_report', 'x_guarantor_address', 'guarantor_address', '`guarantor_address`', '`guarantor_address`', 200, -1, FALSE, '`guarantor_address`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->guarantor_address->Sortable = TRUE; // Allow sort
 		$this->fields['guarantor_address'] = &$this->guarantor_address;
 
 		// guarantor_mobile
-		$this->guarantor_mobile = new cField('loan_application', 'loan_application', 'x_guarantor_mobile', 'guarantor_mobile', '`guarantor_mobile`', '`guarantor_mobile`', 200, -1, FALSE, '`guarantor_mobile`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->guarantor_mobile = new cField('loan_status_report', 'loan_status_report', 'x_guarantor_mobile', 'guarantor_mobile', '`guarantor_mobile`', '`guarantor_mobile`', 200, -1, FALSE, '`guarantor_mobile`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->guarantor_mobile->Sortable = TRUE; // Allow sort
 		$this->fields['guarantor_mobile'] = &$this->guarantor_mobile;
 
 		// guarantor_department
-		$this->guarantor_department = new cField('loan_application', 'loan_application', 'x_guarantor_department', 'guarantor_department', '`guarantor_department`', '`guarantor_department`', 3, -1, FALSE, '`guarantor_department`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->guarantor_department = new cField('loan_status_report', 'loan_status_report', 'x_guarantor_department', 'guarantor_department', '`guarantor_department`', '`guarantor_department`', 3, -1, FALSE, '`guarantor_department`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->guarantor_department->Sortable = TRUE; // Allow sort
 		$this->guarantor_department->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->guarantor_department->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
@@ -220,12 +218,12 @@ class cloan_application extends cTable {
 		$this->fields['guarantor_department'] = &$this->guarantor_department;
 
 		// account_no
-		$this->account_no = new cField('loan_application', 'loan_application', 'x_account_no', 'account_no', '`account_no`', '`account_no`', 200, -1, FALSE, '`account_no`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->account_no = new cField('loan_status_report', 'loan_status_report', 'x_account_no', 'account_no', '`account_no`', '`account_no`', 200, -1, FALSE, '`account_no`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->account_no->Sortable = TRUE; // Allow sort
 		$this->fields['account_no'] = &$this->account_no;
 
 		// bank_name
-		$this->bank_name = new cField('loan_application', 'loan_application', 'x_bank_name', 'bank_name', '`bank_name`', '`bank_name`', 3, -1, FALSE, '`bank_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->bank_name = new cField('loan_status_report', 'loan_status_report', 'x_bank_name', 'bank_name', '`bank_name`', '`bank_name`', 3, -1, FALSE, '`bank_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->bank_name->Sortable = TRUE; // Allow sort
 		$this->bank_name->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->bank_name->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
@@ -233,89 +231,89 @@ class cloan_application extends cTable {
 		$this->fields['bank_name'] = &$this->bank_name;
 
 		// employers_name
-		$this->employers_name = new cField('loan_application', 'loan_application', 'x_employers_name', 'employers_name', '`employers_name`', '`employers_name`', 200, -1, FALSE, '`employers_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->employers_name = new cField('loan_status_report', 'loan_status_report', 'x_employers_name', 'employers_name', '`employers_name`', '`employers_name`', 200, -1, FALSE, '`employers_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->employers_name->Sortable = TRUE; // Allow sort
 		$this->fields['employers_name'] = &$this->employers_name;
 
 		// employers_address
-		$this->employers_address = new cField('loan_application', 'loan_application', 'x_employers_address', 'employers_address', '`employers_address`', '`employers_address`', 200, -1, FALSE, '`employers_address`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->employers_address = new cField('loan_status_report', 'loan_status_report', 'x_employers_address', 'employers_address', '`employers_address`', '`employers_address`', 200, -1, FALSE, '`employers_address`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->employers_address->Sortable = TRUE; // Allow sort
 		$this->fields['employers_address'] = &$this->employers_address;
 
 		// employers_mobile
-		$this->employers_mobile = new cField('loan_application', 'loan_application', 'x_employers_mobile', 'employers_mobile', '`employers_mobile`', '`employers_mobile`', 200, -1, FALSE, '`employers_mobile`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->employers_mobile = new cField('loan_status_report', 'loan_status_report', 'x_employers_mobile', 'employers_mobile', '`employers_mobile`', '`employers_mobile`', 200, -1, FALSE, '`employers_mobile`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->employers_mobile->Sortable = TRUE; // Allow sort
 		$this->fields['employers_mobile'] = &$this->employers_mobile;
 
 		// guarantor_date
-		$this->guarantor_date = new cField('loan_application', 'loan_application', 'x_guarantor_date', 'guarantor_date', '`guarantor_date`', ew_CastDateFieldForLike('`guarantor_date`', 17, "DB"), 135, 17, FALSE, '`guarantor_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->guarantor_date = new cField('loan_status_report', 'loan_status_report', 'x_guarantor_date', 'guarantor_date', '`guarantor_date`', ew_CastDateFieldForLike('`guarantor_date`', 14, "DB"), 135, 14, FALSE, '`guarantor_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->guarantor_date->Sortable = TRUE; // Allow sort
 		$this->guarantor_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
 		$this->fields['guarantor_date'] = &$this->guarantor_date;
 
 		// guarantor_passport
-		$this->guarantor_passport = new cField('loan_application', 'loan_application', 'x_guarantor_passport', 'guarantor_passport', '`guarantor_passport`', '`guarantor_passport`', 201, -1, TRUE, '`guarantor_passport`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'FILE');
+		$this->guarantor_passport = new cField('loan_status_report', 'loan_status_report', 'x_guarantor_passport', 'guarantor_passport', '`guarantor_passport`', '`guarantor_passport`', 201, -1, TRUE, '`guarantor_passport`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'FILE');
 		$this->guarantor_passport->Sortable = TRUE; // Allow sort
 		$this->fields['guarantor_passport'] = &$this->guarantor_passport;
 
 		// status
-		$this->status = new cField('loan_application', 'loan_application', 'x_status', 'status', '`status`', '`status`', 3, -1, FALSE, '`status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->status = new cField('loan_status_report', 'loan_status_report', 'x_status', 'status', '`status`', '`status`', 3, -1, FALSE, '`status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->status->Sortable = TRUE; // Allow sort
 		$this->fields['status'] = &$this->status;
 
 		// initiator_action
-		$this->initiator_action = new cField('loan_application', 'loan_application', 'x_initiator_action', 'initiator_action', '`initiator_action`', '`initiator_action`', 3, -1, FALSE, '`initiator_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->initiator_action = new cField('loan_status_report', 'loan_status_report', 'x_initiator_action', 'initiator_action', '`initiator_action`', '`initiator_action`', 3, -1, FALSE, '`initiator_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->initiator_action->Sortable = TRUE; // Allow sort
 		$this->initiator_action->OptionCount = 1;
 		$this->initiator_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['initiator_action'] = &$this->initiator_action;
 
 		// initiator_comment
-		$this->initiator_comment = new cField('loan_application', 'loan_application', 'x_initiator_comment', 'initiator_comment', '`initiator_comment`', '`initiator_comment`', 200, -1, FALSE, '`initiator_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->initiator_comment = new cField('loan_status_report', 'loan_status_report', 'x_initiator_comment', 'initiator_comment', '`initiator_comment`', '`initiator_comment`', 200, -1, FALSE, '`initiator_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->initiator_comment->Sortable = TRUE; // Allow sort
 		$this->fields['initiator_comment'] = &$this->initiator_comment;
 
 		// recommended_date
-		$this->recommended_date = new cField('loan_application', 'loan_application', 'x_recommended_date', 'recommended_date', '`recommended_date`', ew_CastDateFieldForLike('`recommended_date`', 14, "DB"), 135, 14, FALSE, '`recommended_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->recommended_date = new cField('loan_status_report', 'loan_status_report', 'x_recommended_date', 'recommended_date', '`recommended_date`', ew_CastDateFieldForLike('`recommended_date`', 14, "DB"), 135, 14, FALSE, '`recommended_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->recommended_date->Sortable = TRUE; // Allow sort
 		$this->recommended_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
 		$this->fields['recommended_date'] = &$this->recommended_date;
 
 		// document_checklist
-		$this->document_checklist = new cField('loan_application', 'loan_application', 'x_document_checklist', 'document_checklist', '`document_checklist`', '`document_checklist`', 200, -1, FALSE, '`document_checklist`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'CHECKBOX');
+		$this->document_checklist = new cField('loan_status_report', 'loan_status_report', 'x_document_checklist', 'document_checklist', '`document_checklist`', '`document_checklist`', 200, -1, FALSE, '`document_checklist`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'CHECKBOX');
 		$this->document_checklist->Sortable = TRUE; // Allow sort
 		$this->fields['document_checklist'] = &$this->document_checklist;
 
 		// recommender_action
-		$this->recommender_action = new cField('loan_application', 'loan_application', 'x_recommender_action', 'recommender_action', '`recommender_action`', '`recommender_action`', 3, -1, FALSE, '`recommender_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->recommender_action = new cField('loan_status_report', 'loan_status_report', 'x_recommender_action', 'recommender_action', '`recommender_action`', '`recommender_action`', 3, -1, FALSE, '`recommender_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->recommender_action->Sortable = TRUE; // Allow sort
 		$this->recommender_action->OptionCount = 2;
 		$this->fields['recommender_action'] = &$this->recommender_action;
 
 		// recommender_comment
-		$this->recommender_comment = new cField('loan_application', 'loan_application', 'x_recommender_comment', 'recommender_comment', '`recommender_comment`', '`recommender_comment`', 200, -1, FALSE, '`recommender_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->recommender_comment = new cField('loan_status_report', 'loan_status_report', 'x_recommender_comment', 'recommender_comment', '`recommender_comment`', '`recommender_comment`', 200, -1, FALSE, '`recommender_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->recommender_comment->Sortable = TRUE; // Allow sort
 		$this->fields['recommender_comment'] = &$this->recommender_comment;
 
 		// recommended_by
-		$this->recommended_by = new cField('loan_application', 'loan_application', 'x_recommended_by', 'recommended_by', '`recommended_by`', '`recommended_by`', 3, -1, FALSE, '`recommended_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->recommended_by = new cField('loan_status_report', 'loan_status_report', 'x_recommended_by', 'recommended_by', '`recommended_by`', '`recommended_by`', 3, -1, FALSE, '`recommended_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->recommended_by->Sortable = TRUE; // Allow sort
 		$this->fields['recommended_by'] = &$this->recommended_by;
 
 		// application_status
-		$this->application_status = new cField('loan_application', 'loan_application', 'x_application_status', 'application_status', '`application_status`', '`application_status`', 200, -1, FALSE, '`application_status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->application_status = new cField('loan_status_report', 'loan_status_report', 'x_application_status', 'application_status', '`application_status`', '`application_status`', 200, -1, FALSE, '`application_status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->application_status->Sortable = TRUE; // Allow sort
 		$this->application_status->OptionCount = 2;
 		$this->fields['application_status'] = &$this->application_status;
 
 		// approved_amount
-		$this->approved_amount = new cField('loan_application', 'loan_application', 'x_approved_amount', 'approved_amount', '`approved_amount`', '`approved_amount`', 131, -1, FALSE, '`approved_amount`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->approved_amount = new cField('loan_status_report', 'loan_status_report', 'x_approved_amount', 'approved_amount', '`approved_amount`', '`approved_amount`', 131, -1, FALSE, '`approved_amount`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->approved_amount->Sortable = TRUE; // Allow sort
 		$this->approved_amount->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
 		$this->fields['approved_amount'] = &$this->approved_amount;
 
 		// duration_approved
-		$this->duration_approved = new cField('loan_application', 'loan_application', 'x_duration_approved', 'duration_approved', '`duration_approved`', ew_CastDateFieldForLike('`duration_approved`', 0, "DB"), 133, 0, FALSE, '`duration_approved`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->duration_approved = new cField('loan_status_report', 'loan_status_report', 'x_duration_approved', 'duration_approved', '`duration_approved`', ew_CastDateFieldForLike('`duration_approved`', 0, "DB"), 133, 0, FALSE, '`duration_approved`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->duration_approved->Sortable = TRUE; // Allow sort
 		$this->duration_approved->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->duration_approved->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
@@ -323,25 +321,25 @@ class cloan_application extends cTable {
 		$this->fields['duration_approved'] = &$this->duration_approved;
 
 		// approval_date
-		$this->approval_date = new cField('loan_application', 'loan_application', 'x_approval_date', 'approval_date', '`approval_date`', ew_CastDateFieldForLike('`approval_date`', 17, "DB"), 135, 17, FALSE, '`approval_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->approval_date = new cField('loan_status_report', 'loan_status_report', 'x_approval_date', 'approval_date', '`approval_date`', ew_CastDateFieldForLike('`approval_date`', 17, "DB"), 135, 17, FALSE, '`approval_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->approval_date->Sortable = TRUE; // Allow sort
 		$this->approval_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
 		$this->fields['approval_date'] = &$this->approval_date;
 
 		// approval_action
-		$this->approval_action = new cField('loan_application', 'loan_application', 'x_approval_action', 'approval_action', '`approval_action`', '`approval_action`', 3, -1, FALSE, '`approval_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->approval_action = new cField('loan_status_report', 'loan_status_report', 'x_approval_action', 'approval_action', '`approval_action`', '`approval_action`', 3, -1, FALSE, '`approval_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->approval_action->Sortable = TRUE; // Allow sort
 		$this->approval_action->OptionCount = 2;
 		$this->approval_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['approval_action'] = &$this->approval_action;
 
 		// approval_comment
-		$this->approval_comment = new cField('loan_application', 'loan_application', 'x_approval_comment', 'approval_comment', '`approval_comment`', '`approval_comment`', 200, -1, FALSE, '`approval_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->approval_comment = new cField('loan_status_report', 'loan_status_report', 'x_approval_comment', 'approval_comment', '`approval_comment`', '`approval_comment`', 200, -1, FALSE, '`approval_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->approval_comment->Sortable = TRUE; // Allow sort
 		$this->fields['approval_comment'] = &$this->approval_comment;
 
 		// approved_by
-		$this->approved_by = new cField('loan_application', 'loan_application', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->approved_by = new cField('loan_status_report', 'loan_status_report', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->approved_by->Sortable = TRUE; // Allow sort
 		$this->approved_by->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->approved_by->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
@@ -390,7 +388,7 @@ class cloan_application extends cTable {
 	var $_SqlFrom = "";
 
 	function getSqlFrom() { // From
-		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`loan_application`";
+		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`loan_status_report`";
 	}
 
 	function SqlFrom() { // For backward compatibility
@@ -713,7 +711,7 @@ class cloan_application extends cTable {
 		if (@$_SESSION[$name] <> "") {
 			return $_SESSION[$name];
 		} else {
-			return "loan_applicationlist.php";
+			return "loan_status_reportlist.php";
 		}
 	}
 
@@ -724,11 +722,11 @@ class cloan_application extends cTable {
 	// Get modal caption
 	function GetModalCaption($pageName) {
 		global $Language;
-		if ($pageName == "loan_applicationview.php")
+		if ($pageName == "loan_status_reportview.php")
 			return $Language->Phrase("View");
-		elseif ($pageName == "loan_applicationedit.php")
+		elseif ($pageName == "loan_status_reportedit.php")
 			return $Language->Phrase("Edit");
-		elseif ($pageName == "loan_applicationadd.php")
+		elseif ($pageName == "loan_status_reportadd.php")
 			return $Language->Phrase("Add");
 		else
 			return "";
@@ -736,30 +734,30 @@ class cloan_application extends cTable {
 
 	// List URL
 	function GetListUrl() {
-		return "loan_applicationlist.php";
+		return "loan_status_reportlist.php";
 	}
 
 	// View URL
 	function GetViewUrl($parm = "") {
 		if ($parm <> "")
-			$url = $this->KeyUrl("loan_applicationview.php", $this->UrlParm($parm));
+			$url = $this->KeyUrl("loan_status_reportview.php", $this->UrlParm($parm));
 		else
-			$url = $this->KeyUrl("loan_applicationview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
+			$url = $this->KeyUrl("loan_status_reportview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
 		return $this->AddMasterUrl($url);
 	}
 
 	// Add URL
 	function GetAddUrl($parm = "") {
 		if ($parm <> "")
-			$url = "loan_applicationadd.php?" . $this->UrlParm($parm);
+			$url = "loan_status_reportadd.php?" . $this->UrlParm($parm);
 		else
-			$url = "loan_applicationadd.php";
+			$url = "loan_status_reportadd.php";
 		return $this->AddMasterUrl($url);
 	}
 
 	// Edit URL
 	function GetEditUrl($parm = "") {
-		$url = $this->KeyUrl("loan_applicationedit.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("loan_status_reportedit.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -771,7 +769,7 @@ class cloan_application extends cTable {
 
 	// Copy URL
 	function GetCopyUrl($parm = "") {
-		$url = $this->KeyUrl("loan_applicationadd.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("loan_status_reportadd.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -783,7 +781,7 @@ class cloan_application extends cTable {
 
 	// Delete URL
 	function GetDeleteUrl() {
-		return $this->KeyUrl("loan_applicationdelete.php", $this->UrlParm());
+		return $this->KeyUrl("loan_status_reportdelete.php", $this->UrlParm());
 	}
 
 	// Add master url
@@ -997,28 +995,7 @@ class cloan_application extends cTable {
 		$this->refernce_id->ViewCustomAttributes = "";
 
 		// employee_name
-		if (strval($this->employee_name->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->employee_name->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->employee_name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->employee_name, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->employee_name->ViewValue = $this->employee_name->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->employee_name->ViewValue = $this->employee_name->CurrentValue;
-			}
-		} else {
-			$this->employee_name->ViewValue = NULL;
-		}
+		$this->employee_name->ViewValue = $this->employee_name->CurrentValue;
 		$this->employee_name->ViewCustomAttributes = "";
 
 		// address
@@ -1115,7 +1092,7 @@ class cloan_application extends cTable {
 
 		// applicant_date
 		$this->applicant_date->ViewValue = $this->applicant_date->CurrentValue;
-		$this->applicant_date->ViewValue = ew_FormatDateTime($this->applicant_date->ViewValue, 17);
+		$this->applicant_date->ViewValue = ew_FormatDateTime($this->applicant_date->ViewValue, 14);
 		$this->applicant_date->ViewCustomAttributes = "";
 
 		// applicant_passport
@@ -1202,7 +1179,7 @@ class cloan_application extends cTable {
 
 		// guarantor_date
 		$this->guarantor_date->ViewValue = $this->guarantor_date->CurrentValue;
-		$this->guarantor_date->ViewValue = ew_FormatDateTime($this->guarantor_date->ViewValue, 17);
+		$this->guarantor_date->ViewValue = ew_FormatDateTime($this->guarantor_date->ViewValue, 14);
 		$this->guarantor_date->ViewCustomAttributes = "";
 
 		// guarantor_passport
@@ -1661,6 +1638,8 @@ class cloan_application extends cTable {
 		// employee_name
 		$this->employee_name->EditAttrs["class"] = "form-control";
 		$this->employee_name->EditCustomAttributes = "";
+		$this->employee_name->EditValue = $this->employee_name->CurrentValue;
+		$this->employee_name->PlaceHolder = ew_RemoveHtml($this->employee_name->FldCaption());
 
 		// address
 		$this->address->EditAttrs["class"] = "form-control";
@@ -1737,7 +1716,7 @@ class cloan_application extends cTable {
 		// applicant_date
 		$this->applicant_date->EditAttrs["class"] = "form-control";
 		$this->applicant_date->EditCustomAttributes = "";
-		$this->applicant_date->EditValue = ew_FormatDateTime($this->applicant_date->CurrentValue, 17);
+		$this->applicant_date->EditValue = ew_FormatDateTime($this->applicant_date->CurrentValue, 14);
 		$this->applicant_date->PlaceHolder = ew_RemoveHtml($this->applicant_date->FldCaption());
 
 		// applicant_passport
@@ -1804,7 +1783,7 @@ class cloan_application extends cTable {
 		// guarantor_date
 		$this->guarantor_date->EditAttrs["class"] = "form-control";
 		$this->guarantor_date->EditCustomAttributes = "";
-		$this->guarantor_date->EditValue = ew_FormatDateTime($this->guarantor_date->CurrentValue, 17);
+		$this->guarantor_date->EditValue = ew_FormatDateTime($this->guarantor_date->CurrentValue, 14);
 		$this->guarantor_date->PlaceHolder = ew_RemoveHtml($this->guarantor_date->FldCaption());
 
 		// guarantor_passport
@@ -2167,7 +2146,7 @@ class cloan_application extends cTable {
 
 	// Write Audit Trail start/end for grid update
 	function WriteAuditTrailDummy($typ) {
-		$table = 'loan_application';
+		$table = 'loan_status_report';
 		$usr = CurrentUserName();
 		ew_WriteAuditTrail("log", ew_StdCurrentDateTime(), ew_ScriptName(), $usr, $typ, $table, "", "", "", "");
 	}
@@ -2176,7 +2155,7 @@ class cloan_application extends cTable {
 	function WriteAuditTrailOnAdd(&$rs) {
 		global $Language;
 		if (!$this->AuditTrailOnAdd) return;
-		$table = 'loan_application';
+		$table = 'loan_status_report';
 
 		// Get key value
 		$key = "";
@@ -2210,7 +2189,7 @@ class cloan_application extends cTable {
 	function WriteAuditTrailOnEdit(&$rsold, &$rsnew) {
 		global $Language;
 		if (!$this->AuditTrailOnEdit) return;
-		$table = 'loan_application';
+		$table = 'loan_status_report';
 
 		// Get key value
 		$key = "";
@@ -2257,7 +2236,7 @@ class cloan_application extends cTable {
 	function WriteAuditTrailOnDelete(&$rs) {
 		global $Language;
 		if (!$this->AuditTrailOnDelete) return;
-		$table = 'loan_application';
+		$table = 'loan_status_report';
 
 		// Get key value
 		$key = "";
@@ -2293,15 +2272,6 @@ class cloan_application extends cTable {
 	function Recordset_Selecting(&$filter) {
 
 		// Enter your code here
-		if (CurrentUserLevel() == -2) {
-			ew_AddFilter($filter, "`status` in (6)");
-		}
-		if (CurrentUserLevel() == 7) {
-			ew_AddFilter($filter, "`status` in (1)");
-		}
-		if (CurrentUserLevel() == 3) {
-			ew_AddFilter($filter, "`status` in (2)");
-		}
 	}
 
 	// Recordset Selected event
@@ -2341,65 +2311,7 @@ class cloan_application extends cTable {
 
 		// Enter your code here
 		// To cancel, set return value to FALSE
-		// Officer Only
-		//if (CurrentPageID() == "add" && CurrentUserLevel() == 1) {
 
-		if (CurrentPageID() == "add")  {
-
-			// Save and forward
-			if ($this->initiator_action->CurrentValue == 1) {
-				$rsnew["status"] = 1;
-				$rsnew["initiator_action"] = 1;
-
-				//$rsnew["report_by"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; Loan Application Request Sent Successfully!  Kindly Save your Loan Reference ID  (". $_SESSION['LAP_ID'] .")   for Tracking Your Loan Status &#x2714;");
-			}
-
-			// Saved only
-			if ($this->initiator_action->CurrentValue == 0) {
-				$rsnew["status"] = 0;			
-				$rsnew["initiator_action"] = 0; 
-				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
-			}			
-		}
-
-		// Supervisor Only
-		if (CurrentPageID() == "add" && CurrentUserLevel() == 7) {
-
-			// Save and forward
-			if ($this->initiator_action->CurrentValue == 1) {
-				$rsnew["status"] = 2;
-				$rsnew["initiator_action"] = 1;
-				$rsnew["resolved_by"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; Loan Application Request Sent Successfully &#x2714;"); 					
-			}
-
-			// Saved only
-			if ($this->initiator_action->CurrentValue == 0) {
-				$rsnew["status"] = 0;			
-				$rsnew["initiator_action"] = 0; 
-				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
-			}			
-		}
-
-		// Supervisor Only
-		if (CurrentPageID() == "add" && CurrentUserLevel() == 3) {
-
-			// Save and forward
-			if ($this->initiator_action->CurrentValue == 1) {
-				$rsnew["status"] = 2;
-				$rsnew["initiator_action"] = 1;
-				$rsnew["resolved_by"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; Loan Application Request Sent Successfully &#x2714;"); 					
-			}
-
-			// Saved only
-			if ($this->initiator_action->CurrentValue == 0) {
-				$rsnew["status"] = 0;			
-				$rsnew["initiator_action"] = 0; 
-				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
-			}			
-		}
 		return TRUE;
 	}
 
@@ -2415,165 +2327,6 @@ class cloan_application extends cTable {
 		// Enter your code here
 		// To cancel, set return value to FALSE
 
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-
-		// Supervisor
-		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 7) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$rsnew["datetime_resolved"] = $now->format('Y-m-d H:i:s');
-			$rsnew["resolved_by"] = $_SESSION['Staff_ID'];
-		}
-
-		// Supervisor - Don't change field values captured by Officer
-		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3  && $this->status->CurrentValue == 1) {
-			$rsnew["code"] = $rsold["code"];
-			$rsnew["date_initiated"] = $rsold["date_initiated"];
-			$rsnew["refernce_id"] = $rsold["refernce_id"];
-			$rsnew["employee_name"] = $rsold["employee_name"];
-			$rsnew["address"] = $rsold["address"];
-			$rsnew["mobile"] = $rsold["mobile"];
-			$rsnew["department"] = $rsold["department"];
-			$rsnew["loan_amount"] = $rsold["loan_amount"];
-			$rsnew["amount_inwords"] = $rsold["amount_inwords"];
-			$rsnew["purpose"] = $rsold["purpose"];
-			$rsnew["repayment_period"] = $rsold["repayment_period"];
-			$rsnew["salary_permonth"] = $rsold["salary_permonth"];
-			$rsnew["previous_loan"] = $rsold["previous_loan"];
-			$rsnew["date_collected"] = $rsold["date_collected"];
-			$rsnew["date_liquidated"] = $rsold["date_liquidated"];
-			$rsnew["balance_remaining"] = $rsold["balance_remaining"];
-			$rsnew["applicant_date"] = $rsold["applicant_date"];
-			$rsnew["applicant_passport"] = $rsold["applicant_passport"];
-			$rsnew["guarantor_name"] = $rsold["guarantor_name"];
-			$rsnew["guarantor_address"] = $rsold["guarantor_address"];
-			$rsnew["guarantor_mobile"] = $rsold["guarantor_mobile"];
-			$rsnew["guarantor_department"] = $rsold["guarantor_department"];
-			$rsnew["account_no"] = $rsold["account_no"];
-			$rsnew["bank_name"] = $rsold["bank_name"];
-			$rsnew["employers_name"] = $rsold["employers_name"];
-			$rsnew["employers_address"] = $rsold["employers_address"];
-			$rsnew["employers_mobile"] = $rsold["employers_mobile"];
-			$rsnew["guarantor_date"] = $rsold["guarantor_date"];
-			$rsnew["guarantor_passport"] = $rsold["guarantor_passport"];
-
-			//$rsnew["closed_by"] = $rsold["closed_by"];
-			//$rsnew["status"] = $rsold["status"];
-
-			$rsnew["initiator_action"] = $rsold["initiator_action"];
-			$rsnew["initiator_comment"] = $rsold["initiator_comment"];
-
-			//$rsnew["resolved_action"] = $rsold["resolved_action"];
-			//$rsnew["resolved_comment"] = $rsold["resolved_comment"];
-
-			$rsnew["approval_action"] = $rsold["approval_action"];
-			$rsnew["approval_comment"] = $rsold["approval_comment"];
-		}
-
-		// Supervisor - Don't change field values captured by Officer
-		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3  && $this->status->CurrentValue == 2) {
-			$rsnew["code"] = $rsold["code"];
-			$rsnew["date_initiated"] = $rsold["date_initiated"];
-			$rsnew["refernce_id"] = $rsold["refernce_id"];
-			$rsnew["employee_name"] = $rsold["employee_name"];
-			$rsnew["address"] = $rsold["address"];
-			$rsnew["mobile"] = $rsold["mobile"];
-			$rsnew["department"] = $rsold["department"];
-			$rsnew["loan_amount"] = $rsold["loan_amount"];
-			$rsnew["amount_inwords"] = $rsold["amount_inwords"];
-			$rsnew["purpose"] = $rsold["purpose"];
-			$rsnew["repayment_period"] = $rsold["repayment_period"];
-			$rsnew["salary_permonth"] = $rsold["salary_permonth"];
-			$rsnew["previous_loan"] = $rsold["previous_loan"];
-			$rsnew["date_collected"] = $rsold["date_collected"];
-			$rsnew["date_liquidated"] = $rsold["date_liquidated"];
-			$rsnew["balance_remaining"] = $rsold["balance_remaining"];
-			$rsnew["applicant_date"] = $rsold["applicant_date"];
-			$rsnew["applicant_passport"] = $rsold["applicant_passport"];
-			$rsnew["guarantor_name"] = $rsold["guarantor_name"];
-			$rsnew["guarantor_address"] = $rsold["guarantor_address"];
-			$rsnew["guarantor_mobile"] = $rsold["guarantor_mobile"];
-			$rsnew["guarantor_department"] = $rsold["guarantor_department"];
-			$rsnew["account_no"] = $rsold["account_no"];
-			$rsnew["bank_name"] = $rsold["bank_name"];
-			$rsnew["employers_name"] = $rsold["employers_name"];
-			$rsnew["employers_address"] = $rsold["employers_address"];
-			$rsnew["employers_mobile"] = $rsold["employers_mobile"];
-			$rsnew["guarantor_date"] = $rsold["guarantor_date"];
-			$rsnew["guarantor_passport"] = $rsold["guarantor_passport"];
-			$rsnew["recommended_date"] = $rsold["recommended_date"];
-			$rsnew["document_checklist"] = $rsold["document_checklist"];
-			$rsnew["recommended_by"] = $rsold["recommended_by"];
-
-			//$rsnew["closed_by"] = $rsold["closed_by"];
-			//$rsnew["status"] = $rsold["status"];
-
-			$rsnew["initiator_action"] = $rsold["initiator_action"];
-			$rsnew["initiator_comment"] = $rsold["initiator_comment"];
-			$rsnew["recommender_action"] = $rsold["recommender_action"];
-			$rsnew["recommender_comment"] = $rsold["recommender_comment"];
-
-			//$rsnew["approval_action"] = $rsold["approval_action"];
-			//$rsnew["approval_comment"] = $rsold["approval_comment"];
-
-		}
-
-		// Confirmed by RECOMMENDER
-			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 7) ) {
-				$rsnew["recommended_date"] = $now->format('Y-m-d H:i:s');
-				$rsnew["recommended_by"] = $_SESSION['Staff_ID'];
-			  }
-
-			   	// Confirmed by Administrators
-				if ($this->recommender_action->CurrentValue == 0 && $this->status->CurrentValue == 1 ) {
-
-					// New
-					if ($this->status->CurrentValue == 1) {
-						$rsnew["status"] = 1;					
-						$rsnew["recommender_action"] = 0;
-					}
-					$this->setSuccessMessage("&#x25C9; Record Save Only &#x2714;");
-				}
-
-				// Confirmed by Administrators
-				if ($this->recommender_action->CurrentValue == 1 ) {
-
-					// New
-					if ($this->status->CurrentValue == 1) {
-						$rsnew["status"] = 2;					
-						$rsnew["recommender_action"] = 1;
-					}
-					$this->setSuccessMessage("&#x25C9; Loan Request successfully Recommended and sent for Authorization &#x2714;");
-				}
-
-				// Confirmed by AUTHORIZER
-			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) ) {
-				$rsnew["approval_date"] = $now->format('Y-m-d H:i:s');
-				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
-			  }
-
-			   	// Confirmed by Administrators
-				if ($this->approval_action->CurrentValue == 4 && $this->status->CurrentValue == 2 ) {
-
-					// New
-					if ($this->status->CurrentValue == 2) {
-						$rsnew["status"] = 3;					
-						$rsnew["approval_action"] = 4;
-					}
-					$this->setSuccessMessage("&#x25C9; Loan Request Successfully Rejected &#x2714;");
-				}
-
-				// Confirmed by Administrators
-				if ($this->approval_action->CurrentValue == 2 ) {
-
-					// New
-					if ($this->status->CurrentValue == 2) {
-						$rsnew["status"] = 4;					
-						$rsnew["approval_action"] = 2;
-					}
-					$this->setSuccessMessage("&#x25C9; Loan Request Successfully Approved &#x2714;");
-				}
 		return TRUE;
 	}
 
@@ -2656,34 +2409,6 @@ class cloan_application extends cTable {
 	function Row_Rendering() {
 
 		// Enter your code here
-		if (CurrentPageID() == "add")  {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->date_initiated->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->date_initiated->EditValue = $this->date_initiated->CurrentValue;
-			$this->applicant_date->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->applicant_date->EditValue = $this->applicant_date->CurrentValue;
-			$this->guarantor_date->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->guarantor_date->EditValue = $this->guarantor_date->CurrentValue;
-			$this->refernce_id->CurrentValue = $_SESSION['LAP_ID'];
-			$this->refernce_id->EditValue = $this->refernce_id->CurrentValue;
-		}
-		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 7 )) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->recommended_date->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->recommended_date->EditValue = $this->recommended_date->CurrentValue;
-			$this->recommended_by->CurrentValue = $_SESSION['Staff_ID'];
-			$this->recommended_by->EditValue = $this->recommended_by->CurrentValue;
-		}
-		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 3)) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->approval_date->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->approval_date->EditValue = $this->approval_date->CurrentValue;
-			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
-			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
-		}
 	}
 
 	// Row Rendered event
@@ -2692,119 +2417,6 @@ class cloan_application extends cTable {
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
 
-			if (CurrentPageID() == "add") {
-					$this->date_initiated->ReadOnly = TRUE;
-					$this->refernce_id->ReadOnly = TRUE;
-					$this->document_checklist->Visible = FALSE;
-					$this->recommended_date->Visible = FALSE;
-					$this->recommender_action->Visible = FALSE;
-					$this->recommender_comment->Visible = FALSE;
-					$this->recommended_by->Visible = FALSE;
-					$this->status->Visible = FALSE;
-					$this->application_status->Visible = FALSE;
-					$this->approved_amount->Visible = FALSE;
-					$this->duration_approved->Visible = FALSE;
-					$this->approval_date->Visible = FALSE;
-					$this->approval_action->Visible = FALSE;
-					$this->approval_comment->Visible = FALSE;
-					$this->approved_by->Visible = FALSE;
-					$this->applicant_date->ReadOnly = TRUE;
-					$this->guarantor_date->ReadOnly = TRUE;
-				}
-
-			// Edit Page
-			   if (CurrentPageID() == "edit") {
-					if (CurrentUserLevel() == 7 && ($this->status->CurrentValue == 7 || $this->status->CurrentValue == 1)) {
-					$this->date_initiated->ReadOnly = TRUE;
-					$this->refernce_id->ReadOnly = TRUE;
-					$this->employee_name->ReadOnly = TRUE;
-					$this->address->ReadOnly = TRUE;
-					$this->mobile->ReadOnly = TRUE;
-					$this->department->ReadOnly = TRUE;
-					$this->loan_amount->ReadOnly = TRUE;
-					$this->amount_inwords->ReadOnly = TRUE;
-					$this->purpose->ReadOnly = TRUE;
-					$this->repayment_period->ReadOnly = TRUE;
-					$this->salary_permonth->ReadOnly = TRUE;
-					$this->previous_loan->ReadOnly = TRUE;
-					$this->date_collected->ReadOnly = TRUE;
-					$this->date_liquidated->ReadOnly = TRUE;
-					$this->balance_remaining->ReadOnly = TRUE;
-					$this->applicant_date->ReadOnly = TRUE;
-					$this->applicant_passport->ReadOnly = TRUE;
-					$this->guarantor_name->ReadOnly = TRUE;
-					$this->guarantor_address->ReadOnly = TRUE;
-					$this->guarantor_mobile->ReadOnly = TRUE;
-					$this->guarantor_department->ReadOnly = TRUE;
-					$this->account_no->ReadOnly = TRUE;
-					$this->bank_name->ReadOnly = TRUE;
-					$this->employers_name->ReadOnly = TRUE;
-					$this->employers_address->ReadOnly = TRUE;
-					$this->employers_mobile->ReadOnly = TRUE;
-					$this->guarantor_date->ReadOnly = TRUE;
-					$this->guarantor_passport->ReadOnly = TRUE;
-					$this->initiator_action->ReadOnly = TRUE;
-					$this->initiator_comment->ReadOnly = TRUE;
-
-					//$this->document_checklist->Visible = TRUE;
-					$this->recommended_date->ReadOnly = TRUE;
-					$this->recommender_action->Visible = TRUE;
-					$this->recommender_comment->Visible = TRUE;
-
-					//$this->recommended_by->Visible = FALSE;
-					$this->application_status->Visible = FALSE;
-					$this->approved_amount->Visible = FALSE;
-					$this->duration_approved->Visible = FALSE;
-					$this->approval_date->Visible = FALSE;
-					$this->approval_action->Visible = FALSE;
-					$this->approval_comment->Visible = FALSE;
-					$this->approved_by->Visible = FALSE;
-				}
-				if (CurrentUserLevel() == 3 && ($this->status->CurrentValue == 6 || $this->status->CurrentValue == 2)) {
-					$this->date_initiated->ReadOnly = TRUE;
-					$this->refernce_id->ReadOnly = TRUE;
-					$this->employee_name->ReadOnly = TRUE;
-					$this->address->ReadOnly = TRUE;
-					$this->mobile->ReadOnly = TRUE;
-					$this->department->ReadOnly = TRUE;
-					$this->loan_amount->ReadOnly = TRUE;
-					$this->amount_inwords->ReadOnly = TRUE;
-					$this->purpose->ReadOnly = TRUE;
-					$this->repayment_period->ReadOnly = TRUE;
-					$this->salary_permonth->ReadOnly = TRUE;
-					$this->previous_loan->ReadOnly = TRUE;
-					$this->date_collected->ReadOnly = TRUE;
-					$this->date_liquidated->ReadOnly = TRUE;
-					$this->balance_remaining->ReadOnly = TRUE;
-					$this->applicant_date->ReadOnly = TRUE;
-					$this->applicant_passport->ReadOnly = TRUE;
-					$this->guarantor_name->ReadOnly = TRUE;
-					$this->guarantor_address->ReadOnly = TRUE;
-					$this->guarantor_mobile->ReadOnly = TRUE;
-					$this->guarantor_department->ReadOnly = TRUE;
-					$this->account_no->ReadOnly = TRUE;
-					$this->bank_name->ReadOnly = TRUE;
-					$this->employers_name->ReadOnly = TRUE;
-					$this->employers_address->ReadOnly = TRUE;
-					$this->employers_mobile->ReadOnly = TRUE;
-					$this->guarantor_date->ReadOnly = TRUE;
-					$this->guarantor_passport->ReadOnly = TRUE;
-					$this->initiator_action->ReadOnly = TRUE;
-					$this->initiator_comment->ReadOnly = TRUE;
-					$this->document_checklist->ReadOnly = TRUE;
-					$this->recommended_date->ReadOnly = TRUE;
-					$this->recommender_action->ReadOnly = TRUE;
-					$this->recommender_comment->ReadOnly = TRUE;
-					$this->recommended_by->ReadOnly = TRUE;
-					$this->application_status->Visible = TRUE;
-					$this->approved_amount->Visible = TRUE;
-					$this->duration_approved->Visible = TRUE;
-					$this->approval_date->Visible = TRUE;
-					$this->approval_action->Visible = TRUE;
-					$this->approval_comment->Visible = TRUE;
-					$this->approved_by->ReadOnly = TRUE;
-			}
-		}
 	}
 
 	// User ID Filtering event
