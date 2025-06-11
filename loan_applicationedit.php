@@ -2481,6 +2481,9 @@ class cloan_application_edit extends cloan_application {
 		if (!$this->purpose->FldIsDetailKey && !is_null($this->purpose->FormValue) && $this->purpose->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->purpose->FldCaption(), $this->purpose->ReqErrMsg));
 		}
+		if (!$this->repayment_period->FldIsDetailKey && !is_null($this->repayment_period->FormValue) && $this->repayment_period->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->repayment_period->FldCaption(), $this->repayment_period->ReqErrMsg));
+		}
 		if (!$this->salary_permonth->FldIsDetailKey && !is_null($this->salary_permonth->FormValue) && $this->salary_permonth->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->salary_permonth->FldCaption(), $this->salary_permonth->ReqErrMsg));
 		}
@@ -3266,6 +3269,9 @@ floan_applicationedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_purpose");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->purpose->FldCaption(), $loan_application->purpose->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_repayment_period");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->repayment_period->FldCaption(), $loan_application->repayment_period->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_salary_permonth");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->salary_permonth->FldCaption(), $loan_application->salary_permonth->ReqErrMsg)) ?>");
@@ -3714,7 +3720,7 @@ $loan_application_edit->ShowMessage();
 <?php } ?>
 <?php if ($loan_application->repayment_period->Visible) { // repayment_period ?>
 	<div id="r_repayment_period" class="form-group">
-		<label id="elh_loan_application_repayment_period" for="x_repayment_period" class="<?php echo $loan_application_edit->LeftColumnClass ?>"><?php echo $loan_application->repayment_period->FldCaption() ?></label>
+		<label id="elh_loan_application_repayment_period" for="x_repayment_period" class="<?php echo $loan_application_edit->LeftColumnClass ?>"><?php echo $loan_application->repayment_period->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $loan_application_edit->RightColumnClass ?>"><div<?php echo $loan_application->repayment_period->CellAttributes() ?>>
 <?php if ($loan_application->CurrentAction <> "F") { ?>
 <span id="el_loan_application_repayment_period">
