@@ -721,7 +721,7 @@ if (EW_DEBUG_ENABLED)
 		<!-- Welcome! -->
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	    <a href="https://incidentreport.staysafesystem.com/loan_applicationlist.php"><i class="fa fa-long-arrow-left" aria-hidden="true"style="color:black; width:30px; hieght:100px; font-size:600; font-weight:900"></i><span style="color:#8d1c2d; text-align:right; font-size:large;font-weight:500"> kindly click the link to apply for Salary Advance. </span></a>
+	    <a href="https://incidentreport.staysafesystem.com/loan_applicationlist.php"><i class="fa fa-long-arrow-left" aria-hidden="true"style="color:black; width:30px; hieght:100px; font-size:600; font-weight:900"></i><span style="color:#8d1c2d; text-align:right; font-size:large;font-weight:500"> kindly click the link to apply for Salary Advance Application. </span></a>
 		</div>
 <script type="text/javascript">
 
