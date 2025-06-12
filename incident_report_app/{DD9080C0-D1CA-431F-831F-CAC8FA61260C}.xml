@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<configuration date="2025/06/11" author="e.World Technology Ltd.">
-  <project id="{DD9080C0-D1CA-431F-831F-CAC8FA61260C}" file="C:\Users\Bassey\Documents\PHPMaker\Projects\incident_report_app_staysafe.pmp" name="incident_report_app" product="PHPMaker" version="14.0" datetime="2025/06/11 17:09:24" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0">
+<configuration date="2025/06/12" author="e.World Technology Ltd.">
+  <project id="{DD9080C0-D1CA-431F-831F-CAC8FA61260C}" file="C:\Users\Bassey\Documents\PHPMaker\Projects\incident_report_app_staysafe.pmp" name="incident_report_app" product="PHPMaker" version="14.0" datetime="2025/06/12 12:42:28" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0">
     <table id="branch" name="branch" caption="Organization" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="category" name="category" caption="Category" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="client" name="client" caption="Client" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
@@ -58,8 +58,9 @@
     <table id="duration_months" name="duration_months" caption="Duration Months" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="loan_status" name="loan_status" caption="Loan Status" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="banks_list" name="banks_list" caption="Banks List" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
-    <table id="document_checklist" name="document_checklist" caption="document checklist" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="document_checklist" name="document_checklist" caption="Document Checklist" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="loan_report" name="loan_report" caption="Loan Application Report" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
     <table id="loan_status_report" name="loan_status_report" caption="Check Loan  Status" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
+    <table id="restock_module" name="restock_module" caption="Inventory Restock Module" userlevel="-2,&quot;Anonymous&quot;,0;0,&quot;Default&quot;,0" priv="1" />
   </project>
 </configuration>

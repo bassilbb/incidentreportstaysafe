@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2025/6/11" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2025/6/12" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -718,7 +718,7 @@
       <phrase id="menutext" value="Banks List" />
     </menu>
     <menu id="277">
-      <phrase id="menutext" value="document checklist" />
+      <phrase id="menutext" value="Document Checklist" />
     </menu>
     <menu id="34">
       <phrase id="menutext" value="Incidents" />
@@ -776,6 +776,9 @@
     </menu>
     <menu id="199">
       <phrase id="menutext" value="Inventory Store Records" />
+    </menu>
+    <menu id="314">
+      <phrase id="menutext" value="Inventory Restock Module" />
     </menu>
     <menu id="268">
       <phrase id="menutext" value="Inventory Issuance Module" />
@@ -3038,7 +3041,7 @@
       </field>
     </table>
     <table id="document_checklist">
-      <phrase id="tblcaption" value="document checklist" />
+      <phrase id="tblcaption" value="Document Checklist" />
       <field id="code">
         <phrase id="fldcaption" value="code" />
       </field>
@@ -3364,6 +3367,37 @@
       </field>
       <field id="approved_by">
         <phrase id="fldcaption" value="Approved By" />
+      </field>
+    </table>
+    <table id="restock_module">
+      <phrase id="tblcaption" value="Inventory Restock Module" />
+      <phrase id="tblpagecaption1" value="Restock Info" />
+      <field id="code">
+        <phrase id="fldcaption" value="Code" />
+      </field>
+      <field id="date_restocked">
+        <phrase id="fldcaption" value="Date &amp; Time Restocked" />
+      </field>
+      <field id="reference_id">
+        <phrase id="fldcaption" value="Reference ID" />
+      </field>
+      <field id="material_name">
+        <phrase id="fldcaption" value="Material Name" />
+      </field>
+      <field id="type">
+        <phrase id="fldcaption" value="Type" />
+      </field>
+      <field id="capacity">
+        <phrase id="fldcaption" value="Capacity" />
+      </field>
+      <field id="stock_balance">
+        <phrase id="fldcaption" value="Stock Balance" />
+      </field>
+      <field id="quantity">
+        <phrase id="fldcaption" value="Quantity" />
+      </field>
+      <field id="restocked_by">
+        <phrase id="fldcaption" value="Restocked By" />
       </field>
     </table>
   </project>

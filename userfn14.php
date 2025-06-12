@@ -137,6 +137,11 @@ $randStrs =	mt_rand(000000011,999999999);
 return "LAP".$randStrs;
 }
 
+function generateRSTKey(){
+$randStrs =	mt_rand(000000011,999999999);
+return "RST".$randStrs;
+}
+
 //
 //$conn = mysqli_connect("localhost", "root","","incident_report");
 

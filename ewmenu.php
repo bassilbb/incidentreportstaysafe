@@ -34,7 +34,7 @@ $RootMenu->AddMenuItem(147, "mi_dispenser_status", $Language->MenuPhrase("147", 
 $RootMenu->AddMenuItem(196, "mi_statuss", $Language->MenuPhrase("196", "MenuText"), "statusslist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}statuss'), FALSE, FALSE, "fas fa-hourglass-start");
 $RootMenu->AddMenuItem(274, "mi_duration_months", $Language->MenuPhrase("274", "MenuText"), "duration_monthslist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}duration_months'), FALSE, FALSE, "");
 $RootMenu->AddMenuItem(275, "mi_loan_status", $Language->MenuPhrase("275", "MenuText"), "loan_statuslist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}loan_status'), FALSE, FALSE, "");
-$RootMenu->AddMenuItem(276, "mi_banks_list", $Language->MenuPhrase("276", "MenuText"), "banks_listlist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}banks_list'), FALSE, FALSE, "");
+$RootMenu->AddMenuItem(276, "mi_banks_list", $Language->MenuPhrase("276", "MenuText"), "banks_listlist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}banks_list'), FALSE, FALSE, "fad fa-university");
 $RootMenu->AddMenuItem(277, "mi_document_checklist", $Language->MenuPhrase("277", "MenuText"), "document_checklistlist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}document_checklist'), FALSE, FALSE, "");
 $RootMenu->AddMenuItem(34, "mci_Incidents", $Language->MenuPhrase("34", "MenuText"), "", -1, "", IsLoggedIn(), FALSE, TRUE, "fas fa-indent");
 $RootMenu->AddMenuItem(8, "mi_report_form", $Language->MenuPhrase("8", "MenuText"), "report_formlist.php", 34, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}report_form'), FALSE, FALSE, "fas fa-indent");
@@ -54,6 +54,7 @@ $RootMenu->AddMenuItem(145, "mci_Inventory_Store_Module", $Language->MenuPhrase(
 $RootMenu->AddMenuItem(101, "mi_inventory", $Language->MenuPhrase("101", "MenuText"), "inventorylist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}inventory'), FALSE, FALSE, "fa fa-cube");
 $RootMenu->AddMenuItem(197, "mi_inventory_report", $Language->MenuPhrase("197", "MenuText"), "inventory_reportlist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}inventory_report'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(199, "mi_inventory_record", $Language->MenuPhrase("199", "MenuText"), "inventory_recordlist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}inventory_record'), FALSE, FALSE, "fa fa-cubes");
+$RootMenu->AddMenuItem(314, "mi_restock_module", $Language->MenuPhrase("314", "MenuText"), "restock_modulelist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}restock_module'), FALSE, FALSE, "fa fa-cube");
 $RootMenu->AddMenuItem(268, "mci_Inventory_Issuance_Module", $Language->MenuPhrase("268", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fa fa-cubes");
 $RootMenu->AddMenuItem(102, "mi_issuance_store", $Language->MenuPhrase("102", "MenuText"), "issuance_storelist.php", 268, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}issuance_store'), FALSE, FALSE, "fa fa-cube");
 $RootMenu->AddMenuItem(269, "mi_issuance_history", $Language->MenuPhrase("269", "MenuText"), "issuance_historylist.php", 268, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}issuance_history'), FALSE, FALSE, "fas fa-indent");
