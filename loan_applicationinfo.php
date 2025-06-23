@@ -20,6 +20,7 @@ class cloan_application extends cTable {
 	var $address;
 	var $mobile;
 	var $department;
+	var $pension;
 	var $loan_amount;
 	var $amount_inwords;
 	var $purpose;
@@ -131,6 +132,11 @@ class cloan_application extends cTable {
 		$this->department->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->department->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['department'] = &$this->department;
+
+		// pension
+		$this->pension = new cField('loan_application', 'loan_application', 'x_pension', 'pension', '`pension`', '`pension`', 200, -1, FALSE, '`pension`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->pension->Sortable = TRUE; // Allow sort
+		$this->fields['pension'] = &$this->pension;
 
 		// loan_amount
 		$this->loan_amount = new cField('loan_application', 'loan_application', 'x_loan_amount', 'loan_amount', '`loan_amount`', '`loan_amount`', 131, -1, FALSE, '`loan_amount`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
@@ -266,7 +272,7 @@ class cloan_application extends cTable {
 		// initiator_action
 		$this->initiator_action = new cField('loan_application', 'loan_application', 'x_initiator_action', 'initiator_action', '`initiator_action`', '`initiator_action`', 3, -1, FALSE, '`initiator_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->initiator_action->Sortable = TRUE; // Allow sort
-		$this->initiator_action->OptionCount = 1;
+		$this->initiator_action->OptionCount = 2;
 		$this->initiator_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['initiator_action'] = &$this->initiator_action;
 
@@ -891,6 +897,7 @@ class cloan_application extends cTable {
 		$this->address->setDbValue($rs->fields('address'));
 		$this->mobile->setDbValue($rs->fields('mobile'));
 		$this->department->setDbValue($rs->fields('department'));
+		$this->pension->setDbValue($rs->fields('pension'));
 		$this->loan_amount->setDbValue($rs->fields('loan_amount'));
 		$this->amount_inwords->setDbValue($rs->fields('amount_inwords'));
 		$this->purpose->setDbValue($rs->fields('purpose'));
@@ -945,6 +952,7 @@ class cloan_application extends cTable {
 		// address
 		// mobile
 		// department
+		// pension
 		// loan_amount
 		// amount_inwords
 		// purpose
@@ -1051,6 +1059,10 @@ class cloan_application extends cTable {
 			$this->department->ViewValue = NULL;
 		}
 		$this->department->ViewCustomAttributes = "";
+
+		// pension
+		$this->pension->ViewValue = $this->pension->CurrentValue;
+		$this->pension->ViewCustomAttributes = "";
 
 		// loan_amount
 		$this->loan_amount->ViewValue = $this->loan_amount->CurrentValue;
@@ -1439,6 +1451,11 @@ class cloan_application extends cTable {
 		$this->department->HrefValue = "";
 		$this->department->TooltipValue = "";
 
+		// pension
+		$this->pension->LinkCustomAttributes = "";
+		$this->pension->HrefValue = "";
+		$this->pension->TooltipValue = "";
+
 		// loan_amount
 		$this->loan_amount->LinkCustomAttributes = "";
 		$this->loan_amount->HrefValue = "";
@@ -1677,6 +1694,12 @@ class cloan_application extends cTable {
 		// department
 		$this->department->EditAttrs["class"] = "form-control";
 		$this->department->EditCustomAttributes = "";
+
+		// pension
+		$this->pension->EditAttrs["class"] = "form-control";
+		$this->pension->EditCustomAttributes = "";
+		$this->pension->EditValue = $this->pension->CurrentValue;
+		$this->pension->PlaceHolder = ew_RemoveHtml($this->pension->FldCaption());
 
 		// loan_amount
 		$this->loan_amount->EditAttrs["class"] = "form-control";
@@ -1928,6 +1951,7 @@ class cloan_application extends cTable {
 					if ($this->address->Exportable) $Doc->ExportCaption($this->address);
 					if ($this->mobile->Exportable) $Doc->ExportCaption($this->mobile);
 					if ($this->department->Exportable) $Doc->ExportCaption($this->department);
+					if ($this->pension->Exportable) $Doc->ExportCaption($this->pension);
 					if ($this->loan_amount->Exportable) $Doc->ExportCaption($this->loan_amount);
 					if ($this->amount_inwords->Exportable) $Doc->ExportCaption($this->amount_inwords);
 					if ($this->purpose->Exportable) $Doc->ExportCaption($this->purpose);
@@ -1973,6 +1997,7 @@ class cloan_application extends cTable {
 					if ($this->address->Exportable) $Doc->ExportCaption($this->address);
 					if ($this->mobile->Exportable) $Doc->ExportCaption($this->mobile);
 					if ($this->department->Exportable) $Doc->ExportCaption($this->department);
+					if ($this->pension->Exportable) $Doc->ExportCaption($this->pension);
 					if ($this->loan_amount->Exportable) $Doc->ExportCaption($this->loan_amount);
 					if ($this->amount_inwords->Exportable) $Doc->ExportCaption($this->amount_inwords);
 					if ($this->repayment_period->Exportable) $Doc->ExportCaption($this->repayment_period);
@@ -2045,6 +2070,7 @@ class cloan_application extends cTable {
 						if ($this->address->Exportable) $Doc->ExportField($this->address);
 						if ($this->mobile->Exportable) $Doc->ExportField($this->mobile);
 						if ($this->department->Exportable) $Doc->ExportField($this->department);
+						if ($this->pension->Exportable) $Doc->ExportField($this->pension);
 						if ($this->loan_amount->Exportable) $Doc->ExportField($this->loan_amount);
 						if ($this->amount_inwords->Exportable) $Doc->ExportField($this->amount_inwords);
 						if ($this->purpose->Exportable) $Doc->ExportField($this->purpose);
@@ -2090,6 +2116,7 @@ class cloan_application extends cTable {
 						if ($this->address->Exportable) $Doc->ExportField($this->address);
 						if ($this->mobile->Exportable) $Doc->ExportField($this->mobile);
 						if ($this->department->Exportable) $Doc->ExportField($this->department);
+						if ($this->pension->Exportable) $Doc->ExportField($this->pension);
 						if ($this->loan_amount->Exportable) $Doc->ExportField($this->loan_amount);
 						if ($this->amount_inwords->Exportable) $Doc->ExportField($this->amount_inwords);
 						if ($this->repayment_period->Exportable) $Doc->ExportField($this->repayment_period);

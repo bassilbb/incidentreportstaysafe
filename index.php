@@ -423,6 +423,8 @@ class cdefault {
 			$this->Page_Terminate("loan_status_reportlist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'restock_module'))
 			$this->Page_Terminate("restock_modulelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'restock_report'))
+			$this->Page_Terminate("restock_reportlist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

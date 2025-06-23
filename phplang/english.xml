@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2025/6/12" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2025/6/23" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -777,9 +777,6 @@
     <menu id="199">
       <phrase id="menutext" value="Inventory Store Records" />
     </menu>
-    <menu id="314">
-      <phrase id="menutext" value="Inventory Restock Module" />
-    </menu>
     <menu id="268">
       <phrase id="menutext" value="Inventory Issuance Module" />
     </menu>
@@ -830,6 +827,15 @@
     </menu>
     <menu id="313">
       <phrase id="menutext" value="Check Loan  Status" />
+    </menu>
+    <menu id="387">
+      <phrase id="menutext" value="Restocked Module" />
+    </menu>
+    <menu id="314">
+      <phrase id="menutext" value="Inventory Restock Module" />
+    </menu>
+    <menu id="315">
+      <phrase id="menutext" value="Restock Report" />
     </menu>
     <table id="branch">
       <phrase id="tblcaption" value="Organization" />
@@ -2879,6 +2885,9 @@
       <field id="department">
         <phrase id="fldcaption" value="Department" />
       </field>
+      <field id="pension">
+        <phrase id="fldcaption" value="Pension RSA Pin" />
+      </field>
       <field id="loan_amount">
         <phrase id="fldcaption" value="Loan Amount" />
       </field>
@@ -2943,15 +2952,17 @@
         <phrase id="fldcaption" value="Guarantor Application Date" />
       </field>
       <field id="guarantor_passport">
-        <phrase id="fldcaption" value="Guarantor Passport" />
+        <phrase id="fldcaption" value="Guarantor's Passport/Nepa Bill/NIN" />
       </field>
       <field id="status">
         <phrase id="fldcaption" value="Status" />
       </field>
       <field id="initiator_action">
         <phrase id="fldcaption" value="Initiator Action" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Loan Request" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Cancel" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Loan Request" />
       </field>
       <field id="initiator_comment">
         <phrase id="fldcaption" value="Initiator Comment" />
@@ -3396,8 +3407,129 @@
       <field id="quantity">
         <phrase id="fldcaption" value="Quantity" />
       </field>
+      <field id="statuss">
+        <phrase id="fldcaption" value="Status" />
+      </field>
+      <field id="restocked_action">
+        <phrase id="fldcaption" value="Restocked Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Save and Forward" />
+      </field>
+      <field id="restocked_comment">
+        <phrase id="fldcaption" value="Restocked Comment" />
+      </field>
       <field id="restocked_by">
         <phrase id="fldcaption" value="Restocked By" />
+      </field>
+      <field id="approver_date">
+        <phrase id="fldcaption" value="Approver Date" />
+      </field>
+      <field id="approver_action">
+        <phrase id="fldcaption" value="Approver Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Approved" />
+      </field>
+      <field id="approver_comment">
+        <phrase id="fldcaption" value="Approver Comment" />
+      </field>
+      <field id="approved_by">
+        <phrase id="fldcaption" value="Approved By" />
+      </field>
+      <field id="verified_date">
+        <phrase id="fldcaption" value="Verified Date" />
+      </field>
+      <field id="verified_action">
+        <phrase id="fldcaption" value="Verified Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Verified" />
+      </field>
+      <field id="verified_comment">
+        <phrase id="fldcaption" value="Verified Comment" />
+      </field>
+      <field id="verified_by">
+        <phrase id="fldcaption" value="Verified By" />
+      </field>
+    </table>
+    <table id="restock_report">
+      <phrase id="tblcaption" value="Restock Report" />
+      <phrase id="tblpagecaption1" value="Restock Report" />
+      <field id="code">
+        <phrase id="fldcaption" value="Code" />
+      </field>
+      <field id="date_restocked">
+        <phrase id="fldcaption" value="Date &amp; Time Restocked" />
+      </field>
+      <field id="reference_id">
+        <phrase id="fldcaption" value="Reference ID" />
+      </field>
+      <field id="material_name">
+        <phrase id="fldcaption" value="Material Name" />
+      </field>
+      <field id="type">
+        <phrase id="fldcaption" value="Type" />
+      </field>
+      <field id="capacity">
+        <phrase id="fldcaption" value="Capacity" />
+      </field>
+      <field id="stock_balance">
+        <phrase id="fldcaption" value="Stock Balance" />
+      </field>
+      <field id="quantity">
+        <phrase id="fldcaption" value="Quantity" />
+      </field>
+      <field id="statuss">
+        <phrase id="fldcaption" value="Status" />
+      </field>
+      <field id="restocked_action">
+        <phrase id="fldcaption" value="Restocked Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Save and Forward" />
+      </field>
+      <field id="restocked_comment">
+        <phrase id="fldcaption" value="Restocked Comment" />
+      </field>
+      <field id="restocked_by">
+        <phrase id="fldcaption" value="Restocked By" />
+      </field>
+      <field id="approver_date">
+        <phrase id="fldcaption" value="Approver Date" />
+      </field>
+      <field id="approver_action">
+        <phrase id="fldcaption" value="Approver Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Approved" />
+      </field>
+      <field id="approver_comment">
+        <phrase id="fldcaption" value="Approver Comment" />
+      </field>
+      <field id="approved_by">
+        <phrase id="fldcaption" value="Approved By" />
+      </field>
+      <field id="verified_date">
+        <phrase id="fldcaption" value="Verified Date" />
+      </field>
+      <field id="verified_action">
+        <phrase id="fldcaption" value="Verified Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Verified" />
+      </field>
+      <field id="verified_comment">
+        <phrase id="fldcaption" value="Verified Comment" />
+      </field>
+      <field id="verified_by">
+        <phrase id="fldcaption" value="Verified By" />
       </field>
     </table>
   </project>

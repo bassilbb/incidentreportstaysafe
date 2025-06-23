@@ -329,6 +329,7 @@ class cloan_application_delete extends cloan_application {
 		$this->address->SetVisibility();
 		$this->mobile->SetVisibility();
 		$this->department->SetVisibility();
+		$this->pension->SetVisibility();
 		$this->loan_amount->SetVisibility();
 		$this->amount_inwords->SetVisibility();
 		$this->repayment_period->SetVisibility();
@@ -529,6 +530,7 @@ class cloan_application_delete extends cloan_application {
 		$this->address->setDbValue($row['address']);
 		$this->mobile->setDbValue($row['mobile']);
 		$this->department->setDbValue($row['department']);
+		$this->pension->setDbValue($row['pension']);
 		$this->loan_amount->setDbValue($row['loan_amount']);
 		$this->amount_inwords->setDbValue($row['amount_inwords']);
 		$this->purpose->setDbValue($row['purpose']);
@@ -580,6 +582,7 @@ class cloan_application_delete extends cloan_application {
 		$row['address'] = NULL;
 		$row['mobile'] = NULL;
 		$row['department'] = NULL;
+		$row['pension'] = NULL;
 		$row['loan_amount'] = NULL;
 		$row['amount_inwords'] = NULL;
 		$row['purpose'] = NULL;
@@ -632,6 +635,7 @@ class cloan_application_delete extends cloan_application {
 		$this->address->DbValue = $row['address'];
 		$this->mobile->DbValue = $row['mobile'];
 		$this->department->DbValue = $row['department'];
+		$this->pension->DbValue = $row['pension'];
 		$this->loan_amount->DbValue = $row['loan_amount'];
 		$this->amount_inwords->DbValue = $row['amount_inwords'];
 		$this->purpose->DbValue = $row['purpose'];
@@ -704,6 +708,7 @@ class cloan_application_delete extends cloan_application {
 		// address
 		// mobile
 		// department
+		// pension
 		// loan_amount
 		// amount_inwords
 		// purpose
@@ -812,6 +817,10 @@ class cloan_application_delete extends cloan_application {
 			$this->department->ViewValue = NULL;
 		}
 		$this->department->ViewCustomAttributes = "";
+
+		// pension
+		$this->pension->ViewValue = $this->pension->CurrentValue;
+		$this->pension->ViewCustomAttributes = "";
 
 		// loan_amount
 		$this->loan_amount->ViewValue = $this->loan_amount->CurrentValue;
@@ -1175,6 +1184,11 @@ class cloan_application_delete extends cloan_application {
 			$this->department->HrefValue = "";
 			$this->department->TooltipValue = "";
 
+			// pension
+			$this->pension->LinkCustomAttributes = "";
+			$this->pension->HrefValue = "";
+			$this->pension->TooltipValue = "";
+
 			// loan_amount
 			$this->loan_amount->LinkCustomAttributes = "";
 			$this->loan_amount->HrefValue = "";
@@ -1528,6 +1542,9 @@ $loan_application_delete->ShowMessage();
 <?php if ($loan_application->department->Visible) { // department ?>
 		<th class="<?php echo $loan_application->department->HeaderCellClass() ?>"><span id="elh_loan_application_department" class="loan_application_department"><?php echo $loan_application->department->FldCaption() ?></span></th>
 <?php } ?>
+<?php if ($loan_application->pension->Visible) { // pension ?>
+		<th class="<?php echo $loan_application->pension->HeaderCellClass() ?>"><span id="elh_loan_application_pension" class="loan_application_pension"><?php echo $loan_application->pension->FldCaption() ?></span></th>
+<?php } ?>
 <?php if ($loan_application->loan_amount->Visible) { // loan_amount ?>
 		<th class="<?php echo $loan_application->loan_amount->HeaderCellClass() ?>"><span id="elh_loan_application_loan_amount" class="loan_application_loan_amount"><?php echo $loan_application->loan_amount->FldCaption() ?></span></th>
 <?php } ?>
@@ -1636,6 +1653,14 @@ while (!$loan_application_delete->Recordset->EOF) {
 <span id="el<?php echo $loan_application_delete->RowCnt ?>_loan_application_department" class="loan_application_department">
 <span<?php echo $loan_application->department->ViewAttributes() ?>>
 <?php echo $loan_application->department->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($loan_application->pension->Visible) { // pension ?>
+		<td<?php echo $loan_application->pension->CellAttributes() ?>>
+<span id="el<?php echo $loan_application_delete->RowCnt ?>_loan_application_pension" class="loan_application_pension">
+<span<?php echo $loan_application->pension->ViewAttributes() ?>>
+<?php echo $loan_application->pension->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

@@ -458,6 +458,7 @@ class cloan_application_list extends cloan_application {
 		$this->address->SetVisibility();
 		$this->mobile->SetVisibility();
 		$this->department->SetVisibility();
+		$this->pension->SetVisibility();
 		$this->loan_amount->SetVisibility();
 		$this->amount_inwords->SetVisibility();
 		$this->repayment_period->SetVisibility();
@@ -850,6 +851,7 @@ class cloan_application_list extends cloan_application {
 		$sFilterList = ew_Concat($sFilterList, $this->address->AdvancedSearch->ToJson(), ","); // Field address
 		$sFilterList = ew_Concat($sFilterList, $this->mobile->AdvancedSearch->ToJson(), ","); // Field mobile
 		$sFilterList = ew_Concat($sFilterList, $this->department->AdvancedSearch->ToJson(), ","); // Field department
+		$sFilterList = ew_Concat($sFilterList, $this->pension->AdvancedSearch->ToJson(), ","); // Field pension
 		$sFilterList = ew_Concat($sFilterList, $this->loan_amount->AdvancedSearch->ToJson(), ","); // Field loan_amount
 		$sFilterList = ew_Concat($sFilterList, $this->amount_inwords->AdvancedSearch->ToJson(), ","); // Field amount_inwords
 		$sFilterList = ew_Concat($sFilterList, $this->purpose->AdvancedSearch->ToJson(), ","); // Field purpose
@@ -986,6 +988,14 @@ class cloan_application_list extends cloan_application {
 		$this->department->AdvancedSearch->SearchValue2 = @$filter["y_department"];
 		$this->department->AdvancedSearch->SearchOperator2 = @$filter["w_department"];
 		$this->department->AdvancedSearch->Save();
+
+		// Field pension
+		$this->pension->AdvancedSearch->SearchValue = @$filter["x_pension"];
+		$this->pension->AdvancedSearch->SearchOperator = @$filter["z_pension"];
+		$this->pension->AdvancedSearch->SearchCondition = @$filter["v_pension"];
+		$this->pension->AdvancedSearch->SearchValue2 = @$filter["y_pension"];
+		$this->pension->AdvancedSearch->SearchOperator2 = @$filter["w_pension"];
+		$this->pension->AdvancedSearch->Save();
 
 		// Field loan_amount
 		$this->loan_amount->AdvancedSearch->SearchValue = @$filter["x_loan_amount"];
@@ -1298,6 +1308,7 @@ class cloan_application_list extends cloan_application {
 		$this->BuildSearchSql($sWhere, $this->address, $Default, FALSE); // address
 		$this->BuildSearchSql($sWhere, $this->mobile, $Default, FALSE); // mobile
 		$this->BuildSearchSql($sWhere, $this->department, $Default, FALSE); // department
+		$this->BuildSearchSql($sWhere, $this->pension, $Default, FALSE); // pension
 		$this->BuildSearchSql($sWhere, $this->loan_amount, $Default, FALSE); // loan_amount
 		$this->BuildSearchSql($sWhere, $this->amount_inwords, $Default, FALSE); // amount_inwords
 		$this->BuildSearchSql($sWhere, $this->purpose, $Default, FALSE); // purpose
@@ -1348,6 +1359,7 @@ class cloan_application_list extends cloan_application {
 			$this->address->AdvancedSearch->Save(); // address
 			$this->mobile->AdvancedSearch->Save(); // mobile
 			$this->department->AdvancedSearch->Save(); // department
+			$this->pension->AdvancedSearch->Save(); // pension
 			$this->loan_amount->AdvancedSearch->Save(); // loan_amount
 			$this->amount_inwords->AdvancedSearch->Save(); // amount_inwords
 			$this->purpose->AdvancedSearch->Save(); // purpose
@@ -1440,6 +1452,7 @@ class cloan_application_list extends cloan_application {
 		$this->BuildBasicSearchSQL($sWhere, $this->employee_name, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->address, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->mobile, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->pension, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->amount_inwords, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->purpose, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->repayment_period, $arKeywords, $type);
@@ -1578,6 +1591,8 @@ class cloan_application_list extends cloan_application {
 			return TRUE;
 		if ($this->department->AdvancedSearch->IssetSession())
 			return TRUE;
+		if ($this->pension->AdvancedSearch->IssetSession())
+			return TRUE;
 		if ($this->loan_amount->AdvancedSearch->IssetSession())
 			return TRUE;
 		if ($this->amount_inwords->AdvancedSearch->IssetSession())
@@ -1688,6 +1703,7 @@ class cloan_application_list extends cloan_application {
 		$this->address->AdvancedSearch->UnsetSession();
 		$this->mobile->AdvancedSearch->UnsetSession();
 		$this->department->AdvancedSearch->UnsetSession();
+		$this->pension->AdvancedSearch->UnsetSession();
 		$this->loan_amount->AdvancedSearch->UnsetSession();
 		$this->amount_inwords->AdvancedSearch->UnsetSession();
 		$this->purpose->AdvancedSearch->UnsetSession();
@@ -1742,6 +1758,7 @@ class cloan_application_list extends cloan_application {
 		$this->address->AdvancedSearch->Load();
 		$this->mobile->AdvancedSearch->Load();
 		$this->department->AdvancedSearch->Load();
+		$this->pension->AdvancedSearch->Load();
 		$this->loan_amount->AdvancedSearch->Load();
 		$this->amount_inwords->AdvancedSearch->Load();
 		$this->purpose->AdvancedSearch->Load();
@@ -1794,6 +1811,7 @@ class cloan_application_list extends cloan_application {
 			$this->UpdateSort($this->address); // address
 			$this->UpdateSort($this->mobile); // mobile
 			$this->UpdateSort($this->department); // department
+			$this->UpdateSort($this->pension); // pension
 			$this->UpdateSort($this->loan_amount); // loan_amount
 			$this->UpdateSort($this->amount_inwords); // amount_inwords
 			$this->UpdateSort($this->repayment_period); // repayment_period
@@ -1846,6 +1864,7 @@ class cloan_application_list extends cloan_application {
 				$this->address->setSort("");
 				$this->mobile->setSort("");
 				$this->department->setSort("");
+				$this->pension->setSort("");
 				$this->loan_amount->setSort("");
 				$this->amount_inwords->setSort("");
 				$this->repayment_period->setSort("");
@@ -2299,6 +2318,11 @@ class cloan_application_list extends cloan_application {
 		if ($this->department->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
 		$this->department->AdvancedSearch->SearchOperator = @$_GET["z_department"];
 
+		// pension
+		$this->pension->AdvancedSearch->SearchValue = @$_GET["x_pension"];
+		if ($this->pension->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->pension->AdvancedSearch->SearchOperator = @$_GET["z_pension"];
+
 		// loan_amount
 		$this->loan_amount->AdvancedSearch->SearchValue = @$_GET["x_loan_amount"];
 		if ($this->loan_amount->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
@@ -2553,6 +2577,7 @@ class cloan_application_list extends cloan_application {
 		$this->address->setDbValue($row['address']);
 		$this->mobile->setDbValue($row['mobile']);
 		$this->department->setDbValue($row['department']);
+		$this->pension->setDbValue($row['pension']);
 		$this->loan_amount->setDbValue($row['loan_amount']);
 		$this->amount_inwords->setDbValue($row['amount_inwords']);
 		$this->purpose->setDbValue($row['purpose']);
@@ -2604,6 +2629,7 @@ class cloan_application_list extends cloan_application {
 		$row['address'] = NULL;
 		$row['mobile'] = NULL;
 		$row['department'] = NULL;
+		$row['pension'] = NULL;
 		$row['loan_amount'] = NULL;
 		$row['amount_inwords'] = NULL;
 		$row['purpose'] = NULL;
@@ -2656,6 +2682,7 @@ class cloan_application_list extends cloan_application {
 		$this->address->DbValue = $row['address'];
 		$this->mobile->DbValue = $row['mobile'];
 		$this->department->DbValue = $row['department'];
+		$this->pension->DbValue = $row['pension'];
 		$this->loan_amount->DbValue = $row['loan_amount'];
 		$this->amount_inwords->DbValue = $row['amount_inwords'];
 		$this->purpose->DbValue = $row['purpose'];
@@ -2756,6 +2783,7 @@ class cloan_application_list extends cloan_application {
 		// address
 		// mobile
 		// department
+		// pension
 		// loan_amount
 		// amount_inwords
 		// purpose
@@ -2864,6 +2892,10 @@ class cloan_application_list extends cloan_application {
 			$this->department->ViewValue = NULL;
 		}
 		$this->department->ViewCustomAttributes = "";
+
+		// pension
+		$this->pension->ViewValue = $this->pension->CurrentValue;
+		$this->pension->ViewCustomAttributes = "";
 
 		// loan_amount
 		$this->loan_amount->ViewValue = $this->loan_amount->CurrentValue;
@@ -3227,6 +3259,11 @@ class cloan_application_list extends cloan_application {
 			$this->department->HrefValue = "";
 			$this->department->TooltipValue = "";
 
+			// pension
+			$this->pension->LinkCustomAttributes = "";
+			$this->pension->HrefValue = "";
+			$this->pension->TooltipValue = "";
+
 			// loan_amount
 			$this->loan_amount->LinkCustomAttributes = "";
 			$this->loan_amount->HrefValue = "";
@@ -3329,6 +3366,12 @@ class cloan_application_list extends cloan_application {
 			// department
 			$this->department->EditAttrs["class"] = "form-control";
 			$this->department->EditCustomAttributes = "";
+
+			// pension
+			$this->pension->EditAttrs["class"] = "form-control";
+			$this->pension->EditCustomAttributes = "";
+			$this->pension->EditValue = ew_HtmlEncode($this->pension->AdvancedSearch->SearchValue);
+			$this->pension->PlaceHolder = ew_RemoveHtml($this->pension->FldCaption());
 
 			// loan_amount
 			$this->loan_amount->EditAttrs["class"] = "form-control";
@@ -3450,6 +3493,7 @@ class cloan_application_list extends cloan_application {
 		$this->address->AdvancedSearch->Load();
 		$this->mobile->AdvancedSearch->Load();
 		$this->department->AdvancedSearch->Load();
+		$this->pension->AdvancedSearch->Load();
 		$this->loan_amount->AdvancedSearch->Load();
 		$this->amount_inwords->AdvancedSearch->Load();
 		$this->purpose->AdvancedSearch->Load();
@@ -4138,6 +4182,15 @@ $loan_application_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
+<?php if ($loan_application->pension->Visible) { // pension ?>
+	<?php if ($loan_application->SortUrl($loan_application->pension) == "") { ?>
+		<th data-name="pension" class="<?php echo $loan_application->pension->HeaderCellClass() ?>"><div id="elh_loan_application_pension" class="loan_application_pension"><div class="ewTableHeaderCaption"><?php echo $loan_application->pension->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="pension" class="<?php echo $loan_application->pension->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $loan_application->SortUrl($loan_application->pension) ?>',1);"><div id="elh_loan_application_pension" class="loan_application_pension">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $loan_application->pension->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($loan_application->pension->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($loan_application->pension->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
 <?php if ($loan_application->loan_amount->Visible) { // loan_amount ?>
 	<?php if ($loan_application->SortUrl($loan_application->loan_amount) == "") { ?>
 		<th data-name="loan_amount" class="<?php echo $loan_application->loan_amount->HeaderCellClass() ?>"><div id="elh_loan_application_loan_amount" class="loan_application_loan_amount"><div class="ewTableHeaderCaption"><?php echo $loan_application->loan_amount->FldCaption() ?></div></div></th>
@@ -4374,6 +4427,14 @@ $loan_application_list->ListOptions->Render("body", "left", $loan_application_li
 <span id="el<?php echo $loan_application_list->RowCnt ?>_loan_application_department" class="loan_application_department">
 <span<?php echo $loan_application->department->ViewAttributes() ?>>
 <?php echo $loan_application->department->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($loan_application->pension->Visible) { // pension ?>
+		<td data-name="pension"<?php echo $loan_application->pension->CellAttributes() ?>>
+<span id="el<?php echo $loan_application_list->RowCnt ?>_loan_application_pension" class="loan_application_pension">
+<span<?php echo $loan_application->pension->ViewAttributes() ?>>
+<?php echo $loan_application->pension->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

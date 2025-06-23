@@ -1,12 +1,12 @@
 <?php
 
 // Global variable for table object
-$restock_module = NULL;
+$restock_report = NULL;
 
 //
-// Table class for restock_module
+// Table class for restock_report
 //
-class crestock_module extends cTable {
+class crestock_report extends cTable {
 	var $AuditTrailOnAdd = TRUE;
 	var $AuditTrailOnEdit = TRUE;
 	var $AuditTrailOnDelete = TRUE;
@@ -42,12 +42,12 @@ class crestock_module extends cTable {
 
 		// Language object
 		if (!isset($Language)) $Language = new cLanguage();
-		$this->TableVar = 'restock_module';
-		$this->TableName = 'restock_module';
-		$this->TableType = 'TABLE';
+		$this->TableVar = 'restock_report';
+		$this->TableName = 'restock_report';
+		$this->TableType = 'VIEW';
 
 		// Update Table
-		$this->UpdateTable = "`restock_module`";
+		$this->UpdateTable = "`restock_report`";
 		$this->DBID = 'DB';
 		$this->ExportAll = TRUE;
 		$this->ExportPageBreakCount = 0; // Page break per every n record (PDF only)
@@ -67,24 +67,24 @@ class crestock_module extends cTable {
 		$this->BasicSearch = new cBasicSearch($this->TableVar);
 
 		// code
-		$this->code = new cField('restock_module', 'restock_module', 'x_code', 'code', '`code`', '`code`', 3, -1, FALSE, '`code`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
+		$this->code = new cField('restock_report', 'restock_report', 'x_code', 'code', '`code`', '`code`', 3, -1, FALSE, '`code`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
 		$this->code->Sortable = TRUE; // Allow sort
 		$this->code->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['code'] = &$this->code;
 
 		// date_restocked
-		$this->date_restocked = new cField('restock_module', 'restock_module', 'x_date_restocked', 'date_restocked', '`date_restocked`', ew_CastDateFieldForLike('`date_restocked`', 17, "DB"), 135, 17, FALSE, '`date_restocked`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date_restocked = new cField('restock_report', 'restock_report', 'x_date_restocked', 'date_restocked', '`date_restocked`', ew_CastDateFieldForLike('`date_restocked`', 14, "DB"), 133, 14, FALSE, '`date_restocked`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->date_restocked->Sortable = TRUE; // Allow sort
 		$this->date_restocked->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
 		$this->fields['date_restocked'] = &$this->date_restocked;
 
 		// reference_id
-		$this->reference_id = new cField('restock_module', 'restock_module', 'x_reference_id', 'reference_id', '`reference_id`', '`reference_id`', 200, -1, FALSE, '`reference_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->reference_id = new cField('restock_report', 'restock_report', 'x_reference_id', 'reference_id', '`reference_id`', '`reference_id`', 200, -1, FALSE, '`reference_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->reference_id->Sortable = TRUE; // Allow sort
 		$this->fields['reference_id'] = &$this->reference_id;
 
 		// material_name
-		$this->material_name = new cField('restock_module', 'restock_module', 'x_material_name', 'material_name', '`material_name`', '`material_name`', 3, -1, FALSE, '`material_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->material_name = new cField('restock_report', 'restock_report', 'x_material_name', 'material_name', '`material_name`', '`material_name`', 3, -1, FALSE, '`material_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->material_name->Sortable = TRUE; // Allow sort
 		$this->material_name->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->material_name->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
@@ -92,92 +92,92 @@ class crestock_module extends cTable {
 		$this->fields['material_name'] = &$this->material_name;
 
 		// type
-		$this->type = new cField('restock_module', 'restock_module', 'x_type', 'type', '`type`', '`type`', 200, -1, FALSE, '`type`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->type = new cField('restock_report', 'restock_report', 'x_type', 'type', '`type`', '`type`', 200, -1, FALSE, '`type`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->type->Sortable = TRUE; // Allow sort
 		$this->fields['type'] = &$this->type;
 
 		// capacity
-		$this->capacity = new cField('restock_module', 'restock_module', 'x_capacity', 'capacity', '`capacity`', '`capacity`', 200, -1, FALSE, '`capacity`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->capacity = new cField('restock_report', 'restock_report', 'x_capacity', 'capacity', '`capacity`', '`capacity`', 200, -1, FALSE, '`capacity`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->capacity->Sortable = TRUE; // Allow sort
 		$this->fields['capacity'] = &$this->capacity;
 
 		// stock_balance
-		$this->stock_balance = new cField('restock_module', 'restock_module', 'x_stock_balance', 'stock_balance', '`stock_balance`', '`stock_balance`', 200, -1, FALSE, '`stock_balance`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->stock_balance = new cField('restock_report', 'restock_report', 'x_stock_balance', 'stock_balance', '`stock_balance`', '`stock_balance`', 200, -1, FALSE, '`stock_balance`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->stock_balance->Sortable = TRUE; // Allow sort
 		$this->fields['stock_balance'] = &$this->stock_balance;
 
 		// quantity
-		$this->quantity = new cField('restock_module', 'restock_module', 'x_quantity', 'quantity', '`quantity`', '`quantity`', 200, -1, FALSE, '`quantity`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->quantity = new cField('restock_report', 'restock_report', 'x_quantity', 'quantity', '`quantity`', '`quantity`', 200, -1, FALSE, '`quantity`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->quantity->Sortable = TRUE; // Allow sort
 		$this->fields['quantity'] = &$this->quantity;
 
 		// statuss
-		$this->statuss = new cField('restock_module', 'restock_module', 'x_statuss', 'statuss', '`statuss`', '`statuss`', 3, -1, FALSE, '`statuss`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->statuss = new cField('restock_report', 'restock_report', 'x_statuss', 'statuss', '`statuss`', '`statuss`', 3, -1, FALSE, '`statuss`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->statuss->Sortable = TRUE; // Allow sort
 		$this->statuss->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->statuss->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['statuss'] = &$this->statuss;
 
 		// restocked_action
-		$this->restocked_action = new cField('restock_module', 'restock_module', 'x_restocked_action', 'restocked_action', '`restocked_action`', '`restocked_action`', 3, -1, FALSE, '`restocked_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->restocked_action = new cField('restock_report', 'restock_report', 'x_restocked_action', 'restocked_action', '`restocked_action`', '`restocked_action`', 3, -1, FALSE, '`restocked_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->restocked_action->Sortable = TRUE; // Allow sort
 		$this->restocked_action->OptionCount = 2;
 		$this->restocked_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['restocked_action'] = &$this->restocked_action;
 
 		// restocked_comment
-		$this->restocked_comment = new cField('restock_module', 'restock_module', 'x_restocked_comment', 'restocked_comment', '`restocked_comment`', '`restocked_comment`', 201, -1, FALSE, '`restocked_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->restocked_comment = new cField('restock_report', 'restock_report', 'x_restocked_comment', 'restocked_comment', '`restocked_comment`', '`restocked_comment`', 201, -1, FALSE, '`restocked_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->restocked_comment->Sortable = TRUE; // Allow sort
 		$this->fields['restocked_comment'] = &$this->restocked_comment;
 
 		// restocked_by
-		$this->restocked_by = new cField('restock_module', 'restock_module', 'x_restocked_by', 'restocked_by', '`restocked_by`', '`restocked_by`', 3, -1, FALSE, '`restocked_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->restocked_by = new cField('restock_report', 'restock_report', 'x_restocked_by', 'restocked_by', '`restocked_by`', '`restocked_by`', 3, -1, FALSE, '`restocked_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->restocked_by->Sortable = TRUE; // Allow sort
 		$this->fields['restocked_by'] = &$this->restocked_by;
 
 		// approver_date
-		$this->approver_date = new cField('restock_module', 'restock_module', 'x_approver_date', 'approver_date', '`approver_date`', ew_CastDateFieldForLike('`approver_date`', 0, "DB"), 135, 0, FALSE, '`approver_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->approver_date = new cField('restock_report', 'restock_report', 'x_approver_date', 'approver_date', '`approver_date`', ew_CastDateFieldForLike('`approver_date`', 0, "DB"), 135, 0, FALSE, '`approver_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->approver_date->Sortable = TRUE; // Allow sort
 		$this->approver_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['approver_date'] = &$this->approver_date;
 
 		// approver_action
-		$this->approver_action = new cField('restock_module', 'restock_module', 'x_approver_action', 'approver_action', '`approver_action`', '`approver_action`', 3, -1, FALSE, '`approver_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->approver_action = new cField('restock_report', 'restock_report', 'x_approver_action', 'approver_action', '`approver_action`', '`approver_action`', 3, -1, FALSE, '`approver_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->approver_action->Sortable = TRUE; // Allow sort
 		$this->approver_action->OptionCount = 2;
 		$this->approver_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['approver_action'] = &$this->approver_action;
 
 		// approver_comment
-		$this->approver_comment = new cField('restock_module', 'restock_module', 'x_approver_comment', 'approver_comment', '`approver_comment`', '`approver_comment`', 200, -1, FALSE, '`approver_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->approver_comment = new cField('restock_report', 'restock_report', 'x_approver_comment', 'approver_comment', '`approver_comment`', '`approver_comment`', 200, -1, FALSE, '`approver_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->approver_comment->Sortable = TRUE; // Allow sort
 		$this->fields['approver_comment'] = &$this->approver_comment;
 
 		// approved_by
-		$this->approved_by = new cField('restock_module', 'restock_module', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->approved_by = new cField('restock_report', 'restock_report', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->approved_by->Sortable = TRUE; // Allow sort
 		$this->fields['approved_by'] = &$this->approved_by;
 
 		// verified_date
-		$this->verified_date = new cField('restock_module', 'restock_module', 'x_verified_date', 'verified_date', '`verified_date`', ew_CastDateFieldForLike('`verified_date`', 0, "DB"), 135, 0, FALSE, '`verified_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->verified_date = new cField('restock_report', 'restock_report', 'x_verified_date', 'verified_date', '`verified_date`', ew_CastDateFieldForLike('`verified_date`', 0, "DB"), 135, 0, FALSE, '`verified_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->verified_date->Sortable = TRUE; // Allow sort
 		$this->verified_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['verified_date'] = &$this->verified_date;
 
 		// verified_action
-		$this->verified_action = new cField('restock_module', 'restock_module', 'x_verified_action', 'verified_action', '`verified_action`', '`verified_action`', 3, -1, FALSE, '`verified_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->verified_action = new cField('restock_report', 'restock_report', 'x_verified_action', 'verified_action', '`verified_action`', '`verified_action`', 3, -1, FALSE, '`verified_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->verified_action->Sortable = TRUE; // Allow sort
 		$this->verified_action->OptionCount = 2;
 		$this->verified_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['verified_action'] = &$this->verified_action;
 
 		// verified_comment
-		$this->verified_comment = new cField('restock_module', 'restock_module', 'x_verified_comment', 'verified_comment', '`verified_comment`', '`verified_comment`', 200, -1, FALSE, '`verified_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->verified_comment = new cField('restock_report', 'restock_report', 'x_verified_comment', 'verified_comment', '`verified_comment`', '`verified_comment`', 200, -1, FALSE, '`verified_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->verified_comment->Sortable = TRUE; // Allow sort
 		$this->fields['verified_comment'] = &$this->verified_comment;
 
 		// verified_by
-		$this->verified_by = new cField('restock_module', 'restock_module', 'x_verified_by', 'verified_by', '`verified_by`', '`verified_by`', 3, -1, FALSE, '`verified_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->verified_by = new cField('restock_report', 'restock_report', 'x_verified_by', 'verified_by', '`verified_by`', '`verified_by`', 3, -1, FALSE, '`verified_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->verified_by->Sortable = TRUE; // Allow sort
 		$this->fields['verified_by'] = &$this->verified_by;
 	}
@@ -223,7 +223,7 @@ class crestock_module extends cTable {
 	var $_SqlFrom = "";
 
 	function getSqlFrom() { // From
-		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`restock_module`";
+		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`restock_report`";
 	}
 
 	function SqlFrom() { // For backward compatibility
@@ -546,7 +546,7 @@ class crestock_module extends cTable {
 		if (@$_SESSION[$name] <> "") {
 			return $_SESSION[$name];
 		} else {
-			return "restock_modulelist.php";
+			return "restock_reportlist.php";
 		}
 	}
 
@@ -557,11 +557,11 @@ class crestock_module extends cTable {
 	// Get modal caption
 	function GetModalCaption($pageName) {
 		global $Language;
-		if ($pageName == "restock_moduleview.php")
+		if ($pageName == "restock_reportview.php")
 			return $Language->Phrase("View");
-		elseif ($pageName == "restock_moduleedit.php")
+		elseif ($pageName == "restock_reportedit.php")
 			return $Language->Phrase("Edit");
-		elseif ($pageName == "restock_moduleadd.php")
+		elseif ($pageName == "restock_reportadd.php")
 			return $Language->Phrase("Add");
 		else
 			return "";
@@ -569,30 +569,30 @@ class crestock_module extends cTable {
 
 	// List URL
 	function GetListUrl() {
-		return "restock_modulelist.php";
+		return "restock_reportlist.php";
 	}
 
 	// View URL
 	function GetViewUrl($parm = "") {
 		if ($parm <> "")
-			$url = $this->KeyUrl("restock_moduleview.php", $this->UrlParm($parm));
+			$url = $this->KeyUrl("restock_reportview.php", $this->UrlParm($parm));
 		else
-			$url = $this->KeyUrl("restock_moduleview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
+			$url = $this->KeyUrl("restock_reportview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
 		return $this->AddMasterUrl($url);
 	}
 
 	// Add URL
 	function GetAddUrl($parm = "") {
 		if ($parm <> "")
-			$url = "restock_moduleadd.php?" . $this->UrlParm($parm);
+			$url = "restock_reportadd.php?" . $this->UrlParm($parm);
 		else
-			$url = "restock_moduleadd.php";
+			$url = "restock_reportadd.php";
 		return $this->AddMasterUrl($url);
 	}
 
 	// Edit URL
 	function GetEditUrl($parm = "") {
-		$url = $this->KeyUrl("restock_moduleedit.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("restock_reportedit.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -604,7 +604,7 @@ class crestock_module extends cTable {
 
 	// Copy URL
 	function GetCopyUrl($parm = "") {
-		$url = $this->KeyUrl("restock_moduleadd.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("restock_reportadd.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -616,7 +616,7 @@ class crestock_module extends cTable {
 
 	// Delete URL
 	function GetDeleteUrl() {
-		return $this->KeyUrl("restock_moduledelete.php", $this->UrlParm());
+		return $this->KeyUrl("restock_reportdelete.php", $this->UrlParm());
 	}
 
 	// Add master url
@@ -774,7 +774,7 @@ class crestock_module extends cTable {
 
 		// date_restocked
 		$this->date_restocked->ViewValue = $this->date_restocked->CurrentValue;
-		$this->date_restocked->ViewValue = ew_FormatDateTime($this->date_restocked->ViewValue, 17);
+		$this->date_restocked->ViewValue = ew_FormatDateTime($this->date_restocked->ViewValue, 14);
 		$this->date_restocked->ViewCustomAttributes = "";
 
 		// reference_id
@@ -1088,7 +1088,7 @@ class crestock_module extends cTable {
 		// date_restocked
 		$this->date_restocked->EditAttrs["class"] = "form-control";
 		$this->date_restocked->EditCustomAttributes = "";
-		$this->date_restocked->EditValue = ew_FormatDateTime($this->date_restocked->CurrentValue, 17);
+		$this->date_restocked->EditValue = ew_FormatDateTime($this->date_restocked->CurrentValue, 14);
 		$this->date_restocked->PlaceHolder = ew_RemoveHtml($this->date_restocked->FldCaption());
 
 		// reference_id
@@ -1370,7 +1370,7 @@ class crestock_module extends cTable {
 
 	// Write Audit Trail start/end for grid update
 	function WriteAuditTrailDummy($typ) {
-		$table = 'restock_module';
+		$table = 'restock_report';
 		$usr = CurrentUserName();
 		ew_WriteAuditTrail("log", ew_StdCurrentDateTime(), ew_ScriptName(), $usr, $typ, $table, "", "", "", "");
 	}
@@ -1379,7 +1379,7 @@ class crestock_module extends cTable {
 	function WriteAuditTrailOnAdd(&$rs) {
 		global $Language;
 		if (!$this->AuditTrailOnAdd) return;
-		$table = 'restock_module';
+		$table = 'restock_report';
 
 		// Get key value
 		$key = "";
@@ -1413,7 +1413,7 @@ class crestock_module extends cTable {
 	function WriteAuditTrailOnEdit(&$rsold, &$rsnew) {
 		global $Language;
 		if (!$this->AuditTrailOnEdit) return;
-		$table = 'restock_module';
+		$table = 'restock_report';
 
 		// Get key value
 		$key = "";
@@ -1460,7 +1460,7 @@ class crestock_module extends cTable {
 	function WriteAuditTrailOnDelete(&$rs) {
 		global $Language;
 		if (!$this->AuditTrailOnDelete) return;
-		$table = 'restock_module';
+		$table = 'restock_report';
 
 		// Get key value
 		$key = "";
@@ -1496,21 +1496,6 @@ class crestock_module extends cTable {
 	function Recordset_Selecting(&$filter) {
 
 		// Enter your code here
-		if (CurrentUserLevel() == 1) {
-			ew_AddFilter($filter, "`statuss` in (0,2) ");
-		}
-		if (CurrentUserLevel() == 2) {
-			ew_AddFilter($filter, "`statuss` in (0,2) ");
-		}
-		if (CurrentUserLevel() == 3) {
-			ew_AddFilter($filter, "`statuss` in (1)");
-		}
-		if (CurrentUserLevel() == 4) {
-			ew_AddFilter($filter, "`statuss` in (1)");
-		}
-		if (CurrentUserLevel() == 5) {
-			ew_AddFilter($filter, "`statuss` in (3)");
-		}
 	}
 
 	// Recordset Selected event
@@ -1550,27 +1535,7 @@ class crestock_module extends cTable {
 
 		// Enter your code here
 		// To cancel, set return value to FALSE
-		// Officer Only
-		//if (CurrentPageID() == "add" && CurrentUserLevel() == 1) {
 
-		if (CurrentPageID() == "add")  {
-
-			// Save and forward
-			if ($this->restocked_action->CurrentValue == 1) {
-				$rsnew["statuss"] = 1;
-				$rsnew["restocked_action"] = 1;
-
-				//$rsnew["report_by"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; New Restock Request Sent Successfully For Approver!  (". $_SESSION['RST_ID'] .") &#x2714;");
-			}
-
-			// Saved only
-			if ($this->restocked_action->CurrentValue == 0) {
-				$rsnew["statuss"] = 0;			
-				$rsnew["restocked_action"] = 0; 
-				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
-			}			
-		}
 		return TRUE;
 	}
 
@@ -1578,7 +1543,6 @@ class crestock_module extends cTable {
 	function Row_Inserted($rsold, &$rsnew) {
 
 		//echo "Row Inserted"
-		ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` + " . $this->quantity->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
 	}
 
 	// Row Updating event
@@ -1586,170 +1550,7 @@ class crestock_module extends cTable {
 
 		// Enter your code here
 		// To cancel, set return value to FALSE
-			//if ((CurrentPageID() == "edit" && CurrentUserLevel() == 1) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 2) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
-			//}
 
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-
-			// Officer Only
-			if ((CurrentPageID() == "edit" && (CurrentUserLevel() == 2 || CurrentUserLevel() == 1) && $this->statuss->CurrentValue == 0)) {
-
-			// Save and forward
-			if ($this->restocked_action->CurrentValue == 1 ) {
-				$rsnew["statuss"] = 1;
-				$rsnew["restocked_action"] = 1;
-				$rsnew["approver_action"] = NULL;
-				$rsnew["approver_comment"] = NULL;
-				$this->setSuccessMessage("&#x25C9; Restock Items sent for Review and Approval &#x2714;"); 					
-			}
-
-			// Saved only
-			if ($this->restocked_action->CurrentValue == 0) {
-				$rsnew["statuss"] = 0;			
-				$rsnew["restocked_action"] = 0; 
-
-				//$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
-			 }
-		}
-
-		// Supervisor
-		   if(CurrentPageID() == "edit" && CurrentUserLevel() == 3) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$rsnew["approver_date"] = $now->format('Y-m-d H:i:s');
-			$rsnew["approved_by"] = $_SESSION['Staff_ID'];
-		}
-
-		// Approver - Don't change field values captured by tenant
-		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3) {
-			$rsnew["code"] = $rsold["code"];
-			$rsnew["date_restocked"] = $rsold["date_restocked"];
-			$rsnew["reference_id"] = $rsold["reference_id"];
-			$rsnew["material_name"] = $rsold["material_name"];
-			$rsnew["quantity"] = $rsold["quantity"];
-			$rsnew["type"] = $rsold["type"];
-			$rsnew["capacity"] = $rsold["capacity"];
-			$rsnew["stock_balance"] = $rsold["stock_balance"];
-
-			//$rsnew["status"] = $rsold["status"];
-			$rsnew["restocked_action"] = $rsold["restocked_action"];
-			$rsnew["restocked_comment"] = $rsold["restocked_comment"];
-
-			//$rsnew["reviewed_action"] = $rsold["reviewed_action"];
-			//$rsnew["reviewed_comment"] = $rsold["reviewed_comment"];
-
-		}
-
-		// Supervisor
-		   if(CurrentPageID() == "edit" && CurrentUserLevel() == 4) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$rsnew["approver_date"] = $now->format('Y-m-d H:i:s');
-			$rsnew["approved_by"] = $_SESSION['Staff_ID'];
-		}
-
-		// Approver - Don't change field values captured by tenant
-		if (CurrentPageID() == "edit" && CurrentUserLevel() == 4) {
-			$rsnew["code"] = $rsold["code"];
-			$rsnew["date_restocked"] = $rsold["date_restocked"];
-			$rsnew["reference_id"] = $rsold["reference_id"];
-			$rsnew["material_name"] = $rsold["material_name"];
-			$rsnew["quantity"] = $rsold["quantity"];
-			$rsnew["type"] = $rsold["type"];
-			$rsnew["capacity"] = $rsold["capacity"];
-			$rsnew["stock_balance"] = $rsold["stock_balance"];
-
-			//$rsnew["status"] = $rsold["status"];
-			$rsnew["restocked_action"] = $rsold["restocked_action"];
-			$rsnew["restocked_comment"] = $rsold["restocked_comment"];
-
-			//$rsnew["reviewed_action"] = $rsold["reviewed_action"];
-			//$rsnew["reviewed_comment"] = $rsold["reviewed_comment"];
-
-		}
-
-		// Verified By
-		   if(CurrentPageID() == "edit" && CurrentUserLevel() == 5) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
-			$rsnew["verified_by"] = $_SESSION['Staff_ID'];
-		}
-
-		// Verified - Don't change field values captured by tenant
-		if (CurrentPageID() == "edit" && CurrentUserLevel() == 5) {
-			$rsnew["code"] = $rsold["code"];
-			$rsnew["date_restocked"] = $rsold["date_restocked"];
-			$rsnew["reference_id"] = $rsold["reference_id"];
-			$rsnew["material_name"] = $rsold["material_name"];
-			$rsnew["quantity"] = $rsold["quantity"];
-			$rsnew["type"] = $rsold["type"];
-			$rsnew["capacity"] = $rsold["capacity"];
-			$rsnew["stock_balance"] = $rsold["stock_balance"];
-
-			//$rsnew["status"] = $rsold["status"];
-			$rsnew["restocked_action"] = $rsold["restocked_action"];
-			$rsnew["restocked_comment"] = $rsold["restocked_comment"];
-			$rsnew["approver_action"] = $rsold["approver_action"];
-			$rsnew["approver_comment"] = $rsold["approver_comment"];
-		}
-
-			// Approved by Administrators
-			if (CurrentPageID() == "edit" && (CurrentUserLevel() == 3 || CurrentUserLevel() == 4)) {
-				$rsnew["date_approved"] = $now->format('Y-m-d H:i:s');
-				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
-
-			   	// Approved by Administrators
-				if ($this->approver_action->CurrentValue == 0) {
-
-					// New
-					if ($this->statuss->CurrentValue == 0 && $this->statuss->CurrentValue == 1) {
-						$rsnew["statuss"] = 1;					
-						$rsnew["approver_action"] = 0;
-					}
-					$this->setSuccessMessage("&#x25C9; Record Save Only &#x2714;");
-				}
-
-				// Approved by Administrators
-				if ($this->approver_action->CurrentValue == 1 ) {
-
-					// New
-					if ($this->statuss->CurrentValue == 1) {
-						$rsnew["statuss"] = 3;					
-						$rsnew["approver_action"] = 1;
-					}
-					$this->setSuccessMessage("&#x25C9; Approved successfully and sent for verification &#x2714;");
-				}
-			}
-
-			// Verified by Guard=========================================================================================
-			if (CurrentPageID() == "edit" && CurrentUserLevel() == 5) {
-				$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
-				$rsnew["verified_by"] = $_SESSION['Staff_ID'];
-
-			   	// Verified by Guard
-				if ($this->verified_action->CurrentValue == 0 && $this->statuss->CurrentValue == 3 ) {
-
-					// New
-					if ($this->status->CurrentValue == 3) {
-						$rsnew["statuss"] = 3;					
-						$rsnew["verified_action"] = 0;
-					}
-					$this->setSuccessMessage("&#x25C9; Record Save Only &#x2714;");
-				}
-
-				// Verified by Guard
-					if ($this->verified_action->CurrentValue == 1 && $this->statuss->CurrentValue == 3 ) {
-
-						// New
-						if ($this->statuss->CurrentValue == 3) {
-							$rsnew["statuss"] = 4;					
-							$rsnew["verified_action"] = 1;
-						}
-						$this->setSuccessMessage("&#x25C9; Restocked Items successfully  Verified &#x2714;");
-					}
-			}
 		return TRUE;
 	}
 
@@ -1757,10 +1558,6 @@ class crestock_module extends cTable {
 	function Row_Updated($rsold, &$rsnew) {
 
 		//echo "Row Updated";
-		//ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` + $rsnew['quantity']) WHERE `id`= ".$this->material_name->CurrentValue."");
-		//ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` + " . $this->quantity->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
-		 //ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` + " . $rsnew["quantity"] . ") WHERE `id`= ".$rsnew["material_name"]."");
-
 	}
 
 	// Row Update Conflict event
@@ -1836,40 +1633,6 @@ class crestock_module extends cTable {
 	function Row_Rendering() {
 
 		// Enter your code here
-		if (CurrentPageID() == "add")  {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->date_restocked->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->date_restocked->EditValue = $this->date_restocked->CurrentValue;
-			$this->reference_id->CurrentValue = $_SESSION['RST_ID'];
-			$this->reference_id->EditValue = $this->reference_id->CurrentValue;
-			$this->restocked_by->CurrentValue = $_SESSION['Staff_ID'];
-			$this->restocked_by->EditValue = $this->restocked_by->CurrentValue;
-		}
-		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 3 )) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->approver_date->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->approver_date->EditValue = $this->approver_date->CurrentValue;
-			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
-			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
-		}
-		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 4 )) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->approver_date->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->approver_date->EditValue = $this->approver_date->CurrentValue;
-			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
-			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
-		}
-		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 5 )) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->verified_date->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->verified_date->EditValue = $this->verified_date->CurrentValue;
-			$this->verified_by->CurrentValue = $_SESSION['Staff_ID'];
-			$this->verified_by->EditValue = $this->verified_by->CurrentValue;
-		}
 	}
 
 	// Row Rendered event
@@ -1878,172 +1641,6 @@ class crestock_module extends cTable {
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
 
-				if (CurrentPageID() == "add") {
-					if (CurrentUserLevel() == 1) {
-		            $this->date_restocked->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->material_name->Visible = TRUE;
-					$this->quantity->Visible = TRUE;
-					$this->type->ReadOnly = TRUE;
-					$this->capacity->ReadOnly = TRUE;
-					$this->stock_balance->ReadOnly = TRUE;
-					$this->restocked_by->ReadOnly = TRUE;
-					$this->approver_date->Visible = FALSE;
-					$this->approver_action->Visible = FALSE;
-					$this->approver_comment->Visible = FALSE;
-					$this->approved_by->Visible = FALSE;
-					$this->verified_date->Visible = FALSE;
-					$this->verified_date->Visible = FALSE;
-					$this->verified_action->Visible = FALSE;
-					$this->verified_comment->Visible = FALSE;
-					$this->verified_by->Visible = FALSE;
-					}
-					if (CurrentUserLevel() == 2) {
-		            $this->date_restocked->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->material_name->Visible = TRUE;
-					$this->quantity->Visible = TRUE;
-					$this->type->ReadOnly = TRUE;
-					$this->capacity->ReadOnly = TRUE;
-					$this->stock_balance->ReadOnly = TRUE;
-					$this->restocked_by->ReadOnly = TRUE;
-					$this->approver_date->Visible = FALSE;
-					$this->approver_comment->Visible = FALSE;
-					$this->approver_action->Visible = FALSE;
-					$this->approved_by->Visible = FALSE;
-					$this->verified_date->Visible = FALSE;
-					$this->verified_date->Visible = FALSE;
-					$this->verified_action->Visible = FALSE;
-					$this->verified_comment->Visible = FALSE;
-					$this->verified_by->Visible = FALSE;
-					}
-				}
-
-				// Edit Page
-			   if (CurrentPageID() == "edit") {
-					if (CurrentUserLevel() == 1 && $this->statuss->CurrentValue == 0) {
-					$this->date_restocked->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->material_name->Visible = TRUE;
-					$this->quantity->Visible = TRUE;
-					$this->type->ReadOnly = TRUE;
-					$this->capacity->ReadOnly = TRUE;
-					$this->stock_balance->ReadOnly = TRUE;
-					$this->restocked_by->ReadOnly = TRUE;
-					$this->approver_date->Visible = FALSE;
-					$this->approver_action->Visible = FALSE;
-					$this->approver_comment->Visible = FALSE;
-					$this->approved_by->Visible = FALSE;
-					$this->verified_date->Visible = FALSE;
-					$this->verified_date->Visible = FALSE;
-					$this->approver_action->Visible = FALSE;
-					$this->verified_comment->Visible = FALSE;
-					$this->verified_by->Visible = FALSE;
-				}
-				if (CurrentUserLevel() == 2 && $this->statuss->CurrentValue == 0) {
-					$this->date_restocked->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->material_name->Visible = TRUE;
-					$this->quantity->Visible = TRUE;
-					$this->type->ReadOnly = TRUE;
-					$this->capacity->ReadOnly = TRUE;
-					$this->stock_balance->ReadOnly = TRUE;
-					$this->restocked_by->ReadOnly = TRUE;
-					$this->approver_date->Visible = FALSE;
-					$this->approver_action->Visible = FALSE;
-					$this->approver_comment->Visible = FALSE;
-					$this->approved_by->Visible = FALSE;
-					$this->verified_date->Visible = FALSE;
-					$this->verified_date->Visible = FALSE;
-					$this->verified_action->Visible = FALSE;
-					$this->verified_comment->Visible = FALSE;
-					$this->verified_by->Visible = FALSE;
-				}
-				if (CurrentUserLevel() == 2 && $this->statuss->CurrentValue == 1) {
-					$this->date_restocked->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->material_name->Visible = TRUE;
-					$this->quantity->Visible = TRUE;
-					$this->type->ReadOnly = TRUE;
-					$this->capacity->ReadOnly = TRUE;
-					$this->stock_balance->ReadOnly = TRUE;
-					$this->restocked_by->ReadOnly = TRUE;
-					$this->approver_date->ReadOnly = TRUE;
-					$this->approver_action->Visible = TRUE;
-					$this->approver_comment->Visible = TRUE;
-					$this->approved_by->ReadOnly = TRUE;
-					$this->verified_date->Visible = FALSE;
-					$this->verified_date->Visible = FALSE;
-					$this->verified_comment->Visible = FALSE;
-					$this->verified_by->Visible = FALSE;
-				}
-				if (CurrentUserLevel() == 3 && $this->statuss->CurrentValue == 1) {
-					$this->date_restocked->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->material_name->Visible = TRUE;
-					$this->quantity->Visible = TRUE;
-					$this->type->ReadOnly = TRUE;
-					$this->capacity->ReadOnly = TRUE;
-					$this->quantity->ReadOnly = TRUE;
-					$this->stock_balance->ReadOnly = TRUE;
-					$this->restocked_by->ReadOnly = TRUE;
-
-					//$this->restocked_date->ReadOnly = TRUE;
-					$this->restocked_action->ReadOnly = TRUE;
-					$this->restocked_comment->ReadOnly = TRUE;
-					$this->approver_date->ReadOnly = TRUE;
-					$this->approver_action->Visible = TRUE;
-					$this->approver_comment->Visible = TRUE;
-					$this->approved_by->ReadOnly = TRUE;
-					$this->verified_date->Visible = FALSE;
-					$this->verified_action->Visible = FALSE;
-					$this->verified_comment->Visible = FALSE;
-					$this->verified_by->Visible = FALSE;
-				}
-				if (CurrentUserLevel() == 4 && $this->statuss->CurrentValue == 1) {
-					$this->date_restocked->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->material_name->ReadOnly = TRUE;
-					$this->quantity->ReadOnly = TRUE;
-					$this->type->ReadOnly = TRUE;
-					$this->capacity->ReadOnly = TRUE;
-
-					//$this->restocked_date->ReadOnly = TRUE;
-					$this->restocked_action->ReadOnly = TRUE;
-					$this->restocked_comment->ReadOnly = TRUE;
-					$this->stock_balance->ReadOnly = TRUE;
-					$this->restocked_by->ReadOnly = TRUE;
-					$this->approver_date->ReadOnly = TRUE;
-					$this->approver_action->Visible = TRUE;
-					$this->approver_comment->Visible = TRUE;
-
-					//$this->approved_by->ReadOnly = TRUE;
-					$this->verified_date->Visible = FALSE;
-					$this->verified_action->Visible = FALSE;
-					$this->verified_comment->Visible = FALSE;
-					$this->verified_by->Visible = FALSE;
-				}
-				if (CurrentUserLevel() == 5 && $this->statuss->CurrentValue == 3) {
-					$this->date_restocked->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->material_name->ReadOnly = TRUE;
-					$this->quantity->ReadOnly = TRUE;
-					$this->type->ReadOnly = TRUE;
-					$this->capacity->ReadOnly = TRUE;
-					$this->stock_balance->ReadOnly = TRUE;
-					$this->restocked_by->ReadOnly = TRUE;
-					$this->restocked_action->ReadOnly = TRUE;
-					$this->restocked_comment->ReadOnly = TRUE;
-					$this->approver_date->ReadOnly = TRUE;
-					$this->approver_action->ReadOnly = TRUE;
-					$this->approver_comment->ReadOnly = TRUE;
-					$this->approved_by->ReadOnly = TRUE;
-					$this->verified_date->ReadOnly = TRUE;
-					$this->verified_date->Visible = TRUE;
-					$this->verified_comment->Visible = TRUE;
-					$this->verified_by->ReadOnly = TRUE;
-				}
-			}
 	}
 
 	// User ID Filtering event
