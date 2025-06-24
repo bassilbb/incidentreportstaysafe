@@ -859,7 +859,6 @@ class crestock_report_list extends crestock_report {
 		$sFilterList = ew_Concat($sFilterList, $this->verified_action->AdvancedSearch->ToJson(), ","); // Field verified_action
 		$sFilterList = ew_Concat($sFilterList, $this->verified_comment->AdvancedSearch->ToJson(), ","); // Field verified_comment
 		$sFilterList = ew_Concat($sFilterList, $this->verified_by->AdvancedSearch->ToJson(), ","); // Field verified_by
-		$sFilterList = ew_Concat($sFilterList, $this->date_restocked1->AdvancedSearch->ToJson(), ","); // Field date_restocked1
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -1063,14 +1062,6 @@ class crestock_report_list extends crestock_report {
 		$this->verified_by->AdvancedSearch->SearchValue2 = @$filter["y_verified_by"];
 		$this->verified_by->AdvancedSearch->SearchOperator2 = @$filter["w_verified_by"];
 		$this->verified_by->AdvancedSearch->Save();
-
-		// Field date_restocked1
-		$this->date_restocked1->AdvancedSearch->SearchValue = @$filter["x_date_restocked1"];
-		$this->date_restocked1->AdvancedSearch->SearchOperator = @$filter["z_date_restocked1"];
-		$this->date_restocked1->AdvancedSearch->SearchCondition = @$filter["v_date_restocked1"];
-		$this->date_restocked1->AdvancedSearch->SearchValue2 = @$filter["y_date_restocked1"];
-		$this->date_restocked1->AdvancedSearch->SearchOperator2 = @$filter["w_date_restocked1"];
-		$this->date_restocked1->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
@@ -1100,7 +1091,6 @@ class crestock_report_list extends crestock_report {
 		$this->BuildSearchSql($sWhere, $this->verified_action, $Default, FALSE); // verified_action
 		$this->BuildSearchSql($sWhere, $this->verified_comment, $Default, FALSE); // verified_comment
 		$this->BuildSearchSql($sWhere, $this->verified_by, $Default, FALSE); // verified_by
-		$this->BuildSearchSql($sWhere, $this->date_restocked1, $Default, FALSE); // date_restocked1
 
 		// Set up search parm
 		if (!$Default && $sWhere <> "" && in_array($this->Command, array("", "reset", "resetall"))) {
@@ -1127,7 +1117,6 @@ class crestock_report_list extends crestock_report {
 			$this->verified_action->AdvancedSearch->Save(); // verified_action
 			$this->verified_comment->AdvancedSearch->Save(); // verified_comment
 			$this->verified_by->AdvancedSearch->Save(); // verified_by
-			$this->date_restocked1->AdvancedSearch->Save(); // date_restocked1
 		}
 		return $sWhere;
 	}
@@ -1334,8 +1323,6 @@ class crestock_report_list extends crestock_report {
 			return TRUE;
 		if ($this->verified_by->AdvancedSearch->IssetSession())
 			return TRUE;
-		if ($this->date_restocked1->AdvancedSearch->IssetSession())
-			return TRUE;
 		return FALSE;
 	}
 
@@ -1385,7 +1372,6 @@ class crestock_report_list extends crestock_report {
 		$this->verified_action->AdvancedSearch->UnsetSession();
 		$this->verified_comment->AdvancedSearch->UnsetSession();
 		$this->verified_by->AdvancedSearch->UnsetSession();
-		$this->date_restocked1->AdvancedSearch->UnsetSession();
 	}
 
 	// Restore all search parameters
@@ -1416,7 +1402,6 @@ class crestock_report_list extends crestock_report {
 		$this->verified_action->AdvancedSearch->Load();
 		$this->verified_comment->AdvancedSearch->Load();
 		$this->verified_by->AdvancedSearch->Load();
-		$this->date_restocked1->AdvancedSearch->Load();
 	}
 
 	// Set up sort parameters
@@ -1935,11 +1920,6 @@ class crestock_report_list extends crestock_report {
 		$this->verified_by->AdvancedSearch->SearchValue = @$_GET["x_verified_by"];
 		if ($this->verified_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
 		$this->verified_by->AdvancedSearch->SearchOperator = @$_GET["z_verified_by"];
-
-		// date_restocked1
-		$this->date_restocked1->AdvancedSearch->SearchValue = @$_GET["x_date_restocked1"];
-		if ($this->date_restocked1->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->date_restocked1->AdvancedSearch->SearchOperator = @$_GET["z_date_restocked1"];
 	}
 
 	// Load recordset
@@ -2021,7 +2001,6 @@ class crestock_report_list extends crestock_report {
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
-		$this->date_restocked1->setDbValue($row['date_restocked1']);
 	}
 
 	// Return a row with default values
@@ -2047,7 +2026,6 @@ class crestock_report_list extends crestock_report {
 		$row['verified_action'] = NULL;
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
-		$row['date_restocked1'] = NULL;
 		return $row;
 	}
 
@@ -2076,7 +2054,6 @@ class crestock_report_list extends crestock_report {
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
-		$this->date_restocked1->DbValue = $row['date_restocked1'];
 	}
 
 	// Load old record
@@ -2137,7 +2114,6 @@ class crestock_report_list extends crestock_report {
 		// verified_action
 		// verified_comment
 		// verified_by
-		// date_restocked1
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -2335,11 +2311,6 @@ class crestock_report_list extends crestock_report {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
-		// date_restocked1
-		$this->date_restocked1->ViewValue = $this->date_restocked1->CurrentValue;
-		$this->date_restocked1->ViewValue = ew_FormatDateTime($this->date_restocked1->ViewValue, 0);
-		$this->date_restocked1->ViewCustomAttributes = "";
-
 			// code
 			$this->code->LinkCustomAttributes = "";
 			$this->code->HrefValue = "";
@@ -2533,7 +2504,6 @@ class crestock_report_list extends crestock_report {
 		$this->verified_action->AdvancedSearch->Load();
 		$this->verified_comment->AdvancedSearch->Load();
 		$this->verified_by->AdvancedSearch->Load();
-		$this->date_restocked1->AdvancedSearch->Load();
 	}
 
 	// Set up export options

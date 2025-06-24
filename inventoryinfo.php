@@ -1914,7 +1914,7 @@ class cinventory extends cTable {
 					$this->approver_action->ReadOnly = TRUE;
 					$this->approver_comment->ReadOnly = TRUE;
 					$this->approved_by->ReadOnly = TRUE;
-					$this->verified_date->TRUE = TRUE;
+					$this->verified_date->ReadOnly = TRUE;
 					$this->verified_action->Visible = TRUE;
 					$this->verified_comment->Visible = TRUE;
 

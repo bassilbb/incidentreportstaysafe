@@ -459,8 +459,8 @@ class crestock_module_list extends crestock_module {
 		$this->capacity->SetVisibility();
 		$this->stock_balance->SetVisibility();
 		$this->quantity->SetVisibility();
-		$this->restocked_by->SetVisibility();
 		$this->statuss->SetVisibility();
+		$this->restocked_by->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -825,8 +825,8 @@ class crestock_module_list extends crestock_module {
 		$sFilterList = ew_Concat($sFilterList, $this->capacity->AdvancedSearch->ToJson(), ","); // Field capacity
 		$sFilterList = ew_Concat($sFilterList, $this->stock_balance->AdvancedSearch->ToJson(), ","); // Field stock_balance
 		$sFilterList = ew_Concat($sFilterList, $this->quantity->AdvancedSearch->ToJson(), ","); // Field quantity
-		$sFilterList = ew_Concat($sFilterList, $this->restocked_by->AdvancedSearch->ToJson(), ","); // Field restocked_by
 		$sFilterList = ew_Concat($sFilterList, $this->statuss->AdvancedSearch->ToJson(), ","); // Field statuss
+		$sFilterList = ew_Concat($sFilterList, $this->restocked_by->AdvancedSearch->ToJson(), ","); // Field restocked_by
 		$sFilterList = ew_Concat($sFilterList, $this->restocked_action->AdvancedSearch->ToJson(), ","); // Field restocked_action
 		$sFilterList = ew_Concat($sFilterList, $this->restocked_comment->AdvancedSearch->ToJson(), ","); // Field restocked_comment
 		$sFilterList = ew_Concat($sFilterList, $this->approver_date->AdvancedSearch->ToJson(), ","); // Field approver_date
@@ -945,14 +945,6 @@ class crestock_module_list extends crestock_module {
 		$this->quantity->AdvancedSearch->SearchOperator2 = @$filter["w_quantity"];
 		$this->quantity->AdvancedSearch->Save();
 
-		// Field restocked_by
-		$this->restocked_by->AdvancedSearch->SearchValue = @$filter["x_restocked_by"];
-		$this->restocked_by->AdvancedSearch->SearchOperator = @$filter["z_restocked_by"];
-		$this->restocked_by->AdvancedSearch->SearchCondition = @$filter["v_restocked_by"];
-		$this->restocked_by->AdvancedSearch->SearchValue2 = @$filter["y_restocked_by"];
-		$this->restocked_by->AdvancedSearch->SearchOperator2 = @$filter["w_restocked_by"];
-		$this->restocked_by->AdvancedSearch->Save();
-
 		// Field statuss
 		$this->statuss->AdvancedSearch->SearchValue = @$filter["x_statuss"];
 		$this->statuss->AdvancedSearch->SearchOperator = @$filter["z_statuss"];
@@ -960,6 +952,14 @@ class crestock_module_list extends crestock_module {
 		$this->statuss->AdvancedSearch->SearchValue2 = @$filter["y_statuss"];
 		$this->statuss->AdvancedSearch->SearchOperator2 = @$filter["w_statuss"];
 		$this->statuss->AdvancedSearch->Save();
+
+		// Field restocked_by
+		$this->restocked_by->AdvancedSearch->SearchValue = @$filter["x_restocked_by"];
+		$this->restocked_by->AdvancedSearch->SearchOperator = @$filter["z_restocked_by"];
+		$this->restocked_by->AdvancedSearch->SearchCondition = @$filter["v_restocked_by"];
+		$this->restocked_by->AdvancedSearch->SearchValue2 = @$filter["y_restocked_by"];
+		$this->restocked_by->AdvancedSearch->SearchOperator2 = @$filter["w_restocked_by"];
+		$this->restocked_by->AdvancedSearch->Save();
 
 		// Field restocked_action
 		$this->restocked_action->AdvancedSearch->SearchValue = @$filter["x_restocked_action"];
@@ -1179,7 +1179,8 @@ class crestock_module_list extends crestock_module {
 
 	// Load advanced search default values
 	function LoadAdvancedSearchDefault() {
-		return FALSE;
+		$this->statuss->AdvancedSearch->LoadDefault();
+		return TRUE;
 	}
 
 	// Clear all basic search parameters
@@ -1209,8 +1210,8 @@ class crestock_module_list extends crestock_module {
 			$this->UpdateSort($this->capacity); // capacity
 			$this->UpdateSort($this->stock_balance); // stock_balance
 			$this->UpdateSort($this->quantity); // quantity
-			$this->UpdateSort($this->restocked_by); // restocked_by
 			$this->UpdateSort($this->statuss); // statuss
+			$this->UpdateSort($this->restocked_by); // restocked_by
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1250,8 +1251,8 @@ class crestock_module_list extends crestock_module {
 				$this->capacity->setSort("");
 				$this->stock_balance->setSort("");
 				$this->quantity->setSort("");
-				$this->restocked_by->setSort("");
 				$this->statuss->setSort("");
+				$this->restocked_by->setSort("");
 			}
 
 			// Reset start position
@@ -1276,10 +1277,10 @@ class crestock_module_list extends crestock_module {
 		$item->Visible = $Security->CanView();
 		$item->OnLeft = TRUE;
 
-		// "copy"
-		$item = &$this->ListOptions->Add("copy");
+		// "edit"
+		$item = &$this->ListOptions->Add("edit");
 		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanAdd();
+		$item->Visible = $Security->CanEdit();
 		$item->OnLeft = TRUE;
 
 		// List actions
@@ -1335,11 +1336,11 @@ class crestock_module_list extends crestock_module {
 			$oListOpt->Body = "";
 		}
 
-		// "copy"
-		$oListOpt = &$this->ListOptions->Items["copy"];
-		$copycaption = ew_HtmlTitle($Language->Phrase("CopyLink"));
-		if ($Security->CanAdd()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewCopy\" title=\"" . $copycaption . "\" data-caption=\"" . $copycaption . "\" href=\"" . ew_HtmlEncode($this->CopyUrl) . "\">" . $Language->Phrase("CopyLink") . "</a>";
+		// "edit"
+		$oListOpt = &$this->ListOptions->Items["edit"];
+		$editcaption = ew_HtmlTitle($Language->Phrase("EditLink"));
+		if ($Security->CanEdit()) {
+			$oListOpt->Body = "<a class=\"ewRowLink ewEdit\" title=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" href=\"" . ew_HtmlEncode($this->EditUrl) . "\">" . $Language->Phrase("EditLink") . "</a>";
 		} else {
 			$oListOpt->Body = "";
 		}
@@ -1547,7 +1548,7 @@ class crestock_module_list extends crestock_module {
 
 		// Show all button
 		$item = &$this->SearchOptions->Add("showall");
-		$item->Body = "<a class=\"btn btn-default ewShowAll\" title=\"" . $Language->Phrase("ShowAll") . "\" data-caption=\"" . $Language->Phrase("ShowAll") . "\" href=\"" . $this->PageUrl() . "cmd=reset\">" . $Language->Phrase("ShowAllBtn") . "</a>";
+		$item->Body = "<a class=\"btn btn-default ewShowAll\" title=\"" . $Language->Phrase("ResetSearch") . "\" data-caption=\"" . $Language->Phrase("ResetSearch") . "\" href=\"" . $this->PageUrl() . "cmd=reset\">" . $Language->Phrase("ResetSearchBtn") . "</a>";
 		$item->Visible = ($this->SearchWhere <> $this->DefaultSearchWhere && $this->SearchWhere <> "0=101");
 
 		// Button group for search
@@ -1689,8 +1690,8 @@ class crestock_module_list extends crestock_module {
 		$this->capacity->setDbValue($row['capacity']);
 		$this->stock_balance->setDbValue($row['stock_balance']);
 		$this->quantity->setDbValue($row['quantity']);
-		$this->restocked_by->setDbValue($row['restocked_by']);
 		$this->statuss->setDbValue($row['statuss']);
+		$this->restocked_by->setDbValue($row['restocked_by']);
 		$this->restocked_action->setDbValue($row['restocked_action']);
 		$this->restocked_comment->setDbValue($row['restocked_comment']);
 		$this->approver_date->setDbValue($row['approver_date']);
@@ -1714,8 +1715,8 @@ class crestock_module_list extends crestock_module {
 		$row['capacity'] = NULL;
 		$row['stock_balance'] = NULL;
 		$row['quantity'] = NULL;
-		$row['restocked_by'] = NULL;
 		$row['statuss'] = NULL;
+		$row['restocked_by'] = NULL;
 		$row['restocked_action'] = NULL;
 		$row['restocked_comment'] = NULL;
 		$row['approver_date'] = NULL;
@@ -1742,8 +1743,8 @@ class crestock_module_list extends crestock_module {
 		$this->capacity->DbValue = $row['capacity'];
 		$this->stock_balance->DbValue = $row['stock_balance'];
 		$this->quantity->DbValue = $row['quantity'];
-		$this->restocked_by->DbValue = $row['restocked_by'];
 		$this->statuss->DbValue = $row['statuss'];
+		$this->restocked_by->DbValue = $row['restocked_by'];
 		$this->restocked_action->DbValue = $row['restocked_action'];
 		$this->restocked_comment->DbValue = $row['restocked_comment'];
 		$this->approver_date->DbValue = $row['approver_date'];
@@ -1802,8 +1803,8 @@ class crestock_module_list extends crestock_module {
 		// capacity
 		// stock_balance
 		// quantity
-		// restocked_by
 		// statuss
+		// restocked_by
 		// restocked_action
 		// restocked_comment
 		// approver_date
@@ -1869,6 +1870,29 @@ class crestock_module_list extends crestock_module {
 		$this->quantity->ViewValue = $this->quantity->CurrentValue;
 		$this->quantity->ViewCustomAttributes = "";
 
+		// statuss
+		if (strval($this->statuss->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
+		$sWhereWrk = "";
+		$this->statuss->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->statuss->ViewValue = $this->statuss->CurrentValue;
+			}
+		} else {
+			$this->statuss->ViewValue = NULL;
+		}
+		$this->statuss->ViewCustomAttributes = "";
+
 		// restocked_by
 		$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
 		if (strval($this->restocked_by->CurrentValue) <> "") {
@@ -1894,29 +1918,6 @@ class crestock_module_list extends crestock_module {
 			$this->restocked_by->ViewValue = NULL;
 		}
 		$this->restocked_by->ViewCustomAttributes = "";
-
-		// statuss
-		if (strval($this->statuss->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
-		$sWhereWrk = "";
-		$this->statuss->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->statuss->ViewValue = $this->statuss->CurrentValue;
-			}
-		} else {
-			$this->statuss->ViewValue = NULL;
-		}
-		$this->statuss->ViewCustomAttributes = "";
 
 		// restocked_action
 		if (strval($this->restocked_action->CurrentValue) <> "") {
@@ -2045,15 +2046,15 @@ class crestock_module_list extends crestock_module {
 			$this->quantity->HrefValue = "";
 			$this->quantity->TooltipValue = "";
 
-			// restocked_by
-			$this->restocked_by->LinkCustomAttributes = "";
-			$this->restocked_by->HrefValue = "";
-			$this->restocked_by->TooltipValue = "";
-
 			// statuss
 			$this->statuss->LinkCustomAttributes = "";
 			$this->statuss->HrefValue = "";
 			$this->statuss->TooltipValue = "";
+
+			// restocked_by
+			$this->restocked_by->LinkCustomAttributes = "";
+			$this->restocked_by->HrefValue = "";
+			$this->restocked_by->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2402,11 +2403,11 @@ frestock_modulelist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE
 // Dynamic selection lists
 frestock_modulelist.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
 frestock_modulelist.Lists["x_material_name"].Data = "<?php echo $restock_module_list->material_name->LookupFilterQuery(FALSE, "list") ?>";
+frestock_modulelist.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
+frestock_modulelist.Lists["x_statuss"].Data = "<?php echo $restock_module_list->statuss->LookupFilterQuery(FALSE, "list") ?>";
 frestock_modulelist.Lists["x_restocked_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 frestock_modulelist.Lists["x_restocked_by"].Data = "<?php echo $restock_module_list->restocked_by->LookupFilterQuery(FALSE, "list") ?>";
 frestock_modulelist.AutoSuggests["x_restocked_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $restock_module_list->restocked_by->LookupFilterQuery(TRUE, "list"))) ?>;
-frestock_modulelist.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
-frestock_modulelist.Lists["x_statuss"].Data = "<?php echo $restock_module_list->statuss->LookupFilterQuery(FALSE, "list") ?>";
 
 // Form object for search
 var CurrentSearchForm = frestock_modulelistsrch = new ew_Form("frestock_modulelistsrch");
@@ -2657,21 +2658,21 @@ $restock_module_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($restock_module->restocked_by->Visible) { // restocked_by ?>
-	<?php if ($restock_module->SortUrl($restock_module->restocked_by) == "") { ?>
-		<th data-name="restocked_by" class="<?php echo $restock_module->restocked_by->HeaderCellClass() ?>"><div id="elh_restock_module_restocked_by" class="restock_module_restocked_by"><div class="ewTableHeaderCaption"><?php echo $restock_module->restocked_by->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="restocked_by" class="<?php echo $restock_module->restocked_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $restock_module->SortUrl($restock_module->restocked_by) ?>',1);"><div id="elh_restock_module_restocked_by" class="restock_module_restocked_by">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $restock_module->restocked_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($restock_module->restocked_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($restock_module->restocked_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php if ($restock_module->statuss->Visible) { // statuss ?>
 	<?php if ($restock_module->SortUrl($restock_module->statuss) == "") { ?>
 		<th data-name="statuss" class="<?php echo $restock_module->statuss->HeaderCellClass() ?>"><div id="elh_restock_module_statuss" class="restock_module_statuss"><div class="ewTableHeaderCaption"><?php echo $restock_module->statuss->FldCaption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="statuss" class="<?php echo $restock_module->statuss->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $restock_module->SortUrl($restock_module->statuss) ?>',1);"><div id="elh_restock_module_statuss" class="restock_module_statuss">
 			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $restock_module->statuss->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($restock_module->statuss->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($restock_module->statuss->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($restock_module->restocked_by->Visible) { // restocked_by ?>
+	<?php if ($restock_module->SortUrl($restock_module->restocked_by) == "") { ?>
+		<th data-name="restocked_by" class="<?php echo $restock_module->restocked_by->HeaderCellClass() ?>"><div id="elh_restock_module_restocked_by" class="restock_module_restocked_by"><div class="ewTableHeaderCaption"><?php echo $restock_module->restocked_by->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="restocked_by" class="<?php echo $restock_module->restocked_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $restock_module->SortUrl($restock_module->restocked_by) ?>',1);"><div id="elh_restock_module_restocked_by" class="restock_module_restocked_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $restock_module->restocked_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($restock_module->restocked_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($restock_module->restocked_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -2796,19 +2797,19 @@ $restock_module_list->ListOptions->Render("body", "left", $restock_module_list->
 </span>
 </td>
 	<?php } ?>
-	<?php if ($restock_module->restocked_by->Visible) { // restocked_by ?>
-		<td data-name="restocked_by"<?php echo $restock_module->restocked_by->CellAttributes() ?>>
-<span id="el<?php echo $restock_module_list->RowCnt ?>_restock_module_restocked_by" class="restock_module_restocked_by">
-<span<?php echo $restock_module->restocked_by->ViewAttributes() ?>>
-<?php echo $restock_module->restocked_by->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
 	<?php if ($restock_module->statuss->Visible) { // statuss ?>
 		<td data-name="statuss"<?php echo $restock_module->statuss->CellAttributes() ?>>
 <span id="el<?php echo $restock_module_list->RowCnt ?>_restock_module_statuss" class="restock_module_statuss">
 <span<?php echo $restock_module->statuss->ViewAttributes() ?>>
 <?php echo $restock_module->statuss->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($restock_module->restocked_by->Visible) { // restocked_by ?>
+		<td data-name="restocked_by"<?php echo $restock_module->restocked_by->CellAttributes() ?>>
+<span id="el<?php echo $restock_module_list->RowCnt ?>_restock_module_restocked_by" class="restock_module_restocked_by">
+<span<?php echo $restock_module->restocked_by->ViewAttributes() ?>>
+<?php echo $restock_module->restocked_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

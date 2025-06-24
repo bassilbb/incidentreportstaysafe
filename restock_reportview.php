@@ -450,7 +450,6 @@ class crestock_report_view extends crestock_report {
 		$this->verified_action->SetVisibility();
 		$this->verified_comment->SetVisibility();
 		$this->verified_by->SetVisibility();
-		$this->date_restocked1->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -765,7 +764,6 @@ class crestock_report_view extends crestock_report {
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
-		$this->date_restocked1->setDbValue($row['date_restocked1']);
 	}
 
 	// Return a row with default values
@@ -791,7 +789,6 @@ class crestock_report_view extends crestock_report {
 		$row['verified_action'] = NULL;
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
-		$row['date_restocked1'] = NULL;
 		return $row;
 	}
 
@@ -820,7 +817,6 @@ class crestock_report_view extends crestock_report {
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
-		$this->date_restocked1->DbValue = $row['date_restocked1'];
 	}
 
 	// Render row values based on field settings
@@ -859,7 +855,6 @@ class crestock_report_view extends crestock_report {
 		// verified_action
 		// verified_comment
 		// verified_by
-		// date_restocked1
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1061,11 +1056,6 @@ class crestock_report_view extends crestock_report {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
-		// date_restocked1
-		$this->date_restocked1->ViewValue = $this->date_restocked1->CurrentValue;
-		$this->date_restocked1->ViewValue = ew_FormatDateTime($this->date_restocked1->ViewValue, 0);
-		$this->date_restocked1->ViewCustomAttributes = "";
-
 			// code
 			$this->code->LinkCustomAttributes = "";
 			$this->code->HrefValue = "";
@@ -1165,11 +1155,6 @@ class crestock_report_view extends crestock_report {
 			$this->verified_by->LinkCustomAttributes = "";
 			$this->verified_by->HrefValue = "";
 			$this->verified_by->TooltipValue = "";
-
-			// date_restocked1
-			$this->date_restocked1->LinkCustomAttributes = "";
-			$this->date_restocked1->HrefValue = "";
-			$this->date_restocked1->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1777,17 +1762,6 @@ $restock_report_view->ShowMessage();
 <span id="el_restock_report_verified_by" data-page="1">
 <span<?php echo $restock_report->verified_by->ViewAttributes() ?>>
 <?php echo $restock_report->verified_by->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($restock_report->date_restocked1->Visible) { // date_restocked1 ?>
-	<tr id="r_date_restocked1">
-		<td class="col-sm-2"><span id="elh_restock_report_date_restocked1"><?php echo $restock_report->date_restocked1->FldCaption() ?></span></td>
-		<td data-name="date_restocked1"<?php echo $restock_report->date_restocked1->CellAttributes() ?>>
-<span id="el_restock_report_date_restocked1" data-page="1">
-<span<?php echo $restock_report->date_restocked1->ViewAttributes() ?>>
-<?php echo $restock_report->date_restocked1->ViewValue ?></span>
 </span>
 </td>
 	</tr>
