@@ -1611,6 +1611,9 @@ class cissuance_store extends cTable {
 		if (CurrentUserLevel() == 3) {
 			ew_AddFilter($filter, "`statuss` in (1)");
 		}
+		if (CurrentUserLevel() == 4) {
+			ew_AddFilter($filter, "`statuss` in (1)");
+		}
 		if (CurrentUserLevel() == 5) {
 			ew_AddFilter($filter, "`statuss` in (3)");
 		}
@@ -1776,7 +1779,7 @@ class cissuance_store extends cTable {
 		}
 
 		 // Supervisor
-		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$rsnew["date"] = $now->format('Y-m-d H:i:s');
@@ -1784,7 +1787,7 @@ class cissuance_store extends cTable {
 		}
 
 		// Administartor - Don't change field values captured by tenant
-		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
 			$rsnew["id"] = $rsold["id"];
 			$rsnew["date"] = $rsold["date"];
 			$rsnew["reference_id"] = $rsold["reference_id"];
@@ -1837,7 +1840,7 @@ class cissuance_store extends cTable {
 		}
 
 			// Approved by Administrators
-			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
 				$rsnew["date"] = $now->format('Y-m-d H:i:s');
 				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
 			  }

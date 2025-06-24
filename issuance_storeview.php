@@ -311,11 +311,11 @@ class cissuance_store_view extends cissuance_store {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'view', TRUE);
+			define("EW_PAGE_ID", 'view');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'issuance_store', TRUE);
+			define("EW_TABLE_NAME", 'issuance_store');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))

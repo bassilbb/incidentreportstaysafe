@@ -1377,6 +1377,9 @@ class cinventory extends cTable {
 		if (CurrentUserLevel() == 3) {
 			ew_AddFilter($filter, "`statuss` in (1)");
 		}
+		if (CurrentUserLevel() == 4) {
+			ew_AddFilter($filter, "`statuss` in (1)");
+		}
 		if (CurrentUserLevel() == 5) {
 			ew_AddFilter($filter, "`statuss` in (3)");
 		}
@@ -1549,7 +1552,7 @@ class cinventory extends cTable {
 		}
 
 		 // Supervisor
-		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$rsnew["date_approved"] = $now->format('Y-m-d H:i:s');
@@ -1557,7 +1560,7 @@ class cinventory extends cTable {
 		}
 
 		// Administartor - Don't change field values captured by tenant
-		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
 			$rsnew["id"] = $rsold["id"];
 			$rsnew["date_recieved"] = $rsold["date_recieved"];
 			$rsnew["reference_id"] = $rsold["reference_id"];
@@ -1609,7 +1612,7 @@ class cinventory extends cTable {
 		}
 
 			// Approved by Administrators
-			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
 				$rsnew["date_approved"] = $now->format('Y-m-d H:i:s');
 				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
 			  }
@@ -1774,6 +1777,16 @@ class cinventory extends cTable {
 			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
 			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
 		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 4 ) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_approved->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_approved->EditValue = $this->date_approved->CurrentValue;
+			$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
+			$this->staff_id->EditValue = $this->staff_id->CurrentValue;
+			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
+			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
+		}
 		if (CurrentPageID() == "edit" && CurrentUserLevel() == 5 ) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
@@ -1865,7 +1878,7 @@ class cinventory extends cTable {
 					$this->verified_comment->Visible = FALSE;
 					$this->verified_by->Visible = FALSE;
 				}
-				if (CurrentUserLevel() == 3) {
+				if ((CurrentUserLevel() == 3|| CurrentUserLevel() == 4)) {
 					$this->date_recieved->ReadOnly = TRUE;
 					$this->reference_id->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;

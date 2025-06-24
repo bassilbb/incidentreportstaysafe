@@ -316,11 +316,11 @@ class cinventory_list extends cinventory {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'list', TRUE);
+			define("EW_PAGE_ID", 'list');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'inventory', TRUE);
+			define("EW_TABLE_NAME", 'inventory');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))

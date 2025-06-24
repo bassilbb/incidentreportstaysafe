@@ -261,11 +261,11 @@ class cinventory_delete extends cinventory {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'delete', TRUE);
+			define("EW_PAGE_ID", 'delete');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'inventory', TRUE);
+			define("EW_TABLE_NAME", 'inventory');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
