@@ -3413,6 +3413,10 @@
       </field>
       <field id="restocked_action">
         <phrase id="fldcaption" value="restocked action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Restocked" />
       </field>
       <field id="restocked_comment">
         <phrase id="fldcaption" value="restocked comment" />
@@ -3422,6 +3426,10 @@
       </field>
       <field id="approver_action">
         <phrase id="fldcaption" value="approver action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Approved" />
       </field>
       <field id="approver_comment">
         <phrase id="fldcaption" value="approver comment" />
@@ -3434,6 +3442,10 @@
       </field>
       <field id="verified_action">
         <phrase id="fldcaption" value="verified action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Verified" />
       </field>
       <field id="verified_comment">
         <phrase id="fldcaption" value="verified comment" />
@@ -3474,6 +3486,10 @@
       </field>
       <field id="restocked_action">
         <phrase id="fldcaption" value="restocked action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Restocked" />
       </field>
       <field id="restocked_comment">
         <phrase id="fldcaption" value="restocked comment" />
@@ -3486,6 +3502,10 @@
       </field>
       <field id="approver_action">
         <phrase id="fldcaption" value="approver action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Approved" />
       </field>
       <field id="approver_comment">
         <phrase id="fldcaption" value="approver comment" />
@@ -3498,6 +3518,10 @@
       </field>
       <field id="verified_action">
         <phrase id="fldcaption" value="verified action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Verified" />
       </field>
       <field id="verified_comment">
         <phrase id="fldcaption" value="verified comment" />

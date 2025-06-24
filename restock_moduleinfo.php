@@ -117,14 +117,17 @@ class crestock_module extends cTable {
 		$this->fields['restocked_by'] = &$this->restocked_by;
 
 		// statuss
-		$this->statuss = new cField('restock_module', 'restock_module', 'x_statuss', 'statuss', '`statuss`', '`statuss`', 3, -1, FALSE, '`statuss`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->statuss = new cField('restock_module', 'restock_module', 'x_statuss', 'statuss', '`statuss`', '`statuss`', 3, -1, FALSE, '`statuss`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->statuss->Sortable = TRUE; // Allow sort
+		$this->statuss->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->statuss->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->statuss->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['statuss'] = &$this->statuss;
 
 		// restocked_action
-		$this->restocked_action = new cField('restock_module', 'restock_module', 'x_restocked_action', 'restocked_action', '`restocked_action`', '`restocked_action`', 3, -1, FALSE, '`restocked_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->restocked_action = new cField('restock_module', 'restock_module', 'x_restocked_action', 'restocked_action', '`restocked_action`', '`restocked_action`', 3, -1, FALSE, '`restocked_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->restocked_action->Sortable = TRUE; // Allow sort
+		$this->restocked_action->OptionCount = 2;
 		$this->restocked_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['restocked_action'] = &$this->restocked_action;
 
@@ -140,8 +143,9 @@ class crestock_module extends cTable {
 		$this->fields['approver_date'] = &$this->approver_date;
 
 		// approver_action
-		$this->approver_action = new cField('restock_module', 'restock_module', 'x_approver_action', 'approver_action', '`approver_action`', '`approver_action`', 3, -1, FALSE, '`approver_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->approver_action = new cField('restock_module', 'restock_module', 'x_approver_action', 'approver_action', '`approver_action`', '`approver_action`', 3, -1, FALSE, '`approver_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->approver_action->Sortable = TRUE; // Allow sort
+		$this->approver_action->OptionCount = 2;
 		$this->approver_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['approver_action'] = &$this->approver_action;
 
@@ -151,9 +155,10 @@ class crestock_module extends cTable {
 		$this->fields['approver_comment'] = &$this->approver_comment;
 
 		// approved_by
-		$this->approved_by = new cField('restock_module', 'restock_module', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->approved_by = new cField('restock_module', 'restock_module', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->approved_by->Sortable = TRUE; // Allow sort
-		$this->approved_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->approved_by->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->approved_by->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['approved_by'] = &$this->approved_by;
 
 		// verified_date
@@ -163,8 +168,9 @@ class crestock_module extends cTable {
 		$this->fields['verified_date'] = &$this->verified_date;
 
 		// verified_action
-		$this->verified_action = new cField('restock_module', 'restock_module', 'x_verified_action', 'verified_action', '`verified_action`', '`verified_action`', 3, -1, FALSE, '`verified_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->verified_action = new cField('restock_module', 'restock_module', 'x_verified_action', 'verified_action', '`verified_action`', '`verified_action`', 3, -1, FALSE, '`verified_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->verified_action->Sortable = TRUE; // Allow sort
+		$this->verified_action->OptionCount = 2;
 		$this->verified_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['verified_action'] = &$this->verified_action;
 
@@ -174,8 +180,10 @@ class crestock_module extends cTable {
 		$this->fields['verified_comment'] = &$this->verified_comment;
 
 		// verified_by
-		$this->verified_by = new cField('restock_module', 'restock_module', 'x_verified_by', 'verified_by', '`verified_by`', '`verified_by`', 3, -1, FALSE, '`verified_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->verified_by = new cField('restock_module', 'restock_module', 'x_verified_by', 'verified_by', '`verified_by`', '`verified_by`', 3, -1, FALSE, '`verified_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->verified_by->Sortable = TRUE; // Allow sort
+		$this->verified_by->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->verified_by->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->verified_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['verified_by'] = &$this->verified_by;
 	}
@@ -845,11 +853,34 @@ class crestock_module extends cTable {
 		$this->restocked_by->ViewCustomAttributes = "";
 
 		// statuss
-		$this->statuss->ViewValue = $this->statuss->CurrentValue;
+		if (strval($this->statuss->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
+		$sWhereWrk = "";
+		$this->statuss->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->statuss->ViewValue = $this->statuss->CurrentValue;
+			}
+		} else {
+			$this->statuss->ViewValue = NULL;
+		}
 		$this->statuss->ViewCustomAttributes = "";
 
 		// restocked_action
-		$this->restocked_action->ViewValue = $this->restocked_action->CurrentValue;
+		if (strval($this->restocked_action->CurrentValue) <> "") {
+			$this->restocked_action->ViewValue = $this->restocked_action->OptionCaption($this->restocked_action->CurrentValue);
+		} else {
+			$this->restocked_action->ViewValue = NULL;
+		}
 		$this->restocked_action->ViewCustomAttributes = "";
 
 		// restocked_comment
@@ -862,7 +893,11 @@ class crestock_module extends cTable {
 		$this->approver_date->ViewCustomAttributes = "";
 
 		// approver_action
-		$this->approver_action->ViewValue = $this->approver_action->CurrentValue;
+		if (strval($this->approver_action->CurrentValue) <> "") {
+			$this->approver_action->ViewValue = $this->approver_action->OptionCaption($this->approver_action->CurrentValue);
+		} else {
+			$this->approver_action->ViewValue = NULL;
+		}
 		$this->approver_action->ViewCustomAttributes = "";
 
 		// approver_comment
@@ -870,7 +905,28 @@ class crestock_module extends cTable {
 		$this->approver_comment->ViewCustomAttributes = "";
 
 		// approved_by
-		$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
+		if (strval($this->approved_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->approved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->approved_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->approved_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->approved_by->ViewValue = $this->approved_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
+			}
+		} else {
+			$this->approved_by->ViewValue = NULL;
+		}
 		$this->approved_by->ViewCustomAttributes = "";
 
 		// verified_date
@@ -879,7 +935,11 @@ class crestock_module extends cTable {
 		$this->verified_date->ViewCustomAttributes = "";
 
 		// verified_action
-		$this->verified_action->ViewValue = $this->verified_action->CurrentValue;
+		if (strval($this->verified_action->CurrentValue) <> "") {
+			$this->verified_action->ViewValue = $this->verified_action->OptionCaption($this->verified_action->CurrentValue);
+		} else {
+			$this->verified_action->ViewValue = NULL;
+		}
 		$this->verified_action->ViewCustomAttributes = "";
 
 		// verified_comment
@@ -887,7 +947,28 @@ class crestock_module extends cTable {
 		$this->verified_comment->ViewCustomAttributes = "";
 
 		// verified_by
-		$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
+		if (strval($this->verified_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->verified_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->verified_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->verified_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->verified_by->ViewValue = $this->verified_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
+			}
+		} else {
+			$this->verified_by->ViewValue = NULL;
+		}
 		$this->verified_by->ViewCustomAttributes = "";
 
 		// code
@@ -1059,14 +1140,10 @@ class crestock_module extends cTable {
 		// statuss
 		$this->statuss->EditAttrs["class"] = "form-control";
 		$this->statuss->EditCustomAttributes = "";
-		$this->statuss->EditValue = $this->statuss->CurrentValue;
-		$this->statuss->PlaceHolder = ew_RemoveHtml($this->statuss->FldCaption());
 
 		// restocked_action
-		$this->restocked_action->EditAttrs["class"] = "form-control";
 		$this->restocked_action->EditCustomAttributes = "";
-		$this->restocked_action->EditValue = $this->restocked_action->CurrentValue;
-		$this->restocked_action->PlaceHolder = ew_RemoveHtml($this->restocked_action->FldCaption());
+		$this->restocked_action->EditValue = $this->restocked_action->Options(FALSE);
 
 		// restocked_comment
 		$this->restocked_comment->EditAttrs["class"] = "form-control";
@@ -1081,10 +1158,8 @@ class crestock_module extends cTable {
 		$this->approver_date->PlaceHolder = ew_RemoveHtml($this->approver_date->FldCaption());
 
 		// approver_action
-		$this->approver_action->EditAttrs["class"] = "form-control";
 		$this->approver_action->EditCustomAttributes = "";
-		$this->approver_action->EditValue = $this->approver_action->CurrentValue;
-		$this->approver_action->PlaceHolder = ew_RemoveHtml($this->approver_action->FldCaption());
+		$this->approver_action->EditValue = $this->approver_action->Options(FALSE);
 
 		// approver_comment
 		$this->approver_comment->EditAttrs["class"] = "form-control";
@@ -1095,8 +1170,6 @@ class crestock_module extends cTable {
 		// approved_by
 		$this->approved_by->EditAttrs["class"] = "form-control";
 		$this->approved_by->EditCustomAttributes = "";
-		$this->approved_by->EditValue = $this->approved_by->CurrentValue;
-		$this->approved_by->PlaceHolder = ew_RemoveHtml($this->approved_by->FldCaption());
 
 		// verified_date
 		$this->verified_date->EditAttrs["class"] = "form-control";
@@ -1105,10 +1178,8 @@ class crestock_module extends cTable {
 		$this->verified_date->PlaceHolder = ew_RemoveHtml($this->verified_date->FldCaption());
 
 		// verified_action
-		$this->verified_action->EditAttrs["class"] = "form-control";
 		$this->verified_action->EditCustomAttributes = "";
-		$this->verified_action->EditValue = $this->verified_action->CurrentValue;
-		$this->verified_action->PlaceHolder = ew_RemoveHtml($this->verified_action->FldCaption());
+		$this->verified_action->EditValue = $this->verified_action->Options(FALSE);
 
 		// verified_comment
 		$this->verified_comment->EditAttrs["class"] = "form-control";
@@ -1119,8 +1190,6 @@ class crestock_module extends cTable {
 		// verified_by
 		$this->verified_by->EditAttrs["class"] = "form-control";
 		$this->verified_by->EditCustomAttributes = "";
-		$this->verified_by->EditValue = $this->verified_by->CurrentValue;
-		$this->verified_by->PlaceHolder = ew_RemoveHtml($this->verified_by->FldCaption());
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
