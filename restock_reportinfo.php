@@ -33,6 +33,7 @@ class crestock_report extends cTable {
 	var $verified_action;
 	var $verified_comment;
 	var $verified_by;
+	var $date_restocked1;
 
 	//
 	// Table class constructor
@@ -73,9 +74,9 @@ class crestock_report extends cTable {
 		$this->fields['code'] = &$this->code;
 
 		// date_restocked
-		$this->date_restocked = new cField('restock_report', 'restock_report', 'x_date_restocked', 'date_restocked', '`date_restocked`', ew_CastDateFieldForLike('`date_restocked`', 14, "DB"), 133, 14, FALSE, '`date_restocked`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date_restocked = new cField('restock_report', 'restock_report', 'x_date_restocked', 'date_restocked', '`date_restocked`', ew_CastDateFieldForLike('`date_restocked`', 0, "DB"), 133, 0, FALSE, '`date_restocked`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->date_restocked->Sortable = TRUE; // Allow sort
-		$this->date_restocked->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
+		$this->date_restocked->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['date_restocked'] = &$this->date_restocked;
 
 		// reference_id
@@ -112,16 +113,13 @@ class crestock_report extends cTable {
 		$this->fields['quantity'] = &$this->quantity;
 
 		// statuss
-		$this->statuss = new cField('restock_report', 'restock_report', 'x_statuss', 'statuss', '`statuss`', '`statuss`', 3, -1, FALSE, '`statuss`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->statuss = new cField('restock_report', 'restock_report', 'x_statuss', 'statuss', '`statuss`', '`statuss`', 3, -1, FALSE, '`statuss`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->statuss->Sortable = TRUE; // Allow sort
-		$this->statuss->UsePleaseSelect = TRUE; // Use PleaseSelect by default
-		$this->statuss->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['statuss'] = &$this->statuss;
 
 		// restocked_action
-		$this->restocked_action = new cField('restock_report', 'restock_report', 'x_restocked_action', 'restocked_action', '`restocked_action`', '`restocked_action`', 3, -1, FALSE, '`restocked_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->restocked_action = new cField('restock_report', 'restock_report', 'x_restocked_action', 'restocked_action', '`restocked_action`', '`restocked_action`', 3, -1, FALSE, '`restocked_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->restocked_action->Sortable = TRUE; // Allow sort
-		$this->restocked_action->OptionCount = 2;
 		$this->restocked_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['restocked_action'] = &$this->restocked_action;
 
@@ -133,6 +131,7 @@ class crestock_report extends cTable {
 		// restocked_by
 		$this->restocked_by = new cField('restock_report', 'restock_report', 'x_restocked_by', 'restocked_by', '`restocked_by`', '`restocked_by`', 3, -1, FALSE, '`restocked_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->restocked_by->Sortable = TRUE; // Allow sort
+		$this->restocked_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['restocked_by'] = &$this->restocked_by;
 
 		// approver_date
@@ -142,20 +141,20 @@ class crestock_report extends cTable {
 		$this->fields['approver_date'] = &$this->approver_date;
 
 		// approver_action
-		$this->approver_action = new cField('restock_report', 'restock_report', 'x_approver_action', 'approver_action', '`approver_action`', '`approver_action`', 3, -1, FALSE, '`approver_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->approver_action = new cField('restock_report', 'restock_report', 'x_approver_action', 'approver_action', '`approver_action`', '`approver_action`', 3, -1, FALSE, '`approver_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->approver_action->Sortable = TRUE; // Allow sort
-		$this->approver_action->OptionCount = 2;
 		$this->approver_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['approver_action'] = &$this->approver_action;
 
 		// approver_comment
-		$this->approver_comment = new cField('restock_report', 'restock_report', 'x_approver_comment', 'approver_comment', '`approver_comment`', '`approver_comment`', 200, -1, FALSE, '`approver_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->approver_comment = new cField('restock_report', 'restock_report', 'x_approver_comment', 'approver_comment', '`approver_comment`', '`approver_comment`', 200, -1, FALSE, '`approver_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->approver_comment->Sortable = TRUE; // Allow sort
 		$this->fields['approver_comment'] = &$this->approver_comment;
 
 		// approved_by
 		$this->approved_by = new cField('restock_report', 'restock_report', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->approved_by->Sortable = TRUE; // Allow sort
+		$this->approved_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['approved_by'] = &$this->approved_by;
 
 		// verified_date
@@ -165,21 +164,27 @@ class crestock_report extends cTable {
 		$this->fields['verified_date'] = &$this->verified_date;
 
 		// verified_action
-		$this->verified_action = new cField('restock_report', 'restock_report', 'x_verified_action', 'verified_action', '`verified_action`', '`verified_action`', 3, -1, FALSE, '`verified_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->verified_action = new cField('restock_report', 'restock_report', 'x_verified_action', 'verified_action', '`verified_action`', '`verified_action`', 3, -1, FALSE, '`verified_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->verified_action->Sortable = TRUE; // Allow sort
-		$this->verified_action->OptionCount = 2;
 		$this->verified_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['verified_action'] = &$this->verified_action;
 
 		// verified_comment
-		$this->verified_comment = new cField('restock_report', 'restock_report', 'x_verified_comment', 'verified_comment', '`verified_comment`', '`verified_comment`', 200, -1, FALSE, '`verified_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->verified_comment = new cField('restock_report', 'restock_report', 'x_verified_comment', 'verified_comment', '`verified_comment`', '`verified_comment`', 200, -1, FALSE, '`verified_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->verified_comment->Sortable = TRUE; // Allow sort
 		$this->fields['verified_comment'] = &$this->verified_comment;
 
 		// verified_by
 		$this->verified_by = new cField('restock_report', 'restock_report', 'x_verified_by', 'verified_by', '`verified_by`', '`verified_by`', 3, -1, FALSE, '`verified_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->verified_by->Sortable = TRUE; // Allow sort
+		$this->verified_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['verified_by'] = &$this->verified_by;
+
+		// date_restocked1
+		$this->date_restocked1 = new cField('restock_report', 'restock_report', 'x_date_restocked1', 'date_restocked1', '`date_restocked1`', ew_CastDateFieldForLike('`date_restocked1`', 0, "DB"), 135, 0, FALSE, '`date_restocked1`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date_restocked1->Sortable = TRUE; // Allow sort
+		$this->date_restocked1->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
+		$this->fields['date_restocked1'] = &$this->date_restocked1;
 	}
 
 	// Field Visibility
@@ -737,6 +742,7 @@ class crestock_report extends cTable {
 		$this->verified_action->setDbValue($rs->fields('verified_action'));
 		$this->verified_comment->setDbValue($rs->fields('verified_comment'));
 		$this->verified_by->setDbValue($rs->fields('verified_by'));
+		$this->date_restocked1->setDbValue($rs->fields('date_restocked1'));
 	}
 
 	// Render list row values
@@ -767,6 +773,7 @@ class crestock_report extends cTable {
 		// verified_action
 		// verified_comment
 		// verified_by
+		// date_restocked1
 		// code
 
 		$this->code->ViewValue = $this->code->CurrentValue;
@@ -774,7 +781,7 @@ class crestock_report extends cTable {
 
 		// date_restocked
 		$this->date_restocked->ViewValue = $this->date_restocked->CurrentValue;
-		$this->date_restocked->ViewValue = ew_FormatDateTime($this->date_restocked->ViewValue, 14);
+		$this->date_restocked->ViewValue = ew_FormatDateTime($this->date_restocked->ViewValue, 0);
 		$this->date_restocked->ViewCustomAttributes = "";
 
 		// reference_id
@@ -821,6 +828,7 @@ class crestock_report extends cTable {
 		$this->quantity->ViewCustomAttributes = "";
 
 		// statuss
+		$this->statuss->ViewValue = $this->statuss->CurrentValue;
 		if (strval($this->statuss->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
@@ -844,11 +852,7 @@ class crestock_report extends cTable {
 		$this->statuss->ViewCustomAttributes = "";
 
 		// restocked_action
-		if (strval($this->restocked_action->CurrentValue) <> "") {
-			$this->restocked_action->ViewValue = $this->restocked_action->OptionCaption($this->restocked_action->CurrentValue);
-		} else {
-			$this->restocked_action->ViewValue = NULL;
-		}
+		$this->restocked_action->ViewValue = $this->restocked_action->CurrentValue;
 		$this->restocked_action->ViewCustomAttributes = "";
 
 		// restocked_comment
@@ -857,28 +861,6 @@ class crestock_report extends cTable {
 
 		// restocked_by
 		$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
-		if (strval($this->restocked_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->restocked_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->restocked_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->restocked_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->restocked_by->ViewValue = $this->restocked_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
-			}
-		} else {
-			$this->restocked_by->ViewValue = NULL;
-		}
 		$this->restocked_by->ViewCustomAttributes = "";
 
 		// approver_date
@@ -887,11 +869,7 @@ class crestock_report extends cTable {
 		$this->approver_date->ViewCustomAttributes = "";
 
 		// approver_action
-		if (strval($this->approver_action->CurrentValue) <> "") {
-			$this->approver_action->ViewValue = $this->approver_action->OptionCaption($this->approver_action->CurrentValue);
-		} else {
-			$this->approver_action->ViewValue = NULL;
-		}
+		$this->approver_action->ViewValue = $this->approver_action->CurrentValue;
 		$this->approver_action->ViewCustomAttributes = "";
 
 		// approver_comment
@@ -900,27 +878,6 @@ class crestock_report extends cTable {
 
 		// approved_by
 		$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
-		if (strval($this->approved_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->approved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->approved_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->approved_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$this->approved_by->ViewValue = $this->approved_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
-			}
-		} else {
-			$this->approved_by->ViewValue = NULL;
-		}
 		$this->approved_by->ViewCustomAttributes = "";
 
 		// verified_date
@@ -929,11 +886,7 @@ class crestock_report extends cTable {
 		$this->verified_date->ViewCustomAttributes = "";
 
 		// verified_action
-		if (strval($this->verified_action->CurrentValue) <> "") {
-			$this->verified_action->ViewValue = $this->verified_action->OptionCaption($this->verified_action->CurrentValue);
-		} else {
-			$this->verified_action->ViewValue = NULL;
-		}
+		$this->verified_action->ViewValue = $this->verified_action->CurrentValue;
 		$this->verified_action->ViewCustomAttributes = "";
 
 		// verified_comment
@@ -942,28 +895,12 @@ class crestock_report extends cTable {
 
 		// verified_by
 		$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
-		if (strval($this->verified_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->verified_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->verified_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->verified_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$this->verified_by->ViewValue = $this->verified_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
-			}
-		} else {
-			$this->verified_by->ViewValue = NULL;
-		}
 		$this->verified_by->ViewCustomAttributes = "";
+
+		// date_restocked1
+		$this->date_restocked1->ViewValue = $this->date_restocked1->CurrentValue;
+		$this->date_restocked1->ViewValue = ew_FormatDateTime($this->date_restocked1->ViewValue, 0);
+		$this->date_restocked1->ViewCustomAttributes = "";
 
 		// code
 		$this->code->LinkCustomAttributes = "";
@@ -1065,6 +1002,11 @@ class crestock_report extends cTable {
 		$this->verified_by->HrefValue = "";
 		$this->verified_by->TooltipValue = "";
 
+		// date_restocked1
+		$this->date_restocked1->LinkCustomAttributes = "";
+		$this->date_restocked1->HrefValue = "";
+		$this->date_restocked1->TooltipValue = "";
+
 		// Call Row Rendered event
 		$this->Row_Rendered();
 
@@ -1088,7 +1030,7 @@ class crestock_report extends cTable {
 		// date_restocked
 		$this->date_restocked->EditAttrs["class"] = "form-control";
 		$this->date_restocked->EditCustomAttributes = "";
-		$this->date_restocked->EditValue = ew_FormatDateTime($this->date_restocked->CurrentValue, 14);
+		$this->date_restocked->EditValue = ew_FormatDateTime($this->date_restocked->CurrentValue, 8);
 		$this->date_restocked->PlaceHolder = ew_RemoveHtml($this->date_restocked->FldCaption());
 
 		// reference_id
@@ -1128,10 +1070,14 @@ class crestock_report extends cTable {
 		// statuss
 		$this->statuss->EditAttrs["class"] = "form-control";
 		$this->statuss->EditCustomAttributes = "";
+		$this->statuss->EditValue = $this->statuss->CurrentValue;
+		$this->statuss->PlaceHolder = ew_RemoveHtml($this->statuss->FldCaption());
 
 		// restocked_action
+		$this->restocked_action->EditAttrs["class"] = "form-control";
 		$this->restocked_action->EditCustomAttributes = "";
-		$this->restocked_action->EditValue = $this->restocked_action->Options(FALSE);
+		$this->restocked_action->EditValue = $this->restocked_action->CurrentValue;
+		$this->restocked_action->PlaceHolder = ew_RemoveHtml($this->restocked_action->FldCaption());
 
 		// restocked_comment
 		$this->restocked_comment->EditAttrs["class"] = "form-control";
@@ -1152,8 +1098,10 @@ class crestock_report extends cTable {
 		$this->approver_date->PlaceHolder = ew_RemoveHtml($this->approver_date->FldCaption());
 
 		// approver_action
+		$this->approver_action->EditAttrs["class"] = "form-control";
 		$this->approver_action->EditCustomAttributes = "";
-		$this->approver_action->EditValue = $this->approver_action->Options(FALSE);
+		$this->approver_action->EditValue = $this->approver_action->CurrentValue;
+		$this->approver_action->PlaceHolder = ew_RemoveHtml($this->approver_action->FldCaption());
 
 		// approver_comment
 		$this->approver_comment->EditAttrs["class"] = "form-control";
@@ -1174,8 +1122,10 @@ class crestock_report extends cTable {
 		$this->verified_date->PlaceHolder = ew_RemoveHtml($this->verified_date->FldCaption());
 
 		// verified_action
+		$this->verified_action->EditAttrs["class"] = "form-control";
 		$this->verified_action->EditCustomAttributes = "";
-		$this->verified_action->EditValue = $this->verified_action->Options(FALSE);
+		$this->verified_action->EditValue = $this->verified_action->CurrentValue;
+		$this->verified_action->PlaceHolder = ew_RemoveHtml($this->verified_action->FldCaption());
 
 		// verified_comment
 		$this->verified_comment->EditAttrs["class"] = "form-control";
@@ -1188,6 +1138,12 @@ class crestock_report extends cTable {
 		$this->verified_by->EditCustomAttributes = "";
 		$this->verified_by->EditValue = $this->verified_by->CurrentValue;
 		$this->verified_by->PlaceHolder = ew_RemoveHtml($this->verified_by->FldCaption());
+
+		// date_restocked1
+		$this->date_restocked1->EditAttrs["class"] = "form-control";
+		$this->date_restocked1->EditCustomAttributes = "";
+		$this->date_restocked1->EditValue = ew_FormatDateTime($this->date_restocked1->CurrentValue, 8);
+		$this->date_restocked1->PlaceHolder = ew_RemoveHtml($this->date_restocked1->FldCaption());
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -1236,6 +1192,7 @@ class crestock_report extends cTable {
 					if ($this->verified_action->Exportable) $Doc->ExportCaption($this->verified_action);
 					if ($this->verified_comment->Exportable) $Doc->ExportCaption($this->verified_comment);
 					if ($this->verified_by->Exportable) $Doc->ExportCaption($this->verified_by);
+					if ($this->date_restocked1->Exportable) $Doc->ExportCaption($this->date_restocked1);
 				} else {
 					if ($this->code->Exportable) $Doc->ExportCaption($this->code);
 					if ($this->date_restocked->Exportable) $Doc->ExportCaption($this->date_restocked);
@@ -1256,6 +1213,7 @@ class crestock_report extends cTable {
 					if ($this->verified_action->Exportable) $Doc->ExportCaption($this->verified_action);
 					if ($this->verified_comment->Exportable) $Doc->ExportCaption($this->verified_comment);
 					if ($this->verified_by->Exportable) $Doc->ExportCaption($this->verified_by);
+					if ($this->date_restocked1->Exportable) $Doc->ExportCaption($this->date_restocked1);
 				}
 				$Doc->EndExportRow();
 			}
@@ -1307,6 +1265,7 @@ class crestock_report extends cTable {
 						if ($this->verified_action->Exportable) $Doc->ExportField($this->verified_action);
 						if ($this->verified_comment->Exportable) $Doc->ExportField($this->verified_comment);
 						if ($this->verified_by->Exportable) $Doc->ExportField($this->verified_by);
+						if ($this->date_restocked1->Exportable) $Doc->ExportField($this->date_restocked1);
 					} else {
 						if ($this->code->Exportable) $Doc->ExportField($this->code);
 						if ($this->date_restocked->Exportable) $Doc->ExportField($this->date_restocked);
@@ -1327,6 +1286,7 @@ class crestock_report extends cTable {
 						if ($this->verified_action->Exportable) $Doc->ExportField($this->verified_action);
 						if ($this->verified_comment->Exportable) $Doc->ExportField($this->verified_comment);
 						if ($this->verified_by->Exportable) $Doc->ExportField($this->verified_by);
+						if ($this->date_restocked1->Exportable) $Doc->ExportField($this->date_restocked1);
 					}
 					$Doc->EndExportRow($RowCnt);
 				}

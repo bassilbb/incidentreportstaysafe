@@ -450,6 +450,7 @@ class crestock_report_view extends crestock_report {
 		$this->verified_action->SetVisibility();
 		$this->verified_comment->SetVisibility();
 		$this->verified_by->SetVisibility();
+		$this->date_restocked1->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -764,6 +765,7 @@ class crestock_report_view extends crestock_report {
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
+		$this->date_restocked1->setDbValue($row['date_restocked1']);
 	}
 
 	// Return a row with default values
@@ -789,6 +791,7 @@ class crestock_report_view extends crestock_report {
 		$row['verified_action'] = NULL;
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
+		$row['date_restocked1'] = NULL;
 		return $row;
 	}
 
@@ -817,6 +820,7 @@ class crestock_report_view extends crestock_report {
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
+		$this->date_restocked1->DbValue = $row['date_restocked1'];
 	}
 
 	// Render row values based on field settings
@@ -855,6 +859,7 @@ class crestock_report_view extends crestock_report {
 		// verified_action
 		// verified_comment
 		// verified_by
+		// date_restocked1
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -864,7 +869,7 @@ class crestock_report_view extends crestock_report {
 
 		// date_restocked
 		$this->date_restocked->ViewValue = $this->date_restocked->CurrentValue;
-		$this->date_restocked->ViewValue = ew_FormatDateTime($this->date_restocked->ViewValue, 14);
+		$this->date_restocked->ViewValue = ew_FormatDateTime($this->date_restocked->ViewValue, 0);
 		$this->date_restocked->ViewCustomAttributes = "";
 
 		// reference_id
@@ -911,6 +916,7 @@ class crestock_report_view extends crestock_report {
 		$this->quantity->ViewCustomAttributes = "";
 
 		// statuss
+		$this->statuss->ViewValue = $this->statuss->CurrentValue;
 		if (strval($this->statuss->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
@@ -934,11 +940,7 @@ class crestock_report_view extends crestock_report {
 		$this->statuss->ViewCustomAttributes = "";
 
 		// restocked_action
-		if (strval($this->restocked_action->CurrentValue) <> "") {
-			$this->restocked_action->ViewValue = $this->restocked_action->OptionCaption($this->restocked_action->CurrentValue);
-		} else {
-			$this->restocked_action->ViewValue = NULL;
-		}
+		$this->restocked_action->ViewValue = $this->restocked_action->CurrentValue;
 		$this->restocked_action->ViewCustomAttributes = "";
 
 		// restocked_comment
@@ -947,28 +949,6 @@ class crestock_report_view extends crestock_report {
 
 		// restocked_by
 		$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
-		if (strval($this->restocked_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->restocked_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->restocked_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->restocked_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->restocked_by->ViewValue = $this->restocked_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
-			}
-		} else {
-			$this->restocked_by->ViewValue = NULL;
-		}
 		$this->restocked_by->ViewCustomAttributes = "";
 
 		// approver_date
@@ -977,11 +957,7 @@ class crestock_report_view extends crestock_report {
 		$this->approver_date->ViewCustomAttributes = "";
 
 		// approver_action
-		if (strval($this->approver_action->CurrentValue) <> "") {
-			$this->approver_action->ViewValue = $this->approver_action->OptionCaption($this->approver_action->CurrentValue);
-		} else {
-			$this->approver_action->ViewValue = NULL;
-		}
+		$this->approver_action->ViewValue = $this->approver_action->CurrentValue;
 		$this->approver_action->ViewCustomAttributes = "";
 
 		// approver_comment
@@ -990,27 +966,6 @@ class crestock_report_view extends crestock_report {
 
 		// approved_by
 		$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
-		if (strval($this->approved_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->approved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->approved_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->approved_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$this->approved_by->ViewValue = $this->approved_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
-			}
-		} else {
-			$this->approved_by->ViewValue = NULL;
-		}
 		$this->approved_by->ViewCustomAttributes = "";
 
 		// verified_date
@@ -1019,11 +974,7 @@ class crestock_report_view extends crestock_report {
 		$this->verified_date->ViewCustomAttributes = "";
 
 		// verified_action
-		if (strval($this->verified_action->CurrentValue) <> "") {
-			$this->verified_action->ViewValue = $this->verified_action->OptionCaption($this->verified_action->CurrentValue);
-		} else {
-			$this->verified_action->ViewValue = NULL;
-		}
+		$this->verified_action->ViewValue = $this->verified_action->CurrentValue;
 		$this->verified_action->ViewCustomAttributes = "";
 
 		// verified_comment
@@ -1032,28 +983,12 @@ class crestock_report_view extends crestock_report {
 
 		// verified_by
 		$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
-		if (strval($this->verified_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->verified_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->verified_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->verified_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$this->verified_by->ViewValue = $this->verified_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
-			}
-		} else {
-			$this->verified_by->ViewValue = NULL;
-		}
 		$this->verified_by->ViewCustomAttributes = "";
+
+		// date_restocked1
+		$this->date_restocked1->ViewValue = $this->date_restocked1->CurrentValue;
+		$this->date_restocked1->ViewValue = ew_FormatDateTime($this->date_restocked1->ViewValue, 0);
+		$this->date_restocked1->ViewCustomAttributes = "";
 
 			// code
 			$this->code->LinkCustomAttributes = "";
@@ -1154,6 +1089,11 @@ class crestock_report_view extends crestock_report {
 			$this->verified_by->LinkCustomAttributes = "";
 			$this->verified_by->HrefValue = "";
 			$this->verified_by->TooltipValue = "";
+
+			// date_restocked1
+			$this->date_restocked1->LinkCustomAttributes = "";
+			$this->date_restocked1->HrefValue = "";
+			$this->date_restocked1->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1453,21 +1393,7 @@ frestock_reportview.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"
 frestock_reportview.Lists["x_material_name"].Data = "<?php echo $restock_report_view->material_name->LookupFilterQuery(FALSE, "view") ?>";
 frestock_reportview.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
 frestock_reportview.Lists["x_statuss"].Data = "<?php echo $restock_report_view->statuss->LookupFilterQuery(FALSE, "view") ?>";
-frestock_reportview.Lists["x_restocked_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-frestock_reportview.Lists["x_restocked_action"].Options = <?php echo json_encode($restock_report_view->restocked_action->Options()) ?>;
-frestock_reportview.Lists["x_restocked_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-frestock_reportview.Lists["x_restocked_by"].Data = "<?php echo $restock_report_view->restocked_by->LookupFilterQuery(FALSE, "view") ?>";
-frestock_reportview.AutoSuggests["x_restocked_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $restock_report_view->restocked_by->LookupFilterQuery(TRUE, "view"))) ?>;
-frestock_reportview.Lists["x_approver_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-frestock_reportview.Lists["x_approver_action"].Options = <?php echo json_encode($restock_report_view->approver_action->Options()) ?>;
-frestock_reportview.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-frestock_reportview.Lists["x_approved_by"].Data = "<?php echo $restock_report_view->approved_by->LookupFilterQuery(FALSE, "view") ?>";
-frestock_reportview.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $restock_report_view->approved_by->LookupFilterQuery(TRUE, "view"))) ?>;
-frestock_reportview.Lists["x_verified_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-frestock_reportview.Lists["x_verified_action"].Options = <?php echo json_encode($restock_report_view->verified_action->Options()) ?>;
-frestock_reportview.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-frestock_reportview.Lists["x_verified_by"].Data = "<?php echo $restock_report_view->verified_by->LookupFilterQuery(FALSE, "view") ?>";
-frestock_reportview.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $restock_report_view->verified_by->LookupFilterQuery(TRUE, "view"))) ?>;
+frestock_reportview.AutoSuggests["x_statuss"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $restock_report_view->statuss->LookupFilterQuery(TRUE, "view"))) ?>;
 
 // Form object for search
 </script>
@@ -1760,6 +1686,17 @@ $restock_report_view->ShowMessage();
 <span id="el_restock_report_verified_by" data-page="1">
 <span<?php echo $restock_report->verified_by->ViewAttributes() ?>>
 <?php echo $restock_report->verified_by->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($restock_report->date_restocked1->Visible) { // date_restocked1 ?>
+	<tr id="r_date_restocked1">
+		<td class="col-sm-2"><span id="elh_restock_report_date_restocked1"><?php echo $restock_report->date_restocked1->FldCaption() ?></span></td>
+		<td data-name="date_restocked1"<?php echo $restock_report->date_restocked1->CellAttributes() ?>>
+<span id="el_restock_report_date_restocked1" data-page="1">
+<span<?php echo $restock_report->date_restocked1->ViewAttributes() ?>>
+<?php echo $restock_report->date_restocked1->ViewValue ?></span>
 </span>
 </td>
 	</tr>
