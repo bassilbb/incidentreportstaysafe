@@ -437,7 +437,6 @@ class cloan_application_view extends cloan_application {
 		$this->address->SetVisibility();
 		$this->mobile->SetVisibility();
 		$this->department->SetVisibility();
-		$this->pension->SetVisibility();
 		$this->loan_amount->SetVisibility();
 		$this->amount_inwords->SetVisibility();
 		$this->purpose->SetVisibility();
@@ -475,6 +474,7 @@ class cloan_application_view extends cloan_application {
 		$this->approval_action->SetVisibility();
 		$this->approval_comment->SetVisibility();
 		$this->approved_by->SetVisibility();
+		$this->pension->SetVisibility();
 
 		// Set up multi page object
 		$this->SetupMultiPages();
@@ -815,7 +815,6 @@ class cloan_application_view extends cloan_application {
 		$this->address->setDbValue($row['address']);
 		$this->mobile->setDbValue($row['mobile']);
 		$this->department->setDbValue($row['department']);
-		$this->pension->setDbValue($row['pension']);
 		$this->loan_amount->setDbValue($row['loan_amount']);
 		$this->amount_inwords->setDbValue($row['amount_inwords']);
 		$this->purpose->setDbValue($row['purpose']);
@@ -855,6 +854,7 @@ class cloan_application_view extends cloan_application {
 		$this->approval_action->setDbValue($row['approval_action']);
 		$this->approval_comment->setDbValue($row['approval_comment']);
 		$this->approved_by->setDbValue($row['approved_by']);
+		$this->pension->setDbValue($row['pension']);
 	}
 
 	// Return a row with default values
@@ -867,7 +867,6 @@ class cloan_application_view extends cloan_application {
 		$row['address'] = NULL;
 		$row['mobile'] = NULL;
 		$row['department'] = NULL;
-		$row['pension'] = NULL;
 		$row['loan_amount'] = NULL;
 		$row['amount_inwords'] = NULL;
 		$row['purpose'] = NULL;
@@ -905,6 +904,7 @@ class cloan_application_view extends cloan_application {
 		$row['approval_action'] = NULL;
 		$row['approval_comment'] = NULL;
 		$row['approved_by'] = NULL;
+		$row['pension'] = NULL;
 		return $row;
 	}
 
@@ -920,7 +920,6 @@ class cloan_application_view extends cloan_application {
 		$this->address->DbValue = $row['address'];
 		$this->mobile->DbValue = $row['mobile'];
 		$this->department->DbValue = $row['department'];
-		$this->pension->DbValue = $row['pension'];
 		$this->loan_amount->DbValue = $row['loan_amount'];
 		$this->amount_inwords->DbValue = $row['amount_inwords'];
 		$this->purpose->DbValue = $row['purpose'];
@@ -958,6 +957,7 @@ class cloan_application_view extends cloan_application {
 		$this->approval_action->DbValue = $row['approval_action'];
 		$this->approval_comment->DbValue = $row['approval_comment'];
 		$this->approved_by->DbValue = $row['approved_by'];
+		$this->pension->DbValue = $row['pension'];
 	}
 
 	// Render row values based on field settings
@@ -1003,7 +1003,6 @@ class cloan_application_view extends cloan_application {
 		// address
 		// mobile
 		// department
-		// pension
 		// loan_amount
 		// amount_inwords
 		// purpose
@@ -1041,6 +1040,7 @@ class cloan_application_view extends cloan_application {
 		// approval_action
 		// approval_comment
 		// approved_by
+		// pension
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1112,10 +1112,6 @@ class cloan_application_view extends cloan_application {
 			$this->department->ViewValue = NULL;
 		}
 		$this->department->ViewCustomAttributes = "";
-
-		// pension
-		$this->pension->ViewValue = $this->pension->CurrentValue;
-		$this->pension->ViewCustomAttributes = "";
 
 		// loan_amount
 		$this->loan_amount->ViewValue = $this->loan_amount->CurrentValue;
@@ -1469,6 +1465,10 @@ class cloan_application_view extends cloan_application {
 		}
 		$this->approved_by->ViewCustomAttributes = "";
 
+		// pension
+		$this->pension->ViewValue = $this->pension->CurrentValue;
+		$this->pension->ViewCustomAttributes = "";
+
 			// code
 			$this->code->LinkCustomAttributes = "";
 			$this->code->HrefValue = "";
@@ -1503,11 +1503,6 @@ class cloan_application_view extends cloan_application {
 			$this->department->LinkCustomAttributes = "";
 			$this->department->HrefValue = "";
 			$this->department->TooltipValue = "";
-
-			// pension
-			$this->pension->LinkCustomAttributes = "";
-			$this->pension->HrefValue = "";
-			$this->pension->TooltipValue = "";
 
 			// loan_amount
 			$this->loan_amount->LinkCustomAttributes = "";
@@ -1695,6 +1690,11 @@ class cloan_application_view extends cloan_application {
 			$this->approved_by->LinkCustomAttributes = "";
 			$this->approved_by->HrefValue = "";
 			$this->approved_by->TooltipValue = "";
+
+			// pension
+			$this->pension->LinkCustomAttributes = "";
+			$this->pension->HrefValue = "";
+			$this->pension->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2200,17 +2200,6 @@ $loan_application_view->ShowMessage();
 </td>
 	</tr>
 <?php } ?>
-<?php if ($loan_application->pension->Visible) { // pension ?>
-	<tr id="r_pension">
-		<td class="col-sm-2"><span id="elh_loan_application_pension"><?php echo $loan_application->pension->FldCaption() ?></span></td>
-		<td data-name="pension"<?php echo $loan_application->pension->CellAttributes() ?>>
-<span id="el_loan_application_pension" data-page="1">
-<span<?php echo $loan_application->pension->ViewAttributes() ?>>
-<?php echo $loan_application->pension->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
 <?php if ($loan_application->loan_amount->Visible) { // loan_amount ?>
 	<tr id="r_loan_amount">
 		<td class="col-sm-2"><span id="elh_loan_application_loan_amount"><?php echo $loan_application->loan_amount->FldCaption() ?></span></td>
@@ -2329,6 +2318,17 @@ $loan_application_view->ShowMessage();
 <span<?php echo $loan_application->applicant_passport->ViewAttributes() ?>>
 <?php echo ew_GetFileViewTag($loan_application->applicant_passport, $loan_application->applicant_passport->ViewValue) ?>
 </span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_application->pension->Visible) { // pension ?>
+	<tr id="r_pension">
+		<td class="col-sm-2"><span id="elh_loan_application_pension"><?php echo $loan_application->pension->FldCaption() ?></span></td>
+		<td data-name="pension"<?php echo $loan_application->pension->CellAttributes() ?>>
+<span id="el_loan_application_pension" data-page="1">
+<span<?php echo $loan_application->pension->ViewAttributes() ?>>
+<?php echo $loan_application->pension->ViewValue ?></span>
 </span>
 </td>
 	</tr>

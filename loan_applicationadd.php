@@ -334,7 +334,6 @@ class cloan_application_add extends cloan_application {
 		$this->address->SetVisibility();
 		$this->mobile->SetVisibility();
 		$this->department->SetVisibility();
-		$this->pension->SetVisibility();
 		$this->loan_amount->SetVisibility();
 		$this->amount_inwords->SetVisibility();
 		$this->purpose->SetVisibility();
@@ -372,6 +371,7 @@ class cloan_application_add extends cloan_application {
 		$this->approval_action->SetVisibility();
 		$this->approval_comment->SetVisibility();
 		$this->approved_by->SetVisibility();
+		$this->pension->SetVisibility();
 
 		// Set up multi page object
 		$this->SetupMultiPages();
@@ -597,8 +597,6 @@ class cloan_application_add extends cloan_application {
 		$this->mobile->OldValue = $this->mobile->CurrentValue;
 		$this->department->CurrentValue = NULL;
 		$this->department->OldValue = $this->department->CurrentValue;
-		$this->pension->CurrentValue = NULL;
-		$this->pension->OldValue = $this->pension->CurrentValue;
 		$this->loan_amount->CurrentValue = NULL;
 		$this->loan_amount->OldValue = $this->loan_amount->CurrentValue;
 		$this->amount_inwords->CurrentValue = NULL;
@@ -674,6 +672,8 @@ class cloan_application_add extends cloan_application {
 		$this->approval_comment->OldValue = $this->approval_comment->CurrentValue;
 		$this->approved_by->CurrentValue = NULL;
 		$this->approved_by->OldValue = $this->approved_by->CurrentValue;
+		$this->pension->CurrentValue = NULL;
+		$this->pension->OldValue = $this->pension->CurrentValue;
 	}
 
 	// Load form values
@@ -700,9 +700,6 @@ class cloan_application_add extends cloan_application {
 		}
 		if (!$this->department->FldIsDetailKey) {
 			$this->department->setFormValue($objForm->GetValue("x_department"));
-		}
-		if (!$this->pension->FldIsDetailKey) {
-			$this->pension->setFormValue($objForm->GetValue("x_pension"));
 		}
 		if (!$this->loan_amount->FldIsDetailKey) {
 			$this->loan_amount->setFormValue($objForm->GetValue("x_loan_amount"));
@@ -816,6 +813,9 @@ class cloan_application_add extends cloan_application {
 		if (!$this->approved_by->FldIsDetailKey) {
 			$this->approved_by->setFormValue($objForm->GetValue("x_approved_by"));
 		}
+		if (!$this->pension->FldIsDetailKey) {
+			$this->pension->setFormValue($objForm->GetValue("x_pension"));
+		}
 	}
 
 	// Restore form values
@@ -828,7 +828,6 @@ class cloan_application_add extends cloan_application {
 		$this->address->CurrentValue = $this->address->FormValue;
 		$this->mobile->CurrentValue = $this->mobile->FormValue;
 		$this->department->CurrentValue = $this->department->FormValue;
-		$this->pension->CurrentValue = $this->pension->FormValue;
 		$this->loan_amount->CurrentValue = $this->loan_amount->FormValue;
 		$this->amount_inwords->CurrentValue = $this->amount_inwords->FormValue;
 		$this->purpose->CurrentValue = $this->purpose->FormValue;
@@ -871,6 +870,7 @@ class cloan_application_add extends cloan_application {
 		$this->approval_action->CurrentValue = $this->approval_action->FormValue;
 		$this->approval_comment->CurrentValue = $this->approval_comment->FormValue;
 		$this->approved_by->CurrentValue = $this->approved_by->FormValue;
+		$this->pension->CurrentValue = $this->pension->FormValue;
 	}
 
 	// Load row based on key values
@@ -913,7 +913,6 @@ class cloan_application_add extends cloan_application {
 		$this->address->setDbValue($row['address']);
 		$this->mobile->setDbValue($row['mobile']);
 		$this->department->setDbValue($row['department']);
-		$this->pension->setDbValue($row['pension']);
 		$this->loan_amount->setDbValue($row['loan_amount']);
 		$this->amount_inwords->setDbValue($row['amount_inwords']);
 		$this->purpose->setDbValue($row['purpose']);
@@ -953,6 +952,7 @@ class cloan_application_add extends cloan_application {
 		$this->approval_action->setDbValue($row['approval_action']);
 		$this->approval_comment->setDbValue($row['approval_comment']);
 		$this->approved_by->setDbValue($row['approved_by']);
+		$this->pension->setDbValue($row['pension']);
 	}
 
 	// Return a row with default values
@@ -966,7 +966,6 @@ class cloan_application_add extends cloan_application {
 		$row['address'] = $this->address->CurrentValue;
 		$row['mobile'] = $this->mobile->CurrentValue;
 		$row['department'] = $this->department->CurrentValue;
-		$row['pension'] = $this->pension->CurrentValue;
 		$row['loan_amount'] = $this->loan_amount->CurrentValue;
 		$row['amount_inwords'] = $this->amount_inwords->CurrentValue;
 		$row['purpose'] = $this->purpose->CurrentValue;
@@ -1004,6 +1003,7 @@ class cloan_application_add extends cloan_application {
 		$row['approval_action'] = $this->approval_action->CurrentValue;
 		$row['approval_comment'] = $this->approval_comment->CurrentValue;
 		$row['approved_by'] = $this->approved_by->CurrentValue;
+		$row['pension'] = $this->pension->CurrentValue;
 		return $row;
 	}
 
@@ -1019,7 +1019,6 @@ class cloan_application_add extends cloan_application {
 		$this->address->DbValue = $row['address'];
 		$this->mobile->DbValue = $row['mobile'];
 		$this->department->DbValue = $row['department'];
-		$this->pension->DbValue = $row['pension'];
 		$this->loan_amount->DbValue = $row['loan_amount'];
 		$this->amount_inwords->DbValue = $row['amount_inwords'];
 		$this->purpose->DbValue = $row['purpose'];
@@ -1057,6 +1056,7 @@ class cloan_application_add extends cloan_application {
 		$this->approval_action->DbValue = $row['approval_action'];
 		$this->approval_comment->DbValue = $row['approval_comment'];
 		$this->approved_by->DbValue = $row['approved_by'];
+		$this->pension->DbValue = $row['pension'];
 	}
 
 	// Load old record
@@ -1118,7 +1118,6 @@ class cloan_application_add extends cloan_application {
 		// address
 		// mobile
 		// department
-		// pension
 		// loan_amount
 		// amount_inwords
 		// purpose
@@ -1156,6 +1155,7 @@ class cloan_application_add extends cloan_application {
 		// approval_action
 		// approval_comment
 		// approved_by
+		// pension
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1227,10 +1227,6 @@ class cloan_application_add extends cloan_application {
 			$this->department->ViewValue = NULL;
 		}
 		$this->department->ViewCustomAttributes = "";
-
-		// pension
-		$this->pension->ViewValue = $this->pension->CurrentValue;
-		$this->pension->ViewCustomAttributes = "";
 
 		// loan_amount
 		$this->loan_amount->ViewValue = $this->loan_amount->CurrentValue;
@@ -1584,6 +1580,10 @@ class cloan_application_add extends cloan_application {
 		}
 		$this->approved_by->ViewCustomAttributes = "";
 
+		// pension
+		$this->pension->ViewValue = $this->pension->CurrentValue;
+		$this->pension->ViewCustomAttributes = "";
+
 			// date_initiated
 			$this->date_initiated->LinkCustomAttributes = "";
 			$this->date_initiated->HrefValue = "";
@@ -1613,11 +1613,6 @@ class cloan_application_add extends cloan_application {
 			$this->department->LinkCustomAttributes = "";
 			$this->department->HrefValue = "";
 			$this->department->TooltipValue = "";
-
-			// pension
-			$this->pension->LinkCustomAttributes = "";
-			$this->pension->HrefValue = "";
-			$this->pension->TooltipValue = "";
 
 			// loan_amount
 			$this->loan_amount->LinkCustomAttributes = "";
@@ -1805,6 +1800,11 @@ class cloan_application_add extends cloan_application {
 			$this->approved_by->LinkCustomAttributes = "";
 			$this->approved_by->HrefValue = "";
 			$this->approved_by->TooltipValue = "";
+
+			// pension
+			$this->pension->LinkCustomAttributes = "";
+			$this->pension->HrefValue = "";
+			$this->pension->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_ADD) { // Add row
 
 			// date_initiated
@@ -1876,12 +1876,6 @@ class cloan_application_add extends cloan_application {
 			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
 			if ($rswrk) $rswrk->Close();
 			$this->department->EditValue = $arwrk;
-
-			// pension
-			$this->pension->EditAttrs["class"] = "form-control";
-			$this->pension->EditCustomAttributes = "";
-			$this->pension->EditValue = ew_HtmlEncode($this->pension->CurrentValue);
-			$this->pension->PlaceHolder = ew_RemoveHtml($this->pension->FldCaption());
 
 			// loan_amount
 			$this->loan_amount->EditAttrs["class"] = "form-control";
@@ -2243,6 +2237,12 @@ class cloan_application_add extends cloan_application {
 			if ($rswrk) $rswrk->Close();
 			$this->approved_by->EditValue = $arwrk;
 
+			// pension
+			$this->pension->EditAttrs["class"] = "form-control";
+			$this->pension->EditCustomAttributes = "";
+			$this->pension->EditValue = ew_HtmlEncode($this->pension->CurrentValue);
+			$this->pension->PlaceHolder = ew_RemoveHtml($this->pension->FldCaption());
+
 			// Add refer script
 			// date_initiated
 
@@ -2268,10 +2268,6 @@ class cloan_application_add extends cloan_application {
 			// department
 			$this->department->LinkCustomAttributes = "";
 			$this->department->HrefValue = "";
-
-			// pension
-			$this->pension->LinkCustomAttributes = "";
-			$this->pension->HrefValue = "";
 
 			// loan_amount
 			$this->loan_amount->LinkCustomAttributes = "";
@@ -2422,6 +2418,10 @@ class cloan_application_add extends cloan_application {
 			// approved_by
 			$this->approved_by->LinkCustomAttributes = "";
 			$this->approved_by->HrefValue = "";
+
+			// pension
+			$this->pension->LinkCustomAttributes = "";
+			$this->pension->HrefValue = "";
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD || $this->RowType == EW_ROWTYPE_EDIT || $this->RowType == EW_ROWTYPE_SEARCH) // Add/Edit/Search row
 			$this->SetupFieldTitles();
@@ -2461,9 +2461,6 @@ class cloan_application_add extends cloan_application {
 		}
 		if (!$this->department->FldIsDetailKey && !is_null($this->department->FormValue) && $this->department->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->department->FldCaption(), $this->department->ReqErrMsg));
-		}
-		if (!$this->pension->FldIsDetailKey && !is_null($this->pension->FormValue) && $this->pension->FormValue == "") {
-			ew_AddMessage($gsFormError, str_replace("%s", $this->pension->FldCaption(), $this->pension->ReqErrMsg));
 		}
 		if (!$this->loan_amount->FldIsDetailKey && !is_null($this->loan_amount->FormValue) && $this->loan_amount->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->loan_amount->FldCaption(), $this->loan_amount->ReqErrMsg));
@@ -2636,9 +2633,6 @@ class cloan_application_add extends cloan_application {
 		// department
 		$this->department->SetDbValueDef($rsnew, $this->department->CurrentValue, NULL, FALSE);
 
-		// pension
-		$this->pension->SetDbValueDef($rsnew, $this->pension->CurrentValue, NULL, FALSE);
-
 		// loan_amount
 		$this->loan_amount->SetDbValueDef($rsnew, $this->loan_amount->CurrentValue, NULL, FALSE);
 
@@ -2763,6 +2757,9 @@ class cloan_application_add extends cloan_application {
 
 		// approved_by
 		$this->approved_by->SetDbValueDef($rsnew, $this->approved_by->CurrentValue, NULL, FALSE);
+
+		// pension
+		$this->pension->SetDbValueDef($rsnew, $this->pension->CurrentValue, NULL, FALSE);
 		if ($this->applicant_passport->Visible && !$this->applicant_passport->Upload->KeepFile) {
 			$OldFiles = ew_Empty($this->applicant_passport->Upload->DbValue) ? array() : array($this->applicant_passport->Upload->DbValue);
 			if (!ew_Empty($this->applicant_passport->Upload->FileName)) {
@@ -3242,9 +3239,6 @@ floan_applicationadd.Validate = function() {
 			elm = this.GetElements("x" + infix + "_department");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->department->FldCaption(), $loan_application->department->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_pension");
-			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
-				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->pension->FldCaption(), $loan_application->pension->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_loan_amount");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->loan_amount->FldCaption(), $loan_application->loan_amount->ReqErrMsg)) ?>");
@@ -3532,16 +3526,6 @@ $loan_application_add->ShowMessage();
 <?php echo $loan_application->department->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($loan_application->pension->Visible) { // pension ?>
-	<div id="r_pension" class="form-group">
-		<label id="elh_loan_application_pension" for="x_pension" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->pension->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
-		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->pension->CellAttributes() ?>>
-<span id="el_loan_application_pension">
-<input type="text" data-table="loan_application" data-field="x_pension" data-page="1" name="x_pension" id="x_pension" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($loan_application->pension->getPlaceHolder()) ?>" value="<?php echo $loan_application->pension->EditValue ?>"<?php echo $loan_application->pension->EditAttributes() ?>>
-</span>
-<?php echo $loan_application->pension->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
 <?php if ($loan_application->loan_amount->Visible) { // loan_amount ?>
 	<div id="r_loan_amount" class="form-group">
 		<label id="elh_loan_application_loan_amount" for="x_loan_amount" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->loan_amount->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
@@ -3673,6 +3657,16 @@ ew_CreateDateTimePicker("floan_applicationadd", "x_date_liquidated", {"ignoreRea
 <table id="ft_x_applicant_passport" class="table table-condensed pull-left ewUploadTable"><tbody class="files"></tbody></table>
 </span>
 <?php echo $loan_application->applicant_passport->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($loan_application->pension->Visible) { // pension ?>
+	<div id="r_pension" class="form-group">
+		<label id="elh_loan_application_pension" for="x_pension" class="<?php echo $loan_application_add->LeftColumnClass ?>"><?php echo $loan_application->pension->FldCaption() ?></label>
+		<div class="<?php echo $loan_application_add->RightColumnClass ?>"><div<?php echo $loan_application->pension->CellAttributes() ?>>
+<span id="el_loan_application_pension">
+<input type="text" data-table="loan_application" data-field="x_pension" data-page="1" name="x_pension" id="x_pension" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($loan_application->pension->getPlaceHolder()) ?>" value="<?php echo $loan_application->pension->EditValue ?>"<?php echo $loan_application->pension->EditAttributes() ?>>
+</span>
+<?php echo $loan_application->pension->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 </div><!-- /page* -->
@@ -3820,7 +3814,7 @@ $wrkonchange = trim(" " . @$loan_application->status->EditAttrs["onchange"]);
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $loan_application->status->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_status" style="white-space: nowrap; z-index: 8690">
+<span id="as_x_status" style="white-space: nowrap; z-index: 8700">
 	<input type="text" name="sv_x_status" id="sv_x_status" value="<?php echo $loan_application->status->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($loan_application->status->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($loan_application->status->getPlaceHolder()) ?>"<?php echo $loan_application->status->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="loan_application" data-field="x_status" data-page="3" data-value-separator="<?php echo $loan_application->status->DisplayValueSeparatorAttribute() ?>" name="x_status" id="x_status" value="<?php echo ew_HtmlEncode($loan_application->status->CurrentValue) ?>"<?php echo $wrkonchange ?>>
@@ -3910,7 +3904,7 @@ $wrkonchange = trim(" " . @$loan_application->recommended_by->EditAttrs["onchang
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $loan_application->recommended_by->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_recommended_by" style="white-space: nowrap; z-index: 8620">
+<span id="as_x_recommended_by" style="white-space: nowrap; z-index: 8630">
 	<input type="text" name="sv_x_recommended_by" id="sv_x_recommended_by" value="<?php echo $loan_application->recommended_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($loan_application->recommended_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($loan_application->recommended_by->getPlaceHolder()) ?>"<?php echo $loan_application->recommended_by->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="loan_application" data-field="x_recommended_by" data-page="3" data-value-separator="<?php echo $loan_application->recommended_by->DisplayValueSeparatorAttribute() ?>" name="x_recommended_by" id="x_recommended_by" value="<?php echo ew_HtmlEncode($loan_application->recommended_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
