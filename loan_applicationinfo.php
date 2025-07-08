@@ -367,7 +367,6 @@ class cloan_application extends cTable {
 		// correction_date
 		$this->correction_date = new cField('loan_application', 'loan_application', 'x_correction_date', 'correction_date', '`correction_date`', ew_CastDateFieldForLike('`correction_date`', 0, "DB"), 135, 0, FALSE, '`correction_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->correction_date->Sortable = TRUE; // Allow sort
-		$this->correction_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['correction_date'] = &$this->correction_date;
 
 		// correction_action
@@ -2789,14 +2788,14 @@ class cloan_application extends cTable {
 			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 8) ) {
 				$rsnew["correction_date"] = $now->format('Y-m-d H:i:s');
 				$rsnew["corrected_by"] = $_SESSION['Staff_ID'];
-			  }
 
 			   	// Loan Corrected by Administrators
-				if ($this->correction_action->CurrentValue == 0 ) {
+				if ($this->correction_action->CurrentValue == 0 && CurrentUserLevel() == 8) {
 
 					// New
 					if ($this->status->CurrentValue == 1) {
-						$rsnew["status"] = 1;					
+
+						//$rsnew["status"] = 1;					
 						$rsnew["correction_action"] = 0;
 					}
 
@@ -2804,7 +2803,7 @@ class cloan_application extends cTable {
 				}
 
 				// Loan Corrected by Administrators
-				if ($this->correction_action->CurrentValue == 1 && $this->status->CurrentValue == 1) {
+				if ($this->correction_action->CurrentValue == 1 && CurrentUserLevel() == 8) {
 
 					// New
 					if ($this->status->CurrentValue == 1) {
@@ -2813,6 +2812,7 @@ class cloan_application extends cTable {
 					}
 					$this->setSuccessMessage("&#x25C9; Loan Successfully Corrected &#x2714;");
 				}
+			}
 
 	//==================================================================================================================//
 				// Confirmed by AUTHORIZER

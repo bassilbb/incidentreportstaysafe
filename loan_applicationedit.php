@@ -2771,9 +2771,6 @@ class cloan_application_edit extends cloan_application {
 		if (!$this->correction_date->FldIsDetailKey && !is_null($this->correction_date->FormValue) && $this->correction_date->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->correction_date->FldCaption(), $this->correction_date->ReqErrMsg));
 		}
-		if (!ew_CheckDateDef($this->correction_date->FormValue)) {
-			ew_AddMessage($gsFormError, $this->correction_date->FldErrMsg());
-		}
 		if ($this->correction_action->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->correction_action->FldCaption(), $this->correction_action->ReqErrMsg));
 		}
@@ -3618,9 +3615,6 @@ floan_applicationedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_correction_date");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->correction_date->FldCaption(), $loan_application->correction_date->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_correction_date");
-			if (elm && !ew_CheckDateDef(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($loan_application->correction_date->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_correction_action");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $loan_application->correction_action->FldCaption(), $loan_application->correction_action->ReqErrMsg)) ?>");
