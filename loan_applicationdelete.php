@@ -329,6 +329,7 @@ class cloan_application_delete extends cloan_application {
 		$this->address->SetVisibility();
 		$this->mobile->SetVisibility();
 		$this->department->SetVisibility();
+		$this->pension->SetVisibility();
 		$this->loan_amount->SetVisibility();
 		$this->amount_inwords->SetVisibility();
 		$this->repayment_period->SetVisibility();
@@ -343,7 +344,10 @@ class cloan_application_delete extends cloan_application {
 		$this->guarantor_mobile->SetVisibility();
 		$this->status->SetVisibility();
 		$this->application_status->SetVisibility();
-		$this->pension->SetVisibility();
+		$this->correction_date->SetVisibility();
+		$this->correction_action->SetVisibility();
+		$this->correction_comment->SetVisibility();
+		$this->corrected_by->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -530,6 +534,7 @@ class cloan_application_delete extends cloan_application {
 		$this->address->setDbValue($row['address']);
 		$this->mobile->setDbValue($row['mobile']);
 		$this->department->setDbValue($row['department']);
+		$this->pension->setDbValue($row['pension']);
 		$this->loan_amount->setDbValue($row['loan_amount']);
 		$this->amount_inwords->setDbValue($row['amount_inwords']);
 		$this->purpose->setDbValue($row['purpose']);
@@ -569,7 +574,10 @@ class cloan_application_delete extends cloan_application {
 		$this->approval_action->setDbValue($row['approval_action']);
 		$this->approval_comment->setDbValue($row['approval_comment']);
 		$this->approved_by->setDbValue($row['approved_by']);
-		$this->pension->setDbValue($row['pension']);
+		$this->correction_date->setDbValue($row['correction_date']);
+		$this->correction_action->setDbValue($row['correction_action']);
+		$this->correction_comment->setDbValue($row['correction_comment']);
+		$this->corrected_by->setDbValue($row['corrected_by']);
 	}
 
 	// Return a row with default values
@@ -582,6 +590,7 @@ class cloan_application_delete extends cloan_application {
 		$row['address'] = NULL;
 		$row['mobile'] = NULL;
 		$row['department'] = NULL;
+		$row['pension'] = NULL;
 		$row['loan_amount'] = NULL;
 		$row['amount_inwords'] = NULL;
 		$row['purpose'] = NULL;
@@ -619,7 +628,10 @@ class cloan_application_delete extends cloan_application {
 		$row['approval_action'] = NULL;
 		$row['approval_comment'] = NULL;
 		$row['approved_by'] = NULL;
-		$row['pension'] = NULL;
+		$row['correction_date'] = NULL;
+		$row['correction_action'] = NULL;
+		$row['correction_comment'] = NULL;
+		$row['corrected_by'] = NULL;
 		return $row;
 	}
 
@@ -635,6 +647,7 @@ class cloan_application_delete extends cloan_application {
 		$this->address->DbValue = $row['address'];
 		$this->mobile->DbValue = $row['mobile'];
 		$this->department->DbValue = $row['department'];
+		$this->pension->DbValue = $row['pension'];
 		$this->loan_amount->DbValue = $row['loan_amount'];
 		$this->amount_inwords->DbValue = $row['amount_inwords'];
 		$this->purpose->DbValue = $row['purpose'];
@@ -672,7 +685,10 @@ class cloan_application_delete extends cloan_application {
 		$this->approval_action->DbValue = $row['approval_action'];
 		$this->approval_comment->DbValue = $row['approval_comment'];
 		$this->approved_by->DbValue = $row['approved_by'];
-		$this->pension->DbValue = $row['pension'];
+		$this->correction_date->DbValue = $row['correction_date'];
+		$this->correction_action->DbValue = $row['correction_action'];
+		$this->correction_comment->DbValue = $row['correction_comment'];
+		$this->corrected_by->DbValue = $row['corrected_by'];
 	}
 
 	// Render row values based on field settings
@@ -708,6 +724,7 @@ class cloan_application_delete extends cloan_application {
 		// address
 		// mobile
 		// department
+		// pension
 		// loan_amount
 		// amount_inwords
 		// purpose
@@ -745,7 +762,10 @@ class cloan_application_delete extends cloan_application {
 		// approval_action
 		// approval_comment
 		// approved_by
-		// pension
+		// correction_date
+		// correction_action
+		// correction_comment
+		// corrected_by
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -817,6 +837,10 @@ class cloan_application_delete extends cloan_application {
 			$this->department->ViewValue = NULL;
 		}
 		$this->department->ViewCustomAttributes = "";
+
+		// pension
+		$this->pension->ViewValue = $this->pension->CurrentValue;
+		$this->pension->ViewCustomAttributes = "";
 
 		// loan_amount
 		$this->loan_amount->ViewValue = $this->loan_amount->CurrentValue;
@@ -1150,9 +1174,47 @@ class cloan_application_delete extends cloan_application {
 		}
 		$this->approved_by->ViewCustomAttributes = "";
 
-		// pension
-		$this->pension->ViewValue = $this->pension->CurrentValue;
-		$this->pension->ViewCustomAttributes = "";
+		// correction_date
+		$this->correction_date->ViewValue = $this->correction_date->CurrentValue;
+		$this->correction_date->ViewValue = ew_FormatDateTime($this->correction_date->ViewValue, 0);
+		$this->correction_date->ViewCustomAttributes = "";
+
+		// correction_action
+		if (strval($this->correction_action->CurrentValue) <> "") {
+			$this->correction_action->ViewValue = $this->correction_action->OptionCaption($this->correction_action->CurrentValue);
+		} else {
+			$this->correction_action->ViewValue = NULL;
+		}
+		$this->correction_action->ViewCustomAttributes = "";
+
+		// correction_comment
+		$this->correction_comment->ViewValue = $this->correction_comment->CurrentValue;
+		$this->correction_comment->ViewCustomAttributes = "";
+
+		// corrected_by
+		$this->corrected_by->ViewValue = $this->corrected_by->CurrentValue;
+		if (strval($this->corrected_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->corrected_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->corrected_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->corrected_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->corrected_by->ViewValue = $this->corrected_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->corrected_by->ViewValue = $this->corrected_by->CurrentValue;
+			}
+		} else {
+			$this->corrected_by->ViewValue = NULL;
+		}
+		$this->corrected_by->ViewCustomAttributes = "";
 
 			// date_initiated
 			$this->date_initiated->LinkCustomAttributes = "";
@@ -1183,6 +1245,11 @@ class cloan_application_delete extends cloan_application {
 			$this->department->LinkCustomAttributes = "";
 			$this->department->HrefValue = "";
 			$this->department->TooltipValue = "";
+
+			// pension
+			$this->pension->LinkCustomAttributes = "";
+			$this->pension->HrefValue = "";
+			$this->pension->TooltipValue = "";
 
 			// loan_amount
 			$this->loan_amount->LinkCustomAttributes = "";
@@ -1254,10 +1321,25 @@ class cloan_application_delete extends cloan_application {
 			$this->application_status->HrefValue = "";
 			$this->application_status->TooltipValue = "";
 
-			// pension
-			$this->pension->LinkCustomAttributes = "";
-			$this->pension->HrefValue = "";
-			$this->pension->TooltipValue = "";
+			// correction_date
+			$this->correction_date->LinkCustomAttributes = "";
+			$this->correction_date->HrefValue = "";
+			$this->correction_date->TooltipValue = "";
+
+			// correction_action
+			$this->correction_action->LinkCustomAttributes = "";
+			$this->correction_action->HrefValue = "";
+			$this->correction_action->TooltipValue = "";
+
+			// correction_comment
+			$this->correction_comment->LinkCustomAttributes = "";
+			$this->correction_comment->HrefValue = "";
+			$this->correction_comment->TooltipValue = "";
+
+			// corrected_by
+			$this->corrected_by->LinkCustomAttributes = "";
+			$this->corrected_by->HrefValue = "";
+			$this->corrected_by->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1312,13 +1394,13 @@ class cloan_application_delete extends cloan_application {
 
 				// Delete old files
 				$this->LoadDbValues($row);
-				$OldFiles = ew_Empty($row['applicant_passport']) ? array() : array($row['applicant_passport']);
+				$OldFiles = ew_Empty($row['applicant_passport']) ? array() : explode(EW_MULTIPLE_UPLOAD_SEPARATOR, $row['applicant_passport']);
 				$OldFileCount = count($OldFiles);
 				for ($i = 0; $i < $OldFileCount; $i++) {
 					if (file_exists($this->applicant_passport->OldPhysicalUploadPath() . $OldFiles[$i]))
 						@unlink($this->applicant_passport->OldPhysicalUploadPath() . $OldFiles[$i]);
 				}
-				$OldFiles = ew_Empty($row['guarantor_passport']) ? array() : array($row['guarantor_passport']);
+				$OldFiles = ew_Empty($row['guarantor_passport']) ? array() : explode(EW_MULTIPLE_UPLOAD_SEPARATOR, $row['guarantor_passport']);
 				$OldFileCount = count($OldFiles);
 				for ($i = 0; $i < $OldFileCount; $i++) {
 					if (file_exists($this->guarantor_passport->OldPhysicalUploadPath() . $OldFiles[$i]))
@@ -1498,6 +1580,11 @@ floan_applicationdelete.Lists["x_status"].Data = "<?php echo $loan_application_d
 floan_applicationdelete.AutoSuggests["x_status"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $loan_application_delete->status->LookupFilterQuery(TRUE, "delete"))) ?>;
 floan_applicationdelete.Lists["x_application_status"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 floan_applicationdelete.Lists["x_application_status"].Options = <?php echo json_encode($loan_application_delete->application_status->Options()) ?>;
+floan_applicationdelete.Lists["x_correction_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+floan_applicationdelete.Lists["x_correction_action"].Options = <?php echo json_encode($loan_application_delete->correction_action->Options()) ?>;
+floan_applicationdelete.Lists["x_corrected_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+floan_applicationdelete.Lists["x_corrected_by"].Data = "<?php echo $loan_application_delete->corrected_by->LookupFilterQuery(FALSE, "delete") ?>";
+floan_applicationdelete.AutoSuggests["x_corrected_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $loan_application_delete->corrected_by->LookupFilterQuery(TRUE, "delete"))) ?>;
 
 // Form object for search
 </script>
@@ -1542,6 +1629,9 @@ $loan_application_delete->ShowMessage();
 <?php if ($loan_application->department->Visible) { // department ?>
 		<th class="<?php echo $loan_application->department->HeaderCellClass() ?>"><span id="elh_loan_application_department" class="loan_application_department"><?php echo $loan_application->department->FldCaption() ?></span></th>
 <?php } ?>
+<?php if ($loan_application->pension->Visible) { // pension ?>
+		<th class="<?php echo $loan_application->pension->HeaderCellClass() ?>"><span id="elh_loan_application_pension" class="loan_application_pension"><?php echo $loan_application->pension->FldCaption() ?></span></th>
+<?php } ?>
 <?php if ($loan_application->loan_amount->Visible) { // loan_amount ?>
 		<th class="<?php echo $loan_application->loan_amount->HeaderCellClass() ?>"><span id="elh_loan_application_loan_amount" class="loan_application_loan_amount"><?php echo $loan_application->loan_amount->FldCaption() ?></span></th>
 <?php } ?>
@@ -1584,8 +1674,17 @@ $loan_application_delete->ShowMessage();
 <?php if ($loan_application->application_status->Visible) { // application_status ?>
 		<th class="<?php echo $loan_application->application_status->HeaderCellClass() ?>"><span id="elh_loan_application_application_status" class="loan_application_application_status"><?php echo $loan_application->application_status->FldCaption() ?></span></th>
 <?php } ?>
-<?php if ($loan_application->pension->Visible) { // pension ?>
-		<th class="<?php echo $loan_application->pension->HeaderCellClass() ?>"><span id="elh_loan_application_pension" class="loan_application_pension"><?php echo $loan_application->pension->FldCaption() ?></span></th>
+<?php if ($loan_application->correction_date->Visible) { // correction_date ?>
+		<th class="<?php echo $loan_application->correction_date->HeaderCellClass() ?>"><span id="elh_loan_application_correction_date" class="loan_application_correction_date"><?php echo $loan_application->correction_date->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($loan_application->correction_action->Visible) { // correction_action ?>
+		<th class="<?php echo $loan_application->correction_action->HeaderCellClass() ?>"><span id="elh_loan_application_correction_action" class="loan_application_correction_action"><?php echo $loan_application->correction_action->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($loan_application->correction_comment->Visible) { // correction_comment ?>
+		<th class="<?php echo $loan_application->correction_comment->HeaderCellClass() ?>"><span id="elh_loan_application_correction_comment" class="loan_application_correction_comment"><?php echo $loan_application->correction_comment->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($loan_application->corrected_by->Visible) { // corrected_by ?>
+		<th class="<?php echo $loan_application->corrected_by->HeaderCellClass() ?>"><span id="elh_loan_application_corrected_by" class="loan_application_corrected_by"><?php echo $loan_application->corrected_by->FldCaption() ?></span></th>
 <?php } ?>
 	</tr>
 	</thead>
@@ -1653,6 +1752,14 @@ while (!$loan_application_delete->Recordset->EOF) {
 <span id="el<?php echo $loan_application_delete->RowCnt ?>_loan_application_department" class="loan_application_department">
 <span<?php echo $loan_application->department->ViewAttributes() ?>>
 <?php echo $loan_application->department->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($loan_application->pension->Visible) { // pension ?>
+		<td<?php echo $loan_application->pension->CellAttributes() ?>>
+<span id="el<?php echo $loan_application_delete->RowCnt ?>_loan_application_pension" class="loan_application_pension">
+<span<?php echo $loan_application->pension->ViewAttributes() ?>>
+<?php echo $loan_application->pension->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>
@@ -1768,11 +1875,35 @@ while (!$loan_application_delete->Recordset->EOF) {
 </span>
 </td>
 <?php } ?>
-<?php if ($loan_application->pension->Visible) { // pension ?>
-		<td<?php echo $loan_application->pension->CellAttributes() ?>>
-<span id="el<?php echo $loan_application_delete->RowCnt ?>_loan_application_pension" class="loan_application_pension">
-<span<?php echo $loan_application->pension->ViewAttributes() ?>>
-<?php echo $loan_application->pension->ListViewValue() ?></span>
+<?php if ($loan_application->correction_date->Visible) { // correction_date ?>
+		<td<?php echo $loan_application->correction_date->CellAttributes() ?>>
+<span id="el<?php echo $loan_application_delete->RowCnt ?>_loan_application_correction_date" class="loan_application_correction_date">
+<span<?php echo $loan_application->correction_date->ViewAttributes() ?>>
+<?php echo $loan_application->correction_date->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($loan_application->correction_action->Visible) { // correction_action ?>
+		<td<?php echo $loan_application->correction_action->CellAttributes() ?>>
+<span id="el<?php echo $loan_application_delete->RowCnt ?>_loan_application_correction_action" class="loan_application_correction_action">
+<span<?php echo $loan_application->correction_action->ViewAttributes() ?>>
+<?php echo $loan_application->correction_action->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($loan_application->correction_comment->Visible) { // correction_comment ?>
+		<td<?php echo $loan_application->correction_comment->CellAttributes() ?>>
+<span id="el<?php echo $loan_application_delete->RowCnt ?>_loan_application_correction_comment" class="loan_application_correction_comment">
+<span<?php echo $loan_application->correction_comment->ViewAttributes() ?>>
+<?php echo $loan_application->correction_comment->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($loan_application->corrected_by->Visible) { // corrected_by ?>
+		<td<?php echo $loan_application->corrected_by->CellAttributes() ?>>
+<span id="el<?php echo $loan_application_delete->RowCnt ?>_loan_application_corrected_by" class="loan_application_corrected_by">
+<span<?php echo $loan_application->corrected_by->ViewAttributes() ?>>
+<?php echo $loan_application->corrected_by->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

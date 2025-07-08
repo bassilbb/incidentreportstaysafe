@@ -20,6 +20,7 @@ class cloan_application extends cTable {
 	var $address;
 	var $mobile;
 	var $department;
+	var $pension;
 	var $loan_amount;
 	var $amount_inwords;
 	var $purpose;
@@ -57,7 +58,10 @@ class cloan_application extends cTable {
 	var $approval_action;
 	var $approval_comment;
 	var $approved_by;
-	var $pension;
+	var $correction_date;
+	var $correction_action;
+	var $correction_comment;
+	var $corrected_by;
 
 	//
 	// Table class constructor
@@ -133,6 +137,11 @@ class cloan_application extends cTable {
 		$this->department->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['department'] = &$this->department;
 
+		// pension
+		$this->pension = new cField('loan_application', 'loan_application', 'x_pension', 'pension', '`pension`', '`pension`', 200, -1, FALSE, '`pension`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->pension->Sortable = TRUE; // Allow sort
+		$this->fields['pension'] = &$this->pension;
+
 		// loan_amount
 		$this->loan_amount = new cField('loan_application', 'loan_application', 'x_loan_amount', 'loan_amount', '`loan_amount`', '`loan_amount`', 131, -1, FALSE, '`loan_amount`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->loan_amount->Sortable = TRUE; // Allow sort
@@ -195,6 +204,9 @@ class cloan_application extends cTable {
 		// applicant_passport
 		$this->applicant_passport = new cField('loan_application', 'loan_application', 'x_applicant_passport', 'applicant_passport', '`applicant_passport`', '`applicant_passport`', 201, -1, TRUE, '`applicant_passport`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'FILE');
 		$this->applicant_passport->Sortable = TRUE; // Allow sort
+		$this->applicant_passport->UploadMultiple = TRUE;
+		$this->applicant_passport->Upload->UploadMultiple = TRUE;
+		$this->applicant_passport->UploadMaxFileCount = 0;
 		$this->fields['applicant_passport'] = &$this->applicant_passport;
 
 		// guarantor_name
@@ -257,6 +269,9 @@ class cloan_application extends cTable {
 		// guarantor_passport
 		$this->guarantor_passport = new cField('loan_application', 'loan_application', 'x_guarantor_passport', 'guarantor_passport', '`guarantor_passport`', '`guarantor_passport`', 201, -1, TRUE, '`guarantor_passport`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'FILE');
 		$this->guarantor_passport->Sortable = TRUE; // Allow sort
+		$this->guarantor_passport->UploadMultiple = TRUE;
+		$this->guarantor_passport->Upload->UploadMultiple = TRUE;
+		$this->guarantor_passport->UploadMaxFileCount = 0;
 		$this->fields['guarantor_passport'] = &$this->guarantor_passport;
 
 		// status
@@ -267,7 +282,7 @@ class cloan_application extends cTable {
 		// initiator_action
 		$this->initiator_action = new cField('loan_application', 'loan_application', 'x_initiator_action', 'initiator_action', '`initiator_action`', '`initiator_action`', 3, -1, FALSE, '`initiator_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->initiator_action->Sortable = TRUE; // Allow sort
-		$this->initiator_action->OptionCount = 1;
+		$this->initiator_action->OptionCount = 2;
 		$this->initiator_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['initiator_action'] = &$this->initiator_action;
 
@@ -290,7 +305,7 @@ class cloan_application extends cTable {
 		// recommender_action
 		$this->recommender_action = new cField('loan_application', 'loan_application', 'x_recommender_action', 'recommender_action', '`recommender_action`', '`recommender_action`', 3, -1, FALSE, '`recommender_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->recommender_action->Sortable = TRUE; // Allow sort
-		$this->recommender_action->OptionCount = 2;
+		$this->recommender_action->OptionCount = 3;
 		$this->fields['recommender_action'] = &$this->recommender_action;
 
 		// recommender_comment
@@ -316,7 +331,7 @@ class cloan_application extends cTable {
 		$this->fields['approved_amount'] = &$this->approved_amount;
 
 		// duration_approved
-		$this->duration_approved = new cField('loan_application', 'loan_application', 'x_duration_approved', 'duration_approved', '`duration_approved`', ew_CastDateFieldForLike('`duration_approved`', 0, "DB"), 133, 0, FALSE, '`duration_approved`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->duration_approved = new cField('loan_application', 'loan_application', 'x_duration_approved', 'duration_approved', '`duration_approved`', '`duration_approved`', 200, 0, FALSE, '`duration_approved`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->duration_approved->Sortable = TRUE; // Allow sort
 		$this->duration_approved->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->duration_approved->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
@@ -349,10 +364,28 @@ class cloan_application extends cTable {
 		$this->approved_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['approved_by'] = &$this->approved_by;
 
-		// pension
-		$this->pension = new cField('loan_application', 'loan_application', 'x_pension', 'pension', '`pension`', '`pension`', 200, -1, FALSE, '`pension`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->pension->Sortable = TRUE; // Allow sort
-		$this->fields['pension'] = &$this->pension;
+		// correction_date
+		$this->correction_date = new cField('loan_application', 'loan_application', 'x_correction_date', 'correction_date', '`correction_date`', ew_CastDateFieldForLike('`correction_date`', 0, "DB"), 135, 0, FALSE, '`correction_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->correction_date->Sortable = TRUE; // Allow sort
+		$this->correction_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
+		$this->fields['correction_date'] = &$this->correction_date;
+
+		// correction_action
+		$this->correction_action = new cField('loan_application', 'loan_application', 'x_correction_action', 'correction_action', '`correction_action`', '`correction_action`', 3, -1, FALSE, '`correction_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->correction_action->Sortable = TRUE; // Allow sort
+		$this->correction_action->OptionCount = 2;
+		$this->correction_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->fields['correction_action'] = &$this->correction_action;
+
+		// correction_comment
+		$this->correction_comment = new cField('loan_application', 'loan_application', 'x_correction_comment', 'correction_comment', '`correction_comment`', '`correction_comment`', 200, -1, FALSE, '`correction_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->correction_comment->Sortable = TRUE; // Allow sort
+		$this->fields['correction_comment'] = &$this->correction_comment;
+
+		// corrected_by
+		$this->corrected_by = new cField('loan_application', 'loan_application', 'x_corrected_by', 'corrected_by', '`corrected_by`', '`corrected_by`', 3, -1, FALSE, '`corrected_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->corrected_by->Sortable = TRUE; // Allow sort
+		$this->fields['corrected_by'] = &$this->corrected_by;
 	}
 
 	// Field Visibility
@@ -897,6 +930,7 @@ class cloan_application extends cTable {
 		$this->address->setDbValue($rs->fields('address'));
 		$this->mobile->setDbValue($rs->fields('mobile'));
 		$this->department->setDbValue($rs->fields('department'));
+		$this->pension->setDbValue($rs->fields('pension'));
 		$this->loan_amount->setDbValue($rs->fields('loan_amount'));
 		$this->amount_inwords->setDbValue($rs->fields('amount_inwords'));
 		$this->purpose->setDbValue($rs->fields('purpose'));
@@ -934,7 +968,10 @@ class cloan_application extends cTable {
 		$this->approval_action->setDbValue($rs->fields('approval_action'));
 		$this->approval_comment->setDbValue($rs->fields('approval_comment'));
 		$this->approved_by->setDbValue($rs->fields('approved_by'));
-		$this->pension->setDbValue($rs->fields('pension'));
+		$this->correction_date->setDbValue($rs->fields('correction_date'));
+		$this->correction_action->setDbValue($rs->fields('correction_action'));
+		$this->correction_comment->setDbValue($rs->fields('correction_comment'));
+		$this->corrected_by->setDbValue($rs->fields('corrected_by'));
 	}
 
 	// Render list row values
@@ -952,6 +989,7 @@ class cloan_application extends cTable {
 		// address
 		// mobile
 		// department
+		// pension
 		// loan_amount
 		// amount_inwords
 		// purpose
@@ -989,7 +1027,10 @@ class cloan_application extends cTable {
 		// approval_action
 		// approval_comment
 		// approved_by
-		// pension
+		// correction_date
+		// correction_action
+		// correction_comment
+		// corrected_by
 		// code
 
 		$this->code->ViewValue = $this->code->CurrentValue;
@@ -1059,6 +1100,10 @@ class cloan_application extends cTable {
 			$this->department->ViewValue = NULL;
 		}
 		$this->department->ViewCustomAttributes = "";
+
+		// pension
+		$this->pension->ViewValue = $this->pension->CurrentValue;
+		$this->pension->ViewCustomAttributes = "";
 
 		// loan_amount
 		$this->loan_amount->ViewValue = $this->loan_amount->CurrentValue;
@@ -1412,9 +1457,47 @@ class cloan_application extends cTable {
 		}
 		$this->approved_by->ViewCustomAttributes = "";
 
-		// pension
-		$this->pension->ViewValue = $this->pension->CurrentValue;
-		$this->pension->ViewCustomAttributes = "";
+		// correction_date
+		$this->correction_date->ViewValue = $this->correction_date->CurrentValue;
+		$this->correction_date->ViewValue = ew_FormatDateTime($this->correction_date->ViewValue, 0);
+		$this->correction_date->ViewCustomAttributes = "";
+
+		// correction_action
+		if (strval($this->correction_action->CurrentValue) <> "") {
+			$this->correction_action->ViewValue = $this->correction_action->OptionCaption($this->correction_action->CurrentValue);
+		} else {
+			$this->correction_action->ViewValue = NULL;
+		}
+		$this->correction_action->ViewCustomAttributes = "";
+
+		// correction_comment
+		$this->correction_comment->ViewValue = $this->correction_comment->CurrentValue;
+		$this->correction_comment->ViewCustomAttributes = "";
+
+		// corrected_by
+		$this->corrected_by->ViewValue = $this->corrected_by->CurrentValue;
+		if (strval($this->corrected_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->corrected_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->corrected_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->corrected_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->corrected_by->ViewValue = $this->corrected_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->corrected_by->ViewValue = $this->corrected_by->CurrentValue;
+			}
+		} else {
+			$this->corrected_by->ViewValue = NULL;
+		}
+		$this->corrected_by->ViewCustomAttributes = "";
 
 		// code
 		$this->code->LinkCustomAttributes = "";
@@ -1450,6 +1533,11 @@ class cloan_application extends cTable {
 		$this->department->LinkCustomAttributes = "";
 		$this->department->HrefValue = "";
 		$this->department->TooltipValue = "";
+
+		// pension
+		$this->pension->LinkCustomAttributes = "";
+		$this->pension->HrefValue = "";
+		$this->pension->TooltipValue = "";
 
 		// loan_amount
 		$this->loan_amount->LinkCustomAttributes = "";
@@ -1638,10 +1726,25 @@ class cloan_application extends cTable {
 		$this->approved_by->HrefValue = "";
 		$this->approved_by->TooltipValue = "";
 
-		// pension
-		$this->pension->LinkCustomAttributes = "";
-		$this->pension->HrefValue = "";
-		$this->pension->TooltipValue = "";
+		// correction_date
+		$this->correction_date->LinkCustomAttributes = "";
+		$this->correction_date->HrefValue = "";
+		$this->correction_date->TooltipValue = "";
+
+		// correction_action
+		$this->correction_action->LinkCustomAttributes = "";
+		$this->correction_action->HrefValue = "";
+		$this->correction_action->TooltipValue = "";
+
+		// correction_comment
+		$this->correction_comment->LinkCustomAttributes = "";
+		$this->correction_comment->HrefValue = "";
+		$this->correction_comment->TooltipValue = "";
+
+		// corrected_by
+		$this->corrected_by->LinkCustomAttributes = "";
+		$this->corrected_by->HrefValue = "";
+		$this->corrected_by->TooltipValue = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -1694,6 +1797,12 @@ class cloan_application extends cTable {
 		// department
 		$this->department->EditAttrs["class"] = "form-control";
 		$this->department->EditCustomAttributes = "";
+
+		// pension
+		$this->pension->EditAttrs["class"] = "form-control";
+		$this->pension->EditCustomAttributes = "";
+		$this->pension->EditValue = $this->pension->CurrentValue;
+		$this->pension->PlaceHolder = ew_RemoveHtml($this->pension->FldCaption());
 
 		// loan_amount
 		$this->loan_amount->EditAttrs["class"] = "form-control";
@@ -1911,11 +2020,27 @@ class cloan_application extends cTable {
 		$this->approved_by->EditAttrs["class"] = "form-control";
 		$this->approved_by->EditCustomAttributes = "";
 
-		// pension
-		$this->pension->EditAttrs["class"] = "form-control";
-		$this->pension->EditCustomAttributes = "";
-		$this->pension->EditValue = $this->pension->CurrentValue;
-		$this->pension->PlaceHolder = ew_RemoveHtml($this->pension->FldCaption());
+		// correction_date
+		$this->correction_date->EditAttrs["class"] = "form-control";
+		$this->correction_date->EditCustomAttributes = "";
+		$this->correction_date->EditValue = ew_FormatDateTime($this->correction_date->CurrentValue, 8);
+		$this->correction_date->PlaceHolder = ew_RemoveHtml($this->correction_date->FldCaption());
+
+		// correction_action
+		$this->correction_action->EditCustomAttributes = "";
+		$this->correction_action->EditValue = $this->correction_action->Options(FALSE);
+
+		// correction_comment
+		$this->correction_comment->EditAttrs["class"] = "form-control";
+		$this->correction_comment->EditCustomAttributes = "";
+		$this->correction_comment->EditValue = $this->correction_comment->CurrentValue;
+		$this->correction_comment->PlaceHolder = ew_RemoveHtml($this->correction_comment->FldCaption());
+
+		// corrected_by
+		$this->corrected_by->EditAttrs["class"] = "form-control";
+		$this->corrected_by->EditCustomAttributes = "";
+		$this->corrected_by->EditValue = $this->corrected_by->CurrentValue;
+		$this->corrected_by->PlaceHolder = ew_RemoveHtml($this->corrected_by->FldCaption());
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -1951,6 +2076,7 @@ class cloan_application extends cTable {
 					if ($this->address->Exportable) $Doc->ExportCaption($this->address);
 					if ($this->mobile->Exportable) $Doc->ExportCaption($this->mobile);
 					if ($this->department->Exportable) $Doc->ExportCaption($this->department);
+					if ($this->pension->Exportable) $Doc->ExportCaption($this->pension);
 					if ($this->loan_amount->Exportable) $Doc->ExportCaption($this->loan_amount);
 					if ($this->amount_inwords->Exportable) $Doc->ExportCaption($this->amount_inwords);
 					if ($this->purpose->Exportable) $Doc->ExportCaption($this->purpose);
@@ -1988,7 +2114,10 @@ class cloan_application extends cTable {
 					if ($this->approval_action->Exportable) $Doc->ExportCaption($this->approval_action);
 					if ($this->approval_comment->Exportable) $Doc->ExportCaption($this->approval_comment);
 					if ($this->approved_by->Exportable) $Doc->ExportCaption($this->approved_by);
-					if ($this->pension->Exportable) $Doc->ExportCaption($this->pension);
+					if ($this->correction_date->Exportable) $Doc->ExportCaption($this->correction_date);
+					if ($this->correction_action->Exportable) $Doc->ExportCaption($this->correction_action);
+					if ($this->correction_comment->Exportable) $Doc->ExportCaption($this->correction_comment);
+					if ($this->corrected_by->Exportable) $Doc->ExportCaption($this->corrected_by);
 				} else {
 					if ($this->code->Exportable) $Doc->ExportCaption($this->code);
 					if ($this->date_initiated->Exportable) $Doc->ExportCaption($this->date_initiated);
@@ -1997,6 +2126,7 @@ class cloan_application extends cTable {
 					if ($this->address->Exportable) $Doc->ExportCaption($this->address);
 					if ($this->mobile->Exportable) $Doc->ExportCaption($this->mobile);
 					if ($this->department->Exportable) $Doc->ExportCaption($this->department);
+					if ($this->pension->Exportable) $Doc->ExportCaption($this->pension);
 					if ($this->loan_amount->Exportable) $Doc->ExportCaption($this->loan_amount);
 					if ($this->amount_inwords->Exportable) $Doc->ExportCaption($this->amount_inwords);
 					if ($this->repayment_period->Exportable) $Doc->ExportCaption($this->repayment_period);
@@ -2031,7 +2161,10 @@ class cloan_application extends cTable {
 					if ($this->approval_action->Exportable) $Doc->ExportCaption($this->approval_action);
 					if ($this->approval_comment->Exportable) $Doc->ExportCaption($this->approval_comment);
 					if ($this->approved_by->Exportable) $Doc->ExportCaption($this->approved_by);
-					if ($this->pension->Exportable) $Doc->ExportCaption($this->pension);
+					if ($this->correction_date->Exportable) $Doc->ExportCaption($this->correction_date);
+					if ($this->correction_action->Exportable) $Doc->ExportCaption($this->correction_action);
+					if ($this->correction_comment->Exportable) $Doc->ExportCaption($this->correction_comment);
+					if ($this->corrected_by->Exportable) $Doc->ExportCaption($this->corrected_by);
 				}
 				$Doc->EndExportRow();
 			}
@@ -2070,6 +2203,7 @@ class cloan_application extends cTable {
 						if ($this->address->Exportable) $Doc->ExportField($this->address);
 						if ($this->mobile->Exportable) $Doc->ExportField($this->mobile);
 						if ($this->department->Exportable) $Doc->ExportField($this->department);
+						if ($this->pension->Exportable) $Doc->ExportField($this->pension);
 						if ($this->loan_amount->Exportable) $Doc->ExportField($this->loan_amount);
 						if ($this->amount_inwords->Exportable) $Doc->ExportField($this->amount_inwords);
 						if ($this->purpose->Exportable) $Doc->ExportField($this->purpose);
@@ -2107,7 +2241,10 @@ class cloan_application extends cTable {
 						if ($this->approval_action->Exportable) $Doc->ExportField($this->approval_action);
 						if ($this->approval_comment->Exportable) $Doc->ExportField($this->approval_comment);
 						if ($this->approved_by->Exportable) $Doc->ExportField($this->approved_by);
-						if ($this->pension->Exportable) $Doc->ExportField($this->pension);
+						if ($this->correction_date->Exportable) $Doc->ExportField($this->correction_date);
+						if ($this->correction_action->Exportable) $Doc->ExportField($this->correction_action);
+						if ($this->correction_comment->Exportable) $Doc->ExportField($this->correction_comment);
+						if ($this->corrected_by->Exportable) $Doc->ExportField($this->corrected_by);
 					} else {
 						if ($this->code->Exportable) $Doc->ExportField($this->code);
 						if ($this->date_initiated->Exportable) $Doc->ExportField($this->date_initiated);
@@ -2116,6 +2253,7 @@ class cloan_application extends cTable {
 						if ($this->address->Exportable) $Doc->ExportField($this->address);
 						if ($this->mobile->Exportable) $Doc->ExportField($this->mobile);
 						if ($this->department->Exportable) $Doc->ExportField($this->department);
+						if ($this->pension->Exportable) $Doc->ExportField($this->pension);
 						if ($this->loan_amount->Exportable) $Doc->ExportField($this->loan_amount);
 						if ($this->amount_inwords->Exportable) $Doc->ExportField($this->amount_inwords);
 						if ($this->repayment_period->Exportable) $Doc->ExportField($this->repayment_period);
@@ -2150,7 +2288,10 @@ class cloan_application extends cTable {
 						if ($this->approval_action->Exportable) $Doc->ExportField($this->approval_action);
 						if ($this->approval_comment->Exportable) $Doc->ExportField($this->approval_comment);
 						if ($this->approved_by->Exportable) $Doc->ExportField($this->approved_by);
-						if ($this->pension->Exportable) $Doc->ExportField($this->pension);
+						if ($this->correction_date->Exportable) $Doc->ExportField($this->correction_date);
+						if ($this->correction_action->Exportable) $Doc->ExportField($this->correction_action);
+						if ($this->correction_comment->Exportable) $Doc->ExportField($this->correction_comment);
+						if ($this->corrected_by->Exportable) $Doc->ExportField($this->corrected_by);
 					}
 					$Doc->EndExportRow($RowCnt);
 				}
@@ -2329,6 +2470,9 @@ class cloan_application extends cTable {
 		if (CurrentUserLevel() == 3) {
 			ew_AddFilter($filter, "`status` in (2)");
 		}
+		if (CurrentUserLevel() == 8) {
+			ew_AddFilter($filter, "`status` in (1)");
+		}
 	}
 
 	// Recordset Selected event
@@ -2498,6 +2642,60 @@ class cloan_application extends cTable {
 			$rsnew["approval_comment"] = $rsold["approval_comment"];
 		}
 
+		// Supervisor
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 8) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$rsnew["correction_date"] = $now->format('Y-m-d H:i:s');
+			$rsnew["corrected_by"] = $_SESSION['Staff_ID'];
+		}
+
+		// Supervisor - Don't change field values captured by Officer
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 8  && $this->status->CurrentValue == 1) {
+			$rsnew["code"] = $rsold["code"];
+			$rsnew["date_initiated"] = $rsold["date_initiated"];
+			$rsnew["refernce_id"] = $rsold["refernce_id"];
+			$rsnew["employee_name"] = $rsnew["employee_name"];
+			$rsnew["address"] = $rsnew["address"];
+			$rsnew["mobile"] = $rsnew["mobile"];
+			$rsnew["department"] = $rsnew["department"];
+			$rsnew["loan_amount"] = $rsnew["loan_amount"];
+			$rsnew["amount_inwords"] = $rsnew["amount_inwords"];
+			$rsnew["purpose"] = $rsnew["purpose"];
+			$rsnew["repayment_period"] = $rsnew["repayment_period"];
+			$rsnew["salary_permonth"] = $rsnew["salary_permonth"];
+			$rsnew["previous_loan"] = $rsnew["previous_loan"];
+			$rsnew["date_collected"] = $rsnew["date_collected"];
+			$rsnew["date_liquidated"] = $rsnew["date_liquidated"];
+			$rsnew["balance_remaining"] = $rsnew["balance_remaining"];
+			$rsnew["applicant_date"] = $rsnew["applicant_date"];
+			$rsnew["applicant_passport"] = $rsnew["applicant_passport"];
+			$rsnew["guarantor_name"] = $rsnew["guarantor_name"];
+			$rsnew["guarantor_address"] = $rsnew["guarantor_address"];
+			$rsnew["guarantor_mobile"] = $rsnew["guarantor_mobile"];
+			$rsnew["guarantor_department"] = $rsnew["guarantor_department"];
+			$rsnew["account_no"] = $rsnew["account_no"];
+			$rsnew["bank_name"] = $rsnew["bank_name"];
+			$rsnew["employers_name"] = $rsnew["employers_name"];
+			$rsnew["employers_address"] = $rsnew["employers_address"];
+			$rsnew["employers_mobile"] = $rsnew["employers_mobile"];
+			$rsnew["guarantor_date"] = $rsnew["guarantor_date"];
+			$rsnew["guarantor_passport"] = $rsnew["guarantor_passport"];
+			$rsnew["pension"] = $rsnew["pension"];
+
+			//$rsnew["closed_by"] = $rsold["closed_by"];
+			//$rsnew["status"] = $rsold["status"];
+
+			$rsnew["initiator_action"] = $rsnew["initiator_action"];
+			$rsnew["initiator_comment"] = $rsnew["initiator_comment"];
+
+			//$rsnew["resolved_action"] = $rsold["resolved_action"];
+			//$rsnew["resolved_comment"] = $rsold["resolved_comment"];
+
+			$rsnew["approval_action"] = $rsold["approval_action"];
+			$rsnew["approval_comment"] = $rsold["approval_comment"];
+		}
+
 		// Supervisor - Don't change field values captured by Officer
 		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3  && $this->status->CurrentValue == 2) {
 			$rsnew["code"] = $rsold["code"];
@@ -2563,8 +2761,19 @@ class cloan_application extends cTable {
 					$this->setSuccessMessage("&#x25C9; Record Save Only &#x2714;");
 				}
 
+					// Archived by Recommender
+				if ($this->recommender_action->CurrentValue == 2 && $this->status->CurrentValue == 1 ) {
+
+					// New
+					if ($this->status->CurrentValue == 1) {
+						$rsnew["status"] = 5;					
+						$rsnew["recommender_action"] = 2;
+					}
+					$this->setSuccessMessage("&#x25C9; Record Has Been Archived &#x2714;");
+				}
+
 				// Confirmed by Administrators
-				if ($this->recommender_action->CurrentValue == 1 ) {
+				if ($this->recommender_action->CurrentValue == 1 && $this->status->CurrentValue == 1) {
 
 					// New
 					if ($this->status->CurrentValue == 1) {
@@ -2574,7 +2783,40 @@ class cloan_application extends cTable {
 					$this->setSuccessMessage("&#x25C9; Loan Request successfully Recommended and sent for Authorization &#x2714;");
 				}
 
+	//=================	LOAN CORRECTION===================================================================================
+			//Loan Corrected by Administrators
+
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 8) ) {
+				$rsnew["correction_date"] = $now->format('Y-m-d H:i:s');
+				$rsnew["corrected_by"] = $_SESSION['Staff_ID'];
+			  }
+
+			   	// Loan Corrected by Administrators
+				if ($this->correction_action->CurrentValue == 0 ) {
+
+					// New
+					if ($this->status->CurrentValue == 1) {
+						$rsnew["status"] = 1;					
+						$rsnew["correction_action"] = 0;
+					}
+
+					//$this->setSuccessMessage("&#x25C9; Record Save Only &#x2714;");
+				}
+
+				// Loan Corrected by Administrators
+				if ($this->correction_action->CurrentValue == 1 && $this->status->CurrentValue == 1) {
+
+					// New
+					if ($this->status->CurrentValue == 1) {
+						$rsnew["status"] = 1;					
+						$rsnew["correction_action"] = 1;
+					}
+					$this->setSuccessMessage("&#x25C9; Loan Successfully Corrected &#x2714;");
+				}
+
+	//==================================================================================================================//
 				// Confirmed by AUTHORIZER
+
 			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) ) {
 				$rsnew["approval_date"] = $now->format('Y-m-d H:i:s');
 				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
@@ -2592,7 +2834,7 @@ class cloan_application extends cTable {
 				}
 
 				// Confirmed by Administrators
-				if ($this->approval_action->CurrentValue == 2 ) {
+				if ($this->approval_action->CurrentValue == 2 && $this->status->CurrentValue == 2) {
 
 					// New
 					if ($this->status->CurrentValue == 2) {
@@ -2703,6 +2945,14 @@ class cloan_application extends cTable {
 			$this->recommended_by->CurrentValue = $_SESSION['Staff_ID'];
 			$this->recommended_by->EditValue = $this->recommended_by->CurrentValue;
 		}
+		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 8 )) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->correction_date->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->correction_date->EditValue = $this->correction_date->CurrentValue;
+			$this->corrected_by->CurrentValue = $_SESSION['Staff_ID'];
+			$this->corrected_by->EditValue = $this->corrected_by->CurrentValue;
+		}
 		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 3)) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
@@ -2777,8 +3027,7 @@ class cloan_application extends cTable {
 					$this->recommended_date->ReadOnly = TRUE;
 					$this->recommender_action->Visible = TRUE;
 					$this->recommender_comment->Visible = TRUE;
-
-					//$this->recommended_by->Visible = FALSE;
+					$this->recommended_by->ReadOnly = TRUE;
 					$this->application_status->Visible = FALSE;
 					$this->approved_amount->Visible = FALSE;
 					$this->duration_approved->Visible = FALSE;
@@ -2786,6 +3035,60 @@ class cloan_application extends cTable {
 					$this->approval_action->Visible = FALSE;
 					$this->approval_comment->Visible = FALSE;
 					$this->approved_by->Visible = FALSE;
+					$this->pension->ReadOnly = TRUE;
+					$this->correction_date->Visible = FALSE;
+					$this->correction_action->Visible = FALSE;
+					$this->correction_comment->Visible = FALSE;
+					$this->corrected_by->Visible = FALSE;
+				}
+					if (CurrentUserLevel() == 8 && ($this->status->CurrentValue == 7 || $this->status->CurrentValue == 1)) {
+					$this->date_initiated->ReadOnly = TRUE;
+					$this->refernce_id->ReadOnly = TRUE;
+					$this->employee_name->Visible = TRUE;
+					$this->address->Visible = TRUE;
+					$this->mobile->Visible = TRUE;
+					$this->department->Visible = TRUE;
+					$this->loan_amount->Visible = TRUE;
+					$this->amount_inwords->Visible = TRUE;
+					$this->purpose->Visible = TRUE;
+					$this->repayment_period->Visible = TRUE;
+					$this->salary_permonth->Visible = TRUE;
+					$this->previous_loan->Visible = TRUE;
+					$this->date_collected->Visible = TRUE;
+					$this->date_liquidated->Visible = TRUE;
+					$this->balance_remaining->Visible = TRUE;
+					$this->applicant_date->Visible = TRUE;
+					$this->applicant_passport->Visible = TRUE;
+					$this->guarantor_name->Visible = TRUE;
+					$this->guarantor_address->Visible = TRUE;
+					$this->guarantor_mobile->Visible = TRUE;
+					$this->guarantor_department->Visible = TRUE;
+					$this->account_no->Visible = TRUE;
+					$this->bank_name->Visible = TRUE;
+					$this->employers_name->Visible = TRUE;
+					$this->employers_address->Visible = TRUE;
+					$this->employers_mobile->Visible = TRUE;
+					$this->guarantor_date->Visible = TRUE;
+					$this->guarantor_passport->Visible = TRUE;
+					$this->initiator_action->Visible = TRUE;
+					$this->initiator_comment->Visible = TRUE;
+					$this->document_checklist->Visible = FALSE;
+					$this->recommended_date->Visible = FALSE;
+					$this->recommender_action->Visible = FALSE;
+					$this->recommender_comment->Visible = FALSE;
+					$this->recommended_by->Visible = FALSE;
+					$this->application_status->Visible = FALSE;
+					$this->approved_amount->Visible = FALSE;
+					$this->duration_approved->Visible = FALSE;
+					$this->approval_date->Visible = FALSE;
+					$this->approval_action->Visible = FALSE;
+					$this->approval_comment->Visible = FALSE;
+					$this->approved_by->Visible = FALSE;
+					$this->pension->Visible = TRUE;
+					$this->correction_date->ReadOnly = TRUE;
+					$this->correction_action->Visible = TRUE;
+					$this->correction_comment->Visible = TRUE;
+					$this->corrected_by->ReadOnly = TRUE;
 				}
 				if (CurrentUserLevel() == 3 && ($this->status->CurrentValue == 6 || $this->status->CurrentValue == 2)) {
 					$this->date_initiated->ReadOnly = TRUE;
@@ -2830,6 +3133,11 @@ class cloan_application extends cTable {
 					$this->approval_action->Visible = TRUE;
 					$this->approval_comment->Visible = TRUE;
 					$this->approved_by->ReadOnly = TRUE;
+					$this->pension->ReadOnly = TRUE;
+					$this->correction_date->Visible = FALSE;
+					$this->correction_action->Visible = FALSE;
+					$this->correction_comment->Visible = FALSE;
+					$this->corrected_by->Visible = FALSE;
 			}
 		}
 	}

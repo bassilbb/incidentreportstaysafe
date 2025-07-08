@@ -991,6 +991,29 @@ if (IsLoggedIn()) {
 			}
 		}
 	}
+
+//====================================LOAN APPLICATION===============================================================================================//
+	/*if (IsLoggedIn()) {
+		$MyLoanCount = 0;
+			if (CurrentUserLevel() == IsAdmin()) {
+			$_SESSION['MyLoanCoun'] = NULL;
+		 	}
+			if (CurrentUserLevel() == 2) {
+				$_SESSION['MyLoanCoun'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (1) ");
+			}
+			if (CurrentUserLevel() == 7) {
+				$_SESSION['MyLoanCoun'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE (`status` in (1) ");
+			}
+			if (CurrentUserLevel() == 3) {
+				$_SESSION['MyLoanCoun'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (2)");
+			}
+		if ($Item->Text == "Salary Advance Application") {
+			$MyLoanCount = $_SESSION['MyLoanCoun'];
+			if ($MyLoanCount > 0) {
+				$Item->Text.= "&nbsp;<span class='badge'>$MyLoanCount </span>";
+			}
+		}
+	}*/
 	return TRUE;
 }
 

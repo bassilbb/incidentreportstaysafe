@@ -28,6 +28,8 @@ if ((CurrentUserLevel() == 1)) {
 	     $_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 	     $_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 	     $_SESSION['MyDispenserCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `dispenser` WHERE `status` in (1) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
+	     $_SESSION['MyLoanpenCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (1) ");
+		 $_SESSION['MyLoanappCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (2) ");
 }
 /*if ((CurrentUserLevel() == 1) || (CurrentUserLevel() == 2)|| (CurrentUserLevel() == 3)) {
 		 $_SESSION['MyApprovedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (5) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
@@ -45,6 +47,8 @@ if (CurrentUserLevel() == -1) {
 	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2)");
 	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3)");
 	$_SESSION['MyDispenserCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `dispenser` WHERE `status` in (1)");
+	$_SESSION['MyLoanpenCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (1) ");
+	$_SESSION['MyLoanappCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (2) ");
 }
 /*if (CurrentUserLevel() == 1) {
 	$_SESSION['MyApprovedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (5) ");
@@ -62,6 +66,8 @@ if (CurrentUserLevel() == 2) {
 	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 	$_SESSION['MyDispenserCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `dispenser` WHERE `status` in (1) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
+	$_SESSION['MyLoanpenCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (1) ");
+	$_SESSION['MyLoanappCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (2) ");
 }
 if (CurrentUserLevel() == 3) {
 	$_SESSION['MyApprovedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (5) ");
@@ -72,7 +78,9 @@ if (CurrentUserLevel() == 3) {
 	$_SESSION['MyIssueresolvedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (6) ");
 	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2) ");
 	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3) ");
-	$_SESSION['MyDispenserCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `dispenser` WHERE `status` in (1) ");
+	$_SESSION['MyDispenserCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `dispenser` WHERE `status` in (1) ");	
+	$_SESSION['MyLoanpenCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (1) ");
+	$_SESSION['MyLoanappCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (2) ");
 }
 if (CurrentUserLevel() == 4) {
 	$_SESSION['MyApprovedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (5) AND `branch` = '".$_SESSION['Branch']."' ");
@@ -84,6 +92,8 @@ if (CurrentUserLevel() == 4) {
 	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2)AND `branch` = '".$_SESSION['Branch']."' ");
 	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3)AND `branch` = '".$_SESSION['Branch']."' ");
 	$_SESSION['MyDispenserCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `dispenser` WHERE `status` in (1)AND `branch` = '".$_SESSION['Branch']."' ");
+	$_SESSION['MyLoanpenCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (1) ");
+	$_SESSION['MyLoanappCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (2) ");
 }
 if ((CurrentUserLevel() == 5 || CurrentUserLevel() == 6)) {
 	$_SESSION['MyApprovedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
@@ -95,6 +105,34 @@ if ((CurrentUserLevel() == 5 || CurrentUserLevel() == 6)) {
 	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (12) ");
 	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (12) ");
 	$_SESSION['MyDispenserCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `dispenser` WHERE `status` in (10) ");
+	$_SESSION['MyLoanpenCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (1) ");
+	$_SESSION['MyLoanappCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (2) ");
+}
+if (CurrentUserLevel() == 7) {
+	$_SESSION['MyApprovedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyReworkCount']  = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyPendingCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyNewCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyAssignCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyIssueresolvedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (0) ");
+	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (0) ");
+	$_SESSION['MyDispenserCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `dispenser` WHERE `status` in (0) ");
+	$_SESSION['MyLoanpenCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (1) ");
+	$_SESSION['MyLoanappCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (2) ");
+}
+if (CurrentUserLevel() == 8) {
+	$_SESSION['MyApprovedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyReworkCount']  = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyPendingCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyNewCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyAssignCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyIssueresolvedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (0) ");
+	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (0) ");
+	$_SESSION['MyDispenserCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `dispenser` WHERE `status` in (0) ");
+	$_SESSION['MyLoanpenCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (1) ");
+	$_SESSION['MyLoanappCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (2) ");
 }
 
 function generateSIDKey(){

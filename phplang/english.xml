@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2025/6/30" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2025/7/8" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -2888,6 +2888,9 @@
       <field id="department">
         <phrase id="fldcaption" value="Department" />
       </field>
+      <field id="pension">
+        <phrase id="fldcaption" value="Pension Number" />
+      </field>
       <field id="loan_amount">
         <phrase id="fldcaption" value="Loan Amount" />
       </field>
@@ -2959,8 +2962,10 @@
       </field>
       <field id="initiator_action">
         <phrase id="fldcaption" value="Initiator Action" />
-        <phrase id="fldtagvalue1" value="1" />
-        <phrase id="fldtagcaption1" value="Loan Request" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Loan Request" />
       </field>
       <field id="initiator_comment">
         <phrase id="fldcaption" value="Initiator Comment" />
@@ -2985,6 +2990,8 @@
         <phrase id="fldtagcaption1" value="Save Only" />
         <phrase id="fldtagvalue2" value="1" />
         <phrase id="fldtagcaption2" value="Recommended" />
+        <phrase id="fldtagvalue3" value="2" />
+        <phrase id="fldtagcaption3" value="Archived" />
       </field>
       <field id="recommender_comment">
         <phrase id="fldcaption" value="Recommender Comment" />
@@ -3021,8 +3028,21 @@
       <field id="approved_by">
         <phrase id="fldcaption" value="Approved By" />
       </field>
-      <field id="pension">
-        <phrase id="fldcaption" value="pension" />
+      <field id="correction_date">
+        <phrase id="fldcaption" value="Correction Date" />
+      </field>
+      <field id="correction_action">
+        <phrase id="fldcaption" value="Correction Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Corrected" />
+      </field>
+      <field id="correction_comment">
+        <phrase id="fldcaption" value="Correction Comment" />
+      </field>
+      <field id="corrected_by">
+        <phrase id="fldcaption" value="Corrected By" />
       </field>
     </table>
     <table id="duration_months">

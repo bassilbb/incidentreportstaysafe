@@ -437,6 +437,7 @@ class cloan_application_view extends cloan_application {
 		$this->address->SetVisibility();
 		$this->mobile->SetVisibility();
 		$this->department->SetVisibility();
+		$this->pension->SetVisibility();
 		$this->loan_amount->SetVisibility();
 		$this->amount_inwords->SetVisibility();
 		$this->purpose->SetVisibility();
@@ -474,7 +475,10 @@ class cloan_application_view extends cloan_application {
 		$this->approval_action->SetVisibility();
 		$this->approval_comment->SetVisibility();
 		$this->approved_by->SetVisibility();
-		$this->pension->SetVisibility();
+		$this->correction_date->SetVisibility();
+		$this->correction_action->SetVisibility();
+		$this->correction_comment->SetVisibility();
+		$this->corrected_by->SetVisibility();
 
 		// Set up multi page object
 		$this->SetupMultiPages();
@@ -815,6 +819,7 @@ class cloan_application_view extends cloan_application {
 		$this->address->setDbValue($row['address']);
 		$this->mobile->setDbValue($row['mobile']);
 		$this->department->setDbValue($row['department']);
+		$this->pension->setDbValue($row['pension']);
 		$this->loan_amount->setDbValue($row['loan_amount']);
 		$this->amount_inwords->setDbValue($row['amount_inwords']);
 		$this->purpose->setDbValue($row['purpose']);
@@ -854,7 +859,10 @@ class cloan_application_view extends cloan_application {
 		$this->approval_action->setDbValue($row['approval_action']);
 		$this->approval_comment->setDbValue($row['approval_comment']);
 		$this->approved_by->setDbValue($row['approved_by']);
-		$this->pension->setDbValue($row['pension']);
+		$this->correction_date->setDbValue($row['correction_date']);
+		$this->correction_action->setDbValue($row['correction_action']);
+		$this->correction_comment->setDbValue($row['correction_comment']);
+		$this->corrected_by->setDbValue($row['corrected_by']);
 	}
 
 	// Return a row with default values
@@ -867,6 +875,7 @@ class cloan_application_view extends cloan_application {
 		$row['address'] = NULL;
 		$row['mobile'] = NULL;
 		$row['department'] = NULL;
+		$row['pension'] = NULL;
 		$row['loan_amount'] = NULL;
 		$row['amount_inwords'] = NULL;
 		$row['purpose'] = NULL;
@@ -904,7 +913,10 @@ class cloan_application_view extends cloan_application {
 		$row['approval_action'] = NULL;
 		$row['approval_comment'] = NULL;
 		$row['approved_by'] = NULL;
-		$row['pension'] = NULL;
+		$row['correction_date'] = NULL;
+		$row['correction_action'] = NULL;
+		$row['correction_comment'] = NULL;
+		$row['corrected_by'] = NULL;
 		return $row;
 	}
 
@@ -920,6 +932,7 @@ class cloan_application_view extends cloan_application {
 		$this->address->DbValue = $row['address'];
 		$this->mobile->DbValue = $row['mobile'];
 		$this->department->DbValue = $row['department'];
+		$this->pension->DbValue = $row['pension'];
 		$this->loan_amount->DbValue = $row['loan_amount'];
 		$this->amount_inwords->DbValue = $row['amount_inwords'];
 		$this->purpose->DbValue = $row['purpose'];
@@ -957,7 +970,10 @@ class cloan_application_view extends cloan_application {
 		$this->approval_action->DbValue = $row['approval_action'];
 		$this->approval_comment->DbValue = $row['approval_comment'];
 		$this->approved_by->DbValue = $row['approved_by'];
-		$this->pension->DbValue = $row['pension'];
+		$this->correction_date->DbValue = $row['correction_date'];
+		$this->correction_action->DbValue = $row['correction_action'];
+		$this->correction_comment->DbValue = $row['correction_comment'];
+		$this->corrected_by->DbValue = $row['corrected_by'];
 	}
 
 	// Render row values based on field settings
@@ -1003,6 +1019,7 @@ class cloan_application_view extends cloan_application {
 		// address
 		// mobile
 		// department
+		// pension
 		// loan_amount
 		// amount_inwords
 		// purpose
@@ -1040,7 +1057,10 @@ class cloan_application_view extends cloan_application {
 		// approval_action
 		// approval_comment
 		// approved_by
-		// pension
+		// correction_date
+		// correction_action
+		// correction_comment
+		// corrected_by
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1112,6 +1132,10 @@ class cloan_application_view extends cloan_application {
 			$this->department->ViewValue = NULL;
 		}
 		$this->department->ViewCustomAttributes = "";
+
+		// pension
+		$this->pension->ViewValue = $this->pension->CurrentValue;
+		$this->pension->ViewCustomAttributes = "";
 
 		// loan_amount
 		$this->loan_amount->ViewValue = $this->loan_amount->CurrentValue;
@@ -1465,9 +1489,47 @@ class cloan_application_view extends cloan_application {
 		}
 		$this->approved_by->ViewCustomAttributes = "";
 
-		// pension
-		$this->pension->ViewValue = $this->pension->CurrentValue;
-		$this->pension->ViewCustomAttributes = "";
+		// correction_date
+		$this->correction_date->ViewValue = $this->correction_date->CurrentValue;
+		$this->correction_date->ViewValue = ew_FormatDateTime($this->correction_date->ViewValue, 0);
+		$this->correction_date->ViewCustomAttributes = "";
+
+		// correction_action
+		if (strval($this->correction_action->CurrentValue) <> "") {
+			$this->correction_action->ViewValue = $this->correction_action->OptionCaption($this->correction_action->CurrentValue);
+		} else {
+			$this->correction_action->ViewValue = NULL;
+		}
+		$this->correction_action->ViewCustomAttributes = "";
+
+		// correction_comment
+		$this->correction_comment->ViewValue = $this->correction_comment->CurrentValue;
+		$this->correction_comment->ViewCustomAttributes = "";
+
+		// corrected_by
+		$this->corrected_by->ViewValue = $this->corrected_by->CurrentValue;
+		if (strval($this->corrected_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->corrected_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->corrected_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->corrected_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->corrected_by->ViewValue = $this->corrected_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->corrected_by->ViewValue = $this->corrected_by->CurrentValue;
+			}
+		} else {
+			$this->corrected_by->ViewValue = NULL;
+		}
+		$this->corrected_by->ViewCustomAttributes = "";
 
 			// code
 			$this->code->LinkCustomAttributes = "";
@@ -1503,6 +1565,11 @@ class cloan_application_view extends cloan_application {
 			$this->department->LinkCustomAttributes = "";
 			$this->department->HrefValue = "";
 			$this->department->TooltipValue = "";
+
+			// pension
+			$this->pension->LinkCustomAttributes = "";
+			$this->pension->HrefValue = "";
+			$this->pension->TooltipValue = "";
 
 			// loan_amount
 			$this->loan_amount->LinkCustomAttributes = "";
@@ -1691,10 +1758,25 @@ class cloan_application_view extends cloan_application {
 			$this->approved_by->HrefValue = "";
 			$this->approved_by->TooltipValue = "";
 
-			// pension
-			$this->pension->LinkCustomAttributes = "";
-			$this->pension->HrefValue = "";
-			$this->pension->TooltipValue = "";
+			// correction_date
+			$this->correction_date->LinkCustomAttributes = "";
+			$this->correction_date->HrefValue = "";
+			$this->correction_date->TooltipValue = "";
+
+			// correction_action
+			$this->correction_action->LinkCustomAttributes = "";
+			$this->correction_action->HrefValue = "";
+			$this->correction_action->TooltipValue = "";
+
+			// correction_comment
+			$this->correction_comment->LinkCustomAttributes = "";
+			$this->correction_comment->HrefValue = "";
+			$this->correction_comment->TooltipValue = "";
+
+			// corrected_by
+			$this->corrected_by->LinkCustomAttributes = "";
+			$this->corrected_by->HrefValue = "";
+			$this->corrected_by->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2034,6 +2116,11 @@ floan_applicationview.Lists["x_approval_action"] = {"LinkField":"","Ajax":null,"
 floan_applicationview.Lists["x_approval_action"].Options = <?php echo json_encode($loan_application_view->approval_action->Options()) ?>;
 floan_applicationview.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 floan_applicationview.Lists["x_approved_by"].Data = "<?php echo $loan_application_view->approved_by->LookupFilterQuery(FALSE, "view") ?>";
+floan_applicationview.Lists["x_correction_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+floan_applicationview.Lists["x_correction_action"].Options = <?php echo json_encode($loan_application_view->correction_action->Options()) ?>;
+floan_applicationview.Lists["x_corrected_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+floan_applicationview.Lists["x_corrected_by"].Data = "<?php echo $loan_application_view->corrected_by->LookupFilterQuery(FALSE, "view") ?>";
+floan_applicationview.AutoSuggests["x_corrected_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $loan_application_view->corrected_by->LookupFilterQuery(TRUE, "view"))) ?>;
 
 // Form object for search
 </script>
@@ -2200,6 +2287,17 @@ $loan_application_view->ShowMessage();
 </td>
 	</tr>
 <?php } ?>
+<?php if ($loan_application->pension->Visible) { // pension ?>
+	<tr id="r_pension">
+		<td class="col-sm-2"><span id="elh_loan_application_pension"><?php echo $loan_application->pension->FldCaption() ?></span></td>
+		<td data-name="pension"<?php echo $loan_application->pension->CellAttributes() ?>>
+<span id="el_loan_application_pension" data-page="1">
+<span<?php echo $loan_application->pension->ViewAttributes() ?>>
+<?php echo $loan_application->pension->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
 <?php if ($loan_application->loan_amount->Visible) { // loan_amount ?>
 	<tr id="r_loan_amount">
 		<td class="col-sm-2"><span id="elh_loan_application_loan_amount"><?php echo $loan_application->loan_amount->FldCaption() ?></span></td>
@@ -2318,17 +2416,6 @@ $loan_application_view->ShowMessage();
 <span<?php echo $loan_application->applicant_passport->ViewAttributes() ?>>
 <?php echo ew_GetFileViewTag($loan_application->applicant_passport, $loan_application->applicant_passport->ViewValue) ?>
 </span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($loan_application->pension->Visible) { // pension ?>
-	<tr id="r_pension">
-		<td class="col-sm-2"><span id="elh_loan_application_pension"><?php echo $loan_application->pension->FldCaption() ?></span></td>
-		<td data-name="pension"<?php echo $loan_application->pension->CellAttributes() ?>>
-<span id="el_loan_application_pension" data-page="1">
-<span<?php echo $loan_application->pension->ViewAttributes() ?>>
-<?php echo $loan_application->pension->ViewValue ?></span>
 </span>
 </td>
 	</tr>
@@ -2632,6 +2719,50 @@ $loan_application_view->ShowMessage();
 <span id="el_loan_application_approved_by" data-page="3">
 <span<?php echo $loan_application->approved_by->ViewAttributes() ?>>
 <?php echo $loan_application->approved_by->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_application->correction_date->Visible) { // correction_date ?>
+	<tr id="r_correction_date">
+		<td class="col-sm-2"><span id="elh_loan_application_correction_date"><?php echo $loan_application->correction_date->FldCaption() ?></span></td>
+		<td data-name="correction_date"<?php echo $loan_application->correction_date->CellAttributes() ?>>
+<span id="el_loan_application_correction_date" data-page="3">
+<span<?php echo $loan_application->correction_date->ViewAttributes() ?>>
+<?php echo $loan_application->correction_date->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_application->correction_action->Visible) { // correction_action ?>
+	<tr id="r_correction_action">
+		<td class="col-sm-2"><span id="elh_loan_application_correction_action"><?php echo $loan_application->correction_action->FldCaption() ?></span></td>
+		<td data-name="correction_action"<?php echo $loan_application->correction_action->CellAttributes() ?>>
+<span id="el_loan_application_correction_action" data-page="3">
+<span<?php echo $loan_application->correction_action->ViewAttributes() ?>>
+<?php echo $loan_application->correction_action->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_application->correction_comment->Visible) { // correction_comment ?>
+	<tr id="r_correction_comment">
+		<td class="col-sm-2"><span id="elh_loan_application_correction_comment"><?php echo $loan_application->correction_comment->FldCaption() ?></span></td>
+		<td data-name="correction_comment"<?php echo $loan_application->correction_comment->CellAttributes() ?>>
+<span id="el_loan_application_correction_comment" data-page="3">
+<span<?php echo $loan_application->correction_comment->ViewAttributes() ?>>
+<?php echo $loan_application->correction_comment->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($loan_application->corrected_by->Visible) { // corrected_by ?>
+	<tr id="r_corrected_by">
+		<td class="col-sm-2"><span id="elh_loan_application_corrected_by"><?php echo $loan_application->corrected_by->FldCaption() ?></span></td>
+		<td data-name="corrected_by"<?php echo $loan_application->corrected_by->CellAttributes() ?>>
+<span id="el_loan_application_corrected_by" data-page="3">
+<span<?php echo $loan_application->corrected_by->ViewAttributes() ?>>
+<?php echo $loan_application->corrected_by->ViewValue ?></span>
 </span>
 </td>
 	</tr>
