@@ -2750,10 +2750,10 @@ class cloan_application extends cTable {
 			  }
 
 			   	// Confirmed by Administrators
-				if ($this->recommender_action->CurrentValue == 0 && $this->status->CurrentValue == 1 ) {
+				if ($this->recommender_action->CurrentValue == 0 && CurrentUserLevel() == 7 ) {
 
 					// New
-					if ($this->status->CurrentValue == 1) {
+					if ($this->status->CurrentValue == 1 && CurrentUserLevel() == 7) {
 						$rsnew["status"] = 1;					
 						$rsnew["recommender_action"] = 0;
 					}
@@ -2790,13 +2790,13 @@ class cloan_application extends cTable {
 				$rsnew["corrected_by"] = $_SESSION['Staff_ID'];
 
 			   	// Loan Corrected by Administrators
-				if ($this->correction_action->CurrentValue == 0 && CurrentUserLevel() == 8) {
+				if ($this->correction_action->CurrentValue == 5 && CurrentUserLevel() == 8) {
 
 					// New
 					if ($this->status->CurrentValue == 1) {
 
 						//$rsnew["status"] = 1;					
-						$rsnew["correction_action"] = 0;
+						$rsnew["correction_action"] = 5;
 					}
 
 					//$this->setSuccessMessage("&#x25C9; Record Save Only &#x2714;");
@@ -2987,6 +2987,10 @@ class cloan_application extends cTable {
 					$this->approved_by->Visible = FALSE;
 					$this->applicant_date->ReadOnly = TRUE;
 					$this->guarantor_date->ReadOnly = TRUE;
+					$this->correction_date->Visible = FALSE;
+					$this->correction_action->Visible = FALSE;
+					$this->correction_comment->Visible = FALSE;
+					$this->corrected_by->Visible = FALSE;
 				}
 
 			// Edit Page
