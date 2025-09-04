@@ -427,6 +427,7 @@ class cinventory_staysafe_view extends cinventory_staysafe {
 			$this->id->Visible = FALSE;
 		$this->date_recieved->SetVisibility();
 		$this->reference_id->SetVisibility();
+		$this->staff_id->SetVisibility();
 		$this->material_name->SetVisibility();
 		$this->type->SetVisibility();
 		$this->capacity->SetVisibility();
@@ -1101,6 +1102,11 @@ class cinventory_staysafe_view extends cinventory_staysafe {
 			$this->reference_id->HrefValue = "";
 			$this->reference_id->TooltipValue = "";
 
+			// staff_id
+			$this->staff_id->LinkCustomAttributes = "";
+			$this->staff_id->HrefValue = "";
+			$this->staff_id->TooltipValue = "";
+
 			// material_name
 			$this->material_name->LinkCustomAttributes = "";
 			$this->material_name->HrefValue = "";
@@ -1475,6 +1481,9 @@ finventory_staysafeview.Form_CustomValidate =
 finventory_staysafeview.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+finventory_staysafeview.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventory_staysafeview.Lists["x_staff_id"].Data = "<?php echo $inventory_staysafe_view->staff_id->LookupFilterQuery(FALSE, "view") ?>";
+finventory_staysafeview.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_staysafe_view->staff_id->LookupFilterQuery(TRUE, "view"))) ?>;
 finventory_staysafeview.Lists["x_recieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 finventory_staysafeview.Lists["x_recieved_by"].Data = "<?php echo $inventory_staysafe_view->recieved_by->LookupFilterQuery(FALSE, "view") ?>";
 finventory_staysafeview.AutoSuggests["x_recieved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_staysafe_view->recieved_by->LookupFilterQuery(TRUE, "view"))) ?>;
@@ -1597,6 +1606,17 @@ $inventory_staysafe_view->ShowMessage();
 <span id="el_inventory_staysafe_reference_id">
 <span<?php echo $inventory_staysafe->reference_id->ViewAttributes() ?>>
 <?php echo $inventory_staysafe->reference_id->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($inventory_staysafe->staff_id->Visible) { // staff_id ?>
+	<tr id="r_staff_id">
+		<td class="col-sm-2"><span id="elh_inventory_staysafe_staff_id"><?php echo $inventory_staysafe->staff_id->FldCaption() ?></span></td>
+		<td data-name="staff_id"<?php echo $inventory_staysafe->staff_id->CellAttributes() ?>>
+<span id="el_inventory_staysafe_staff_id">
+<span<?php echo $inventory_staysafe->staff_id->ViewAttributes() ?>>
+<?php echo $inventory_staysafe->staff_id->ViewValue ?></span>
 </span>
 </td>
 	</tr>

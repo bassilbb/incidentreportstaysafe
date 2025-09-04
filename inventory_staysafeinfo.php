@@ -1206,6 +1206,7 @@ class cinventory_staysafe extends cTable {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->date_recieved->Exportable) $Doc->ExportCaption($this->date_recieved);
 					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
+					if ($this->staff_id->Exportable) $Doc->ExportCaption($this->staff_id);
 					if ($this->material_name->Exportable) $Doc->ExportCaption($this->material_name);
 					if ($this->type->Exportable) $Doc->ExportCaption($this->type);
 					if ($this->capacity->Exportable) $Doc->ExportCaption($this->capacity);
@@ -1277,6 +1278,7 @@ class cinventory_staysafe extends cTable {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->date_recieved->Exportable) $Doc->ExportField($this->date_recieved);
 						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
+						if ($this->staff_id->Exportable) $Doc->ExportField($this->staff_id);
 						if ($this->material_name->Exportable) $Doc->ExportField($this->material_name);
 						if ($this->type->Exportable) $Doc->ExportField($this->type);
 						if ($this->capacity->Exportable) $Doc->ExportField($this->capacity);

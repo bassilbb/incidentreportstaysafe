@@ -324,6 +324,7 @@ class cinventory_staysafe_edit extends cinventory_staysafe {
 		$this->CurrentAction = (@$_GET["a"] <> "") ? $_GET["a"] : @$_POST["a_list"]; // Set up current action
 		$this->date_recieved->SetVisibility();
 		$this->reference_id->SetVisibility();
+		$this->staff_id->SetVisibility();
 		$this->material_name->SetVisibility();
 		$this->type->SetVisibility();
 		$this->capacity->SetVisibility();
@@ -631,6 +632,9 @@ class cinventory_staysafe_edit extends cinventory_staysafe {
 		if (!$this->reference_id->FldIsDetailKey) {
 			$this->reference_id->setFormValue($objForm->GetValue("x_reference_id"));
 		}
+		if (!$this->staff_id->FldIsDetailKey) {
+			$this->staff_id->setFormValue($objForm->GetValue("x_staff_id"));
+		}
 		if (!$this->material_name->FldIsDetailKey) {
 			$this->material_name->setFormValue($objForm->GetValue("x_material_name"));
 		}
@@ -692,6 +696,7 @@ class cinventory_staysafe_edit extends cinventory_staysafe {
 		$this->date_recieved->CurrentValue = $this->date_recieved->FormValue;
 		$this->date_recieved->CurrentValue = ew_UnFormatDateTime($this->date_recieved->CurrentValue, 0);
 		$this->reference_id->CurrentValue = $this->reference_id->FormValue;
+		$this->staff_id->CurrentValue = $this->staff_id->FormValue;
 		$this->material_name->CurrentValue = $this->material_name->FormValue;
 		$this->type->CurrentValue = $this->type->FormValue;
 		$this->capacity->CurrentValue = $this->capacity->FormValue;
@@ -1112,6 +1117,11 @@ class cinventory_staysafe_edit extends cinventory_staysafe {
 			$this->reference_id->HrefValue = "";
 			$this->reference_id->TooltipValue = "";
 
+			// staff_id
+			$this->staff_id->LinkCustomAttributes = "";
+			$this->staff_id->HrefValue = "";
+			$this->staff_id->TooltipValue = "";
+
 			// material_name
 			$this->material_name->LinkCustomAttributes = "";
 			$this->material_name->HrefValue = "";
@@ -1204,6 +1214,33 @@ class cinventory_staysafe_edit extends cinventory_staysafe {
 			$this->reference_id->EditCustomAttributes = "";
 			$this->reference_id->EditValue = ew_HtmlEncode($this->reference_id->CurrentValue);
 			$this->reference_id->PlaceHolder = ew_RemoveHtml($this->reference_id->FldCaption());
+
+			// staff_id
+			$this->staff_id->EditAttrs["class"] = "form-control";
+			$this->staff_id->EditCustomAttributes = "";
+			$this->staff_id->EditValue = ew_HtmlEncode($this->staff_id->CurrentValue);
+			if (strval($this->staff_id->CurrentValue) <> "") {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sWhereWrk = "";
+			$this->staff_id->LookupFilters = array();
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+				$rswrk = Conn()->Execute($sSqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+					$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
+					$this->staff_id->EditValue = $this->staff_id->DisplayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->staff_id->EditValue = ew_HtmlEncode($this->staff_id->CurrentValue);
+				}
+			} else {
+				$this->staff_id->EditValue = NULL;
+			}
+			$this->staff_id->PlaceHolder = ew_RemoveHtml($this->staff_id->FldCaption());
 
 			// material_name
 			$this->material_name->EditAttrs["class"] = "form-control";
@@ -1384,6 +1421,10 @@ class cinventory_staysafe_edit extends cinventory_staysafe {
 			$this->reference_id->LinkCustomAttributes = "";
 			$this->reference_id->HrefValue = "";
 
+			// staff_id
+			$this->staff_id->LinkCustomAttributes = "";
+			$this->staff_id->HrefValue = "";
+
 			// material_name
 			$this->material_name->LinkCustomAttributes = "";
 			$this->material_name->HrefValue = "";
@@ -1475,6 +1516,9 @@ class cinventory_staysafe_edit extends cinventory_staysafe {
 		if (!$this->reference_id->FldIsDetailKey && !is_null($this->reference_id->FormValue) && $this->reference_id->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->reference_id->FldCaption(), $this->reference_id->ReqErrMsg));
 		}
+		if (!$this->staff_id->FldIsDetailKey && !is_null($this->staff_id->FormValue) && $this->staff_id->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->staff_id->FldCaption(), $this->staff_id->ReqErrMsg));
+		}
 		if (!$this->material_name->FldIsDetailKey && !is_null($this->material_name->FormValue) && $this->material_name->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->material_name->FldCaption(), $this->material_name->ReqErrMsg));
 		}
@@ -1555,6 +1599,9 @@ class cinventory_staysafe_edit extends cinventory_staysafe {
 
 			// reference_id
 			$this->reference_id->SetDbValueDef($rsnew, $this->reference_id->CurrentValue, "", $this->reference_id->ReadOnly);
+
+			// staff_id
+			$this->staff_id->SetDbValueDef($rsnew, $this->staff_id->CurrentValue, "", $this->staff_id->ReadOnly);
 
 			// material_name
 			$this->material_name->SetDbValueDef($rsnew, $this->material_name->CurrentValue, "", $this->material_name->ReadOnly);
@@ -1651,6 +1698,18 @@ class cinventory_staysafe_edit extends cinventory_staysafe {
 		global $gsLanguage;
 		$pageId = $pageId ?: $this->PageID;
 		switch ($fld->FldVar) {
+		case "x_staff_id":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sWhereWrk = "{filter}";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
 		case "x_recieved_by":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
@@ -1707,6 +1766,18 @@ class cinventory_staysafe_edit extends cinventory_staysafe {
 		global $gsLanguage;
 		$pageId = $pageId ?: $this->PageID;
 		switch ($fld->FldVar) {
+		case "x_staff_id":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld` FROM `users`";
+			$sWhereWrk = "`firstname` LIKE '{query_value}%' OR CONCAT(COALESCE(`firstname`, ''),'" . ew_ValueSeparator(1, $this->staff_id) . "',COALESCE(`lastname`,'')) LIKE '{query_value}%'";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
 		case "x_recieved_by":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld` FROM `users`";
@@ -1863,6 +1934,9 @@ finventory_staysafeedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_reference_id");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_staysafe->reference_id->FldCaption(), $inventory_staysafe->reference_id->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_staff_id");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_staysafe->staff_id->FldCaption(), $inventory_staysafe->staff_id->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_material_name");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $inventory_staysafe->material_name->FldCaption(), $inventory_staysafe->material_name->ReqErrMsg)) ?>");
@@ -1931,6 +2005,9 @@ finventory_staysafeedit.Form_CustomValidate =
 finventory_staysafeedit.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+finventory_staysafeedit.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventory_staysafeedit.Lists["x_staff_id"].Data = "<?php echo $inventory_staysafe_edit->staff_id->LookupFilterQuery(FALSE, "edit") ?>";
+finventory_staysafeedit.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_staysafe_edit->staff_id->LookupFilterQuery(TRUE, "edit"))) ?>;
 finventory_staysafeedit.Lists["x_recieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 finventory_staysafeedit.Lists["x_recieved_by"].Data = "<?php echo $inventory_staysafe_edit->recieved_by->LookupFilterQuery(FALSE, "edit") ?>";
 finventory_staysafeedit.AutoSuggests["x_recieved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_staysafe_edit->recieved_by->LookupFilterQuery(TRUE, "edit"))) ?>;
@@ -2030,6 +2107,27 @@ $inventory_staysafe_edit->ShowMessage();
 <input type="text" data-table="inventory_staysafe" data-field="x_reference_id" name="x_reference_id" id="x_reference_id" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($inventory_staysafe->reference_id->getPlaceHolder()) ?>" value="<?php echo $inventory_staysafe->reference_id->EditValue ?>"<?php echo $inventory_staysafe->reference_id->EditAttributes() ?>>
 </span>
 <?php echo $inventory_staysafe->reference_id->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($inventory_staysafe->staff_id->Visible) { // staff_id ?>
+	<div id="r_staff_id" class="form-group">
+		<label id="elh_inventory_staysafe_staff_id" class="<?php echo $inventory_staysafe_edit->LeftColumnClass ?>"><?php echo $inventory_staysafe->staff_id->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
+		<div class="<?php echo $inventory_staysafe_edit->RightColumnClass ?>"><div<?php echo $inventory_staysafe->staff_id->CellAttributes() ?>>
+<span id="el_inventory_staysafe_staff_id">
+<?php
+$wrkonchange = trim(" " . @$inventory_staysafe->staff_id->EditAttrs["onchange"]);
+if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
+$inventory_staysafe->staff_id->EditAttrs["onchange"] = "";
+?>
+<span id="as_x_staff_id" style="white-space: nowrap; z-index: 8960">
+	<input type="text" name="sv_x_staff_id" id="sv_x_staff_id" value="<?php echo $inventory_staysafe->staff_id->EditValue ?>" size="30" maxlength="11" placeholder="<?php echo ew_HtmlEncode($inventory_staysafe->staff_id->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($inventory_staysafe->staff_id->getPlaceHolder()) ?>"<?php echo $inventory_staysafe->staff_id->EditAttributes() ?>>
+</span>
+<input type="hidden" data-table="inventory_staysafe" data-field="x_staff_id" data-value-separator="<?php echo $inventory_staysafe->staff_id->DisplayValueSeparatorAttribute() ?>" name="x_staff_id" id="x_staff_id" value="<?php echo ew_HtmlEncode($inventory_staysafe->staff_id->CurrentValue) ?>"<?php echo $wrkonchange ?>>
+<script type="text/javascript">
+finventory_staysafeedit.CreateAutoSuggest({"id":"x_staff_id","forceSelect":false});
+</script>
+</span>
+<?php echo $inventory_staysafe->staff_id->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($inventory_staysafe->material_name->Visible) { // material_name ?>
