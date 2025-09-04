@@ -213,11 +213,11 @@ class chome_php {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'custom', TRUE);
+			define("EW_PAGE_ID", 'custom');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'home.php', TRUE);
+			define("EW_TABLE_NAME", 'home.php');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -536,6 +536,32 @@ Page_Rendering();
 				<div class="info-box-content">
 					<span class="info-box-text">Dispenser Activity</span>
 					<span class="info-box-number"><?php echo $_SESSION['MyDispenserCount'] ?></span>
+
+				</div><!-- /.info-box-content -->
+			</div><!-- /.info-box -->
+		</div>
+		</a>
+
+		<a href="loan_applicationlist.php" class="small-box-footer">
+			<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box bg-red-gradient">
+				<span class="info-box-icon"><i class="fa fa-credit-card" aria-hidden="true"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">Pending Loan Application</span>
+					<span class="info-box-number"><?php echo $_SESSION['MyLoanpenCount'] ?></span>
+
+				</div><!-- /.info-box-content -->
+			</div><!-- /.info-box -->
+		</div>
+		</a>
+
+		<a href="loan_applicationlist.php" class="small-box-footer">
+			<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box bg-teal-gradient">
+				<span class="info-box-icon"><i class="fa fa-credit-card" aria-hidden="true"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">Loan Awaiting Approver</span>
+					<span class="info-box-number"><?php echo $_SESSION['MyLoanappCount'] ?></span>
 
 				</div><!-- /.info-box-content -->
 			</div><!-- /.info-box -->
