@@ -433,6 +433,7 @@ class cissuance_store_staysafe_view extends cissuance_store_staysafe {
 		$this->total_quantity->SetVisibility();
 		$this->quantity_type->SetVisibility();
 		$this->treated_by->SetVisibility();
+		$this->staff_id->SetVisibility();
 		$this->statuss->SetVisibility();
 		$this->issued_action->SetVisibility();
 		$this->issued_comment->SetVisibility();
@@ -1188,6 +1189,11 @@ class cissuance_store_staysafe_view extends cissuance_store_staysafe {
 			$this->treated_by->HrefValue = "";
 			$this->treated_by->TooltipValue = "";
 
+			// staff_id
+			$this->staff_id->LinkCustomAttributes = "";
+			$this->staff_id->HrefValue = "";
+			$this->staff_id->TooltipValue = "";
+
 			// statuss
 			$this->statuss->LinkCustomAttributes = "";
 			$this->statuss->HrefValue = "";
@@ -1547,6 +1553,9 @@ fissuance_store_staysafeview.Lists["x_material_name"].Data = "<?php echo $issuan
 fissuance_store_staysafeview.Lists["x_treated_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fissuance_store_staysafeview.Lists["x_treated_by"].Data = "<?php echo $issuance_store_staysafe_view->treated_by->LookupFilterQuery(FALSE, "view") ?>";
 fissuance_store_staysafeview.AutoSuggests["x_treated_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_staysafe_view->treated_by->LookupFilterQuery(TRUE, "view"))) ?>;
+fissuance_store_staysafeview.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fissuance_store_staysafeview.Lists["x_staff_id"].Data = "<?php echo $issuance_store_staysafe_view->staff_id->LookupFilterQuery(FALSE, "view") ?>";
+fissuance_store_staysafeview.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_staysafe_view->staff_id->LookupFilterQuery(TRUE, "view"))) ?>;
 fissuance_store_staysafeview.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
 fissuance_store_staysafeview.Lists["x_statuss"].Data = "<?php echo $issuance_store_staysafe_view->statuss->LookupFilterQuery(FALSE, "view") ?>";
 fissuance_store_staysafeview.Lists["x_issued_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
@@ -1735,6 +1744,17 @@ $issuance_store_staysafe_view->ShowMessage();
 <span id="el_issuance_store_staysafe_treated_by">
 <span<?php echo $issuance_store_staysafe->treated_by->ViewAttributes() ?>>
 <?php echo $issuance_store_staysafe->treated_by->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($issuance_store_staysafe->staff_id->Visible) { // staff_id ?>
+	<tr id="r_staff_id">
+		<td class="col-sm-2"><span id="elh_issuance_store_staysafe_staff_id"><?php echo $issuance_store_staysafe->staff_id->FldCaption() ?></span></td>
+		<td data-name="staff_id"<?php echo $issuance_store_staysafe->staff_id->CellAttributes() ?>>
+<span id="el_issuance_store_staysafe_staff_id">
+<span<?php echo $issuance_store_staysafe->staff_id->ViewAttributes() ?>>
+<?php echo $issuance_store_staysafe->staff_id->ViewValue ?></span>
 </span>
 </td>
 	</tr>

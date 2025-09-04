@@ -1297,6 +1297,7 @@ class cissuance_store_staysafe extends cTable {
 					if ($this->total_quantity->Exportable) $Doc->ExportCaption($this->total_quantity);
 					if ($this->quantity_type->Exportable) $Doc->ExportCaption($this->quantity_type);
 					if ($this->treated_by->Exportable) $Doc->ExportCaption($this->treated_by);
+					if ($this->staff_id->Exportable) $Doc->ExportCaption($this->staff_id);
 					if ($this->statuss->Exportable) $Doc->ExportCaption($this->statuss);
 					if ($this->issued_action->Exportable) $Doc->ExportCaption($this->issued_action);
 					if ($this->issued_comment->Exportable) $Doc->ExportCaption($this->issued_comment);
@@ -1372,6 +1373,7 @@ class cissuance_store_staysafe extends cTable {
 						if ($this->total_quantity->Exportable) $Doc->ExportField($this->total_quantity);
 						if ($this->quantity_type->Exportable) $Doc->ExportField($this->quantity_type);
 						if ($this->treated_by->Exportable) $Doc->ExportField($this->treated_by);
+						if ($this->staff_id->Exportable) $Doc->ExportField($this->staff_id);
 						if ($this->statuss->Exportable) $Doc->ExportField($this->statuss);
 						if ($this->issued_action->Exportable) $Doc->ExportField($this->issued_action);
 						if ($this->issued_comment->Exportable) $Doc->ExportField($this->issued_comment);

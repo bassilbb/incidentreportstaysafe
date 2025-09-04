@@ -330,6 +330,7 @@ class cissuance_store_staysafe_edit extends cissuance_store_staysafe {
 		$this->total_quantity->SetVisibility();
 		$this->quantity_type->SetVisibility();
 		$this->treated_by->SetVisibility();
+		$this->staff_id->SetVisibility();
 		$this->statuss->SetVisibility();
 		$this->issued_action->SetVisibility();
 		$this->issued_comment->SetVisibility();
@@ -651,6 +652,9 @@ class cissuance_store_staysafe_edit extends cissuance_store_staysafe {
 		if (!$this->treated_by->FldIsDetailKey) {
 			$this->treated_by->setFormValue($objForm->GetValue("x_treated_by"));
 		}
+		if (!$this->staff_id->FldIsDetailKey) {
+			$this->staff_id->setFormValue($objForm->GetValue("x_staff_id"));
+		}
 		if (!$this->statuss->FldIsDetailKey) {
 			$this->statuss->setFormValue($objForm->GetValue("x_statuss"));
 		}
@@ -706,6 +710,7 @@ class cissuance_store_staysafe_edit extends cissuance_store_staysafe {
 		$this->total_quantity->CurrentValue = $this->total_quantity->FormValue;
 		$this->quantity_type->CurrentValue = $this->quantity_type->FormValue;
 		$this->treated_by->CurrentValue = $this->treated_by->FormValue;
+		$this->staff_id->CurrentValue = $this->staff_id->FormValue;
 		$this->statuss->CurrentValue = $this->statuss->FormValue;
 		$this->issued_action->CurrentValue = $this->issued_action->FormValue;
 		$this->issued_comment->CurrentValue = $this->issued_comment->FormValue;
@@ -1207,6 +1212,11 @@ class cissuance_store_staysafe_edit extends cissuance_store_staysafe {
 			$this->treated_by->HrefValue = "";
 			$this->treated_by->TooltipValue = "";
 
+			// staff_id
+			$this->staff_id->LinkCustomAttributes = "";
+			$this->staff_id->HrefValue = "";
+			$this->staff_id->TooltipValue = "";
+
 			// statuss
 			$this->statuss->LinkCustomAttributes = "";
 			$this->statuss->HrefValue = "";
@@ -1350,6 +1360,33 @@ class cissuance_store_staysafe_edit extends cissuance_store_staysafe {
 				$this->treated_by->EditValue = NULL;
 			}
 			$this->treated_by->PlaceHolder = ew_RemoveHtml($this->treated_by->FldCaption());
+
+			// staff_id
+			$this->staff_id->EditAttrs["class"] = "form-control";
+			$this->staff_id->EditCustomAttributes = "";
+			$this->staff_id->EditValue = ew_HtmlEncode($this->staff_id->CurrentValue);
+			if (strval($this->staff_id->CurrentValue) <> "") {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sWhereWrk = "";
+			$this->staff_id->LookupFilters = array();
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+				$rswrk = Conn()->Execute($sSqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+					$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
+					$this->staff_id->EditValue = $this->staff_id->DisplayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->staff_id->EditValue = ew_HtmlEncode($this->staff_id->CurrentValue);
+				}
+			} else {
+				$this->staff_id->EditValue = NULL;
+			}
+			$this->staff_id->PlaceHolder = ew_RemoveHtml($this->staff_id->FldCaption());
 
 			// statuss
 			$this->statuss->EditAttrs["class"] = "form-control";
@@ -1528,6 +1565,10 @@ class cissuance_store_staysafe_edit extends cissuance_store_staysafe {
 			$this->treated_by->LinkCustomAttributes = "";
 			$this->treated_by->HrefValue = "";
 
+			// staff_id
+			$this->staff_id->LinkCustomAttributes = "";
+			$this->staff_id->HrefValue = "";
+
 			// statuss
 			$this->statuss->LinkCustomAttributes = "";
 			$this->statuss->HrefValue = "";
@@ -1612,6 +1653,9 @@ class cissuance_store_staysafe_edit extends cissuance_store_staysafe {
 		if (!$this->treated_by->FldIsDetailKey && !is_null($this->treated_by->FormValue) && $this->treated_by->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->treated_by->FldCaption(), $this->treated_by->ReqErrMsg));
 		}
+		if (!$this->staff_id->FldIsDetailKey && !is_null($this->staff_id->FormValue) && $this->staff_id->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->staff_id->FldCaption(), $this->staff_id->ReqErrMsg));
+		}
 		if (!ew_CheckDateDef($this->approver_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->approver_date->FldErrMsg());
 		}
@@ -1677,6 +1721,9 @@ class cissuance_store_staysafe_edit extends cissuance_store_staysafe {
 
 			// treated_by
 			$this->treated_by->SetDbValueDef($rsnew, $this->treated_by->CurrentValue, 0, $this->treated_by->ReadOnly);
+
+			// staff_id
+			$this->staff_id->SetDbValueDef($rsnew, $this->staff_id->CurrentValue, 0, $this->staff_id->ReadOnly);
 
 			// statuss
 			$this->statuss->SetDbValueDef($rsnew, $this->statuss->CurrentValue, NULL, $this->statuss->ReadOnly);
@@ -1786,6 +1833,18 @@ class cissuance_store_staysafe_edit extends cissuance_store_staysafe {
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
 			break;
+		case "x_staff_id":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sWhereWrk = "{filter}";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
 		case "x_statuss":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
@@ -1850,6 +1909,18 @@ class cissuance_store_staysafe_edit extends cissuance_store_staysafe {
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->treated_by, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+		case "x_staff_id":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld` FROM `users`";
+			$sWhereWrk = "`firstname` LIKE '{query_value}%' OR CONCAT(COALESCE(`firstname`, ''),'" . ew_ValueSeparator(1, $this->staff_id) . "',COALESCE(`lastname`,'')) LIKE '{query_value}%'";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
@@ -2019,6 +2090,9 @@ fissuance_store_staysafeedit.Validate = function() {
 			elm = this.GetElements("x" + infix + "_treated_by");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->treated_by->FldCaption(), $issuance_store_staysafe->treated_by->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_staff_id");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->staff_id->FldCaption(), $issuance_store_staysafe->staff_id->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_approver_date");
 			if (elm && !ew_CheckDateDef(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($issuance_store_staysafe->approver_date->FldErrMsg()) ?>");
@@ -2059,6 +2133,9 @@ fissuance_store_staysafeedit.Lists["x_material_name"].Data = "<?php echo $issuan
 fissuance_store_staysafeedit.Lists["x_treated_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 fissuance_store_staysafeedit.Lists["x_treated_by"].Data = "<?php echo $issuance_store_staysafe_edit->treated_by->LookupFilterQuery(FALSE, "edit") ?>";
 fissuance_store_staysafeedit.AutoSuggests["x_treated_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_staysafe_edit->treated_by->LookupFilterQuery(TRUE, "edit"))) ?>;
+fissuance_store_staysafeedit.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fissuance_store_staysafeedit.Lists["x_staff_id"].Data = "<?php echo $issuance_store_staysafe_edit->staff_id->LookupFilterQuery(FALSE, "edit") ?>";
+fissuance_store_staysafeedit.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_staysafe_edit->staff_id->LookupFilterQuery(TRUE, "edit"))) ?>;
 fissuance_store_staysafeedit.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
 fissuance_store_staysafeedit.Lists["x_statuss"].Data = "<?php echo $issuance_store_staysafe_edit->statuss->LookupFilterQuery(FALSE, "edit") ?>";
 fissuance_store_staysafeedit.Lists["x_issued_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
@@ -2231,6 +2308,27 @@ fissuance_store_staysafeedit.CreateAutoSuggest({"id":"x_treated_by","forceSelect
 </script>
 </span>
 <?php echo $issuance_store_staysafe->treated_by->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($issuance_store_staysafe->staff_id->Visible) { // staff_id ?>
+	<div id="r_staff_id" class="form-group">
+		<label id="elh_issuance_store_staysafe_staff_id" class="<?php echo $issuance_store_staysafe_edit->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->staff_id->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
+		<div class="<?php echo $issuance_store_staysafe_edit->RightColumnClass ?>"><div<?php echo $issuance_store_staysafe->staff_id->CellAttributes() ?>>
+<span id="el_issuance_store_staysafe_staff_id">
+<?php
+$wrkonchange = trim(" " . @$issuance_store_staysafe->staff_id->EditAttrs["onchange"]);
+if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
+$issuance_store_staysafe->staff_id->EditAttrs["onchange"] = "";
+?>
+<span id="as_x_staff_id" style="white-space: nowrap; z-index: 8900">
+	<input type="text" name="sv_x_staff_id" id="sv_x_staff_id" value="<?php echo $issuance_store_staysafe->staff_id->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($issuance_store_staysafe->staff_id->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($issuance_store_staysafe->staff_id->getPlaceHolder()) ?>"<?php echo $issuance_store_staysafe->staff_id->EditAttributes() ?>>
+</span>
+<input type="hidden" data-table="issuance_store_staysafe" data-field="x_staff_id" data-value-separator="<?php echo $issuance_store_staysafe->staff_id->DisplayValueSeparatorAttribute() ?>" name="x_staff_id" id="x_staff_id" value="<?php echo ew_HtmlEncode($issuance_store_staysafe->staff_id->CurrentValue) ?>"<?php echo $wrkonchange ?>>
+<script type="text/javascript">
+fissuance_store_staysafeedit.CreateAutoSuggest({"id":"x_staff_id","forceSelect":false});
+</script>
+</span>
+<?php echo $issuance_store_staysafe->staff_id->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($issuance_store_staysafe->statuss->Visible) { // statuss ?>
