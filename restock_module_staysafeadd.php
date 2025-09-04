@@ -1675,7 +1675,7 @@ class crestock_module_staysafe_add extends crestock_module_staysafe {
 	function Page_Load() {
 
 		//echo "Page Load";
-			ew_SetClientVar("GetStock_StaysafeDetailsSearchModel", ew_Encrypt("SELECT `quantity`,`type`,`capacity` FROM `inventory_staysafe` WHERE `id`= {query_value}"));
+			ew_SetClientVar("GetStock_staysafeDetailsSearchModel", ew_Encrypt("SELECT `quantity`,`type`,`capacity` FROM `inventory_staysafe` WHERE `id`= {query_value}"));
 	}
 
 	// Page Unload event
@@ -1843,7 +1843,7 @@ $(document).ready(function(){
 		   if(StoreId !=''){
 
 			 //alert(StoreId);
-			 var resultSearchModel = ew_Ajax(ewVar.GetStock_StaysafeDetailsSearchModel, StoreId);   
+			 var resultSearchModel = ew_Ajax(ewVar.GetStock_staysafeDetailsSearchModel, StoreId);   
 
 		   //alert(resultSearchModel);
 			 if(resultSearchModel !=''){
