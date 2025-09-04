@@ -802,7 +802,7 @@
       <phrase id="menutext" value="Issuance Tracking Records" />
     </menu>
     <menu id="336">
-      <phrase id="menutext" value="Inventory Issuance Store SSF" />
+      <phrase id="menutext" value="Issuance Store SSF" />
     </menu>
     <menu id="342">
       <phrase id="menutext" value="Issuance Store Report SSF" />
@@ -862,7 +862,7 @@
       <phrase id="menutext" value="Restock Report" />
     </menu>
     <menu id="340">
-      <phrase id="menutext" value="Inventory Restock Report SSF" />
+      <phrase id="menutext" value="Restock Report SSF" />
     </menu>
     <menu id="344">
       <phrase id="menutext" value="Retocked Tracking SSF" />
