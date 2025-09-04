@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg14.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
 <?php include_once "phpfn14.php" ?>
-<?php include_once "restock_moduleinfo.php" ?>
+<?php include_once "restock_staysafe_reportinfo.php" ?>
 <?php include_once "usersinfo.php" ?>
 <?php include_once "userfn14.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$restock_module_add = NULL; // Initialize page object first
+$restock_staysafe_report_add = NULL; // Initialize page object first
 
-class crestock_module_add extends crestock_module {
+class crestock_staysafe_report_add extends crestock_staysafe_report {
 
 	// Page ID
 	var $PageID = 'add';
@@ -25,10 +25,10 @@ class crestock_module_add extends crestock_module {
 	var $ProjectID = '{DD9080C0-D1CA-431F-831F-CAC8FA61260C}';
 
 	// Table name
-	var $TableName = 'restock_module';
+	var $TableName = 'restock_staysafe_report';
 
 	// Page object name
-	var $PageObjName = 'restock_module_add';
+	var $PageObjName = 'restock_staysafe_report_add';
 
 	// Page headings
 	var $Heading = '';
@@ -256,10 +256,10 @@ class crestock_module_add extends crestock_module {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (restock_module)
-		if (!isset($GLOBALS["restock_module"]) || get_class($GLOBALS["restock_module"]) == "crestock_module") {
-			$GLOBALS["restock_module"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["restock_module"];
+		// Table object (restock_staysafe_report)
+		if (!isset($GLOBALS["restock_staysafe_report"]) || get_class($GLOBALS["restock_staysafe_report"]) == "crestock_staysafe_report") {
+			$GLOBALS["restock_staysafe_report"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["restock_staysafe_report"];
 		}
 
 		// Table object (users)
@@ -271,7 +271,7 @@ class crestock_module_add extends crestock_module {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'restock_module');
+			define("EW_TABLE_NAME", 'restock_staysafe_report');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -315,7 +315,7 @@ class crestock_module_add extends crestock_module {
 			$Security->SaveLastUrl();
 			$this->setFailureMessage(ew_DeniedMsg()); // Set no permission
 			if ($Security->CanList())
-				$this->Page_Terminate(ew_GetUrl("restock_modulelist.php"));
+				$this->Page_Terminate(ew_GetUrl("restock_staysafe_reportlist.php"));
 			else
 				$this->Page_Terminate(ew_GetUrl("login.php"));
 		}
@@ -336,9 +336,9 @@ class crestock_module_add extends crestock_module {
 		$this->stock_balance->SetVisibility();
 		$this->quantity->SetVisibility();
 		$this->statuss->SetVisibility();
-		$this->restocked_by->SetVisibility();
 		$this->restocked_action->SetVisibility();
 		$this->restocked_comment->SetVisibility();
+		$this->restocked_by->SetVisibility();
 		$this->approver_date->SetVisibility();
 		$this->approver_action->SetVisibility();
 		$this->approver_comment->SetVisibility();
@@ -392,13 +392,13 @@ class crestock_module_add extends crestock_module {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $restock_module;
+		global $EW_EXPORT, $restock_staysafe_report;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($restock_module);
+				$doc = new $class($restock_staysafe_report);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -424,7 +424,7 @@ class crestock_module_add extends crestock_module {
 				$pageName = ew_GetPageName($url);
 				if ($pageName != $this->GetListUrl()) { // Not List page
 					$row["caption"] = $this->GetModalCaption($pageName);
-					if ($pageName == "restock_moduleview.php")
+					if ($pageName == "restock_staysafe_reportview.php")
 						$row["view"] = "1";
 				} else { // List page should not be shown as modal => error
 					$row["error"] = $this->getFailureMessage();
@@ -508,7 +508,7 @@ class crestock_module_add extends crestock_module {
 			case "C": // Copy an existing record
 				if (!$loaded) { // Record not loaded
 					if ($this->getFailureMessage() == "") $this->setFailureMessage($Language->Phrase("NoRecord")); // No record found
-					$this->Page_Terminate("restock_modulelist.php"); // No matching record, return to list
+					$this->Page_Terminate("restock_staysafe_reportlist.php"); // No matching record, return to list
 				}
 				break;
 			case "A": // Add new record
@@ -517,9 +517,9 @@ class crestock_module_add extends crestock_module {
 					if ($this->getSuccessMessage() == "")
 						$this->setSuccessMessage($Language->Phrase("AddSuccess")); // Set up success message
 					$sReturnUrl = $this->getReturnUrl();
-					if (ew_GetPageName($sReturnUrl) == "restock_modulelist.php")
+					if (ew_GetPageName($sReturnUrl) == "restock_staysafe_reportlist.php")
 						$sReturnUrl = $this->AddMasterUrl($sReturnUrl); // List page, return to List page with correct master key if necessary
-					elseif (ew_GetPageName($sReturnUrl) == "restock_moduleview.php")
+					elseif (ew_GetPageName($sReturnUrl) == "restock_staysafe_reportview.php")
 						$sReturnUrl = $this->GetViewUrl(); // View page, return to View page with keyurl directly
 					$this->Page_Terminate($sReturnUrl); // Clean up and return
 				} else {
@@ -532,11 +532,7 @@ class crestock_module_add extends crestock_module {
 		$this->SetupBreadcrumb();
 
 		// Render row based on row type
-		if ($this->CurrentAction == "F") { // Confirm page
-			$this->RowType = EW_ROWTYPE_VIEW; // Render view type
-		} else {
-			$this->RowType = EW_ROWTYPE_ADD; // Render add type
-		}
+		$this->RowType = EW_ROWTYPE_ADD; // Render add type
 
 		// Render row
 		$this->ResetAttrs();
@@ -568,13 +564,14 @@ class crestock_module_add extends crestock_module {
 		$this->stock_balance->OldValue = $this->stock_balance->CurrentValue;
 		$this->quantity->CurrentValue = NULL;
 		$this->quantity->OldValue = $this->quantity->CurrentValue;
-		$this->statuss->CurrentValue = 0;
-		$this->restocked_by->CurrentValue = NULL;
-		$this->restocked_by->OldValue = $this->restocked_by->CurrentValue;
+		$this->statuss->CurrentValue = NULL;
+		$this->statuss->OldValue = $this->statuss->CurrentValue;
 		$this->restocked_action->CurrentValue = NULL;
 		$this->restocked_action->OldValue = $this->restocked_action->CurrentValue;
 		$this->restocked_comment->CurrentValue = NULL;
 		$this->restocked_comment->OldValue = $this->restocked_comment->CurrentValue;
+		$this->restocked_by->CurrentValue = NULL;
+		$this->restocked_by->OldValue = $this->restocked_by->CurrentValue;
 		$this->approver_date->CurrentValue = NULL;
 		$this->approver_date->OldValue = $this->approver_date->CurrentValue;
 		$this->approver_action->CurrentValue = NULL;
@@ -600,7 +597,7 @@ class crestock_module_add extends crestock_module {
 		global $objForm;
 		if (!$this->date_restocked->FldIsDetailKey) {
 			$this->date_restocked->setFormValue($objForm->GetValue("x_date_restocked"));
-			$this->date_restocked->CurrentValue = ew_UnFormatDateTime($this->date_restocked->CurrentValue, 17);
+			$this->date_restocked->CurrentValue = ew_UnFormatDateTime($this->date_restocked->CurrentValue, 14);
 		}
 		if (!$this->reference_id->FldIsDetailKey) {
 			$this->reference_id->setFormValue($objForm->GetValue("x_reference_id"));
@@ -623,18 +620,18 @@ class crestock_module_add extends crestock_module {
 		if (!$this->statuss->FldIsDetailKey) {
 			$this->statuss->setFormValue($objForm->GetValue("x_statuss"));
 		}
-		if (!$this->restocked_by->FldIsDetailKey) {
-			$this->restocked_by->setFormValue($objForm->GetValue("x_restocked_by"));
-		}
 		if (!$this->restocked_action->FldIsDetailKey) {
 			$this->restocked_action->setFormValue($objForm->GetValue("x_restocked_action"));
 		}
 		if (!$this->restocked_comment->FldIsDetailKey) {
 			$this->restocked_comment->setFormValue($objForm->GetValue("x_restocked_comment"));
 		}
+		if (!$this->restocked_by->FldIsDetailKey) {
+			$this->restocked_by->setFormValue($objForm->GetValue("x_restocked_by"));
+		}
 		if (!$this->approver_date->FldIsDetailKey) {
 			$this->approver_date->setFormValue($objForm->GetValue("x_approver_date"));
-			$this->approver_date->CurrentValue = ew_UnFormatDateTime($this->approver_date->CurrentValue, 0);
+			$this->approver_date->CurrentValue = ew_UnFormatDateTime($this->approver_date->CurrentValue, 14);
 		}
 		if (!$this->approver_action->FldIsDetailKey) {
 			$this->approver_action->setFormValue($objForm->GetValue("x_approver_action"));
@@ -647,7 +644,7 @@ class crestock_module_add extends crestock_module {
 		}
 		if (!$this->verified_date->FldIsDetailKey) {
 			$this->verified_date->setFormValue($objForm->GetValue("x_verified_date"));
-			$this->verified_date->CurrentValue = ew_UnFormatDateTime($this->verified_date->CurrentValue, 0);
+			$this->verified_date->CurrentValue = ew_UnFormatDateTime($this->verified_date->CurrentValue, 14);
 		}
 		if (!$this->verified_action->FldIsDetailKey) {
 			$this->verified_action->setFormValue($objForm->GetValue("x_verified_action"));
@@ -664,7 +661,7 @@ class crestock_module_add extends crestock_module {
 	function RestoreFormValues() {
 		global $objForm;
 		$this->date_restocked->CurrentValue = $this->date_restocked->FormValue;
-		$this->date_restocked->CurrentValue = ew_UnFormatDateTime($this->date_restocked->CurrentValue, 17);
+		$this->date_restocked->CurrentValue = ew_UnFormatDateTime($this->date_restocked->CurrentValue, 14);
 		$this->reference_id->CurrentValue = $this->reference_id->FormValue;
 		$this->material_name->CurrentValue = $this->material_name->FormValue;
 		$this->type->CurrentValue = $this->type->FormValue;
@@ -672,16 +669,16 @@ class crestock_module_add extends crestock_module {
 		$this->stock_balance->CurrentValue = $this->stock_balance->FormValue;
 		$this->quantity->CurrentValue = $this->quantity->FormValue;
 		$this->statuss->CurrentValue = $this->statuss->FormValue;
-		$this->restocked_by->CurrentValue = $this->restocked_by->FormValue;
 		$this->restocked_action->CurrentValue = $this->restocked_action->FormValue;
 		$this->restocked_comment->CurrentValue = $this->restocked_comment->FormValue;
+		$this->restocked_by->CurrentValue = $this->restocked_by->FormValue;
 		$this->approver_date->CurrentValue = $this->approver_date->FormValue;
-		$this->approver_date->CurrentValue = ew_UnFormatDateTime($this->approver_date->CurrentValue, 0);
+		$this->approver_date->CurrentValue = ew_UnFormatDateTime($this->approver_date->CurrentValue, 14);
 		$this->approver_action->CurrentValue = $this->approver_action->FormValue;
 		$this->approver_comment->CurrentValue = $this->approver_comment->FormValue;
 		$this->approved_by->CurrentValue = $this->approved_by->FormValue;
 		$this->verified_date->CurrentValue = $this->verified_date->FormValue;
-		$this->verified_date->CurrentValue = ew_UnFormatDateTime($this->verified_date->CurrentValue, 0);
+		$this->verified_date->CurrentValue = ew_UnFormatDateTime($this->verified_date->CurrentValue, 14);
 		$this->verified_action->CurrentValue = $this->verified_action->FormValue;
 		$this->verified_comment->CurrentValue = $this->verified_comment->FormValue;
 		$this->verified_by->CurrentValue = $this->verified_by->FormValue;
@@ -729,9 +726,9 @@ class crestock_module_add extends crestock_module {
 		$this->stock_balance->setDbValue($row['stock_balance']);
 		$this->quantity->setDbValue($row['quantity']);
 		$this->statuss->setDbValue($row['statuss']);
-		$this->restocked_by->setDbValue($row['restocked_by']);
 		$this->restocked_action->setDbValue($row['restocked_action']);
 		$this->restocked_comment->setDbValue($row['restocked_comment']);
+		$this->restocked_by->setDbValue($row['restocked_by']);
 		$this->approver_date->setDbValue($row['approver_date']);
 		$this->approver_action->setDbValue($row['approver_action']);
 		$this->approver_comment->setDbValue($row['approver_comment']);
@@ -755,9 +752,9 @@ class crestock_module_add extends crestock_module {
 		$row['stock_balance'] = $this->stock_balance->CurrentValue;
 		$row['quantity'] = $this->quantity->CurrentValue;
 		$row['statuss'] = $this->statuss->CurrentValue;
-		$row['restocked_by'] = $this->restocked_by->CurrentValue;
 		$row['restocked_action'] = $this->restocked_action->CurrentValue;
 		$row['restocked_comment'] = $this->restocked_comment->CurrentValue;
+		$row['restocked_by'] = $this->restocked_by->CurrentValue;
 		$row['approver_date'] = $this->approver_date->CurrentValue;
 		$row['approver_action'] = $this->approver_action->CurrentValue;
 		$row['approver_comment'] = $this->approver_comment->CurrentValue;
@@ -783,9 +780,9 @@ class crestock_module_add extends crestock_module {
 		$this->stock_balance->DbValue = $row['stock_balance'];
 		$this->quantity->DbValue = $row['quantity'];
 		$this->statuss->DbValue = $row['statuss'];
-		$this->restocked_by->DbValue = $row['restocked_by'];
 		$this->restocked_action->DbValue = $row['restocked_action'];
 		$this->restocked_comment->DbValue = $row['restocked_comment'];
+		$this->restocked_by->DbValue = $row['restocked_by'];
 		$this->approver_date->DbValue = $row['approver_date'];
 		$this->approver_action->DbValue = $row['approver_action'];
 		$this->approver_comment->DbValue = $row['approver_comment'];
@@ -837,9 +834,9 @@ class crestock_module_add extends crestock_module {
 		// stock_balance
 		// quantity
 		// statuss
-		// restocked_by
 		// restocked_action
 		// restocked_comment
+		// restocked_by
 		// approver_date
 		// approver_action
 		// approver_comment
@@ -857,7 +854,7 @@ class crestock_module_add extends crestock_module {
 
 		// date_restocked
 		$this->date_restocked->ViewValue = $this->date_restocked->CurrentValue;
-		$this->date_restocked->ViewValue = ew_FormatDateTime($this->date_restocked->ViewValue, 17);
+		$this->date_restocked->ViewValue = ew_FormatDateTime($this->date_restocked->ViewValue, 14);
 		$this->date_restocked->ViewCustomAttributes = "";
 
 		// reference_id
@@ -867,7 +864,7 @@ class crestock_module_add extends crestock_module {
 		// material_name
 		if (strval($this->material_name->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
+		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory_staysafe`";
 		$sWhereWrk = "";
 		$this->material_name->LookupFilters = array("dx1" => '`material_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
@@ -926,32 +923,6 @@ class crestock_module_add extends crestock_module {
 		}
 		$this->statuss->ViewCustomAttributes = "";
 
-		// restocked_by
-		$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
-		if (strval($this->restocked_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->restocked_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->restocked_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->restocked_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->restocked_by->ViewValue = $this->restocked_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
-			}
-		} else {
-			$this->restocked_by->ViewValue = NULL;
-		}
-		$this->restocked_by->ViewCustomAttributes = "";
-
 		// restocked_action
 		if (strval($this->restocked_action->CurrentValue) <> "") {
 			$this->restocked_action->ViewValue = $this->restocked_action->OptionCaption($this->restocked_action->CurrentValue);
@@ -964,9 +935,34 @@ class crestock_module_add extends crestock_module {
 		$this->restocked_comment->ViewValue = $this->restocked_comment->CurrentValue;
 		$this->restocked_comment->ViewCustomAttributes = "";
 
+		// restocked_by
+		$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
+		if (strval($this->restocked_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->restocked_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->restocked_by->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->restocked_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->restocked_by->ViewValue = $this->restocked_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
+			}
+		} else {
+			$this->restocked_by->ViewValue = NULL;
+		}
+		$this->restocked_by->ViewCustomAttributes = "";
+
 		// approver_date
 		$this->approver_date->ViewValue = $this->approver_date->CurrentValue;
-		$this->approver_date->ViewValue = ew_FormatDateTime($this->approver_date->ViewValue, 0);
+		$this->approver_date->ViewValue = ew_FormatDateTime($this->approver_date->ViewValue, 14);
 		$this->approver_date->ViewCustomAttributes = "";
 
 		// approver_action
@@ -982,6 +978,7 @@ class crestock_module_add extends crestock_module {
 		$this->approver_comment->ViewCustomAttributes = "";
 
 		// approved_by
+		$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
 		if (strval($this->approved_by->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->approved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
@@ -1008,7 +1005,7 @@ class crestock_module_add extends crestock_module {
 
 		// verified_date
 		$this->verified_date->ViewValue = $this->verified_date->CurrentValue;
-		$this->verified_date->ViewValue = ew_FormatDateTime($this->verified_date->ViewValue, 0);
+		$this->verified_date->ViewValue = ew_FormatDateTime($this->verified_date->ViewValue, 14);
 		$this->verified_date->ViewCustomAttributes = "";
 
 		// verified_action
@@ -1024,6 +1021,7 @@ class crestock_module_add extends crestock_module {
 		$this->verified_comment->ViewCustomAttributes = "";
 
 		// verified_by
+		$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
 		if (strval($this->verified_by->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->verified_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
@@ -1088,11 +1086,6 @@ class crestock_module_add extends crestock_module {
 			$this->statuss->HrefValue = "";
 			$this->statuss->TooltipValue = "";
 
-			// restocked_by
-			$this->restocked_by->LinkCustomAttributes = "";
-			$this->restocked_by->HrefValue = "";
-			$this->restocked_by->TooltipValue = "";
-
 			// restocked_action
 			$this->restocked_action->LinkCustomAttributes = "";
 			$this->restocked_action->HrefValue = "";
@@ -1102,6 +1095,11 @@ class crestock_module_add extends crestock_module {
 			$this->restocked_comment->LinkCustomAttributes = "";
 			$this->restocked_comment->HrefValue = "";
 			$this->restocked_comment->TooltipValue = "";
+
+			// restocked_by
+			$this->restocked_by->LinkCustomAttributes = "";
+			$this->restocked_by->HrefValue = "";
+			$this->restocked_by->TooltipValue = "";
 
 			// approver_date
 			$this->approver_date->LinkCustomAttributes = "";
@@ -1147,7 +1145,7 @@ class crestock_module_add extends crestock_module {
 			// date_restocked
 			$this->date_restocked->EditAttrs["class"] = "form-control";
 			$this->date_restocked->EditCustomAttributes = "";
-			$this->date_restocked->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->date_restocked->CurrentValue, 17));
+			$this->date_restocked->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->date_restocked->CurrentValue, 14));
 			$this->date_restocked->PlaceHolder = ew_RemoveHtml($this->date_restocked->FldCaption());
 
 			// reference_id
@@ -1163,7 +1161,7 @@ class crestock_module_add extends crestock_module {
 			} else {
 				$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->CurrentValue, EW_DATATYPE_NUMBER, "");
 			}
-			$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `inventory`";
+			$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `inventory_staysafe`";
 			$sWhereWrk = "";
 			$this->material_name->LookupFilters = array("dx1" => '`material_name`');
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
@@ -1224,34 +1222,6 @@ class crestock_module_add extends crestock_module {
 			if ($rswrk) $rswrk->Close();
 			$this->statuss->EditValue = $arwrk;
 
-			// restocked_by
-			$this->restocked_by->EditAttrs["class"] = "form-control";
-			$this->restocked_by->EditCustomAttributes = "";
-			$this->restocked_by->EditValue = ew_HtmlEncode($this->restocked_by->CurrentValue);
-			if (strval($this->restocked_by->CurrentValue) <> "") {
-				$sFilterWrk = "`id`" . ew_SearchString("=", $this->restocked_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-			$sWhereWrk = "";
-			$this->restocked_by->LookupFilters = array();
-			ew_AddFilter($sWhereWrk, $sFilterWrk);
-			$this->Lookup_Selecting($this->restocked_by, $sWhereWrk); // Call Lookup Selecting
-			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-				$rswrk = Conn()->Execute($sSqlWrk);
-				if ($rswrk && !$rswrk->EOF) { // Lookup values found
-					$arwrk = array();
-					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
-					$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
-					$arwrk[3] = ew_HtmlEncode($rswrk->fields('Disp3Fld'));
-					$this->restocked_by->EditValue = $this->restocked_by->DisplayValue($arwrk);
-					$rswrk->Close();
-				} else {
-					$this->restocked_by->EditValue = ew_HtmlEncode($this->restocked_by->CurrentValue);
-				}
-			} else {
-				$this->restocked_by->EditValue = NULL;
-			}
-			$this->restocked_by->PlaceHolder = ew_RemoveHtml($this->restocked_by->FldCaption());
-
 			// restocked_action
 			$this->restocked_action->EditCustomAttributes = "";
 			$this->restocked_action->EditValue = $this->restocked_action->Options(FALSE);
@@ -1262,10 +1232,37 @@ class crestock_module_add extends crestock_module {
 			$this->restocked_comment->EditValue = ew_HtmlEncode($this->restocked_comment->CurrentValue);
 			$this->restocked_comment->PlaceHolder = ew_RemoveHtml($this->restocked_comment->FldCaption());
 
+			// restocked_by
+			$this->restocked_by->EditAttrs["class"] = "form-control";
+			$this->restocked_by->EditCustomAttributes = "";
+			$this->restocked_by->EditValue = ew_HtmlEncode($this->restocked_by->CurrentValue);
+			if (strval($this->restocked_by->CurrentValue) <> "") {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->restocked_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sWhereWrk = "";
+			$this->restocked_by->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->restocked_by, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+				$rswrk = Conn()->Execute($sSqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+					$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
+					$this->restocked_by->EditValue = $this->restocked_by->DisplayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->restocked_by->EditValue = ew_HtmlEncode($this->restocked_by->CurrentValue);
+				}
+			} else {
+				$this->restocked_by->EditValue = NULL;
+			}
+			$this->restocked_by->PlaceHolder = ew_RemoveHtml($this->restocked_by->FldCaption());
+
 			// approver_date
 			$this->approver_date->EditAttrs["class"] = "form-control";
 			$this->approver_date->EditCustomAttributes = "";
-			$this->approver_date->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->approver_date->CurrentValue, 8));
+			$this->approver_date->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->approver_date->CurrentValue, 14));
 			$this->approver_date->PlaceHolder = ew_RemoveHtml($this->approver_date->FldCaption());
 
 			// approver_action
@@ -1281,26 +1278,35 @@ class crestock_module_add extends crestock_module {
 			// approved_by
 			$this->approved_by->EditAttrs["class"] = "form-control";
 			$this->approved_by->EditCustomAttributes = "";
-			if (trim(strval($this->approved_by->CurrentValue)) == "") {
-				$sFilterWrk = "0=1";
-			} else {
+			$this->approved_by->EditValue = ew_HtmlEncode($this->approved_by->CurrentValue);
+			if (strval($this->approved_by->CurrentValue) <> "") {
 				$sFilterWrk = "`id`" . ew_SearchString("=", $this->approved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-			}
-			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 			$sWhereWrk = "";
 			$this->approved_by->LookupFilters = array();
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
 			$this->Lookup_Selecting($this->approved_by, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
-			if ($rswrk) $rswrk->Close();
-			$this->approved_by->EditValue = $arwrk;
+				$rswrk = Conn()->Execute($sSqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+					$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
+					$arwrk[3] = ew_HtmlEncode($rswrk->fields('Disp3Fld'));
+					$this->approved_by->EditValue = $this->approved_by->DisplayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->approved_by->EditValue = ew_HtmlEncode($this->approved_by->CurrentValue);
+				}
+			} else {
+				$this->approved_by->EditValue = NULL;
+			}
+			$this->approved_by->PlaceHolder = ew_RemoveHtml($this->approved_by->FldCaption());
 
 			// verified_date
 			$this->verified_date->EditAttrs["class"] = "form-control";
 			$this->verified_date->EditCustomAttributes = "";
-			$this->verified_date->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->verified_date->CurrentValue, 8));
+			$this->verified_date->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->verified_date->CurrentValue, 14));
 			$this->verified_date->PlaceHolder = ew_RemoveHtml($this->verified_date->FldCaption());
 
 			// verified_action
@@ -1316,21 +1322,30 @@ class crestock_module_add extends crestock_module {
 			// verified_by
 			$this->verified_by->EditAttrs["class"] = "form-control";
 			$this->verified_by->EditCustomAttributes = "";
-			if (trim(strval($this->verified_by->CurrentValue)) == "") {
-				$sFilterWrk = "0=1";
-			} else {
+			$this->verified_by->EditValue = ew_HtmlEncode($this->verified_by->CurrentValue);
+			if (strval($this->verified_by->CurrentValue) <> "") {
 				$sFilterWrk = "`id`" . ew_SearchString("=", $this->verified_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-			}
-			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 			$sWhereWrk = "";
 			$this->verified_by->LookupFilters = array();
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
 			$this->Lookup_Selecting($this->verified_by, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
-			if ($rswrk) $rswrk->Close();
-			$this->verified_by->EditValue = $arwrk;
+				$rswrk = Conn()->Execute($sSqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+					$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
+					$arwrk[3] = ew_HtmlEncode($rswrk->fields('Disp3Fld'));
+					$this->verified_by->EditValue = $this->verified_by->DisplayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->verified_by->EditValue = ew_HtmlEncode($this->verified_by->CurrentValue);
+				}
+			} else {
+				$this->verified_by->EditValue = NULL;
+			}
+			$this->verified_by->PlaceHolder = ew_RemoveHtml($this->verified_by->FldCaption());
 
 			// Add refer script
 			// date_restocked
@@ -1366,10 +1381,6 @@ class crestock_module_add extends crestock_module {
 			$this->statuss->LinkCustomAttributes = "";
 			$this->statuss->HrefValue = "";
 
-			// restocked_by
-			$this->restocked_by->LinkCustomAttributes = "";
-			$this->restocked_by->HrefValue = "";
-
 			// restocked_action
 			$this->restocked_action->LinkCustomAttributes = "";
 			$this->restocked_action->HrefValue = "";
@@ -1377,6 +1388,10 @@ class crestock_module_add extends crestock_module {
 			// restocked_comment
 			$this->restocked_comment->LinkCustomAttributes = "";
 			$this->restocked_comment->HrefValue = "";
+
+			// restocked_by
+			$this->restocked_by->LinkCustomAttributes = "";
+			$this->restocked_by->HrefValue = "";
 
 			// approver_date
 			$this->approver_date->LinkCustomAttributes = "";
@@ -1428,38 +1443,11 @@ class crestock_module_add extends crestock_module {
 		// Check if validation required
 		if (!EW_SERVER_VALIDATE)
 			return ($gsFormError == "");
-		if (!$this->date_restocked->FldIsDetailKey && !is_null($this->date_restocked->FormValue) && $this->date_restocked->FormValue == "") {
-			ew_AddMessage($gsFormError, str_replace("%s", $this->date_restocked->FldCaption(), $this->date_restocked->ReqErrMsg));
+		if (!ew_CheckInteger($this->approved_by->FormValue)) {
+			ew_AddMessage($gsFormError, $this->approved_by->FldErrMsg());
 		}
-		if (!ew_CheckShortEuroDate($this->date_restocked->FormValue)) {
-			ew_AddMessage($gsFormError, $this->date_restocked->FldErrMsg());
-		}
-		if (!$this->reference_id->FldIsDetailKey && !is_null($this->reference_id->FormValue) && $this->reference_id->FormValue == "") {
-			ew_AddMessage($gsFormError, str_replace("%s", $this->reference_id->FldCaption(), $this->reference_id->ReqErrMsg));
-		}
-		if (!$this->material_name->FldIsDetailKey && !is_null($this->material_name->FormValue) && $this->material_name->FormValue == "") {
-			ew_AddMessage($gsFormError, str_replace("%s", $this->material_name->FldCaption(), $this->material_name->ReqErrMsg));
-		}
-		if (!$this->type->FldIsDetailKey && !is_null($this->type->FormValue) && $this->type->FormValue == "") {
-			ew_AddMessage($gsFormError, str_replace("%s", $this->type->FldCaption(), $this->type->ReqErrMsg));
-		}
-		if (!$this->capacity->FldIsDetailKey && !is_null($this->capacity->FormValue) && $this->capacity->FormValue == "") {
-			ew_AddMessage($gsFormError, str_replace("%s", $this->capacity->FldCaption(), $this->capacity->ReqErrMsg));
-		}
-		if (!$this->stock_balance->FldIsDetailKey && !is_null($this->stock_balance->FormValue) && $this->stock_balance->FormValue == "") {
-			ew_AddMessage($gsFormError, str_replace("%s", $this->stock_balance->FldCaption(), $this->stock_balance->ReqErrMsg));
-		}
-		if (!$this->quantity->FldIsDetailKey && !is_null($this->quantity->FormValue) && $this->quantity->FormValue == "") {
-			ew_AddMessage($gsFormError, str_replace("%s", $this->quantity->FldCaption(), $this->quantity->ReqErrMsg));
-		}
-		if (!$this->restocked_by->FldIsDetailKey && !is_null($this->restocked_by->FormValue) && $this->restocked_by->FormValue == "") {
-			ew_AddMessage($gsFormError, str_replace("%s", $this->restocked_by->FldCaption(), $this->restocked_by->ReqErrMsg));
-		}
-		if (!ew_CheckDateDef($this->approver_date->FormValue)) {
-			ew_AddMessage($gsFormError, $this->approver_date->FldErrMsg());
-		}
-		if (!ew_CheckDateDef($this->verified_date->FormValue)) {
-			ew_AddMessage($gsFormError, $this->verified_date->FldErrMsg());
+		if (!ew_CheckInteger($this->verified_by->FormValue)) {
+			ew_AddMessage($gsFormError, $this->verified_by->FldErrMsg());
 		}
 
 		// Return validate result
@@ -1486,7 +1474,7 @@ class crestock_module_add extends crestock_module {
 		$rsnew = array();
 
 		// date_restocked
-		$this->date_restocked->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->date_restocked->CurrentValue, 17), NULL, FALSE);
+		$this->date_restocked->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->date_restocked->CurrentValue, 14), NULL, FALSE);
 
 		// reference_id
 		$this->reference_id->SetDbValueDef($rsnew, $this->reference_id->CurrentValue, NULL, FALSE);
@@ -1509,17 +1497,17 @@ class crestock_module_add extends crestock_module {
 		// statuss
 		$this->statuss->SetDbValueDef($rsnew, $this->statuss->CurrentValue, NULL, FALSE);
 
-		// restocked_by
-		$this->restocked_by->SetDbValueDef($rsnew, $this->restocked_by->CurrentValue, NULL, FALSE);
-
 		// restocked_action
 		$this->restocked_action->SetDbValueDef($rsnew, $this->restocked_action->CurrentValue, NULL, FALSE);
 
 		// restocked_comment
 		$this->restocked_comment->SetDbValueDef($rsnew, $this->restocked_comment->CurrentValue, NULL, FALSE);
 
+		// restocked_by
+		$this->restocked_by->SetDbValueDef($rsnew, $this->restocked_by->CurrentValue, NULL, FALSE);
+
 		// approver_date
-		$this->approver_date->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->approver_date->CurrentValue, 0), NULL, FALSE);
+		$this->approver_date->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->approver_date->CurrentValue, 14), NULL, FALSE);
 
 		// approver_action
 		$this->approver_action->SetDbValueDef($rsnew, $this->approver_action->CurrentValue, NULL, FALSE);
@@ -1531,7 +1519,7 @@ class crestock_module_add extends crestock_module {
 		$this->approved_by->SetDbValueDef($rsnew, $this->approved_by->CurrentValue, NULL, FALSE);
 
 		// verified_date
-		$this->verified_date->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->verified_date->CurrentValue, 0), NULL, FALSE);
+		$this->verified_date->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->verified_date->CurrentValue, 14), NULL, FALSE);
 
 		// verified_action
 		$this->verified_action->SetDbValueDef($rsnew, $this->verified_action->CurrentValue, NULL, FALSE);
@@ -1577,7 +1565,7 @@ class crestock_module_add extends crestock_module {
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new cBreadcrumb();
 		$url = substr(ew_CurrentUrl(), strrpos(ew_CurrentUrl(), "/")+1);
-		$Breadcrumb->Add("list", $this->TableVar, $this->AddMasterUrl("restock_modulelist.php"), "", $this->TableVar, TRUE);
+		$Breadcrumb->Add("list", $this->TableVar, $this->AddMasterUrl("restock_staysafe_reportlist.php"), "", $this->TableVar, TRUE);
 		$PageId = ($this->CurrentAction == "C") ? "Copy" : "Add";
 		$Breadcrumb->Add("add", $PageId, $url);
 	}
@@ -1589,7 +1577,7 @@ class crestock_module_add extends crestock_module {
 		switch ($fld->FldVar) {
 		case "x_material_name":
 			$sSqlWrk = "";
-			$sSqlWrk = "SELECT `id` AS `LinkFld`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory_staysafe`";
 			$sWhereWrk = "{filter}";
 			$fld->LookupFilters = array("dx1" => '`material_name`');
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
@@ -1613,9 +1601,9 @@ class crestock_module_add extends crestock_module {
 			break;
 		case "x_restocked_by":
 			$sSqlWrk = "";
-			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 			$sWhereWrk = "{filter}";
-			$fld->LookupFilters = array();
+			$fld->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->restocked_by, $sWhereWrk); // Call Lookup Selecting
@@ -1626,7 +1614,7 @@ class crestock_module_add extends crestock_module {
 		case "x_approved_by":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-			$sWhereWrk = "";
+			$sWhereWrk = "{filter}";
 			$fld->LookupFilters = array();
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
@@ -1638,7 +1626,7 @@ class crestock_module_add extends crestock_module {
 		case "x_verified_by":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-			$sWhereWrk = "";
+			$sWhereWrk = "{filter}";
 			$fld->LookupFilters = array();
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
@@ -1657,12 +1645,36 @@ class crestock_module_add extends crestock_module {
 		switch ($fld->FldVar) {
 		case "x_restocked_by":
 			$sSqlWrk = "";
-			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld` FROM `users`";
-			$sWhereWrk = "`firstname` LIKE '{query_value}%' OR CONCAT(COALESCE(`firstname`, ''),'" . ew_ValueSeparator(1, $this->restocked_by) . "',COALESCE(`lastname`,''),'" . ew_ValueSeparator(2, $this->restocked_by) . "',COALESCE(`staffno`,'')) LIKE '{query_value}%'";
-			$fld->LookupFilters = array();
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld` FROM `users`";
+			$sWhereWrk = "`firstname` LIKE '{query_value}%' OR CONCAT(COALESCE(`firstname`, ''),'" . ew_ValueSeparator(1, $this->restocked_by) . "',COALESCE(`lastname`,'')) LIKE '{query_value}%'";
+			$fld->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->restocked_by, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+		case "x_approved_by":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld` FROM `users`";
+			$sWhereWrk = "`firstname` LIKE '{query_value}%' OR CONCAT(COALESCE(`firstname`, ''),'" . ew_ValueSeparator(1, $this->approved_by) . "',COALESCE(`lastname`,''),'" . ew_ValueSeparator(2, $this->approved_by) . "',COALESCE(`staffno`,'')) LIKE '{query_value}%'";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->approved_by, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+		case "x_verified_by":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld` FROM `users`";
+			$sWhereWrk = "`firstname` LIKE '{query_value}%' OR CONCAT(COALESCE(`firstname`, ''),'" . ew_ValueSeparator(1, $this->verified_by) . "',COALESCE(`lastname`,''),'" . ew_ValueSeparator(2, $this->verified_by) . "',COALESCE(`staffno`,'')) LIKE '{query_value}%'";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->verified_by, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
@@ -1674,9 +1686,6 @@ class crestock_module_add extends crestock_module {
 	function Page_Load() {
 
 		//echo "Page Load";
-		ew_SetClientVar("GetStockDetailsSearchModel", ew_Encrypt("SELECT `quantity`,`type`,`capacity` FROM `inventory` WHERE `id`= {query_value}"));
-
-		//	ew_SetClientVar("GetStockDetailsSearchModel", ew_Encrypt("SELECT `quantity` FROM `inventory` WHERE `id`= 1"));
 	}
 
 	// Page Unload event
@@ -1745,29 +1754,29 @@ class crestock_module_add extends crestock_module {
 <?php
 
 // Create page object
-if (!isset($restock_module_add)) $restock_module_add = new crestock_module_add();
+if (!isset($restock_staysafe_report_add)) $restock_staysafe_report_add = new crestock_staysafe_report_add();
 
 // Page init
-$restock_module_add->Page_Init();
+$restock_staysafe_report_add->Page_Init();
 
 // Page main
-$restock_module_add->Page_Main();
+$restock_staysafe_report_add->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$restock_module_add->Page_Render();
+$restock_staysafe_report_add->Page_Render();
 ?>
 <?php include_once "header.php" ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "add";
-var CurrentForm = frestock_moduleadd = new ew_Form("frestock_moduleadd", "add");
+var CurrentForm = frestock_staysafe_reportadd = new ew_Form("frestock_staysafe_reportadd", "add");
 
 // Validate form
-frestock_moduleadd.Validate = function() {
+frestock_staysafe_reportadd.Validate = function() {
 	if (!this.ValidateRequired)
 		return true; // Ignore validation
 	var $ = jQuery, fobj = this.GetForm(), $fobj = $(fobj);
@@ -1781,39 +1790,12 @@ frestock_moduleadd.Validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
-			elm = this.GetElements("x" + infix + "_date_restocked");
-			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
-				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module->date_restocked->FldCaption(), $restock_module->date_restocked->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_date_restocked");
-			if (elm && !ew_CheckShortEuroDate(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($restock_module->date_restocked->FldErrMsg()) ?>");
-			elm = this.GetElements("x" + infix + "_reference_id");
-			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
-				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module->reference_id->FldCaption(), $restock_module->reference_id->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_material_name");
-			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
-				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module->material_name->FldCaption(), $restock_module->material_name->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_type");
-			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
-				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module->type->FldCaption(), $restock_module->type->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_capacity");
-			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
-				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module->capacity->FldCaption(), $restock_module->capacity->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_stock_balance");
-			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
-				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module->stock_balance->FldCaption(), $restock_module->stock_balance->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_quantity");
-			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
-				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module->quantity->FldCaption(), $restock_module->quantity->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_restocked_by");
-			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
-				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module->restocked_by->FldCaption(), $restock_module->restocked_by->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_approver_date");
-			if (elm && !ew_CheckDateDef(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($restock_module->approver_date->FldErrMsg()) ?>");
-			elm = this.GetElements("x" + infix + "_verified_date");
-			if (elm && !ew_CheckDateDef(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($restock_module->verified_date->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_approved_by");
+			if (elm && !ew_CheckInteger(elm.value))
+				return this.OnError(elm, "<?php echo ew_JsEncode2($restock_staysafe_report->approved_by->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_verified_by");
+			if (elm && !ew_CheckInteger(elm.value))
+				return this.OnError(elm, "<?php echo ew_JsEncode2($restock_staysafe_report->verified_by->FldErrMsg()) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -1832,7 +1814,7 @@ frestock_moduleadd.Validate = function() {
 }
 
 // Form_CustomValidate event
-frestock_moduleadd.Form_CustomValidate = 
+frestock_staysafe_reportadd.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid.
@@ -1840,471 +1822,306 @@ frestock_moduleadd.Form_CustomValidate =
  }
 
 // Use JavaScript validation or not
-frestock_moduleadd.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+frestock_staysafe_reportadd.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-frestock_moduleadd.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
-frestock_moduleadd.Lists["x_material_name"].Data = "<?php echo $restock_module_add->material_name->LookupFilterQuery(FALSE, "add") ?>";
-frestock_moduleadd.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
-frestock_moduleadd.Lists["x_statuss"].Data = "<?php echo $restock_module_add->statuss->LookupFilterQuery(FALSE, "add") ?>";
-frestock_moduleadd.Lists["x_restocked_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-frestock_moduleadd.Lists["x_restocked_by"].Data = "<?php echo $restock_module_add->restocked_by->LookupFilterQuery(FALSE, "add") ?>";
-frestock_moduleadd.AutoSuggests["x_restocked_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $restock_module_add->restocked_by->LookupFilterQuery(TRUE, "add"))) ?>;
-frestock_moduleadd.Lists["x_restocked_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-frestock_moduleadd.Lists["x_restocked_action"].Options = <?php echo json_encode($restock_module_add->restocked_action->Options()) ?>;
-frestock_moduleadd.Lists["x_approver_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-frestock_moduleadd.Lists["x_approver_action"].Options = <?php echo json_encode($restock_module_add->approver_action->Options()) ?>;
-frestock_moduleadd.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-frestock_moduleadd.Lists["x_approved_by"].Data = "<?php echo $restock_module_add->approved_by->LookupFilterQuery(FALSE, "add") ?>";
-frestock_moduleadd.Lists["x_verified_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-frestock_moduleadd.Lists["x_verified_action"].Options = <?php echo json_encode($restock_module_add->verified_action->Options()) ?>;
-frestock_moduleadd.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-frestock_moduleadd.Lists["x_verified_by"].Data = "<?php echo $restock_module_add->verified_by->LookupFilterQuery(FALSE, "add") ?>";
+frestock_staysafe_reportadd.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory_staysafe"};
+frestock_staysafe_reportadd.Lists["x_material_name"].Data = "<?php echo $restock_staysafe_report_add->material_name->LookupFilterQuery(FALSE, "add") ?>";
+frestock_staysafe_reportadd.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
+frestock_staysafe_reportadd.Lists["x_statuss"].Data = "<?php echo $restock_staysafe_report_add->statuss->LookupFilterQuery(FALSE, "add") ?>";
+frestock_staysafe_reportadd.Lists["x_restocked_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+frestock_staysafe_reportadd.Lists["x_restocked_action"].Options = <?php echo json_encode($restock_staysafe_report_add->restocked_action->Options()) ?>;
+frestock_staysafe_reportadd.Lists["x_restocked_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+frestock_staysafe_reportadd.Lists["x_restocked_by"].Data = "<?php echo $restock_staysafe_report_add->restocked_by->LookupFilterQuery(FALSE, "add") ?>";
+frestock_staysafe_reportadd.AutoSuggests["x_restocked_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $restock_staysafe_report_add->restocked_by->LookupFilterQuery(TRUE, "add"))) ?>;
+frestock_staysafe_reportadd.Lists["x_approver_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+frestock_staysafe_reportadd.Lists["x_approver_action"].Options = <?php echo json_encode($restock_staysafe_report_add->approver_action->Options()) ?>;
+frestock_staysafe_reportadd.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+frestock_staysafe_reportadd.Lists["x_approved_by"].Data = "<?php echo $restock_staysafe_report_add->approved_by->LookupFilterQuery(FALSE, "add") ?>";
+frestock_staysafe_reportadd.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $restock_staysafe_report_add->approved_by->LookupFilterQuery(TRUE, "add"))) ?>;
+frestock_staysafe_reportadd.Lists["x_verified_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
+frestock_staysafe_reportadd.Lists["x_verified_action"].Options = <?php echo json_encode($restock_staysafe_report_add->verified_action->Options()) ?>;
+frestock_staysafe_reportadd.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+frestock_staysafe_reportadd.Lists["x_verified_by"].Data = "<?php echo $restock_staysafe_report_add->verified_by->LookupFilterQuery(FALSE, "add") ?>";
+frestock_staysafe_reportadd.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $restock_staysafe_report_add->verified_by->LookupFilterQuery(TRUE, "add"))) ?>;
 
 // Form object for search
 </script>
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
-$(document).ready(function(){
-	var inventory_quantity;
-	$("#x_material_name").on("change", function() { 
-	   var StoreId = this.value;
-
-	//    alert('Hello')
-		   if(StoreId !=''){
-
-			 //alert(StoreId);
-			 var resultSearchModel = ew_Ajax(ewVar.GetStockDetailsSearchModel, StoreId);   
-
-		   //alert(resultSearchModel);
-			 if(resultSearchModel !=''){
-
-			// alert(resultSearchModel);
-				$('#x_stock_balance').val(resultSearchModel[0]);
-				$('#x_type').val(resultSearchModel[1]);
-				$('#x_capacity').val(resultSearchModel[2]);
-
-				//$('#x_capacity').val(resultSearchModel[2]);
-				}
-				}else{
-					$('#x_stock_balance').val('');
-					$('#x_quantity').val('');
-					$('#x_type').val('');
-					$('#x_capacity').val('');
-				}
-			})
-		})	
 </script>
-<?php $restock_module_add->ShowPageHeader(); ?>
+<?php $restock_staysafe_report_add->ShowPageHeader(); ?>
 <?php
-$restock_module_add->ShowMessage();
+$restock_staysafe_report_add->ShowMessage();
 ?>
-<form name="frestock_moduleadd" id="frestock_moduleadd" class="<?php echo $restock_module_add->FormClassName ?>" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($restock_module_add->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $restock_module_add->Token ?>">
+<form name="frestock_staysafe_reportadd" id="frestock_staysafe_reportadd" class="<?php echo $restock_staysafe_report_add->FormClassName ?>" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($restock_staysafe_report_add->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $restock_staysafe_report_add->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="restock_module">
-<?php if ($restock_module->CurrentAction == "F") { // Confirm page ?>
+<input type="hidden" name="t" value="restock_staysafe_report">
 <input type="hidden" name="a_add" id="a_add" value="A">
-<input type="hidden" name="a_confirm" id="a_confirm" value="F">
-<?php } else { ?>
-<input type="hidden" name="a_add" id="a_add" value="F">
-<?php } ?>
-<input type="hidden" name="modal" value="<?php echo intval($restock_module_add->IsModal) ?>">
+<input type="hidden" name="modal" value="<?php echo intval($restock_staysafe_report_add->IsModal) ?>">
 <div class="ewAddDiv"><!-- page* -->
-<?php if ($restock_module->date_restocked->Visible) { // date_restocked ?>
+<?php if ($restock_staysafe_report->date_restocked->Visible) { // date_restocked ?>
 	<div id="r_date_restocked" class="form-group">
-		<label id="elh_restock_module_date_restocked" for="x_date_restocked" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->date_restocked->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->date_restocked->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_date_restocked">
-<input type="text" data-table="restock_module" data-field="x_date_restocked" data-page="1" data-format="17" name="x_date_restocked" id="x_date_restocked" size="30" placeholder="<?php echo ew_HtmlEncode($restock_module->date_restocked->getPlaceHolder()) ?>" value="<?php echo $restock_module->date_restocked->EditValue ?>"<?php echo $restock_module->date_restocked->EditAttributes() ?>>
-</span>
-<?php } else { ?>
-<span id="el_restock_module_date_restocked">
-<span<?php echo $restock_module->date_restocked->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->date_restocked->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_date_restocked" data-page="1" name="x_date_restocked" id="x_date_restocked" value="<?php echo ew_HtmlEncode($restock_module->date_restocked->FormValue) ?>">
+		<label id="elh_restock_staysafe_report_date_restocked" for="x_date_restocked" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->date_restocked->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->date_restocked->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_date_restocked">
+<input type="text" data-table="restock_staysafe_report" data-field="x_date_restocked" data-page="1" data-format="14" name="x_date_restocked" id="x_date_restocked" size="30" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->date_restocked->getPlaceHolder()) ?>" value="<?php echo $restock_staysafe_report->date_restocked->EditValue ?>"<?php echo $restock_staysafe_report->date_restocked->EditAttributes() ?>>
+<?php if (!$restock_staysafe_report->date_restocked->ReadOnly && !$restock_staysafe_report->date_restocked->Disabled && !isset($restock_staysafe_report->date_restocked->EditAttrs["readonly"]) && !isset($restock_staysafe_report->date_restocked->EditAttrs["disabled"])) { ?>
+<script type="text/javascript">
+ew_CreateDateTimePicker("frestock_staysafe_reportadd", "x_date_restocked", {"ignoreReadonly":true,"useCurrent":false,"format":14});
+</script>
 <?php } ?>
-<?php echo $restock_module->date_restocked->CustomMsg ?></div></div>
+</span>
+<?php echo $restock_staysafe_report->date_restocked->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($restock_module->reference_id->Visible) { // reference_id ?>
+<?php if ($restock_staysafe_report->reference_id->Visible) { // reference_id ?>
 	<div id="r_reference_id" class="form-group">
-		<label id="elh_restock_module_reference_id" for="x_reference_id" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->reference_id->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->reference_id->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_reference_id">
-<input type="text" data-table="restock_module" data-field="x_reference_id" data-page="1" name="x_reference_id" id="x_reference_id" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_module->reference_id->getPlaceHolder()) ?>" value="<?php echo $restock_module->reference_id->EditValue ?>"<?php echo $restock_module->reference_id->EditAttributes() ?>>
+		<label id="elh_restock_staysafe_report_reference_id" for="x_reference_id" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->reference_id->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->reference_id->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_reference_id">
+<input type="text" data-table="restock_staysafe_report" data-field="x_reference_id" data-page="1" name="x_reference_id" id="x_reference_id" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->reference_id->getPlaceHolder()) ?>" value="<?php echo $restock_staysafe_report->reference_id->EditValue ?>"<?php echo $restock_staysafe_report->reference_id->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_restock_module_reference_id">
-<span<?php echo $restock_module->reference_id->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->reference_id->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_reference_id" data-page="1" name="x_reference_id" id="x_reference_id" value="<?php echo ew_HtmlEncode($restock_module->reference_id->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->reference_id->CustomMsg ?></div></div>
+<?php echo $restock_staysafe_report->reference_id->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($restock_module->material_name->Visible) { // material_name ?>
+<?php if ($restock_staysafe_report->material_name->Visible) { // material_name ?>
 	<div id="r_material_name" class="form-group">
-		<label id="elh_restock_module_material_name" for="x_material_name" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->material_name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->material_name->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_material_name">
+		<label id="elh_restock_staysafe_report_material_name" for="x_material_name" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->material_name->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->material_name->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_material_name">
 <span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_material_name"><?php echo (strval($restock_module->material_name->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $restock_module->material_name->ViewValue); ?></span>
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_material_name"><?php echo (strval($restock_staysafe_report->material_name->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $restock_staysafe_report->material_name->ViewValue); ?></span>
 </span>
-<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($restock_module->material_name->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_material_name',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($restock_module->material_name->ReadOnly || $restock_module->material_name->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
-<input type="hidden" data-table="restock_module" data-field="x_material_name" data-page="1" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $restock_module->material_name->DisplayValueSeparatorAttribute() ?>" name="x_material_name" id="x_material_name" value="<?php echo $restock_module->material_name->CurrentValue ?>"<?php echo $restock_module->material_name->EditAttributes() ?>>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($restock_staysafe_report->material_name->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_material_name',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($restock_staysafe_report->material_name->ReadOnly || $restock_staysafe_report->material_name->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="restock_staysafe_report" data-field="x_material_name" data-page="1" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $restock_staysafe_report->material_name->DisplayValueSeparatorAttribute() ?>" name="x_material_name" id="x_material_name" value="<?php echo $restock_staysafe_report->material_name->CurrentValue ?>"<?php echo $restock_staysafe_report->material_name->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_restock_module_material_name">
-<span<?php echo $restock_module->material_name->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->material_name->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_material_name" data-page="1" name="x_material_name" id="x_material_name" value="<?php echo ew_HtmlEncode($restock_module->material_name->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->material_name->CustomMsg ?></div></div>
+<?php echo $restock_staysafe_report->material_name->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($restock_module->type->Visible) { // type ?>
+<?php if ($restock_staysafe_report->type->Visible) { // type ?>
 	<div id="r_type" class="form-group">
-		<label id="elh_restock_module_type" for="x_type" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->type->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->type->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_type">
-<input type="text" data-table="restock_module" data-field="x_type" data-page="1" name="x_type" id="x_type" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_module->type->getPlaceHolder()) ?>" value="<?php echo $restock_module->type->EditValue ?>"<?php echo $restock_module->type->EditAttributes() ?>>
+		<label id="elh_restock_staysafe_report_type" for="x_type" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->type->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->type->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_type">
+<input type="text" data-table="restock_staysafe_report" data-field="x_type" data-page="1" name="x_type" id="x_type" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->type->getPlaceHolder()) ?>" value="<?php echo $restock_staysafe_report->type->EditValue ?>"<?php echo $restock_staysafe_report->type->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_restock_module_type">
-<span<?php echo $restock_module->type->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->type->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_type" data-page="1" name="x_type" id="x_type" value="<?php echo ew_HtmlEncode($restock_module->type->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->type->CustomMsg ?></div></div>
+<?php echo $restock_staysafe_report->type->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($restock_module->capacity->Visible) { // capacity ?>
+<?php if ($restock_staysafe_report->capacity->Visible) { // capacity ?>
 	<div id="r_capacity" class="form-group">
-		<label id="elh_restock_module_capacity" for="x_capacity" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->capacity->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->capacity->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_capacity">
-<input type="text" data-table="restock_module" data-field="x_capacity" data-page="1" name="x_capacity" id="x_capacity" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_module->capacity->getPlaceHolder()) ?>" value="<?php echo $restock_module->capacity->EditValue ?>"<?php echo $restock_module->capacity->EditAttributes() ?>>
+		<label id="elh_restock_staysafe_report_capacity" for="x_capacity" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->capacity->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->capacity->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_capacity">
+<input type="text" data-table="restock_staysafe_report" data-field="x_capacity" data-page="1" name="x_capacity" id="x_capacity" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->capacity->getPlaceHolder()) ?>" value="<?php echo $restock_staysafe_report->capacity->EditValue ?>"<?php echo $restock_staysafe_report->capacity->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_restock_module_capacity">
-<span<?php echo $restock_module->capacity->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->capacity->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_capacity" data-page="1" name="x_capacity" id="x_capacity" value="<?php echo ew_HtmlEncode($restock_module->capacity->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->capacity->CustomMsg ?></div></div>
+<?php echo $restock_staysafe_report->capacity->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($restock_module->stock_balance->Visible) { // stock_balance ?>
+<?php if ($restock_staysafe_report->stock_balance->Visible) { // stock_balance ?>
 	<div id="r_stock_balance" class="form-group">
-		<label id="elh_restock_module_stock_balance" for="x_stock_balance" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->stock_balance->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->stock_balance->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_stock_balance">
-<input type="text" data-table="restock_module" data-field="x_stock_balance" data-page="1" name="x_stock_balance" id="x_stock_balance" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_module->stock_balance->getPlaceHolder()) ?>" value="<?php echo $restock_module->stock_balance->EditValue ?>"<?php echo $restock_module->stock_balance->EditAttributes() ?>>
+		<label id="elh_restock_staysafe_report_stock_balance" for="x_stock_balance" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->stock_balance->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->stock_balance->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_stock_balance">
+<input type="text" data-table="restock_staysafe_report" data-field="x_stock_balance" data-page="1" name="x_stock_balance" id="x_stock_balance" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->stock_balance->getPlaceHolder()) ?>" value="<?php echo $restock_staysafe_report->stock_balance->EditValue ?>"<?php echo $restock_staysafe_report->stock_balance->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_restock_module_stock_balance">
-<span<?php echo $restock_module->stock_balance->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->stock_balance->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_stock_balance" data-page="1" name="x_stock_balance" id="x_stock_balance" value="<?php echo ew_HtmlEncode($restock_module->stock_balance->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->stock_balance->CustomMsg ?></div></div>
+<?php echo $restock_staysafe_report->stock_balance->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($restock_module->quantity->Visible) { // quantity ?>
+<?php if ($restock_staysafe_report->quantity->Visible) { // quantity ?>
 	<div id="r_quantity" class="form-group">
-		<label id="elh_restock_module_quantity" for="x_quantity" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->quantity->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->quantity->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_quantity">
-<input type="text" data-table="restock_module" data-field="x_quantity" data-page="1" name="x_quantity" id="x_quantity" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_module->quantity->getPlaceHolder()) ?>" value="<?php echo $restock_module->quantity->EditValue ?>"<?php echo $restock_module->quantity->EditAttributes() ?>>
+		<label id="elh_restock_staysafe_report_quantity" for="x_quantity" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->quantity->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->quantity->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_quantity">
+<input type="text" data-table="restock_staysafe_report" data-field="x_quantity" data-page="1" name="x_quantity" id="x_quantity" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->quantity->getPlaceHolder()) ?>" value="<?php echo $restock_staysafe_report->quantity->EditValue ?>"<?php echo $restock_staysafe_report->quantity->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_restock_module_quantity">
-<span<?php echo $restock_module->quantity->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->quantity->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_quantity" data-page="1" name="x_quantity" id="x_quantity" value="<?php echo ew_HtmlEncode($restock_module->quantity->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->quantity->CustomMsg ?></div></div>
+<?php echo $restock_staysafe_report->quantity->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($restock_module->statuss->Visible) { // statuss ?>
+<?php if ($restock_staysafe_report->statuss->Visible) { // statuss ?>
 	<div id="r_statuss" class="form-group">
-		<label id="elh_restock_module_statuss" for="x_statuss" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->statuss->FldCaption() ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->statuss->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_statuss">
-<select data-table="restock_module" data-field="x_statuss" data-page="1" data-value-separator="<?php echo $restock_module->statuss->DisplayValueSeparatorAttribute() ?>" id="x_statuss" name="x_statuss"<?php echo $restock_module->statuss->EditAttributes() ?>>
-<?php echo $restock_module->statuss->SelectOptionListHtml("x_statuss") ?>
+		<label id="elh_restock_staysafe_report_statuss" for="x_statuss" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->statuss->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->statuss->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_statuss">
+<select data-table="restock_staysafe_report" data-field="x_statuss" data-page="1" data-value-separator="<?php echo $restock_staysafe_report->statuss->DisplayValueSeparatorAttribute() ?>" id="x_statuss" name="x_statuss"<?php echo $restock_staysafe_report->statuss->EditAttributes() ?>>
+<?php echo $restock_staysafe_report->statuss->SelectOptionListHtml("x_statuss") ?>
 </select>
 </span>
-<?php } else { ?>
-<span id="el_restock_module_statuss">
-<span<?php echo $restock_module->statuss->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->statuss->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_statuss" data-page="1" name="x_statuss" id="x_statuss" value="<?php echo ew_HtmlEncode($restock_module->statuss->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->statuss->CustomMsg ?></div></div>
+<?php echo $restock_staysafe_report->statuss->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($restock_module->restocked_by->Visible) { // restocked_by ?>
-	<div id="r_restocked_by" class="form-group">
-		<label id="elh_restock_module_restocked_by" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->restocked_by->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->restocked_by->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_restocked_by">
-<?php
-$wrkonchange = trim(" " . @$restock_module->restocked_by->EditAttrs["onchange"]);
-if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
-$restock_module->restocked_by->EditAttrs["onchange"] = "";
-?>
-<span id="as_x_restocked_by" style="white-space: nowrap; z-index: 8900">
-	<input type="text" name="sv_x_restocked_by" id="sv_x_restocked_by" value="<?php echo $restock_module->restocked_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($restock_module->restocked_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($restock_module->restocked_by->getPlaceHolder()) ?>"<?php echo $restock_module->restocked_by->EditAttributes() ?>>
+<?php if ($restock_staysafe_report->restocked_action->Visible) { // restocked_action ?>
+	<div id="r_restocked_action" class="form-group">
+		<label id="elh_restock_staysafe_report_restocked_action" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->restocked_action->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->restocked_action->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_restocked_action">
+<div id="tp_x_restocked_action" class="ewTemplate"><input type="radio" data-table="restock_staysafe_report" data-field="x_restocked_action" data-page="1" data-value-separator="<?php echo $restock_staysafe_report->restocked_action->DisplayValueSeparatorAttribute() ?>" name="x_restocked_action" id="x_restocked_action" value="{value}"<?php echo $restock_staysafe_report->restocked_action->EditAttributes() ?>></div>
+<div id="dsl_x_restocked_action" data-repeatcolumn="5" class="ewItemList" style="display: none;"><div>
+<?php echo $restock_staysafe_report->restocked_action->RadioButtonListHtml(FALSE, "x_restocked_action", 1) ?>
+</div></div>
 </span>
-<input type="hidden" data-table="restock_module" data-field="x_restocked_by" data-page="1" data-value-separator="<?php echo $restock_module->restocked_by->DisplayValueSeparatorAttribute() ?>" name="x_restocked_by" id="x_restocked_by" value="<?php echo ew_HtmlEncode($restock_module->restocked_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
+<?php echo $restock_staysafe_report->restocked_action->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($restock_staysafe_report->restocked_comment->Visible) { // restocked_comment ?>
+	<div id="r_restocked_comment" class="form-group">
+		<label id="elh_restock_staysafe_report_restocked_comment" for="x_restocked_comment" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->restocked_comment->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->restocked_comment->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_restocked_comment">
+<textarea data-table="restock_staysafe_report" data-field="x_restocked_comment" data-page="1" name="x_restocked_comment" id="x_restocked_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->restocked_comment->getPlaceHolder()) ?>"<?php echo $restock_staysafe_report->restocked_comment->EditAttributes() ?>><?php echo $restock_staysafe_report->restocked_comment->EditValue ?></textarea>
+</span>
+<?php echo $restock_staysafe_report->restocked_comment->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($restock_staysafe_report->restocked_by->Visible) { // restocked_by ?>
+	<div id="r_restocked_by" class="form-group">
+		<label id="elh_restock_staysafe_report_restocked_by" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->restocked_by->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->restocked_by->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_restocked_by">
+<?php
+$wrkonchange = trim(" " . @$restock_staysafe_report->restocked_by->EditAttrs["onchange"]);
+if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
+$restock_staysafe_report->restocked_by->EditAttrs["onchange"] = "";
+?>
+<span id="as_x_restocked_by" style="white-space: nowrap; z-index: 8880">
+	<input type="text" name="sv_x_restocked_by" id="sv_x_restocked_by" value="<?php echo $restock_staysafe_report->restocked_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->restocked_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->restocked_by->getPlaceHolder()) ?>"<?php echo $restock_staysafe_report->restocked_by->EditAttributes() ?>>
+</span>
+<input type="hidden" data-table="restock_staysafe_report" data-field="x_restocked_by" data-page="1" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $restock_staysafe_report->restocked_by->DisplayValueSeparatorAttribute() ?>" name="x_restocked_by" id="x_restocked_by" value="<?php echo ew_HtmlEncode($restock_staysafe_report->restocked_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
 <script type="text/javascript">
-frestock_moduleadd.CreateAutoSuggest({"id":"x_restocked_by","forceSelect":false});
+frestock_staysafe_reportadd.CreateAutoSuggest({"id":"x_restocked_by","forceSelect":false});
+</script>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($restock_staysafe_report->restocked_by->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_restocked_by',m:0,n:10,srch:true});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($restock_staysafe_report->restocked_by->ReadOnly || $restock_staysafe_report->restocked_by->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+</span>
+<?php echo $restock_staysafe_report->restocked_by->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($restock_staysafe_report->approver_date->Visible) { // approver_date ?>
+	<div id="r_approver_date" class="form-group">
+		<label id="elh_restock_staysafe_report_approver_date" for="x_approver_date" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->approver_date->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->approver_date->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_approver_date">
+<input type="text" data-table="restock_staysafe_report" data-field="x_approver_date" data-page="1" data-format="14" name="x_approver_date" id="x_approver_date" size="30" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->approver_date->getPlaceHolder()) ?>" value="<?php echo $restock_staysafe_report->approver_date->EditValue ?>"<?php echo $restock_staysafe_report->approver_date->EditAttributes() ?>>
+</span>
+<?php echo $restock_staysafe_report->approver_date->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($restock_staysafe_report->approver_action->Visible) { // approver_action ?>
+	<div id="r_approver_action" class="form-group">
+		<label id="elh_restock_staysafe_report_approver_action" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->approver_action->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->approver_action->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_approver_action">
+<div id="tp_x_approver_action" class="ewTemplate"><input type="radio" data-table="restock_staysafe_report" data-field="x_approver_action" data-page="1" data-value-separator="<?php echo $restock_staysafe_report->approver_action->DisplayValueSeparatorAttribute() ?>" name="x_approver_action" id="x_approver_action" value="{value}"<?php echo $restock_staysafe_report->approver_action->EditAttributes() ?>></div>
+<div id="dsl_x_approver_action" data-repeatcolumn="5" class="ewItemList" style="display: none;"><div>
+<?php echo $restock_staysafe_report->approver_action->RadioButtonListHtml(FALSE, "x_approver_action", 1) ?>
+</div></div>
+</span>
+<?php echo $restock_staysafe_report->approver_action->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($restock_staysafe_report->approver_comment->Visible) { // approver_comment ?>
+	<div id="r_approver_comment" class="form-group">
+		<label id="elh_restock_staysafe_report_approver_comment" for="x_approver_comment" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->approver_comment->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->approver_comment->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_approver_comment">
+<textarea data-table="restock_staysafe_report" data-field="x_approver_comment" data-page="1" name="x_approver_comment" id="x_approver_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->approver_comment->getPlaceHolder()) ?>"<?php echo $restock_staysafe_report->approver_comment->EditAttributes() ?>><?php echo $restock_staysafe_report->approver_comment->EditValue ?></textarea>
+</span>
+<?php echo $restock_staysafe_report->approver_comment->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($restock_staysafe_report->approved_by->Visible) { // approved_by ?>
+	<div id="r_approved_by" class="form-group">
+		<label id="elh_restock_staysafe_report_approved_by" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->approved_by->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->approved_by->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_approved_by">
+<?php
+$wrkonchange = trim(" " . @$restock_staysafe_report->approved_by->EditAttrs["onchange"]);
+if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
+$restock_staysafe_report->approved_by->EditAttrs["onchange"] = "";
+?>
+<span id="as_x_approved_by" style="white-space: nowrap; z-index: 8840">
+	<input type="text" name="sv_x_approved_by" id="sv_x_approved_by" value="<?php echo $restock_staysafe_report->approved_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->approved_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->approved_by->getPlaceHolder()) ?>"<?php echo $restock_staysafe_report->approved_by->EditAttributes() ?>>
+</span>
+<input type="hidden" data-table="restock_staysafe_report" data-field="x_approved_by" data-page="1" data-value-separator="<?php echo $restock_staysafe_report->approved_by->DisplayValueSeparatorAttribute() ?>" name="x_approved_by" id="x_approved_by" value="<?php echo ew_HtmlEncode($restock_staysafe_report->approved_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
+<script type="text/javascript">
+frestock_staysafe_reportadd.CreateAutoSuggest({"id":"x_approved_by","forceSelect":false});
 </script>
 </span>
-<?php } else { ?>
-<span id="el_restock_module_restocked_by">
-<span<?php echo $restock_module->restocked_by->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->restocked_by->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_restocked_by" data-page="1" name="x_restocked_by" id="x_restocked_by" value="<?php echo ew_HtmlEncode($restock_module->restocked_by->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->restocked_by->CustomMsg ?></div></div>
+<?php echo $restock_staysafe_report->approved_by->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($restock_module->restocked_action->Visible) { // restocked_action ?>
-	<div id="r_restocked_action" class="form-group">
-		<label id="elh_restock_module_restocked_action" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->restocked_action->FldCaption() ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->restocked_action->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_restocked_action">
-<div id="tp_x_restocked_action" class="ewTemplate"><input type="radio" data-table="restock_module" data-field="x_restocked_action" data-page="1" data-value-separator="<?php echo $restock_module->restocked_action->DisplayValueSeparatorAttribute() ?>" name="x_restocked_action" id="x_restocked_action" value="{value}"<?php echo $restock_module->restocked_action->EditAttributes() ?>></div>
-<div id="dsl_x_restocked_action" data-repeatcolumn="5" class="ewItemList" style="display: none;"><div>
-<?php echo $restock_module->restocked_action->RadioButtonListHtml(FALSE, "x_restocked_action", 1) ?>
-</div></div>
-</span>
-<?php } else { ?>
-<span id="el_restock_module_restocked_action">
-<span<?php echo $restock_module->restocked_action->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->restocked_action->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_restocked_action" data-page="1" name="x_restocked_action" id="x_restocked_action" value="<?php echo ew_HtmlEncode($restock_module->restocked_action->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->restocked_action->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
-<?php if ($restock_module->restocked_comment->Visible) { // restocked_comment ?>
-	<div id="r_restocked_comment" class="form-group">
-		<label id="elh_restock_module_restocked_comment" for="x_restocked_comment" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->restocked_comment->FldCaption() ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->restocked_comment->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_restocked_comment">
-<textarea data-table="restock_module" data-field="x_restocked_comment" data-page="1" name="x_restocked_comment" id="x_restocked_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($restock_module->restocked_comment->getPlaceHolder()) ?>"<?php echo $restock_module->restocked_comment->EditAttributes() ?>><?php echo $restock_module->restocked_comment->EditValue ?></textarea>
-</span>
-<?php } else { ?>
-<span id="el_restock_module_restocked_comment">
-<span<?php echo $restock_module->restocked_comment->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->restocked_comment->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_restocked_comment" data-page="1" name="x_restocked_comment" id="x_restocked_comment" value="<?php echo ew_HtmlEncode($restock_module->restocked_comment->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->restocked_comment->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
-<?php if ($restock_module->approver_date->Visible) { // approver_date ?>
-	<div id="r_approver_date" class="form-group">
-		<label id="elh_restock_module_approver_date" for="x_approver_date" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->approver_date->FldCaption() ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->approver_date->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_approver_date">
-<input type="text" data-table="restock_module" data-field="x_approver_date" data-page="1" name="x_approver_date" id="x_approver_date" placeholder="<?php echo ew_HtmlEncode($restock_module->approver_date->getPlaceHolder()) ?>" value="<?php echo $restock_module->approver_date->EditValue ?>"<?php echo $restock_module->approver_date->EditAttributes() ?>>
-</span>
-<?php } else { ?>
-<span id="el_restock_module_approver_date">
-<span<?php echo $restock_module->approver_date->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->approver_date->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_approver_date" data-page="1" name="x_approver_date" id="x_approver_date" value="<?php echo ew_HtmlEncode($restock_module->approver_date->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->approver_date->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
-<?php if ($restock_module->approver_action->Visible) { // approver_action ?>
-	<div id="r_approver_action" class="form-group">
-		<label id="elh_restock_module_approver_action" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->approver_action->FldCaption() ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->approver_action->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_approver_action">
-<div id="tp_x_approver_action" class="ewTemplate"><input type="radio" data-table="restock_module" data-field="x_approver_action" data-page="1" data-value-separator="<?php echo $restock_module->approver_action->DisplayValueSeparatorAttribute() ?>" name="x_approver_action" id="x_approver_action" value="{value}"<?php echo $restock_module->approver_action->EditAttributes() ?>></div>
-<div id="dsl_x_approver_action" data-repeatcolumn="5" class="ewItemList" style="display: none;"><div>
-<?php echo $restock_module->approver_action->RadioButtonListHtml(FALSE, "x_approver_action", 1) ?>
-</div></div>
-</span>
-<?php } else { ?>
-<span id="el_restock_module_approver_action">
-<span<?php echo $restock_module->approver_action->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->approver_action->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_approver_action" data-page="1" name="x_approver_action" id="x_approver_action" value="<?php echo ew_HtmlEncode($restock_module->approver_action->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->approver_action->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
-<?php if ($restock_module->approver_comment->Visible) { // approver_comment ?>
-	<div id="r_approver_comment" class="form-group">
-		<label id="elh_restock_module_approver_comment" for="x_approver_comment" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->approver_comment->FldCaption() ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->approver_comment->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_approver_comment">
-<textarea data-table="restock_module" data-field="x_approver_comment" data-page="1" name="x_approver_comment" id="x_approver_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($restock_module->approver_comment->getPlaceHolder()) ?>"<?php echo $restock_module->approver_comment->EditAttributes() ?>><?php echo $restock_module->approver_comment->EditValue ?></textarea>
-</span>
-<?php } else { ?>
-<span id="el_restock_module_approver_comment">
-<span<?php echo $restock_module->approver_comment->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->approver_comment->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_approver_comment" data-page="1" name="x_approver_comment" id="x_approver_comment" value="<?php echo ew_HtmlEncode($restock_module->approver_comment->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->approver_comment->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
-<?php if ($restock_module->approved_by->Visible) { // approved_by ?>
-	<div id="r_approved_by" class="form-group">
-		<label id="elh_restock_module_approved_by" for="x_approved_by" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->approved_by->FldCaption() ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->approved_by->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_approved_by">
-<select data-table="restock_module" data-field="x_approved_by" data-page="1" data-value-separator="<?php echo $restock_module->approved_by->DisplayValueSeparatorAttribute() ?>" id="x_approved_by" name="x_approved_by"<?php echo $restock_module->approved_by->EditAttributes() ?>>
-<?php echo $restock_module->approved_by->SelectOptionListHtml("x_approved_by") ?>
-</select>
-</span>
-<?php } else { ?>
-<span id="el_restock_module_approved_by">
-<span<?php echo $restock_module->approved_by->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->approved_by->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_approved_by" data-page="1" name="x_approved_by" id="x_approved_by" value="<?php echo ew_HtmlEncode($restock_module->approved_by->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->approved_by->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
-<?php if ($restock_module->verified_date->Visible) { // verified_date ?>
+<?php if ($restock_staysafe_report->verified_date->Visible) { // verified_date ?>
 	<div id="r_verified_date" class="form-group">
-		<label id="elh_restock_module_verified_date" for="x_verified_date" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->verified_date->FldCaption() ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->verified_date->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_verified_date">
-<input type="text" data-table="restock_module" data-field="x_verified_date" data-page="1" name="x_verified_date" id="x_verified_date" placeholder="<?php echo ew_HtmlEncode($restock_module->verified_date->getPlaceHolder()) ?>" value="<?php echo $restock_module->verified_date->EditValue ?>"<?php echo $restock_module->verified_date->EditAttributes() ?>>
+		<label id="elh_restock_staysafe_report_verified_date" for="x_verified_date" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->verified_date->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->verified_date->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_verified_date">
+<input type="text" data-table="restock_staysafe_report" data-field="x_verified_date" data-page="1" data-format="14" name="x_verified_date" id="x_verified_date" size="30" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->verified_date->getPlaceHolder()) ?>" value="<?php echo $restock_staysafe_report->verified_date->EditValue ?>"<?php echo $restock_staysafe_report->verified_date->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_restock_module_verified_date">
-<span<?php echo $restock_module->verified_date->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->verified_date->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_verified_date" data-page="1" name="x_verified_date" id="x_verified_date" value="<?php echo ew_HtmlEncode($restock_module->verified_date->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->verified_date->CustomMsg ?></div></div>
+<?php echo $restock_staysafe_report->verified_date->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($restock_module->verified_action->Visible) { // verified_action ?>
+<?php if ($restock_staysafe_report->verified_action->Visible) { // verified_action ?>
 	<div id="r_verified_action" class="form-group">
-		<label id="elh_restock_module_verified_action" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->verified_action->FldCaption() ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->verified_action->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_verified_action">
-<div id="tp_x_verified_action" class="ewTemplate"><input type="radio" data-table="restock_module" data-field="x_verified_action" data-page="1" data-value-separator="<?php echo $restock_module->verified_action->DisplayValueSeparatorAttribute() ?>" name="x_verified_action" id="x_verified_action" value="{value}"<?php echo $restock_module->verified_action->EditAttributes() ?>></div>
+		<label id="elh_restock_staysafe_report_verified_action" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->verified_action->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->verified_action->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_verified_action">
+<div id="tp_x_verified_action" class="ewTemplate"><input type="radio" data-table="restock_staysafe_report" data-field="x_verified_action" data-page="1" data-value-separator="<?php echo $restock_staysafe_report->verified_action->DisplayValueSeparatorAttribute() ?>" name="x_verified_action" id="x_verified_action" value="{value}"<?php echo $restock_staysafe_report->verified_action->EditAttributes() ?>></div>
 <div id="dsl_x_verified_action" data-repeatcolumn="5" class="ewItemList" style="display: none;"><div>
-<?php echo $restock_module->verified_action->RadioButtonListHtml(FALSE, "x_verified_action", 1) ?>
+<?php echo $restock_staysafe_report->verified_action->RadioButtonListHtml(FALSE, "x_verified_action", 1) ?>
 </div></div>
 </span>
-<?php } else { ?>
-<span id="el_restock_module_verified_action">
-<span<?php echo $restock_module->verified_action->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->verified_action->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_verified_action" data-page="1" name="x_verified_action" id="x_verified_action" value="<?php echo ew_HtmlEncode($restock_module->verified_action->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->verified_action->CustomMsg ?></div></div>
+<?php echo $restock_staysafe_report->verified_action->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($restock_module->verified_comment->Visible) { // verified_comment ?>
+<?php if ($restock_staysafe_report->verified_comment->Visible) { // verified_comment ?>
 	<div id="r_verified_comment" class="form-group">
-		<label id="elh_restock_module_verified_comment" for="x_verified_comment" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->verified_comment->FldCaption() ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->verified_comment->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_verified_comment">
-<textarea data-table="restock_module" data-field="x_verified_comment" data-page="1" name="x_verified_comment" id="x_verified_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($restock_module->verified_comment->getPlaceHolder()) ?>"<?php echo $restock_module->verified_comment->EditAttributes() ?>><?php echo $restock_module->verified_comment->EditValue ?></textarea>
+		<label id="elh_restock_staysafe_report_verified_comment" for="x_verified_comment" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->verified_comment->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->verified_comment->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_verified_comment">
+<textarea data-table="restock_staysafe_report" data-field="x_verified_comment" data-page="1" name="x_verified_comment" id="x_verified_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->verified_comment->getPlaceHolder()) ?>"<?php echo $restock_staysafe_report->verified_comment->EditAttributes() ?>><?php echo $restock_staysafe_report->verified_comment->EditValue ?></textarea>
 </span>
-<?php } else { ?>
-<span id="el_restock_module_verified_comment">
-<span<?php echo $restock_module->verified_comment->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->verified_comment->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="restock_module" data-field="x_verified_comment" data-page="1" name="x_verified_comment" id="x_verified_comment" value="<?php echo ew_HtmlEncode($restock_module->verified_comment->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->verified_comment->CustomMsg ?></div></div>
+<?php echo $restock_staysafe_report->verified_comment->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
-<?php if ($restock_module->verified_by->Visible) { // verified_by ?>
+<?php if ($restock_staysafe_report->verified_by->Visible) { // verified_by ?>
 	<div id="r_verified_by" class="form-group">
-		<label id="elh_restock_module_verified_by" for="x_verified_by" class="<?php echo $restock_module_add->LeftColumnClass ?>"><?php echo $restock_module->verified_by->FldCaption() ?></label>
-		<div class="<?php echo $restock_module_add->RightColumnClass ?>"><div<?php echo $restock_module->verified_by->CellAttributes() ?>>
-<?php if ($restock_module->CurrentAction <> "F") { ?>
-<span id="el_restock_module_verified_by">
-<select data-table="restock_module" data-field="x_verified_by" data-page="1" data-value-separator="<?php echo $restock_module->verified_by->DisplayValueSeparatorAttribute() ?>" id="x_verified_by" name="x_verified_by"<?php echo $restock_module->verified_by->EditAttributes() ?>>
-<?php echo $restock_module->verified_by->SelectOptionListHtml("x_verified_by") ?>
-</select>
+		<label id="elh_restock_staysafe_report_verified_by" class="<?php echo $restock_staysafe_report_add->LeftColumnClass ?>"><?php echo $restock_staysafe_report->verified_by->FldCaption() ?></label>
+		<div class="<?php echo $restock_staysafe_report_add->RightColumnClass ?>"><div<?php echo $restock_staysafe_report->verified_by->CellAttributes() ?>>
+<span id="el_restock_staysafe_report_verified_by">
+<?php
+$wrkonchange = trim(" " . @$restock_staysafe_report->verified_by->EditAttrs["onchange"]);
+if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
+$restock_staysafe_report->verified_by->EditAttrs["onchange"] = "";
+?>
+<span id="as_x_verified_by" style="white-space: nowrap; z-index: 8800">
+	<input type="text" name="sv_x_verified_by" id="sv_x_verified_by" value="<?php echo $restock_staysafe_report->verified_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->verified_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($restock_staysafe_report->verified_by->getPlaceHolder()) ?>"<?php echo $restock_staysafe_report->verified_by->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_restock_module_verified_by">
-<span<?php echo $restock_module->verified_by->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $restock_module->verified_by->ViewValue ?></p></span>
+<input type="hidden" data-table="restock_staysafe_report" data-field="x_verified_by" data-page="1" data-value-separator="<?php echo $restock_staysafe_report->verified_by->DisplayValueSeparatorAttribute() ?>" name="x_verified_by" id="x_verified_by" value="<?php echo ew_HtmlEncode($restock_staysafe_report->verified_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
+<script type="text/javascript">
+frestock_staysafe_reportadd.CreateAutoSuggest({"id":"x_verified_by","forceSelect":false});
+</script>
 </span>
-<input type="hidden" data-table="restock_module" data-field="x_verified_by" data-page="1" name="x_verified_by" id="x_verified_by" value="<?php echo ew_HtmlEncode($restock_module->verified_by->FormValue) ?>">
-<?php } ?>
-<?php echo $restock_module->verified_by->CustomMsg ?></div></div>
+<?php echo $restock_staysafe_report->verified_by->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 </div><!-- /page* -->
-<?php if (!$restock_module_add->IsModal) { ?>
+<?php if (!$restock_staysafe_report_add->IsModal) { ?>
 <div class="form-group"><!-- buttons .form-group -->
-	<div class="<?php echo $restock_module_add->OffsetColumnClass ?>"><!-- buttons offset -->
-<?php if ($restock_module->CurrentAction <> "F") { // Confirm page ?>
-<button class="btn btn-primary ewButton" name="btnAction" id="btnAction" type="submit" onclick="this.form.a_add.value='F';"><?php echo $Language->Phrase("AddBtn") ?></button>
-<button class="btn btn-default ewButton" name="btnCancel" id="btnCancel" type="button" data-href="<?php echo $restock_module_add->getReturnUrl() ?>"><?php echo $Language->Phrase("CancelBtn") ?></button>
-<?php } else { ?>
-<button class="btn btn-primary ewButton" name="btnAction" id="btnAction" type="submit"><?php echo $Language->Phrase("ConfirmBtn") ?></button>
-<button class="btn btn-default ewButton" name="btnCancel" id="btnCancel" type="submit" onclick="this.form.a_add.value='X';"><?php echo $Language->Phrase("CancelBtn") ?></button>
-<?php } ?>
+	<div class="<?php echo $restock_staysafe_report_add->OffsetColumnClass ?>"><!-- buttons offset -->
+<button class="btn btn-primary ewButton" name="btnAction" id="btnAction" type="submit"><?php echo $Language->Phrase("AddBtn") ?></button>
+<button class="btn btn-default ewButton" name="btnCancel" id="btnCancel" type="button" data-href="<?php echo $restock_staysafe_report_add->getReturnUrl() ?>"><?php echo $Language->Phrase("CancelBtn") ?></button>
 	</div><!-- /buttons offset -->
 </div><!-- /buttons .form-group -->
 <?php } ?>
 </form>
 <script type="text/javascript">
-frestock_moduleadd.Init();
+frestock_staysafe_reportadd.Init();
 </script>
 <?php
-$restock_module_add->ShowPageFooter();
+$restock_staysafe_report_add->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
@@ -2313,12 +2130,8 @@ if (EW_DEBUG_ENABLED)
 // Write your table-specific startup script here
 // document.write("page loaded");
 
-$("#r_restocked_by").hide();
-$('#r_approved_by').hide();
-$('#r_verified_by').hide();
-$('#r_statuss').hide();
 </script>
 <?php include_once "footer.php" ?>
 <?php
-$restock_module_add->Page_Terminate();
+$restock_staysafe_report_add->Page_Terminate();
 ?>

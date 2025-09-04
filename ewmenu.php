@@ -53,11 +53,17 @@ $RootMenu->AddMenuItem(100, "mi_assign_task", $Language->MenuPhrase("100", "Menu
 $RootMenu->AddMenuItem(145, "mci_Inventory_Store_Module", $Language->MenuPhrase("145", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fa fa-cubes");
 $RootMenu->AddMenuItem(101, "mi_inventory", $Language->MenuPhrase("101", "MenuText"), "inventorylist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}inventory'), FALSE, FALSE, "fa fa-cube");
 $RootMenu->AddMenuItem(197, "mi_inventory_report", $Language->MenuPhrase("197", "MenuText"), "inventory_reportlist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}inventory_report'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(335, "mi_inventory_staysafe", $Language->MenuPhrase("335", "MenuText"), "inventory_staysafelist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}inventory_staysafe'), FALSE, FALSE, "fa fa-cube");
 $RootMenu->AddMenuItem(199, "mi_inventory_record", $Language->MenuPhrase("199", "MenuText"), "inventory_recordlist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}inventory_record'), FALSE, FALSE, "fa fa-cubes");
+$RootMenu->AddMenuItem(338, "mi_inventory_staysafe_report", $Language->MenuPhrase("338", "MenuText"), "inventory_staysafe_reportlist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}inventory_staysafe_report'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(341, "mi_inventory_tracking_statysafe", $Language->MenuPhrase("341", "MenuText"), "inventory_tracking_statysafelist.php", 145, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}inventory_tracking_statysafe'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(268, "mci_Inventory_Issuance_Module", $Language->MenuPhrase("268", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fa fa-cubes");
 $RootMenu->AddMenuItem(102, "mi_issuance_store", $Language->MenuPhrase("102", "MenuText"), "issuance_storelist.php", 268, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}issuance_store'), FALSE, FALSE, "fa fa-cube");
 $RootMenu->AddMenuItem(269, "mi_issuance_history", $Language->MenuPhrase("269", "MenuText"), "issuance_historylist.php", 268, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}issuance_history'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(270, "mi_issuance_tracking", $Language->MenuPhrase("270", "MenuText"), "issuance_trackinglist.php", 268, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}issuance_tracking'), FALSE, FALSE, "fa fa-cubes");
+$RootMenu->AddMenuItem(336, "mi_issuance_store_staysafe", $Language->MenuPhrase("336", "MenuText"), "issuance_store_staysafelist.php", 268, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}issuance_store_staysafe'), FALSE, FALSE, "fa fa-cube");
+$RootMenu->AddMenuItem(342, "mi_issuancestore_report", $Language->MenuPhrase("342", "MenuText"), "issuancestore_reportlist.php", 268, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}issuancestore_report'), FALSE, FALSE, "");
+$RootMenu->AddMenuItem(343, "mi_issunacestore_view", $Language->MenuPhrase("343", "MenuText"), "issunacestore_viewlist.php", 268, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}issunacestore_view'), FALSE, FALSE, "");
 $RootMenu->AddMenuItem(193, "mci_Dispenser_Module", $Language->MenuPhrase("193", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fa fa-futbol-o");
 $RootMenu->AddMenuItem(146, "mi_dispenser", $Language->MenuPhrase("146", "MenuText"), "dispenserlist.php", 193, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}dispenser'), FALSE, FALSE, "fa fa-glass");
 $RootMenu->AddMenuItem(194, "mi_dispenser_report", $Language->MenuPhrase("194", "MenuText"), "dispenser_reportlist.php", 193, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}dispenser_report'), FALSE, FALSE, "fas fa-indent");
@@ -73,7 +79,10 @@ $RootMenu->AddMenuItem(278, "mi_loan_report", $Language->MenuPhrase("278", "Menu
 $RootMenu->AddMenuItem(313, "mi_loan_status_report", $Language->MenuPhrase("313", "MenuText"), "loan_status_reportlist.php", 312, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}loan_status_report'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(332, "mci_Restock_Mudole", $Language->MenuPhrase("332", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fa fa-cubes");
 $RootMenu->AddMenuItem(314, "mi_restock_module", $Language->MenuPhrase("314", "MenuText"), "restock_modulelist.php", 332, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}restock_module'), FALSE, FALSE, "fa fa-cube");
+$RootMenu->AddMenuItem(337, "mi_restock_module_staysafe", $Language->MenuPhrase("337", "MenuText"), "restock_module_staysafelist.php", 332, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}restock_module_staysafe'), FALSE, FALSE, "fa fa-cube");
 $RootMenu->AddMenuItem(333, "mi_restock_report", $Language->MenuPhrase("333", "MenuText"), "restock_reportlist.php", 332, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}restock_report'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(340, "mi_restock_staysafe_report", $Language->MenuPhrase("340", "MenuText"), "restock_staysafe_reportlist.php", 332, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}restock_staysafe_report'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(344, "mi_retock_tracking", $Language->MenuPhrase("344", "MenuText"), "retock_trackinglist.php", 332, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}retock_tracking'), FALSE, FALSE, "fas fa-indent");
 echo $RootMenu->ToScript();
 ?>
 <div class="ewVertical" id="ewMenu"></div>

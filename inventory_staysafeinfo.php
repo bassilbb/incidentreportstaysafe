@@ -1,34 +1,32 @@
 <?php
 
 // Global variable for table object
-$issuance_tracking = NULL;
+$inventory_staysafe = NULL;
 
 //
-// Table class for issuance_tracking
+// Table class for inventory_staysafe
 //
-class cissuance_tracking extends cTable {
+class cinventory_staysafe extends cTable {
 	var $id;
-	var $date;
+	var $date_recieved;
 	var $reference_id;
 	var $staff_id;
 	var $material_name;
-	var $quantity_in;
-	var $quantity_type;
-	var $quantity_out;
-	var $total_quantity;
-	var $treated_by;
-	var $issued_action;
-	var $issued_comment;
-	var $issued_by;
-	var $approver_date;
+	var $type;
+	var $capacity;
+	var $quantity;
+	var $recieved_by;
+	var $recieved_action;
+	var $recieved_comment;
+	var $date_approved;
 	var $approver_action;
-	var $approved_comment;
+	var $approver_comment;
+	var $statuss;
 	var $approved_by;
 	var $verified_date;
 	var $verified_action;
 	var $verified_comment;
 	var $verified_by;
-	var $statuss;
 
 	//
 	// Table class constructor
@@ -38,12 +36,12 @@ class cissuance_tracking extends cTable {
 
 		// Language object
 		if (!isset($Language)) $Language = new cLanguage();
-		$this->TableVar = 'issuance_tracking';
-		$this->TableName = 'issuance_tracking';
-		$this->TableType = 'VIEW';
+		$this->TableVar = 'inventory_staysafe';
+		$this->TableName = 'inventory_staysafe';
+		$this->TableType = 'TABLE';
 
 		// Update Table
-		$this->UpdateTable = "`issuance_tracking`";
+		$this->UpdateTable = "`inventory_staysafe`";
 		$this->DBID = 'DB';
 		$this->ExportAll = TRUE;
 		$this->ExportPageBreakCount = 0; // Page break per every n record (PDF only)
@@ -63,129 +61,116 @@ class cissuance_tracking extends cTable {
 		$this->BasicSearch = new cBasicSearch($this->TableVar);
 
 		// id
-		$this->id = new cField('issuance_tracking', 'issuance_tracking', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
+		$this->id = new cField('inventory_staysafe', 'inventory_staysafe', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
 		$this->id->Sortable = TRUE; // Allow sort
 		$this->id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['id'] = &$this->id;
 
-		// date
-		$this->date = new cField('issuance_tracking', 'issuance_tracking', 'x_date', 'date', '`date`', ew_CastDateFieldForLike('`date`', 0, "DB"), 135, 0, FALSE, '`date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->date->Sortable = TRUE; // Allow sort
-		$this->date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
-		$this->fields['date'] = &$this->date;
+		// date_recieved
+		$this->date_recieved = new cField('inventory_staysafe', 'inventory_staysafe', 'x_date_recieved', 'date_recieved', '`date_recieved`', ew_CastDateFieldForLike('`date_recieved`', 0, "DB"), 135, 0, FALSE, '`date_recieved`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date_recieved->Sortable = TRUE; // Allow sort
+		$this->date_recieved->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
+		$this->fields['date_recieved'] = &$this->date_recieved;
 
 		// reference_id
-		$this->reference_id = new cField('issuance_tracking', 'issuance_tracking', 'x_reference_id', 'reference_id', '`reference_id`', '`reference_id`', 200, -1, FALSE, '`reference_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->reference_id = new cField('inventory_staysafe', 'inventory_staysafe', 'x_reference_id', 'reference_id', '`reference_id`', '`reference_id`', 200, -1, FALSE, '`reference_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->reference_id->Sortable = TRUE; // Allow sort
 		$this->fields['reference_id'] = &$this->reference_id;
 
 		// staff_id
-		$this->staff_id = new cField('issuance_tracking', 'issuance_tracking', 'x_staff_id', 'staff_id', '`staff_id`', '`staff_id`', 3, -1, FALSE, '`staff_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->staff_id = new cField('inventory_staysafe', 'inventory_staysafe', 'x_staff_id', 'staff_id', '`staff_id`', '`staff_id`', 200, -1, FALSE, '`staff_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->staff_id->Sortable = TRUE; // Allow sort
-		$this->staff_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['staff_id'] = &$this->staff_id;
 
 		// material_name
-		$this->material_name = new cField('issuance_tracking', 'issuance_tracking', 'x_material_name', 'material_name', '`material_name`', '`material_name`', 200, -1, FALSE, '`material_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->material_name = new cField('inventory_staysafe', 'inventory_staysafe', 'x_material_name', 'material_name', '`material_name`', '`material_name`', 200, -1, FALSE, '`material_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->material_name->Sortable = TRUE; // Allow sort
-		$this->material_name->UsePleaseSelect = TRUE; // Use PleaseSelect by default
-		$this->material_name->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['material_name'] = &$this->material_name;
 
-		// quantity_in
-		$this->quantity_in = new cField('issuance_tracking', 'issuance_tracking', 'x_quantity_in', 'quantity_in', '`quantity_in`', '`quantity_in`', 200, -1, FALSE, '`quantity_in`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->quantity_in->Sortable = TRUE; // Allow sort
-		$this->fields['quantity_in'] = &$this->quantity_in;
+		// type
+		$this->type = new cField('inventory_staysafe', 'inventory_staysafe', 'x_type', 'type', '`type`', '`type`', 200, -1, FALSE, '`type`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->type->Sortable = TRUE; // Allow sort
+		$this->fields['type'] = &$this->type;
 
-		// quantity_type
-		$this->quantity_type = new cField('issuance_tracking', 'issuance_tracking', 'x_quantity_type', 'quantity_type', '`quantity_type`', '`quantity_type`', 200, -1, FALSE, '`quantity_type`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->quantity_type->Sortable = TRUE; // Allow sort
-		$this->fields['quantity_type'] = &$this->quantity_type;
+		// capacity
+		$this->capacity = new cField('inventory_staysafe', 'inventory_staysafe', 'x_capacity', 'capacity', '`capacity`', '`capacity`', 200, -1, FALSE, '`capacity`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->capacity->Sortable = TRUE; // Allow sort
+		$this->fields['capacity'] = &$this->capacity;
 
-		// quantity_out
-		$this->quantity_out = new cField('issuance_tracking', 'issuance_tracking', 'x_quantity_out', 'quantity_out', '`quantity_out`', '`quantity_out`', 200, -1, FALSE, '`quantity_out`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->quantity_out->Sortable = TRUE; // Allow sort
-		$this->fields['quantity_out'] = &$this->quantity_out;
+		// quantity
+		$this->quantity = new cField('inventory_staysafe', 'inventory_staysafe', 'x_quantity', 'quantity', '`quantity`', '`quantity`', 200, -1, FALSE, '`quantity`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->quantity->Sortable = TRUE; // Allow sort
+		$this->fields['quantity'] = &$this->quantity;
 
-		// total_quantity
-		$this->total_quantity = new cField('issuance_tracking', 'issuance_tracking', 'x_total_quantity', 'total_quantity', '`total_quantity`', '`total_quantity`', 200, -1, FALSE, '`total_quantity`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->total_quantity->Sortable = TRUE; // Allow sort
-		$this->fields['total_quantity'] = &$this->total_quantity;
+		// recieved_by
+		$this->recieved_by = new cField('inventory_staysafe', 'inventory_staysafe', 'x_recieved_by', 'recieved_by', '`recieved_by`', '`recieved_by`', 3, -1, FALSE, '`recieved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->recieved_by->Sortable = TRUE; // Allow sort
+		$this->fields['recieved_by'] = &$this->recieved_by;
 
-		// treated_by
-		$this->treated_by = new cField('issuance_tracking', 'issuance_tracking', 'x_treated_by', 'treated_by', '`treated_by`', '`treated_by`', 3, -1, FALSE, '`treated_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->treated_by->Sortable = TRUE; // Allow sort
-		$this->fields['treated_by'] = &$this->treated_by;
+		// recieved_action
+		$this->recieved_action = new cField('inventory_staysafe', 'inventory_staysafe', 'x_recieved_action', 'recieved_action', '`recieved_action`', '`recieved_action`', 3, -1, FALSE, '`recieved_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->recieved_action->Sortable = TRUE; // Allow sort
+		$this->recieved_action->OptionCount = 2;
+		$this->recieved_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->fields['recieved_action'] = &$this->recieved_action;
 
-		// issued_action
-		$this->issued_action = new cField('issuance_tracking', 'issuance_tracking', 'x_issued_action', 'issued_action', '`issued_action`', '`issued_action`', 3, -1, FALSE, '`issued_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
-		$this->issued_action->Sortable = TRUE; // Allow sort
-		$this->issued_action->OptionCount = 2;
-		$this->issued_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
-		$this->fields['issued_action'] = &$this->issued_action;
+		// recieved_comment
+		$this->recieved_comment = new cField('inventory_staysafe', 'inventory_staysafe', 'x_recieved_comment', 'recieved_comment', '`recieved_comment`', '`recieved_comment`', 200, -1, FALSE, '`recieved_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->recieved_comment->Sortable = TRUE; // Allow sort
+		$this->fields['recieved_comment'] = &$this->recieved_comment;
 
-		// issued_comment
-		$this->issued_comment = new cField('issuance_tracking', 'issuance_tracking', 'x_issued_comment', 'issued_comment', '`issued_comment`', '`issued_comment`', 200, -1, FALSE, '`issued_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
-		$this->issued_comment->Sortable = TRUE; // Allow sort
-		$this->fields['issued_comment'] = &$this->issued_comment;
-
-		// issued_by
-		$this->issued_by = new cField('issuance_tracking', 'issuance_tracking', 'x_issued_by', 'issued_by', '`issued_by`', '`issued_by`', 3, -1, FALSE, '`issued_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->issued_by->Sortable = TRUE; // Allow sort
-		$this->fields['issued_by'] = &$this->issued_by;
-
-		// approver_date
-		$this->approver_date = new cField('issuance_tracking', 'issuance_tracking', 'x_approver_date', 'approver_date', '`approver_date`', ew_CastDateFieldForLike('`approver_date`', 0, "DB"), 135, 0, FALSE, '`approver_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->approver_date->Sortable = TRUE; // Allow sort
-		$this->approver_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
-		$this->fields['approver_date'] = &$this->approver_date;
+		// date_approved
+		$this->date_approved = new cField('inventory_staysafe', 'inventory_staysafe', 'x_date_approved', 'date_approved', '`date_approved`', ew_CastDateFieldForLike('`date_approved`', 0, "DB"), 135, 0, FALSE, '`date_approved`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date_approved->Sortable = TRUE; // Allow sort
+		$this->date_approved->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
+		$this->fields['date_approved'] = &$this->date_approved;
 
 		// approver_action
-		$this->approver_action = new cField('issuance_tracking', 'issuance_tracking', 'x_approver_action', 'approver_action', '`approver_action`', '`approver_action`', 3, -1, FALSE, '`approver_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->approver_action = new cField('inventory_staysafe', 'inventory_staysafe', 'x_approver_action', 'approver_action', '`approver_action`', '`approver_action`', 3, -1, FALSE, '`approver_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->approver_action->Sortable = TRUE; // Allow sort
 		$this->approver_action->OptionCount = 2;
 		$this->approver_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['approver_action'] = &$this->approver_action;
 
-		// approved_comment
-		$this->approved_comment = new cField('issuance_tracking', 'issuance_tracking', 'x_approved_comment', 'approved_comment', '`approved_comment`', '`approved_comment`', 200, -1, FALSE, '`approved_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
-		$this->approved_comment->Sortable = TRUE; // Allow sort
-		$this->fields['approved_comment'] = &$this->approved_comment;
+		// approver_comment
+		$this->approver_comment = new cField('inventory_staysafe', 'inventory_staysafe', 'x_approver_comment', 'approver_comment', '`approver_comment`', '`approver_comment`', 200, -1, FALSE, '`approver_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->approver_comment->Sortable = TRUE; // Allow sort
+		$this->fields['approver_comment'] = &$this->approver_comment;
+
+		// statuss
+		$this->statuss = new cField('inventory_staysafe', 'inventory_staysafe', 'x_statuss', 'statuss', '`statuss`', '`statuss`', 3, -1, FALSE, '`statuss`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->statuss->Sortable = TRUE; // Allow sort
+		$this->statuss->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->statuss->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
+		$this->fields['statuss'] = &$this->statuss;
 
 		// approved_by
-		$this->approved_by = new cField('issuance_tracking', 'issuance_tracking', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->approved_by = new cField('inventory_staysafe', 'inventory_staysafe', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->approved_by->Sortable = TRUE; // Allow sort
 		$this->fields['approved_by'] = &$this->approved_by;
 
 		// verified_date
-		$this->verified_date = new cField('issuance_tracking', 'issuance_tracking', 'x_verified_date', 'verified_date', '`verified_date`', ew_CastDateFieldForLike('`verified_date`', 0, "DB"), 135, 0, FALSE, '`verified_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->verified_date = new cField('inventory_staysafe', 'inventory_staysafe', 'x_verified_date', 'verified_date', '`verified_date`', ew_CastDateFieldForLike('`verified_date`', 0, "DB"), 135, 0, FALSE, '`verified_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->verified_date->Sortable = TRUE; // Allow sort
 		$this->verified_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['verified_date'] = &$this->verified_date;
 
 		// verified_action
-		$this->verified_action = new cField('issuance_tracking', 'issuance_tracking', 'x_verified_action', 'verified_action', '`verified_action`', '`verified_action`', 3, -1, FALSE, '`verified_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->verified_action = new cField('inventory_staysafe', 'inventory_staysafe', 'x_verified_action', 'verified_action', '`verified_action`', '`verified_action`', 3, -1, FALSE, '`verified_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->verified_action->Sortable = TRUE; // Allow sort
 		$this->verified_action->OptionCount = 2;
 		$this->verified_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['verified_action'] = &$this->verified_action;
 
 		// verified_comment
-		$this->verified_comment = new cField('issuance_tracking', 'issuance_tracking', 'x_verified_comment', 'verified_comment', '`verified_comment`', '`verified_comment`', 200, -1, FALSE, '`verified_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->verified_comment = new cField('inventory_staysafe', 'inventory_staysafe', 'x_verified_comment', 'verified_comment', '`verified_comment`', '`verified_comment`', 200, -1, FALSE, '`verified_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->verified_comment->Sortable = TRUE; // Allow sort
 		$this->fields['verified_comment'] = &$this->verified_comment;
 
 		// verified_by
-		$this->verified_by = new cField('issuance_tracking', 'issuance_tracking', 'x_verified_by', 'verified_by', '`verified_by`', '`verified_by`', 3, -1, FALSE, '`verified_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->verified_by = new cField('inventory_staysafe', 'inventory_staysafe', 'x_verified_by', 'verified_by', '`verified_by`', '`verified_by`', 3, -1, FALSE, '`verified_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->verified_by->Sortable = TRUE; // Allow sort
 		$this->fields['verified_by'] = &$this->verified_by;
-
-		// statuss
-		$this->statuss = new cField('issuance_tracking', 'issuance_tracking', 'x_statuss', 'statuss', '`statuss`', '`statuss`', 3, -1, FALSE, '`statuss`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
-		$this->statuss->Sortable = TRUE; // Allow sort
-		$this->statuss->UsePleaseSelect = TRUE; // Use PleaseSelect by default
-		$this->statuss->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
-		$this->fields['statuss'] = &$this->statuss;
 	}
 
 	// Field Visibility
@@ -229,7 +214,7 @@ class cissuance_tracking extends cTable {
 	var $_SqlFrom = "";
 
 	function getSqlFrom() { // From
-		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`issuance_tracking`";
+		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`inventory_staysafe`";
 	}
 
 	function SqlFrom() { // For backward compatibility
@@ -542,7 +527,7 @@ class cissuance_tracking extends cTable {
 		if (@$_SESSION[$name] <> "") {
 			return $_SESSION[$name];
 		} else {
-			return "issuance_trackinglist.php";
+			return "inventory_staysafelist.php";
 		}
 	}
 
@@ -553,11 +538,11 @@ class cissuance_tracking extends cTable {
 	// Get modal caption
 	function GetModalCaption($pageName) {
 		global $Language;
-		if ($pageName == "issuance_trackingview.php")
+		if ($pageName == "inventory_staysafeview.php")
 			return $Language->Phrase("View");
-		elseif ($pageName == "issuance_trackingedit.php")
+		elseif ($pageName == "inventory_staysafeedit.php")
 			return $Language->Phrase("Edit");
-		elseif ($pageName == "issuance_trackingadd.php")
+		elseif ($pageName == "inventory_staysafeadd.php")
 			return $Language->Phrase("Add");
 		else
 			return "";
@@ -565,30 +550,30 @@ class cissuance_tracking extends cTable {
 
 	// List URL
 	function GetListUrl() {
-		return "issuance_trackinglist.php";
+		return "inventory_staysafelist.php";
 	}
 
 	// View URL
 	function GetViewUrl($parm = "") {
 		if ($parm <> "")
-			$url = $this->KeyUrl("issuance_trackingview.php", $this->UrlParm($parm));
+			$url = $this->KeyUrl("inventory_staysafeview.php", $this->UrlParm($parm));
 		else
-			$url = $this->KeyUrl("issuance_trackingview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
+			$url = $this->KeyUrl("inventory_staysafeview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
 		return $this->AddMasterUrl($url);
 	}
 
 	// Add URL
 	function GetAddUrl($parm = "") {
 		if ($parm <> "")
-			$url = "issuance_trackingadd.php?" . $this->UrlParm($parm);
+			$url = "inventory_staysafeadd.php?" . $this->UrlParm($parm);
 		else
-			$url = "issuance_trackingadd.php";
+			$url = "inventory_staysafeadd.php";
 		return $this->AddMasterUrl($url);
 	}
 
 	// Edit URL
 	function GetEditUrl($parm = "") {
-		$url = $this->KeyUrl("issuance_trackingedit.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("inventory_staysafeedit.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -600,7 +585,7 @@ class cissuance_tracking extends cTable {
 
 	// Copy URL
 	function GetCopyUrl($parm = "") {
-		$url = $this->KeyUrl("issuance_trackingadd.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("inventory_staysafeadd.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -612,7 +597,7 @@ class cissuance_tracking extends cTable {
 
 	// Delete URL
 	function GetDeleteUrl() {
-		return $this->KeyUrl("issuance_trackingdelete.php", $this->UrlParm());
+		return $this->KeyUrl("inventory_staysafedelete.php", $this->UrlParm());
 	}
 
 	// Add master url
@@ -714,27 +699,25 @@ class cissuance_tracking extends cTable {
 	// Load row values from recordset
 	function LoadListRowValues(&$rs) {
 		$this->id->setDbValue($rs->fields('id'));
-		$this->date->setDbValue($rs->fields('date'));
+		$this->date_recieved->setDbValue($rs->fields('date_recieved'));
 		$this->reference_id->setDbValue($rs->fields('reference_id'));
 		$this->staff_id->setDbValue($rs->fields('staff_id'));
 		$this->material_name->setDbValue($rs->fields('material_name'));
-		$this->quantity_in->setDbValue($rs->fields('quantity_in'));
-		$this->quantity_type->setDbValue($rs->fields('quantity_type'));
-		$this->quantity_out->setDbValue($rs->fields('quantity_out'));
-		$this->total_quantity->setDbValue($rs->fields('total_quantity'));
-		$this->treated_by->setDbValue($rs->fields('treated_by'));
-		$this->issued_action->setDbValue($rs->fields('issued_action'));
-		$this->issued_comment->setDbValue($rs->fields('issued_comment'));
-		$this->issued_by->setDbValue($rs->fields('issued_by'));
-		$this->approver_date->setDbValue($rs->fields('approver_date'));
+		$this->type->setDbValue($rs->fields('type'));
+		$this->capacity->setDbValue($rs->fields('capacity'));
+		$this->quantity->setDbValue($rs->fields('quantity'));
+		$this->recieved_by->setDbValue($rs->fields('recieved_by'));
+		$this->recieved_action->setDbValue($rs->fields('recieved_action'));
+		$this->recieved_comment->setDbValue($rs->fields('recieved_comment'));
+		$this->date_approved->setDbValue($rs->fields('date_approved'));
 		$this->approver_action->setDbValue($rs->fields('approver_action'));
-		$this->approved_comment->setDbValue($rs->fields('approved_comment'));
+		$this->approver_comment->setDbValue($rs->fields('approver_comment'));
+		$this->statuss->setDbValue($rs->fields('statuss'));
 		$this->approved_by->setDbValue($rs->fields('approved_by'));
 		$this->verified_date->setDbValue($rs->fields('verified_date'));
 		$this->verified_action->setDbValue($rs->fields('verified_action'));
 		$this->verified_comment->setDbValue($rs->fields('verified_comment'));
 		$this->verified_by->setDbValue($rs->fields('verified_by'));
-		$this->statuss->setDbValue($rs->fields('statuss'));
 	}
 
 	// Render list row values
@@ -746,36 +729,34 @@ class cissuance_tracking extends cTable {
 
 	// Common render codes
 		// id
-		// date
+		// date_recieved
 		// reference_id
 		// staff_id
 		// material_name
-		// quantity_in
-		// quantity_type
-		// quantity_out
-		// total_quantity
-		// treated_by
-		// issued_action
-		// issued_comment
-		// issued_by
-		// approver_date
+		// type
+		// capacity
+		// quantity
+		// recieved_by
+		// recieved_action
+		// recieved_comment
+		// date_approved
 		// approver_action
-		// approved_comment
+		// approver_comment
+		// statuss
 		// approved_by
 		// verified_date
 		// verified_action
 		// verified_comment
 		// verified_by
-		// statuss
 		// id
 
 		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// date
-		$this->date->ViewValue = $this->date->CurrentValue;
-		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 0);
-		$this->date->ViewCustomAttributes = "";
+		// date_recieved
+		$this->date_recieved->ViewValue = $this->date_recieved->CurrentValue;
+		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 0);
+		$this->date_recieved->ViewCustomAttributes = "";
 
 		// reference_id
 		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
@@ -807,53 +788,30 @@ class cissuance_tracking extends cTable {
 		$this->staff_id->ViewCustomAttributes = "";
 
 		// material_name
-		if (strval($this->material_name->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
-		$sWhereWrk = "";
-		$this->material_name->LookupFilters = array("dx1" => '`material_name`');
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->material_name->ViewValue = $this->material_name->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->material_name->ViewValue = $this->material_name->CurrentValue;
-			}
-		} else {
-			$this->material_name->ViewValue = NULL;
-		}
+		$this->material_name->ViewValue = $this->material_name->CurrentValue;
 		$this->material_name->ViewCustomAttributes = "";
 
-		// quantity_in
-		$this->quantity_in->ViewValue = $this->quantity_in->CurrentValue;
-		$this->quantity_in->ViewCustomAttributes = "";
+		// type
+		$this->type->ViewValue = $this->type->CurrentValue;
+		$this->type->ViewCustomAttributes = "";
 
-		// quantity_type
-		$this->quantity_type->ViewValue = $this->quantity_type->CurrentValue;
-		$this->quantity_type->ViewCustomAttributes = "";
+		// capacity
+		$this->capacity->ViewValue = $this->capacity->CurrentValue;
+		$this->capacity->ViewCustomAttributes = "";
 
-		// quantity_out
-		$this->quantity_out->ViewValue = $this->quantity_out->CurrentValue;
-		$this->quantity_out->ViewCustomAttributes = "";
+		// quantity
+		$this->quantity->ViewValue = $this->quantity->CurrentValue;
+		$this->quantity->ViewCustomAttributes = "";
 
-		// total_quantity
-		$this->total_quantity->ViewValue = $this->total_quantity->CurrentValue;
-		$this->total_quantity->ViewCustomAttributes = "";
-
-		// treated_by
-		$this->treated_by->ViewValue = $this->treated_by->CurrentValue;
-		if (strval($this->treated_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->treated_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		// recieved_by
+		$this->recieved_by->ViewValue = $this->recieved_by->CurrentValue;
+		if (strval($this->recieved_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->recieved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->treated_by->LookupFilters = array();
+		$this->recieved_by->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->treated_by, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->recieved_by, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
@@ -861,58 +819,32 @@ class cissuance_tracking extends cTable {
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
 				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->treated_by->ViewValue = $this->treated_by->DisplayValue($arwrk);
+				$this->recieved_by->ViewValue = $this->recieved_by->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->treated_by->ViewValue = $this->treated_by->CurrentValue;
+				$this->recieved_by->ViewValue = $this->recieved_by->CurrentValue;
 			}
 		} else {
-			$this->treated_by->ViewValue = NULL;
+			$this->recieved_by->ViewValue = NULL;
 		}
-		$this->treated_by->ViewCustomAttributes = "";
+		$this->recieved_by->ViewCustomAttributes = "";
 
-		// issued_action
-		if (strval($this->issued_action->CurrentValue) <> "") {
-			$this->issued_action->ViewValue = $this->issued_action->OptionCaption($this->issued_action->CurrentValue);
+		// recieved_action
+		if (strval($this->recieved_action->CurrentValue) <> "") {
+			$this->recieved_action->ViewValue = $this->recieved_action->OptionCaption($this->recieved_action->CurrentValue);
 		} else {
-			$this->issued_action->ViewValue = NULL;
+			$this->recieved_action->ViewValue = NULL;
 		}
-		$this->issued_action->ViewCustomAttributes = "";
+		$this->recieved_action->ViewCustomAttributes = "";
 
-		// issued_comment
-		$this->issued_comment->ViewValue = $this->issued_comment->CurrentValue;
-		$this->issued_comment->ViewCustomAttributes = "";
+		// recieved_comment
+		$this->recieved_comment->ViewValue = $this->recieved_comment->CurrentValue;
+		$this->recieved_comment->ViewCustomAttributes = "";
 
-		// issued_by
-		$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
-		if (strval($this->issued_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->issued_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->issued_by->ViewValue = $this->issued_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
-			}
-		} else {
-			$this->issued_by->ViewValue = NULL;
-		}
-		$this->issued_by->ViewCustomAttributes = "";
-
-		// approver_date
-		$this->approver_date->ViewValue = $this->approver_date->CurrentValue;
-		$this->approver_date->ViewValue = ew_FormatDateTime($this->approver_date->ViewValue, 0);
-		$this->approver_date->ViewCustomAttributes = "";
+		// date_approved
+		$this->date_approved->ViewValue = $this->date_approved->CurrentValue;
+		$this->date_approved->ViewValue = ew_FormatDateTime($this->date_approved->ViewValue, 0);
+		$this->date_approved->ViewCustomAttributes = "";
 
 		// approver_action
 		if (strval($this->approver_action->CurrentValue) <> "") {
@@ -922,9 +854,32 @@ class cissuance_tracking extends cTable {
 		}
 		$this->approver_action->ViewCustomAttributes = "";
 
-		// approved_comment
-		$this->approved_comment->ViewValue = $this->approved_comment->CurrentValue;
-		$this->approved_comment->ViewCustomAttributes = "";
+		// approver_comment
+		$this->approver_comment->ViewValue = $this->approver_comment->CurrentValue;
+		$this->approver_comment->ViewCustomAttributes = "";
+
+		// statuss
+		if (strval($this->statuss->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
+		$sWhereWrk = "";
+		$this->statuss->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->statuss->ViewValue = $this->statuss->CurrentValue;
+			}
+		} else {
+			$this->statuss->ViewValue = NULL;
+		}
+		$this->statuss->ViewCustomAttributes = "";
 
 		// approved_by
 		$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
@@ -995,38 +950,15 @@ class cissuance_tracking extends cTable {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
-		// statuss
-		if (strval($this->statuss->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
-		$sWhereWrk = "";
-		$this->statuss->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->statuss->ViewValue = $this->statuss->CurrentValue;
-			}
-		} else {
-			$this->statuss->ViewValue = NULL;
-		}
-		$this->statuss->ViewCustomAttributes = "";
-
 		// id
 		$this->id->LinkCustomAttributes = "";
 		$this->id->HrefValue = "";
 		$this->id->TooltipValue = "";
 
-		// date
-		$this->date->LinkCustomAttributes = "";
-		$this->date->HrefValue = "";
-		$this->date->TooltipValue = "";
+		// date_recieved
+		$this->date_recieved->LinkCustomAttributes = "";
+		$this->date_recieved->HrefValue = "";
+		$this->date_recieved->TooltipValue = "";
 
 		// reference_id
 		$this->reference_id->LinkCustomAttributes = "";
@@ -1043,60 +975,55 @@ class cissuance_tracking extends cTable {
 		$this->material_name->HrefValue = "";
 		$this->material_name->TooltipValue = "";
 
-		// quantity_in
-		$this->quantity_in->LinkCustomAttributes = "";
-		$this->quantity_in->HrefValue = "";
-		$this->quantity_in->TooltipValue = "";
+		// type
+		$this->type->LinkCustomAttributes = "";
+		$this->type->HrefValue = "";
+		$this->type->TooltipValue = "";
 
-		// quantity_type
-		$this->quantity_type->LinkCustomAttributes = "";
-		$this->quantity_type->HrefValue = "";
-		$this->quantity_type->TooltipValue = "";
+		// capacity
+		$this->capacity->LinkCustomAttributes = "";
+		$this->capacity->HrefValue = "";
+		$this->capacity->TooltipValue = "";
 
-		// quantity_out
-		$this->quantity_out->LinkCustomAttributes = "";
-		$this->quantity_out->HrefValue = "";
-		$this->quantity_out->TooltipValue = "";
+		// quantity
+		$this->quantity->LinkCustomAttributes = "";
+		$this->quantity->HrefValue = "";
+		$this->quantity->TooltipValue = "";
 
-		// total_quantity
-		$this->total_quantity->LinkCustomAttributes = "";
-		$this->total_quantity->HrefValue = "";
-		$this->total_quantity->TooltipValue = "";
+		// recieved_by
+		$this->recieved_by->LinkCustomAttributes = "";
+		$this->recieved_by->HrefValue = "";
+		$this->recieved_by->TooltipValue = "";
 
-		// treated_by
-		$this->treated_by->LinkCustomAttributes = "";
-		$this->treated_by->HrefValue = "";
-		$this->treated_by->TooltipValue = "";
+		// recieved_action
+		$this->recieved_action->LinkCustomAttributes = "";
+		$this->recieved_action->HrefValue = "";
+		$this->recieved_action->TooltipValue = "";
 
-		// issued_action
-		$this->issued_action->LinkCustomAttributes = "";
-		$this->issued_action->HrefValue = "";
-		$this->issued_action->TooltipValue = "";
+		// recieved_comment
+		$this->recieved_comment->LinkCustomAttributes = "";
+		$this->recieved_comment->HrefValue = "";
+		$this->recieved_comment->TooltipValue = "";
 
-		// issued_comment
-		$this->issued_comment->LinkCustomAttributes = "";
-		$this->issued_comment->HrefValue = "";
-		$this->issued_comment->TooltipValue = "";
-
-		// issued_by
-		$this->issued_by->LinkCustomAttributes = "";
-		$this->issued_by->HrefValue = "";
-		$this->issued_by->TooltipValue = "";
-
-		// approver_date
-		$this->approver_date->LinkCustomAttributes = "";
-		$this->approver_date->HrefValue = "";
-		$this->approver_date->TooltipValue = "";
+		// date_approved
+		$this->date_approved->LinkCustomAttributes = "";
+		$this->date_approved->HrefValue = "";
+		$this->date_approved->TooltipValue = "";
 
 		// approver_action
 		$this->approver_action->LinkCustomAttributes = "";
 		$this->approver_action->HrefValue = "";
 		$this->approver_action->TooltipValue = "";
 
-		// approved_comment
-		$this->approved_comment->LinkCustomAttributes = "";
-		$this->approved_comment->HrefValue = "";
-		$this->approved_comment->TooltipValue = "";
+		// approver_comment
+		$this->approver_comment->LinkCustomAttributes = "";
+		$this->approver_comment->HrefValue = "";
+		$this->approver_comment->TooltipValue = "";
+
+		// statuss
+		$this->statuss->LinkCustomAttributes = "";
+		$this->statuss->HrefValue = "";
+		$this->statuss->TooltipValue = "";
 
 		// approved_by
 		$this->approved_by->LinkCustomAttributes = "";
@@ -1123,11 +1050,6 @@ class cissuance_tracking extends cTable {
 		$this->verified_by->HrefValue = "";
 		$this->verified_by->TooltipValue = "";
 
-		// statuss
-		$this->statuss->LinkCustomAttributes = "";
-		$this->statuss->HrefValue = "";
-		$this->statuss->TooltipValue = "";
-
 		// Call Row Rendered event
 		$this->Row_Rendered();
 
@@ -1148,11 +1070,11 @@ class cissuance_tracking extends cTable {
 		$this->id->EditValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// date
-		$this->date->EditAttrs["class"] = "form-control";
-		$this->date->EditCustomAttributes = "";
-		$this->date->EditValue = ew_FormatDateTime($this->date->CurrentValue, 8);
-		$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
+		// date_recieved
+		$this->date_recieved->EditAttrs["class"] = "form-control";
+		$this->date_recieved->EditCustomAttributes = "";
+		$this->date_recieved->EditValue = ew_FormatDateTime($this->date_recieved->CurrentValue, 8);
+		$this->date_recieved->PlaceHolder = ew_RemoveHtml($this->date_recieved->FldCaption());
 
 		// reference_id
 		$this->reference_id->EditAttrs["class"] = "form-control";
@@ -1169,68 +1091,62 @@ class cissuance_tracking extends cTable {
 		// material_name
 		$this->material_name->EditAttrs["class"] = "form-control";
 		$this->material_name->EditCustomAttributes = "";
+		$this->material_name->EditValue = $this->material_name->CurrentValue;
+		$this->material_name->PlaceHolder = ew_RemoveHtml($this->material_name->FldCaption());
 
-		// quantity_in
-		$this->quantity_in->EditAttrs["class"] = "form-control";
-		$this->quantity_in->EditCustomAttributes = "";
-		$this->quantity_in->EditValue = $this->quantity_in->CurrentValue;
-		$this->quantity_in->PlaceHolder = ew_RemoveHtml($this->quantity_in->FldCaption());
+		// type
+		$this->type->EditAttrs["class"] = "form-control";
+		$this->type->EditCustomAttributes = "";
+		$this->type->EditValue = $this->type->CurrentValue;
+		$this->type->PlaceHolder = ew_RemoveHtml($this->type->FldCaption());
 
-		// quantity_type
-		$this->quantity_type->EditAttrs["class"] = "form-control";
-		$this->quantity_type->EditCustomAttributes = "";
-		$this->quantity_type->EditValue = $this->quantity_type->CurrentValue;
-		$this->quantity_type->PlaceHolder = ew_RemoveHtml($this->quantity_type->FldCaption());
+		// capacity
+		$this->capacity->EditAttrs["class"] = "form-control";
+		$this->capacity->EditCustomAttributes = "";
+		$this->capacity->EditValue = $this->capacity->CurrentValue;
+		$this->capacity->PlaceHolder = ew_RemoveHtml($this->capacity->FldCaption());
 
-		// quantity_out
-		$this->quantity_out->EditAttrs["class"] = "form-control";
-		$this->quantity_out->EditCustomAttributes = "";
-		$this->quantity_out->EditValue = $this->quantity_out->CurrentValue;
-		$this->quantity_out->PlaceHolder = ew_RemoveHtml($this->quantity_out->FldCaption());
+		// quantity
+		$this->quantity->EditAttrs["class"] = "form-control";
+		$this->quantity->EditCustomAttributes = "";
+		$this->quantity->EditValue = $this->quantity->CurrentValue;
+		$this->quantity->PlaceHolder = ew_RemoveHtml($this->quantity->FldCaption());
 
-		// total_quantity
-		$this->total_quantity->EditAttrs["class"] = "form-control";
-		$this->total_quantity->EditCustomAttributes = "";
-		$this->total_quantity->EditValue = $this->total_quantity->CurrentValue;
-		$this->total_quantity->PlaceHolder = ew_RemoveHtml($this->total_quantity->FldCaption());
+		// recieved_by
+		$this->recieved_by->EditAttrs["class"] = "form-control";
+		$this->recieved_by->EditCustomAttributes = "";
+		$this->recieved_by->EditValue = $this->recieved_by->CurrentValue;
+		$this->recieved_by->PlaceHolder = ew_RemoveHtml($this->recieved_by->FldCaption());
 
-		// treated_by
-		$this->treated_by->EditAttrs["class"] = "form-control";
-		$this->treated_by->EditCustomAttributes = "";
-		$this->treated_by->EditValue = $this->treated_by->CurrentValue;
-		$this->treated_by->PlaceHolder = ew_RemoveHtml($this->treated_by->FldCaption());
+		// recieved_action
+		$this->recieved_action->EditCustomAttributes = "";
+		$this->recieved_action->EditValue = $this->recieved_action->Options(FALSE);
 
-		// issued_action
-		$this->issued_action->EditCustomAttributes = "";
-		$this->issued_action->EditValue = $this->issued_action->Options(FALSE);
+		// recieved_comment
+		$this->recieved_comment->EditAttrs["class"] = "form-control";
+		$this->recieved_comment->EditCustomAttributes = "";
+		$this->recieved_comment->EditValue = $this->recieved_comment->CurrentValue;
+		$this->recieved_comment->PlaceHolder = ew_RemoveHtml($this->recieved_comment->FldCaption());
 
-		// issued_comment
-		$this->issued_comment->EditAttrs["class"] = "form-control";
-		$this->issued_comment->EditCustomAttributes = "";
-		$this->issued_comment->EditValue = $this->issued_comment->CurrentValue;
-		$this->issued_comment->PlaceHolder = ew_RemoveHtml($this->issued_comment->FldCaption());
-
-		// issued_by
-		$this->issued_by->EditAttrs["class"] = "form-control";
-		$this->issued_by->EditCustomAttributes = "";
-		$this->issued_by->EditValue = $this->issued_by->CurrentValue;
-		$this->issued_by->PlaceHolder = ew_RemoveHtml($this->issued_by->FldCaption());
-
-		// approver_date
-		$this->approver_date->EditAttrs["class"] = "form-control";
-		$this->approver_date->EditCustomAttributes = "";
-		$this->approver_date->EditValue = ew_FormatDateTime($this->approver_date->CurrentValue, 8);
-		$this->approver_date->PlaceHolder = ew_RemoveHtml($this->approver_date->FldCaption());
+		// date_approved
+		$this->date_approved->EditAttrs["class"] = "form-control";
+		$this->date_approved->EditCustomAttributes = "";
+		$this->date_approved->EditValue = ew_FormatDateTime($this->date_approved->CurrentValue, 8);
+		$this->date_approved->PlaceHolder = ew_RemoveHtml($this->date_approved->FldCaption());
 
 		// approver_action
 		$this->approver_action->EditCustomAttributes = "";
 		$this->approver_action->EditValue = $this->approver_action->Options(FALSE);
 
-		// approved_comment
-		$this->approved_comment->EditAttrs["class"] = "form-control";
-		$this->approved_comment->EditCustomAttributes = "";
-		$this->approved_comment->EditValue = $this->approved_comment->CurrentValue;
-		$this->approved_comment->PlaceHolder = ew_RemoveHtml($this->approved_comment->FldCaption());
+		// approver_comment
+		$this->approver_comment->EditAttrs["class"] = "form-control";
+		$this->approver_comment->EditCustomAttributes = "";
+		$this->approver_comment->EditValue = $this->approver_comment->CurrentValue;
+		$this->approver_comment->PlaceHolder = ew_RemoveHtml($this->approver_comment->FldCaption());
+
+		// statuss
+		$this->statuss->EditAttrs["class"] = "form-control";
+		$this->statuss->EditCustomAttributes = "";
 
 		// approved_by
 		$this->approved_by->EditAttrs["class"] = "form-control";
@@ -1260,10 +1176,6 @@ class cissuance_tracking extends cTable {
 		$this->verified_by->EditValue = $this->verified_by->CurrentValue;
 		$this->verified_by->PlaceHolder = ew_RemoveHtml($this->verified_by->FldCaption());
 
-		// statuss
-		$this->statuss->EditAttrs["class"] = "form-control";
-		$this->statuss->EditCustomAttributes = "";
-
 		// Call Row Rendered event
 		$this->Row_Rendered();
 	}
@@ -1292,50 +1204,45 @@ class cissuance_tracking extends cTable {
 				$Doc->BeginExportRow();
 				if ($ExportPageType == "view") {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
-					if ($this->date->Exportable) $Doc->ExportCaption($this->date);
+					if ($this->date_recieved->Exportable) $Doc->ExportCaption($this->date_recieved);
 					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
-					if ($this->staff_id->Exportable) $Doc->ExportCaption($this->staff_id);
 					if ($this->material_name->Exportable) $Doc->ExportCaption($this->material_name);
-					if ($this->quantity_in->Exportable) $Doc->ExportCaption($this->quantity_in);
-					if ($this->quantity_type->Exportable) $Doc->ExportCaption($this->quantity_type);
-					if ($this->quantity_out->Exportable) $Doc->ExportCaption($this->quantity_out);
-					if ($this->total_quantity->Exportable) $Doc->ExportCaption($this->total_quantity);
-					if ($this->treated_by->Exportable) $Doc->ExportCaption($this->treated_by);
-					if ($this->issued_action->Exportable) $Doc->ExportCaption($this->issued_action);
-					if ($this->issued_comment->Exportable) $Doc->ExportCaption($this->issued_comment);
-					if ($this->issued_by->Exportable) $Doc->ExportCaption($this->issued_by);
-					if ($this->approver_date->Exportable) $Doc->ExportCaption($this->approver_date);
+					if ($this->type->Exportable) $Doc->ExportCaption($this->type);
+					if ($this->capacity->Exportable) $Doc->ExportCaption($this->capacity);
+					if ($this->quantity->Exportable) $Doc->ExportCaption($this->quantity);
+					if ($this->recieved_by->Exportable) $Doc->ExportCaption($this->recieved_by);
+					if ($this->recieved_action->Exportable) $Doc->ExportCaption($this->recieved_action);
+					if ($this->recieved_comment->Exportable) $Doc->ExportCaption($this->recieved_comment);
+					if ($this->date_approved->Exportable) $Doc->ExportCaption($this->date_approved);
 					if ($this->approver_action->Exportable) $Doc->ExportCaption($this->approver_action);
-					if ($this->approved_comment->Exportable) $Doc->ExportCaption($this->approved_comment);
+					if ($this->approver_comment->Exportable) $Doc->ExportCaption($this->approver_comment);
+					if ($this->statuss->Exportable) $Doc->ExportCaption($this->statuss);
 					if ($this->approved_by->Exportable) $Doc->ExportCaption($this->approved_by);
 					if ($this->verified_date->Exportable) $Doc->ExportCaption($this->verified_date);
 					if ($this->verified_action->Exportable) $Doc->ExportCaption($this->verified_action);
 					if ($this->verified_comment->Exportable) $Doc->ExportCaption($this->verified_comment);
 					if ($this->verified_by->Exportable) $Doc->ExportCaption($this->verified_by);
-					if ($this->statuss->Exportable) $Doc->ExportCaption($this->statuss);
 				} else {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
-					if ($this->date->Exportable) $Doc->ExportCaption($this->date);
+					if ($this->date_recieved->Exportable) $Doc->ExportCaption($this->date_recieved);
 					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
 					if ($this->staff_id->Exportable) $Doc->ExportCaption($this->staff_id);
 					if ($this->material_name->Exportable) $Doc->ExportCaption($this->material_name);
-					if ($this->quantity_in->Exportable) $Doc->ExportCaption($this->quantity_in);
-					if ($this->quantity_type->Exportable) $Doc->ExportCaption($this->quantity_type);
-					if ($this->quantity_out->Exportable) $Doc->ExportCaption($this->quantity_out);
-					if ($this->total_quantity->Exportable) $Doc->ExportCaption($this->total_quantity);
-					if ($this->treated_by->Exportable) $Doc->ExportCaption($this->treated_by);
-					if ($this->issued_action->Exportable) $Doc->ExportCaption($this->issued_action);
-					if ($this->issued_comment->Exportable) $Doc->ExportCaption($this->issued_comment);
-					if ($this->issued_by->Exportable) $Doc->ExportCaption($this->issued_by);
-					if ($this->approver_date->Exportable) $Doc->ExportCaption($this->approver_date);
+					if ($this->type->Exportable) $Doc->ExportCaption($this->type);
+					if ($this->capacity->Exportable) $Doc->ExportCaption($this->capacity);
+					if ($this->quantity->Exportable) $Doc->ExportCaption($this->quantity);
+					if ($this->recieved_by->Exportable) $Doc->ExportCaption($this->recieved_by);
+					if ($this->recieved_action->Exportable) $Doc->ExportCaption($this->recieved_action);
+					if ($this->recieved_comment->Exportable) $Doc->ExportCaption($this->recieved_comment);
+					if ($this->date_approved->Exportable) $Doc->ExportCaption($this->date_approved);
 					if ($this->approver_action->Exportable) $Doc->ExportCaption($this->approver_action);
-					if ($this->approved_comment->Exportable) $Doc->ExportCaption($this->approved_comment);
+					if ($this->approver_comment->Exportable) $Doc->ExportCaption($this->approver_comment);
+					if ($this->statuss->Exportable) $Doc->ExportCaption($this->statuss);
 					if ($this->approved_by->Exportable) $Doc->ExportCaption($this->approved_by);
 					if ($this->verified_date->Exportable) $Doc->ExportCaption($this->verified_date);
 					if ($this->verified_action->Exportable) $Doc->ExportCaption($this->verified_action);
 					if ($this->verified_comment->Exportable) $Doc->ExportCaption($this->verified_comment);
 					if ($this->verified_by->Exportable) $Doc->ExportCaption($this->verified_by);
-					if ($this->statuss->Exportable) $Doc->ExportCaption($this->statuss);
 				}
 				$Doc->EndExportRow();
 			}
@@ -1368,50 +1275,45 @@ class cissuance_tracking extends cTable {
 					$Doc->BeginExportRow($RowCnt); // Allow CSS styles if enabled
 					if ($ExportPageType == "view") {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
-						if ($this->date->Exportable) $Doc->ExportField($this->date);
+						if ($this->date_recieved->Exportable) $Doc->ExportField($this->date_recieved);
 						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
-						if ($this->staff_id->Exportable) $Doc->ExportField($this->staff_id);
 						if ($this->material_name->Exportable) $Doc->ExportField($this->material_name);
-						if ($this->quantity_in->Exportable) $Doc->ExportField($this->quantity_in);
-						if ($this->quantity_type->Exportable) $Doc->ExportField($this->quantity_type);
-						if ($this->quantity_out->Exportable) $Doc->ExportField($this->quantity_out);
-						if ($this->total_quantity->Exportable) $Doc->ExportField($this->total_quantity);
-						if ($this->treated_by->Exportable) $Doc->ExportField($this->treated_by);
-						if ($this->issued_action->Exportable) $Doc->ExportField($this->issued_action);
-						if ($this->issued_comment->Exportable) $Doc->ExportField($this->issued_comment);
-						if ($this->issued_by->Exportable) $Doc->ExportField($this->issued_by);
-						if ($this->approver_date->Exportable) $Doc->ExportField($this->approver_date);
+						if ($this->type->Exportable) $Doc->ExportField($this->type);
+						if ($this->capacity->Exportable) $Doc->ExportField($this->capacity);
+						if ($this->quantity->Exportable) $Doc->ExportField($this->quantity);
+						if ($this->recieved_by->Exportable) $Doc->ExportField($this->recieved_by);
+						if ($this->recieved_action->Exportable) $Doc->ExportField($this->recieved_action);
+						if ($this->recieved_comment->Exportable) $Doc->ExportField($this->recieved_comment);
+						if ($this->date_approved->Exportable) $Doc->ExportField($this->date_approved);
 						if ($this->approver_action->Exportable) $Doc->ExportField($this->approver_action);
-						if ($this->approved_comment->Exportable) $Doc->ExportField($this->approved_comment);
+						if ($this->approver_comment->Exportable) $Doc->ExportField($this->approver_comment);
+						if ($this->statuss->Exportable) $Doc->ExportField($this->statuss);
 						if ($this->approved_by->Exportable) $Doc->ExportField($this->approved_by);
 						if ($this->verified_date->Exportable) $Doc->ExportField($this->verified_date);
 						if ($this->verified_action->Exportable) $Doc->ExportField($this->verified_action);
 						if ($this->verified_comment->Exportable) $Doc->ExportField($this->verified_comment);
 						if ($this->verified_by->Exportable) $Doc->ExportField($this->verified_by);
-						if ($this->statuss->Exportable) $Doc->ExportField($this->statuss);
 					} else {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
-						if ($this->date->Exportable) $Doc->ExportField($this->date);
+						if ($this->date_recieved->Exportable) $Doc->ExportField($this->date_recieved);
 						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
 						if ($this->staff_id->Exportable) $Doc->ExportField($this->staff_id);
 						if ($this->material_name->Exportable) $Doc->ExportField($this->material_name);
-						if ($this->quantity_in->Exportable) $Doc->ExportField($this->quantity_in);
-						if ($this->quantity_type->Exportable) $Doc->ExportField($this->quantity_type);
-						if ($this->quantity_out->Exportable) $Doc->ExportField($this->quantity_out);
-						if ($this->total_quantity->Exportable) $Doc->ExportField($this->total_quantity);
-						if ($this->treated_by->Exportable) $Doc->ExportField($this->treated_by);
-						if ($this->issued_action->Exportable) $Doc->ExportField($this->issued_action);
-						if ($this->issued_comment->Exportable) $Doc->ExportField($this->issued_comment);
-						if ($this->issued_by->Exportable) $Doc->ExportField($this->issued_by);
-						if ($this->approver_date->Exportable) $Doc->ExportField($this->approver_date);
+						if ($this->type->Exportable) $Doc->ExportField($this->type);
+						if ($this->capacity->Exportable) $Doc->ExportField($this->capacity);
+						if ($this->quantity->Exportable) $Doc->ExportField($this->quantity);
+						if ($this->recieved_by->Exportable) $Doc->ExportField($this->recieved_by);
+						if ($this->recieved_action->Exportable) $Doc->ExportField($this->recieved_action);
+						if ($this->recieved_comment->Exportable) $Doc->ExportField($this->recieved_comment);
+						if ($this->date_approved->Exportable) $Doc->ExportField($this->date_approved);
 						if ($this->approver_action->Exportable) $Doc->ExportField($this->approver_action);
-						if ($this->approved_comment->Exportable) $Doc->ExportField($this->approved_comment);
+						if ($this->approver_comment->Exportable) $Doc->ExportField($this->approver_comment);
+						if ($this->statuss->Exportable) $Doc->ExportField($this->statuss);
 						if ($this->approved_by->Exportable) $Doc->ExportField($this->approved_by);
 						if ($this->verified_date->Exportable) $Doc->ExportField($this->verified_date);
 						if ($this->verified_action->Exportable) $Doc->ExportField($this->verified_action);
 						if ($this->verified_comment->Exportable) $Doc->ExportField($this->verified_comment);
 						if ($this->verified_by->Exportable) $Doc->ExportField($this->verified_by);
-						if ($this->statuss->Exportable) $Doc->ExportField($this->statuss);
 					}
 					$Doc->EndExportRow($RowCnt);
 				}
@@ -1458,6 +1360,15 @@ class cissuance_tracking extends cTable {
 	function Recordset_Selecting(&$filter) {
 
 		// Enter your code here
+		if (CurrentUserLevel() == 9) {
+			ew_AddFilter($filter, "`statuss` in (0,2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
+		}
+		if (CurrentUserLevel() == 10) {
+			ew_AddFilter($filter, "`statuss` in (1)");
+		}
+		if (CurrentUserLevel() == 11) {
+			ew_AddFilter($filter, "`statuss` in (3)");
+		}
 	}
 
 	// Recordset Selected event
@@ -1498,6 +1409,69 @@ class cissuance_tracking extends cTable {
 		// Enter your code here
 		// To cancel, set return value to FALSE
 
+			date_default_timezone_set('Africa/Lagos');
+		$now = new DateTime();
+		$this->date_recieved->CurrentValue = $now->Format('Y-m-d H:i:s');
+		$this->date_recieved->EditValue = $this->date_recieved->CurrentValue;
+
+			// Officer Only
+		if (CurrentPageID() == "add" && CurrentUserLevel() == 9) {
+
+			// Save and forward
+			if ($this->recieved_action->CurrentValue == 1) {
+				$rsnew["statuss"] = 1;
+				$rsnew["recieved_action"] = 1;
+				$rsnew["recieved_by"] = $_SESSION['Staff_ID'];
+				$this->setSuccessMessage("&#x25C9; Record sent for Approval &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->recieved_action->CurrentValue == 0) {
+				$rsnew["statuss"] = 0;			
+				$rsnew["recieved_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}			
+		}
+
+			// Manager Only
+		if (CurrentPageID() == "add" && CurrentUserLevel() == 10 ) {
+
+			// Save and forward
+			if ($this->initiator_action->CurrentValue == 1) {
+				$rsnew["statuss"] = 1;
+				$rsnew["initiator_action"] = 1;
+				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
+				$this->setSuccessMessage("&#x25C9; Record sent for Approval &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->initiator_action->CurrentValue == 0) {
+				$rsnew["statuss"] = 0;			
+				$rsnew["initiator_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}			
+		}
+
+			// Manager Only
+		if (CurrentPageID() == "add" && CurrentUserLevel() == 4 ) {
+
+			// Save and forward
+			if ($this->initiator_action->CurrentValue == 1) {
+				$rsnew["statuss"] = 1;
+				$rsnew["initiator_action"] = 1;
+				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
+
+				//$this->setSuccessMessage("&#x25C9; Record sent for Approval &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->initiator_action->CurrentValue == 0) {
+				$rsnew["statuss"] = 0;			
+				$rsnew["initiator_action"] = 0; 
+
+				//$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}			
+		}
 		return TRUE;
 	}
 
@@ -1513,6 +1487,151 @@ class cissuance_tracking extends cTable {
 		// Enter your code here
 		// To cancel, set return value to FALSE
 
+			date_default_timezone_set('Africa/Lagos');
+		$now = new DateTime();
+		$this->date_recieved->CurrentValue = $now->Format('Y-m-d H:i:s');
+		$this->date_recieved->EditValue = $this->date_recieved->CurrentValue;
+		$this->date_approved->CurrentValue = $now->Format('Y-m-d H:i:s');
+		$this->date_approved->EditValue = $this->date_approved->CurrentValue;
+		$this->verified_date->CurrentValue = $now->Format('Y-m-d H:i:s');
+		$this->verified_date->EditValue = $this->verified_date->CurrentValue;
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 9) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 12) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) || ((CurrentPageID() == "edit" && CurrentUserLevel() == 10) && $this->staff_id->CurrentValue == $_SESSION['Staff_ID'])) {
+		}	
+
+		// Officer Only
+				//if (CurrentPageID() == "edit" && (CurrentUserLevel() == 1 || CurrentUserLevel() == 2)) {
+
+				if (CurrentPageID() == "edit" && CurrentUserLevel() == 9) {
+
+			// Save and forward
+			if ($this->recieved_action->CurrentValue == 1 && ($this->statuss->CurrentValue == 0 || $this->statuss->CurrentValue == 2)) {
+				$rsnew["statuss"] = 1;
+				$rsnew["recieved_action"] = 1;
+				$rsnew["approver_action"] = NULL;
+				$rsnew["approver_comment"] = NULL;
+				$this->setSuccessMessage("&#x25C9; Recieved Items sent for Review and Approval &#x2714;"); 					
+			}
+
+			// Saved only
+			if ($this->recieved_action->CurrentValue == 0 && $this->status->CurrentValue == 0) {
+				$rsnew["statuss"] = 0;			
+				$rsnew["recieved_action"] = 0; 
+				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+			}
+		}
+
+		 // Supervisor
+		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 10 || CurrentUserLevel() == 14) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$rsnew["date_approved"] = $now->format('Y-m-d H:i:s');
+			$rsnew["approved_by"] = $_SESSION['Staff_ID'];
+		}
+
+		// Administartor - Don't change field values captured by tenant
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 10 || CurrentUserLevel() == 14) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+			$rsnew["id"] = $rsold["id"];
+			$rsnew["date_recieved"] = $rsold["date_recieved"];
+			$rsnew["reference_id"] = $rsold["reference_id"];
+			$rsnew["staff_id"] = $rsold["staff_id"];
+			$rsnew["material_name"] = $rsold["material_name"];
+			$rsnew["quantity"] = $rsold["quantity"];
+			$rsnew["type"] = $rsold["type"];
+			$rsnew["capacity"] = $rsold["capacity"];
+
+			//$rsnew["status"] = $rsold["status"];
+			$rsnew["recieved_action"] = $rsold["recieved_action"];
+			$rsnew["recieved_comment"] = $rsold["recieved_comment"];
+
+			//$rsnew["reviewed_action"] = $rsold["reviewed_action"];
+			//$rsnew["reviewed_comment"] = $rsold["reviewed_comment"];
+
+		}
+
+		 // Supervisor
+		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 11) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
+			$rsnew["verified_by"] = $_SESSION['Staff_ID'];
+		}
+
+		// Verified By Guard - Don't change field values captured by tenant
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 11) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+			$rsnew["id"] = $rsold["id"];
+			$rsnew["date_recieved"] = $rsold["date_recieved"];
+			$rsnew["reference_id"] = $rsold["reference_id"];
+			$rsnew["staff_id"] = $rsold["staff_id"];
+			$rsnew["material_name"] = $rsold["material_name"];
+			$rsnew["quantity"] = $rsold["quantity"];
+			$rsnew["type"] = $rsold["type"];
+			$rsnew["capacity"] = $rsold["capacity"];
+
+			//$rsnew["status"] = $rsold["status"];
+			$rsnew["recieved_action"] = $rsold["recieved_action"];
+			$rsnew["recieved_comment"] = $rsold["recieved_comment"];
+			$rsnew["approver_action"] = $rsold["approver_action"];
+			$rsnew["approver_comment"] = $rsold["approver_comment"];
+		}
+
+			// Approved by Administrators
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 10 || CurrentUserLevel() == 14) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+				$rsnew["date_approved"] = $now->format('Y-m-d H:i:s');
+				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
+			  }
+
+			   	// Approved by Administrators
+				if ($this->approver_action->CurrentValue == 0) {
+
+					// New
+					if ($this->statuss->CurrentValue == 2) {
+						$rsnew["statuss"] = 0;					
+						$rsnew["approver_action"] = 0;
+					}
+					$this->setSuccessMessage("&#x25C9; Recieved Items Decliend &#x2714;");
+				}
+
+				// Approved by Administrators
+				if ($this->approver_action->CurrentValue == 1 ) {
+
+					// New
+					if ($this->statuss->CurrentValue == 1) {
+						$rsnew["statuss"] = 3;					
+						$rsnew["approver_action"] = 1;
+					}
+					$this->setSuccessMessage("&#x25C9; Recieved Items successfully Reviewed and Approved &#x2714;");
+				}
+
+			// Verified by Guard=========================================================================================
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 11 && $this->status->CurrentValue == 3)) {
+				$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
+				$rsnew["verified_by"] = $_SESSION['Staff_ID'];
+			  }
+
+			   	// Verified by Guard
+				if ($this->verified_action->CurrentValue == 0 && $this->statuss->CurrentValue == 3 ) {
+
+					// New
+					if ($this->statuss->CurrentValue == 3) {
+						$rsnew["statuss"] = 2;					
+						$rsnew["verified_action"] = 0;
+					}
+					$this->setSuccessMessage("&#x25C9; Record Saved &#x2714;");
+				}
+
+				// Verified by Guard
+				if ($this->verified_action->CurrentValue == 2 ) {
+
+					// New
+					if ($this->statuss->CurrentValue == 3 && CurrentUserLevel() == 11 ) {
+						$rsnew["statuss"] = 4;					
+						$rsnew["verified_action"] = 2;
+
+						//$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
+					}
+
+					//$this->setSuccessMessage("&#x25C9; Recieved Items successfully  Verified &#x2714;");
+				}
 		return TRUE;
 	}
 
@@ -1595,6 +1714,42 @@ class cissuance_tracking extends cTable {
 	function Row_Rendering() {
 
 		// Enter your code here
+			if (CurrentPageID() == "add" )  {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_recieved->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_recieved->EditValue = $this->date_recieved->CurrentValue;
+		}
+		if (CurrentPageID() == "add" && (CurrentUserLevel() == 9 || CurrentUserLevel() == 10 || CurrentUserLevel()   == 13 || CurrentUserLevel() == 14)) {
+			$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
+			$this->staff_id->EditValue = $this->staff_id->CurrentValue;
+			$this->recieved_by->CurrentValue = $_SESSION['Staff_ID'];
+			$this->recieved_by->EditValue = $this->recieved_by->CurrentValue;
+		}
+		if (CurrentPageID() == "add")  {
+			$this->reference_id->CurrentValue = $_SESSION['INVN_ID'];
+			$this->reference_id->EditValue = $this->reference_id->CurrentValue;
+		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 10 ) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_approved->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_approved->EditValue = $this->date_approved->CurrentValue;
+			$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
+			$this->staff_id->EditValue = $this->staff_id->CurrentValue;
+			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
+			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
+		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 11 ) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+		 	$this->verified_date->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->verified_date->EditValue = $this->verified_date->CurrentValue;
+			$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
+			$this->staff_id->EditValue = $this->staff_id->CurrentValue;
+			$this->verified_by->CurrentValue = $_SESSION['Staff_ID'];
+			$this->verified_by->EditValue = $this->verified_by->CurrentValue;
+		}
 	}
 
 	// Row Rendered event
@@ -1602,8 +1757,125 @@ class cissuance_tracking extends cTable {
 
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
-				// Highligh rows in color based on the status
 
+		if (CurrentPageID() == "add") {
+				if (CurrentUserLevel() == 9) {
+					$this->date_recieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->material_name->Visible = TRUE;
+					$this->quantity->Visible = TRUE;
+					$this->type->Visible = TRUE;
+					$this->capacity->Visible = TRUE;
+					$this->recieved_by->Visible = FALSE;
+					$this->date_approved->Visible = FALSE;
+					$this->approver_action->Visible = FALSE;
+					$this->approver_comment->Visible = FALSE;
+					$this->approved_by->Visible = FALSE;
+					$this->verified_date->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+				}
+				if (CurrentUserLevel() == 12) {
+					$this->date_recieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->material_name->Visible = TRUE;
+					$this->quantity->Visible = TRUE;
+					$this->type->Visible = TRUE;
+					$this->capacity->Visible = TRUE;
+					$this->recieved_by->Visible = FALSE;
+					$this->date_approved->Visible = FALSE;
+					$this->approver_action->Visible = FALSE;
+					$this->approver_comment->Visible = FALSE;
+					$this->approved_by->Visible = FALSE;
+					$this->verified_date->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+				}
+				if (CurrentUserLevel() == 12) {
+					$this->date_recieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+
+					//$this->recieved_by->Visible = FALSE;	
+				}
+				if (CurrentUserLevel() == 10) {
+					$this->date_recieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+
+					//$this->recieved_by->Visible = FALSE;	
+				}
+		   }
+
+		   // Edit Page
+			if (CurrentPageID() == "edit") {
+				if ((CurrentUserLevel() == 9||CurrentUserLevel() == 12)) {
+					$this->date_recieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->material_name->ReadOnly = TRUE;
+					$this->quantity->Visible = TRUE;
+					$this->type->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->recieved_by->Visible = FALSE;
+					$this->date_approved->Visible = FALSE;
+					$this->approver_action->Visible = FALSE;
+					$this->approver_comment->Visible = FALSE;
+					$this->approved_by->Visible = FALSE;
+					$this->verified_date->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+				}
+				if ((CurrentUserLevel() == 10|| CurrentUserLevel() == 14)) {
+					$this->date_recieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->material_name->ReadOnly = TRUE;
+					$this->quantity->ReadOnly = TRUE;
+					$this->type->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->recieved_by->ReadOnly = TRUE;
+					$this->recieved_action->ReadOnly = TRUE;
+					$this->recieved_comment->ReadOnly = TRUE;
+					$this->date_approved->ReadOnly = TRUE;
+					$this->approver_action->Visible = TRUE;
+					$this->approver_comment->Visible = TRUE;
+					$this->approved_by->ReadOnly = TRUE;
+					$this->verified_date->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+				}
+				if (CurrentUserLevel() == 11) {
+					$this->date_recieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->material_name->ReadOnly = TRUE;
+					$this->quantity->ReadOnly = TRUE;
+					$this->type->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->recieved_by->ReadOnly = TRUE;
+					$this->recieved_by->ReadOnly = TRUE;
+					$this->recieved_action->ReadOnly = TRUE;
+					$this->recieved_comment->ReadOnly = TRUE;
+					$this->date_approved->ReadOnly = TRUE;
+					$this->approver_action->ReadOnly = TRUE;
+					$this->approver_comment->ReadOnly = TRUE;
+					$this->approved_by->ReadOnly = TRUE;
+					$this->verified_date->ReadOnly = TRUE;
+					$this->verified_action->Visible = TRUE;
+					$this->verified_comment->Visible = TRUE;
+
+					//$this->verified_by->ReadOnly = TRUE;
+				}
+			}
+
+		// Highligh rows in color based on the status
 		if (CurrentPageID() == "list") {
 
 			//$this->branch_code->Visible = FALSE;
@@ -1612,8 +1884,7 @@ class cissuance_tracking extends cTable {
 				$this->date_recieved->CellCssStyle = "color: orange; text-align: left;";
 				$this->staff_id->CellCssStyle = "color: orange; text-align: left;";
 				$this->material_name->CellCssStyle = "color: orange; text-align: left;";
-				$this->issued_by->CellCssStyle = "color: orange; text-align: left;";
-				$this->issued_comment->CellCssStyle = "color: orange; text-align: left;";
+				$this->recieved_by->CellCssStyle = "color: orange; text-align: left;";
 				$this->quantity->CellCssStyle = "color: orange; text-align: left;";
 				$this->type->CellCssStyle = "color: orange; text-align: left;";
 				$this->reference_id->CellCssStyle = "color: orange; text-align: left;";
@@ -1624,15 +1895,13 @@ class cissuance_tracking extends cTable {
 				$this->approver_comment->CellCssStyle = "color: orange; text-align: left;";
 				$this->approved_by->CellCssStyle = "color: orange; text-align: left;";
 				$this->verified_by->CellCssStyle = "color: orange; text-align: left;";
-				$this->verified_comment->CellCssStyle = "color: orange; text-align: left;";
 			}
 			if ($this->statuss->CurrentValue == 2) {
 				$this->id->CellCssStyle = "color: red; text-align: left;";
 				$this->date_recieved->CellCssStyle = "color: red; text-align: left;";
 				$this->staff_id->CellCssStyle = "color: red; text-align: left;";
 				$this->material_name->CellCssStyle = "color: red; text-align: left;";
-				$this->issued_by->CellCssStyle = "color: red; text-align: left;";
-				$this->issued_comment->CellCssStyle = "color: red; text-align: left;";
+				$this->recieved_by->CellCssStyle = "color: red; text-align: left;";
 				$this->quantity->CellCssStyle = "color: red; text-align: left;";
 				$this->type->CellCssStyle = "color: red; text-align: left;";
 				$this->reference_id->CellCssStyle = "color: red; text-align: left;";
@@ -1643,15 +1912,13 @@ class cissuance_tracking extends cTable {
 				$this->approver_comment->CellCssStyle = "color: red; text-align: left;";
 				$this->approved_by->CellCssStyle = "color: red; text-align: left;";
 				$this->verified_by->CellCssStyle = "color: red; text-align: left;";
-				$this->verified_comment->CellCssStyle = "color: red; text-align: left;";
 			}
 			if ($this->statuss->CurrentValue == 3) {
 				$this->id->CellCssStyle = "color: blue; text-align: left;";
 				$this->date_recieved->CellCssStyle = "color: blue; text-align: left;";
 				$this->staff_id->CellCssStyle = "color: blue; text-align: left;";
 				$this->material_name->CellCssStyle = "color: blue; text-align: left;";
-				$this->issued_by->CellCssStyle = "color: blue; text-align: left;";
-				$this->issued_comment->CellCssStyle = "color: blue; text-align: left;";
+				$this->recieved_by->CellCssStyle = "color: blue; text-align: left;";
 				$this->quantity->CellCssStyle = "color: blue; text-align: left;";
 				$this->type->CellCssStyle = "color: blue; text-align: left;";
 				$this->reference_id->CellCssStyle = "color: blue; text-align: left;";
@@ -1662,15 +1929,13 @@ class cissuance_tracking extends cTable {
 				$this->approver_comment->CellCssStyle = "color: blue; text-align: left;";
 				$this->approved_by->CellCssStyle = "color: blue; text-align: left;";
 				$this->verified_by->CellCssStyle = "color: blue; text-align: left;";
-				$this->verified_comment->CellCssStyle = "color: blue; text-align: left;";
 			}
 			if ($this->statuss->CurrentValue == 4) {
 				$this->id->CellCssStyle = "color: green; text-align: left;";
 				$this->date_recieved->CellCssStyle = "color: green; text-align: left;";
 				$this->staff_id->CellCssStyle = "color: green; text-align: left;";
 				$this->material_name->CellCssStyle = "color: green; text-align: left;";
-				$this->issued_by->CellCssStyle = "color: green; text-align: left;";
-				$this->issued_comment->CellCssStyle = "color: green; text-align: left;";
+				$this->recieved_by->CellCssStyle = "color: green; text-align: left;";
 				$this->quantity->CellCssStyle = "color: green; text-align: left;";
 				$this->type->CellCssStyle = "color: green; text-align: left;";
 				$this->reference_id->CellCssStyle = "color: green; text-align: left;";
@@ -1681,7 +1946,6 @@ class cissuance_tracking extends cTable {
 				$this->approver_comment->CellCssStyle = "color: green; text-align: left;";
 				$this->approved_by->CellCssStyle = "color: green; text-align: left;";
 				$this->verified_by->CellCssStyle = "color: green; text-align: left;";
-				$this->verified_comment->CellCssStyle = "color: green; text-align: left;";
 			}
 		}
 	}

@@ -425,6 +425,24 @@ class cdefault {
 			$this->Page_Terminate("restock_modulelist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'restock_report'))
 			$this->Page_Terminate("restock_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'inventory_staysafe'))
+			$this->Page_Terminate("inventory_staysafelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'issuance_store_staysafe'))
+			$this->Page_Terminate("issuance_store_staysafelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'restock_module_staysafe'))
+			$this->Page_Terminate("restock_module_staysafelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'inventory_staysafe_report'))
+			$this->Page_Terminate("inventory_staysafe_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'restock_staysafe_report'))
+			$this->Page_Terminate("restock_staysafe_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'inventory_tracking_statysafe'))
+			$this->Page_Terminate("inventory_tracking_statysafelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'issuancestore_report'))
+			$this->Page_Terminate("issuancestore_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'issunacestore_view'))
+			$this->Page_Terminate("issunacestore_viewlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'retock_tracking'))
+			$this->Page_Terminate("retock_trackinglist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

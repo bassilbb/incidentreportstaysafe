@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg14.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
 <?php include_once "phpfn14.php" ?>
-<?php include_once "issuance_trackinginfo.php" ?>
+<?php include_once "inventory_tracking_statysafeinfo.php" ?>
 <?php include_once "usersinfo.php" ?>
 <?php include_once "userfn14.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$issuance_tracking_list = NULL; // Initialize page object first
+$inventory_tracking_statysafe_list = NULL; // Initialize page object first
 
-class cissuance_tracking_list extends cissuance_tracking {
+class cinventory_tracking_statysafe_list extends cinventory_tracking_statysafe {
 
 	// Page ID
 	var $PageID = 'list';
@@ -25,13 +25,13 @@ class cissuance_tracking_list extends cissuance_tracking {
 	var $ProjectID = '{DD9080C0-D1CA-431F-831F-CAC8FA61260C}';
 
 	// Table name
-	var $TableName = 'issuance_tracking';
+	var $TableName = 'inventory_tracking_statysafe';
 
 	// Page object name
-	var $PageObjName = 'issuance_tracking_list';
+	var $PageObjName = 'inventory_tracking_statysafe_list';
 
 	// Grid form hidden field names
-	var $FormName = 'fissuance_trackinglist';
+	var $FormName = 'finventory_tracking_statysafelist';
 	var $FormActionName = 'k_action';
 	var $FormKeyName = 'k_key';
 	var $FormOldKeyName = 'k_oldkey';
@@ -290,10 +290,10 @@ class cissuance_tracking_list extends cissuance_tracking {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (issuance_tracking)
-		if (!isset($GLOBALS["issuance_tracking"]) || get_class($GLOBALS["issuance_tracking"]) == "cissuance_tracking") {
-			$GLOBALS["issuance_tracking"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["issuance_tracking"];
+		// Table object (inventory_tracking_statysafe)
+		if (!isset($GLOBALS["inventory_tracking_statysafe"]) || get_class($GLOBALS["inventory_tracking_statysafe"]) == "cinventory_tracking_statysafe") {
+			$GLOBALS["inventory_tracking_statysafe"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["inventory_tracking_statysafe"];
 		}
 
 		// Initialize URLs
@@ -304,12 +304,12 @@ class cissuance_tracking_list extends cissuance_tracking {
 		$this->ExportXmlUrl = $this->PageUrl() . "export=xml";
 		$this->ExportCsvUrl = $this->PageUrl() . "export=csv";
 		$this->ExportPdfUrl = $this->PageUrl() . "export=pdf";
-		$this->AddUrl = "issuance_trackingadd.php";
+		$this->AddUrl = "inventory_tracking_statysafeadd.php";
 		$this->InlineAddUrl = $this->PageUrl() . "a=add";
 		$this->GridAddUrl = $this->PageUrl() . "a=gridadd";
 		$this->GridEditUrl = $this->PageUrl() . "a=gridedit";
-		$this->MultiDeleteUrl = "issuance_trackingdelete.php";
-		$this->MultiUpdateUrl = "issuance_trackingupdate.php";
+		$this->MultiDeleteUrl = "inventory_tracking_statysafedelete.php";
+		$this->MultiUpdateUrl = "inventory_tracking_statysafeupdate.php";
 
 		// Table object (users)
 		if (!isset($GLOBALS['users'])) $GLOBALS['users'] = new cusers();
@@ -320,7 +320,7 @@ class cissuance_tracking_list extends cissuance_tracking {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'issuance_tracking');
+			define("EW_TABLE_NAME", 'inventory_tracking_statysafe');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -362,7 +362,7 @@ class cissuance_tracking_list extends cissuance_tracking {
 		// Filter options
 		$this->FilterOptions = new cListOptions();
 		$this->FilterOptions->Tag = "div";
-		$this->FilterOptions->TagClassName = "ewFilterOption fissuance_trackinglistsrch";
+		$this->FilterOptions->TagClassName = "ewFilterOption finventory_tracking_statysafelistsrch";
 
 		// List actions
 		$this->ListActions = new cListActions();
@@ -446,20 +446,16 @@ class cissuance_tracking_list extends cissuance_tracking {
 
 		// Setup export options
 		$this->SetupExportOptions();
-		$this->date->SetVisibility();
+		$this->date_recieved->SetVisibility();
 		$this->reference_id->SetVisibility();
 		$this->material_name->SetVisibility();
-		$this->quantity_in->SetVisibility();
-		$this->quantity_type->SetVisibility();
-		$this->quantity_out->SetVisibility();
-		$this->total_quantity->SetVisibility();
-		$this->issued_comment->SetVisibility();
-		$this->issued_by->SetVisibility();
-		$this->approved_comment->SetVisibility();
-		$this->approved_by->SetVisibility();
-		$this->verified_comment->SetVisibility();
-		$this->verified_by->SetVisibility();
+		$this->type->SetVisibility();
+		$this->capacity->SetVisibility();
+		$this->quantity->SetVisibility();
+		$this->recieved_by->SetVisibility();
 		$this->statuss->SetVisibility();
+		$this->approved_by->SetVisibility();
+		$this->verified_by->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -520,13 +516,13 @@ class cissuance_tracking_list extends cissuance_tracking {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $issuance_tracking;
+		global $EW_EXPORT, $inventory_tracking_statysafe;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($issuance_tracking);
+				$doc = new $class($inventory_tracking_statysafe);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -815,29 +811,27 @@ class cissuance_tracking_list extends cissuance_tracking {
 
 		// Load server side filters
 		if (EW_SEARCH_FILTER_OPTION == "Server" && isset($UserProfile))
-			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "fissuance_trackinglistsrch");
+			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "finventory_tracking_statysafelistsrch");
 		$sFilterList = ew_Concat($sFilterList, $this->id->AdvancedSearch->ToJson(), ","); // Field id
-		$sFilterList = ew_Concat($sFilterList, $this->date->AdvancedSearch->ToJson(), ","); // Field date
+		$sFilterList = ew_Concat($sFilterList, $this->date_recieved->AdvancedSearch->ToJson(), ","); // Field date_recieved
 		$sFilterList = ew_Concat($sFilterList, $this->reference_id->AdvancedSearch->ToJson(), ","); // Field reference_id
 		$sFilterList = ew_Concat($sFilterList, $this->staff_id->AdvancedSearch->ToJson(), ","); // Field staff_id
 		$sFilterList = ew_Concat($sFilterList, $this->material_name->AdvancedSearch->ToJson(), ","); // Field material_name
-		$sFilterList = ew_Concat($sFilterList, $this->quantity_in->AdvancedSearch->ToJson(), ","); // Field quantity_in
-		$sFilterList = ew_Concat($sFilterList, $this->quantity_type->AdvancedSearch->ToJson(), ","); // Field quantity_type
-		$sFilterList = ew_Concat($sFilterList, $this->quantity_out->AdvancedSearch->ToJson(), ","); // Field quantity_out
-		$sFilterList = ew_Concat($sFilterList, $this->total_quantity->AdvancedSearch->ToJson(), ","); // Field total_quantity
-		$sFilterList = ew_Concat($sFilterList, $this->treated_by->AdvancedSearch->ToJson(), ","); // Field treated_by
-		$sFilterList = ew_Concat($sFilterList, $this->issued_action->AdvancedSearch->ToJson(), ","); // Field issued_action
-		$sFilterList = ew_Concat($sFilterList, $this->issued_comment->AdvancedSearch->ToJson(), ","); // Field issued_comment
-		$sFilterList = ew_Concat($sFilterList, $this->issued_by->AdvancedSearch->ToJson(), ","); // Field issued_by
-		$sFilterList = ew_Concat($sFilterList, $this->approver_date->AdvancedSearch->ToJson(), ","); // Field approver_date
+		$sFilterList = ew_Concat($sFilterList, $this->type->AdvancedSearch->ToJson(), ","); // Field type
+		$sFilterList = ew_Concat($sFilterList, $this->capacity->AdvancedSearch->ToJson(), ","); // Field capacity
+		$sFilterList = ew_Concat($sFilterList, $this->quantity->AdvancedSearch->ToJson(), ","); // Field quantity
+		$sFilterList = ew_Concat($sFilterList, $this->recieved_by->AdvancedSearch->ToJson(), ","); // Field recieved_by
+		$sFilterList = ew_Concat($sFilterList, $this->recieved_action->AdvancedSearch->ToJson(), ","); // Field recieved_action
+		$sFilterList = ew_Concat($sFilterList, $this->recieved_comment->AdvancedSearch->ToJson(), ","); // Field recieved_comment
+		$sFilterList = ew_Concat($sFilterList, $this->date_approved->AdvancedSearch->ToJson(), ","); // Field date_approved
 		$sFilterList = ew_Concat($sFilterList, $this->approver_action->AdvancedSearch->ToJson(), ","); // Field approver_action
-		$sFilterList = ew_Concat($sFilterList, $this->approved_comment->AdvancedSearch->ToJson(), ","); // Field approved_comment
+		$sFilterList = ew_Concat($sFilterList, $this->approver_comment->AdvancedSearch->ToJson(), ","); // Field approver_comment
+		$sFilterList = ew_Concat($sFilterList, $this->statuss->AdvancedSearch->ToJson(), ","); // Field statuss
 		$sFilterList = ew_Concat($sFilterList, $this->approved_by->AdvancedSearch->ToJson(), ","); // Field approved_by
 		$sFilterList = ew_Concat($sFilterList, $this->verified_date->AdvancedSearch->ToJson(), ","); // Field verified_date
 		$sFilterList = ew_Concat($sFilterList, $this->verified_action->AdvancedSearch->ToJson(), ","); // Field verified_action
 		$sFilterList = ew_Concat($sFilterList, $this->verified_comment->AdvancedSearch->ToJson(), ","); // Field verified_comment
 		$sFilterList = ew_Concat($sFilterList, $this->verified_by->AdvancedSearch->ToJson(), ","); // Field verified_by
-		$sFilterList = ew_Concat($sFilterList, $this->statuss->AdvancedSearch->ToJson(), ","); // Field statuss
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -860,7 +854,7 @@ class cissuance_tracking_list extends cissuance_tracking {
 		global $UserProfile;
 		if (@$_POST["ajax"] == "savefilters") { // Save filter request (Ajax)
 			$filters = @$_POST["filters"];
-			$UserProfile->SetSearchFilters(CurrentUserName(), "fissuance_trackinglistsrch", $filters);
+			$UserProfile->SetSearchFilters(CurrentUserName(), "finventory_tracking_statysafelistsrch", $filters);
 
 			// Clean output buffer
 			if (!EW_DEBUG_ENABLED && ob_get_length())
@@ -890,13 +884,13 @@ class cissuance_tracking_list extends cissuance_tracking {
 		$this->id->AdvancedSearch->SearchOperator2 = @$filter["w_id"];
 		$this->id->AdvancedSearch->Save();
 
-		// Field date
-		$this->date->AdvancedSearch->SearchValue = @$filter["x_date"];
-		$this->date->AdvancedSearch->SearchOperator = @$filter["z_date"];
-		$this->date->AdvancedSearch->SearchCondition = @$filter["v_date"];
-		$this->date->AdvancedSearch->SearchValue2 = @$filter["y_date"];
-		$this->date->AdvancedSearch->SearchOperator2 = @$filter["w_date"];
-		$this->date->AdvancedSearch->Save();
+		// Field date_recieved
+		$this->date_recieved->AdvancedSearch->SearchValue = @$filter["x_date_recieved"];
+		$this->date_recieved->AdvancedSearch->SearchOperator = @$filter["z_date_recieved"];
+		$this->date_recieved->AdvancedSearch->SearchCondition = @$filter["v_date_recieved"];
+		$this->date_recieved->AdvancedSearch->SearchValue2 = @$filter["y_date_recieved"];
+		$this->date_recieved->AdvancedSearch->SearchOperator2 = @$filter["w_date_recieved"];
+		$this->date_recieved->AdvancedSearch->Save();
 
 		// Field reference_id
 		$this->reference_id->AdvancedSearch->SearchValue = @$filter["x_reference_id"];
@@ -922,77 +916,61 @@ class cissuance_tracking_list extends cissuance_tracking {
 		$this->material_name->AdvancedSearch->SearchOperator2 = @$filter["w_material_name"];
 		$this->material_name->AdvancedSearch->Save();
 
-		// Field quantity_in
-		$this->quantity_in->AdvancedSearch->SearchValue = @$filter["x_quantity_in"];
-		$this->quantity_in->AdvancedSearch->SearchOperator = @$filter["z_quantity_in"];
-		$this->quantity_in->AdvancedSearch->SearchCondition = @$filter["v_quantity_in"];
-		$this->quantity_in->AdvancedSearch->SearchValue2 = @$filter["y_quantity_in"];
-		$this->quantity_in->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_in"];
-		$this->quantity_in->AdvancedSearch->Save();
+		// Field type
+		$this->type->AdvancedSearch->SearchValue = @$filter["x_type"];
+		$this->type->AdvancedSearch->SearchOperator = @$filter["z_type"];
+		$this->type->AdvancedSearch->SearchCondition = @$filter["v_type"];
+		$this->type->AdvancedSearch->SearchValue2 = @$filter["y_type"];
+		$this->type->AdvancedSearch->SearchOperator2 = @$filter["w_type"];
+		$this->type->AdvancedSearch->Save();
 
-		// Field quantity_type
-		$this->quantity_type->AdvancedSearch->SearchValue = @$filter["x_quantity_type"];
-		$this->quantity_type->AdvancedSearch->SearchOperator = @$filter["z_quantity_type"];
-		$this->quantity_type->AdvancedSearch->SearchCondition = @$filter["v_quantity_type"];
-		$this->quantity_type->AdvancedSearch->SearchValue2 = @$filter["y_quantity_type"];
-		$this->quantity_type->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_type"];
-		$this->quantity_type->AdvancedSearch->Save();
+		// Field capacity
+		$this->capacity->AdvancedSearch->SearchValue = @$filter["x_capacity"];
+		$this->capacity->AdvancedSearch->SearchOperator = @$filter["z_capacity"];
+		$this->capacity->AdvancedSearch->SearchCondition = @$filter["v_capacity"];
+		$this->capacity->AdvancedSearch->SearchValue2 = @$filter["y_capacity"];
+		$this->capacity->AdvancedSearch->SearchOperator2 = @$filter["w_capacity"];
+		$this->capacity->AdvancedSearch->Save();
 
-		// Field quantity_out
-		$this->quantity_out->AdvancedSearch->SearchValue = @$filter["x_quantity_out"];
-		$this->quantity_out->AdvancedSearch->SearchOperator = @$filter["z_quantity_out"];
-		$this->quantity_out->AdvancedSearch->SearchCondition = @$filter["v_quantity_out"];
-		$this->quantity_out->AdvancedSearch->SearchValue2 = @$filter["y_quantity_out"];
-		$this->quantity_out->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_out"];
-		$this->quantity_out->AdvancedSearch->Save();
+		// Field quantity
+		$this->quantity->AdvancedSearch->SearchValue = @$filter["x_quantity"];
+		$this->quantity->AdvancedSearch->SearchOperator = @$filter["z_quantity"];
+		$this->quantity->AdvancedSearch->SearchCondition = @$filter["v_quantity"];
+		$this->quantity->AdvancedSearch->SearchValue2 = @$filter["y_quantity"];
+		$this->quantity->AdvancedSearch->SearchOperator2 = @$filter["w_quantity"];
+		$this->quantity->AdvancedSearch->Save();
 
-		// Field total_quantity
-		$this->total_quantity->AdvancedSearch->SearchValue = @$filter["x_total_quantity"];
-		$this->total_quantity->AdvancedSearch->SearchOperator = @$filter["z_total_quantity"];
-		$this->total_quantity->AdvancedSearch->SearchCondition = @$filter["v_total_quantity"];
-		$this->total_quantity->AdvancedSearch->SearchValue2 = @$filter["y_total_quantity"];
-		$this->total_quantity->AdvancedSearch->SearchOperator2 = @$filter["w_total_quantity"];
-		$this->total_quantity->AdvancedSearch->Save();
+		// Field recieved_by
+		$this->recieved_by->AdvancedSearch->SearchValue = @$filter["x_recieved_by"];
+		$this->recieved_by->AdvancedSearch->SearchOperator = @$filter["z_recieved_by"];
+		$this->recieved_by->AdvancedSearch->SearchCondition = @$filter["v_recieved_by"];
+		$this->recieved_by->AdvancedSearch->SearchValue2 = @$filter["y_recieved_by"];
+		$this->recieved_by->AdvancedSearch->SearchOperator2 = @$filter["w_recieved_by"];
+		$this->recieved_by->AdvancedSearch->Save();
 
-		// Field treated_by
-		$this->treated_by->AdvancedSearch->SearchValue = @$filter["x_treated_by"];
-		$this->treated_by->AdvancedSearch->SearchOperator = @$filter["z_treated_by"];
-		$this->treated_by->AdvancedSearch->SearchCondition = @$filter["v_treated_by"];
-		$this->treated_by->AdvancedSearch->SearchValue2 = @$filter["y_treated_by"];
-		$this->treated_by->AdvancedSearch->SearchOperator2 = @$filter["w_treated_by"];
-		$this->treated_by->AdvancedSearch->Save();
+		// Field recieved_action
+		$this->recieved_action->AdvancedSearch->SearchValue = @$filter["x_recieved_action"];
+		$this->recieved_action->AdvancedSearch->SearchOperator = @$filter["z_recieved_action"];
+		$this->recieved_action->AdvancedSearch->SearchCondition = @$filter["v_recieved_action"];
+		$this->recieved_action->AdvancedSearch->SearchValue2 = @$filter["y_recieved_action"];
+		$this->recieved_action->AdvancedSearch->SearchOperator2 = @$filter["w_recieved_action"];
+		$this->recieved_action->AdvancedSearch->Save();
 
-		// Field issued_action
-		$this->issued_action->AdvancedSearch->SearchValue = @$filter["x_issued_action"];
-		$this->issued_action->AdvancedSearch->SearchOperator = @$filter["z_issued_action"];
-		$this->issued_action->AdvancedSearch->SearchCondition = @$filter["v_issued_action"];
-		$this->issued_action->AdvancedSearch->SearchValue2 = @$filter["y_issued_action"];
-		$this->issued_action->AdvancedSearch->SearchOperator2 = @$filter["w_issued_action"];
-		$this->issued_action->AdvancedSearch->Save();
+		// Field recieved_comment
+		$this->recieved_comment->AdvancedSearch->SearchValue = @$filter["x_recieved_comment"];
+		$this->recieved_comment->AdvancedSearch->SearchOperator = @$filter["z_recieved_comment"];
+		$this->recieved_comment->AdvancedSearch->SearchCondition = @$filter["v_recieved_comment"];
+		$this->recieved_comment->AdvancedSearch->SearchValue2 = @$filter["y_recieved_comment"];
+		$this->recieved_comment->AdvancedSearch->SearchOperator2 = @$filter["w_recieved_comment"];
+		$this->recieved_comment->AdvancedSearch->Save();
 
-		// Field issued_comment
-		$this->issued_comment->AdvancedSearch->SearchValue = @$filter["x_issued_comment"];
-		$this->issued_comment->AdvancedSearch->SearchOperator = @$filter["z_issued_comment"];
-		$this->issued_comment->AdvancedSearch->SearchCondition = @$filter["v_issued_comment"];
-		$this->issued_comment->AdvancedSearch->SearchValue2 = @$filter["y_issued_comment"];
-		$this->issued_comment->AdvancedSearch->SearchOperator2 = @$filter["w_issued_comment"];
-		$this->issued_comment->AdvancedSearch->Save();
-
-		// Field issued_by
-		$this->issued_by->AdvancedSearch->SearchValue = @$filter["x_issued_by"];
-		$this->issued_by->AdvancedSearch->SearchOperator = @$filter["z_issued_by"];
-		$this->issued_by->AdvancedSearch->SearchCondition = @$filter["v_issued_by"];
-		$this->issued_by->AdvancedSearch->SearchValue2 = @$filter["y_issued_by"];
-		$this->issued_by->AdvancedSearch->SearchOperator2 = @$filter["w_issued_by"];
-		$this->issued_by->AdvancedSearch->Save();
-
-		// Field approver_date
-		$this->approver_date->AdvancedSearch->SearchValue = @$filter["x_approver_date"];
-		$this->approver_date->AdvancedSearch->SearchOperator = @$filter["z_approver_date"];
-		$this->approver_date->AdvancedSearch->SearchCondition = @$filter["v_approver_date"];
-		$this->approver_date->AdvancedSearch->SearchValue2 = @$filter["y_approver_date"];
-		$this->approver_date->AdvancedSearch->SearchOperator2 = @$filter["w_approver_date"];
-		$this->approver_date->AdvancedSearch->Save();
+		// Field date_approved
+		$this->date_approved->AdvancedSearch->SearchValue = @$filter["x_date_approved"];
+		$this->date_approved->AdvancedSearch->SearchOperator = @$filter["z_date_approved"];
+		$this->date_approved->AdvancedSearch->SearchCondition = @$filter["v_date_approved"];
+		$this->date_approved->AdvancedSearch->SearchValue2 = @$filter["y_date_approved"];
+		$this->date_approved->AdvancedSearch->SearchOperator2 = @$filter["w_date_approved"];
+		$this->date_approved->AdvancedSearch->Save();
 
 		// Field approver_action
 		$this->approver_action->AdvancedSearch->SearchValue = @$filter["x_approver_action"];
@@ -1002,13 +980,21 @@ class cissuance_tracking_list extends cissuance_tracking {
 		$this->approver_action->AdvancedSearch->SearchOperator2 = @$filter["w_approver_action"];
 		$this->approver_action->AdvancedSearch->Save();
 
-		// Field approved_comment
-		$this->approved_comment->AdvancedSearch->SearchValue = @$filter["x_approved_comment"];
-		$this->approved_comment->AdvancedSearch->SearchOperator = @$filter["z_approved_comment"];
-		$this->approved_comment->AdvancedSearch->SearchCondition = @$filter["v_approved_comment"];
-		$this->approved_comment->AdvancedSearch->SearchValue2 = @$filter["y_approved_comment"];
-		$this->approved_comment->AdvancedSearch->SearchOperator2 = @$filter["w_approved_comment"];
-		$this->approved_comment->AdvancedSearch->Save();
+		// Field approver_comment
+		$this->approver_comment->AdvancedSearch->SearchValue = @$filter["x_approver_comment"];
+		$this->approver_comment->AdvancedSearch->SearchOperator = @$filter["z_approver_comment"];
+		$this->approver_comment->AdvancedSearch->SearchCondition = @$filter["v_approver_comment"];
+		$this->approver_comment->AdvancedSearch->SearchValue2 = @$filter["y_approver_comment"];
+		$this->approver_comment->AdvancedSearch->SearchOperator2 = @$filter["w_approver_comment"];
+		$this->approver_comment->AdvancedSearch->Save();
+
+		// Field statuss
+		$this->statuss->AdvancedSearch->SearchValue = @$filter["x_statuss"];
+		$this->statuss->AdvancedSearch->SearchOperator = @$filter["z_statuss"];
+		$this->statuss->AdvancedSearch->SearchCondition = @$filter["v_statuss"];
+		$this->statuss->AdvancedSearch->SearchValue2 = @$filter["y_statuss"];
+		$this->statuss->AdvancedSearch->SearchOperator2 = @$filter["w_statuss"];
+		$this->statuss->AdvancedSearch->Save();
 
 		// Field approved_by
 		$this->approved_by->AdvancedSearch->SearchValue = @$filter["x_approved_by"];
@@ -1049,14 +1035,6 @@ class cissuance_tracking_list extends cissuance_tracking {
 		$this->verified_by->AdvancedSearch->SearchValue2 = @$filter["y_verified_by"];
 		$this->verified_by->AdvancedSearch->SearchOperator2 = @$filter["w_verified_by"];
 		$this->verified_by->AdvancedSearch->Save();
-
-		// Field statuss
-		$this->statuss->AdvancedSearch->SearchValue = @$filter["x_statuss"];
-		$this->statuss->AdvancedSearch->SearchOperator = @$filter["z_statuss"];
-		$this->statuss->AdvancedSearch->SearchCondition = @$filter["v_statuss"];
-		$this->statuss->AdvancedSearch->SearchValue2 = @$filter["y_statuss"];
-		$this->statuss->AdvancedSearch->SearchOperator2 = @$filter["w_statuss"];
-		$this->statuss->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
@@ -1066,12 +1044,11 @@ class cissuance_tracking_list extends cissuance_tracking {
 		$sWhere = "";
 		$this->BuildBasicSearchSQL($sWhere, $this->reference_id, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->material_name, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->quantity_in, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->quantity_type, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->quantity_out, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->total_quantity, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->issued_comment, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->approved_comment, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->type, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->capacity, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->quantity, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->recieved_comment, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->approver_comment, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->verified_comment, $arKeywords, $type);
 		return $sWhere;
 	}
@@ -1219,20 +1196,16 @@ class cissuance_tracking_list extends cissuance_tracking {
 		if (@$_GET["order"] <> "") {
 			$this->CurrentOrder = @$_GET["order"];
 			$this->CurrentOrderType = @$_GET["ordertype"];
-			$this->UpdateSort($this->date); // date
+			$this->UpdateSort($this->date_recieved); // date_recieved
 			$this->UpdateSort($this->reference_id); // reference_id
 			$this->UpdateSort($this->material_name); // material_name
-			$this->UpdateSort($this->quantity_in); // quantity_in
-			$this->UpdateSort($this->quantity_type); // quantity_type
-			$this->UpdateSort($this->quantity_out); // quantity_out
-			$this->UpdateSort($this->total_quantity); // total_quantity
-			$this->UpdateSort($this->issued_comment); // issued_comment
-			$this->UpdateSort($this->issued_by); // issued_by
-			$this->UpdateSort($this->approved_comment); // approved_comment
-			$this->UpdateSort($this->approved_by); // approved_by
-			$this->UpdateSort($this->verified_comment); // verified_comment
-			$this->UpdateSort($this->verified_by); // verified_by
+			$this->UpdateSort($this->type); // type
+			$this->UpdateSort($this->capacity); // capacity
+			$this->UpdateSort($this->quantity); // quantity
+			$this->UpdateSort($this->recieved_by); // recieved_by
 			$this->UpdateSort($this->statuss); // statuss
+			$this->UpdateSort($this->approved_by); // approved_by
+			$this->UpdateSort($this->verified_by); // verified_by
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1265,20 +1238,16 @@ class cissuance_tracking_list extends cissuance_tracking {
 			if ($this->Command == "resetsort") {
 				$sOrderBy = "";
 				$this->setSessionOrderBy($sOrderBy);
-				$this->date->setSort("");
+				$this->date_recieved->setSort("");
 				$this->reference_id->setSort("");
 				$this->material_name->setSort("");
-				$this->quantity_in->setSort("");
-				$this->quantity_type->setSort("");
-				$this->quantity_out->setSort("");
-				$this->total_quantity->setSort("");
-				$this->issued_comment->setSort("");
-				$this->issued_by->setSort("");
-				$this->approved_comment->setSort("");
-				$this->approved_by->setSort("");
-				$this->verified_comment->setSort("");
-				$this->verified_by->setSort("");
+				$this->type->setSort("");
+				$this->capacity->setSort("");
+				$this->quantity->setSort("");
+				$this->recieved_by->setSort("");
 				$this->statuss->setSort("");
+				$this->approved_by->setSort("");
+				$this->verified_by->setSort("");
 			}
 
 			// Reset start position
@@ -1398,10 +1367,10 @@ class cissuance_tracking_list extends cissuance_tracking {
 
 		// Filter button
 		$item = &$this->FilterOptions->Add("savecurrentfilter");
-		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"fissuance_trackinglistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
+		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"finventory_tracking_statysafelistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
 		$item->Visible = TRUE;
 		$item = &$this->FilterOptions->Add("deletefilter");
-		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"fissuance_trackinglistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
+		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"finventory_tracking_statysafelistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
 		$item->Visible = TRUE;
 		$this->FilterOptions->UseDropDownButton = TRUE;
 		$this->FilterOptions->UseButtonGroup = !$this->FilterOptions->UseDropDownButton;
@@ -1425,7 +1394,7 @@ class cissuance_tracking_list extends cissuance_tracking {
 					$item = &$option->Add("custom_" . $listaction->Action);
 					$caption = $listaction->Caption;
 					$icon = ($listaction->Icon <> "") ? "<span class=\"" . ew_HtmlEncode($listaction->Icon) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\"></span> " : $caption;
-					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.fissuance_trackinglist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
+					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.finventory_tracking_statysafelist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
 					$item->Visible = $listaction->Allow;
 				}
 			}
@@ -1529,7 +1498,7 @@ class cissuance_tracking_list extends cissuance_tracking {
 		// Search button
 		$item = &$this->SearchOptions->Add("searchtoggle");
 		$SearchToggleClass = ($this->SearchWhere <> "") ? " active" : " active";
-		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"fissuance_trackinglistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"finventory_tracking_statysafelistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
 		$item->Visible = TRUE;
 
 		// Show all button
@@ -1669,54 +1638,50 @@ class cissuance_tracking_list extends cissuance_tracking {
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
-		$this->date->setDbValue($row['date']);
+		$this->date_recieved->setDbValue($row['date_recieved']);
 		$this->reference_id->setDbValue($row['reference_id']);
 		$this->staff_id->setDbValue($row['staff_id']);
 		$this->material_name->setDbValue($row['material_name']);
-		$this->quantity_in->setDbValue($row['quantity_in']);
-		$this->quantity_type->setDbValue($row['quantity_type']);
-		$this->quantity_out->setDbValue($row['quantity_out']);
-		$this->total_quantity->setDbValue($row['total_quantity']);
-		$this->treated_by->setDbValue($row['treated_by']);
-		$this->issued_action->setDbValue($row['issued_action']);
-		$this->issued_comment->setDbValue($row['issued_comment']);
-		$this->issued_by->setDbValue($row['issued_by']);
-		$this->approver_date->setDbValue($row['approver_date']);
+		$this->type->setDbValue($row['type']);
+		$this->capacity->setDbValue($row['capacity']);
+		$this->quantity->setDbValue($row['quantity']);
+		$this->recieved_by->setDbValue($row['recieved_by']);
+		$this->recieved_action->setDbValue($row['recieved_action']);
+		$this->recieved_comment->setDbValue($row['recieved_comment']);
+		$this->date_approved->setDbValue($row['date_approved']);
 		$this->approver_action->setDbValue($row['approver_action']);
-		$this->approved_comment->setDbValue($row['approved_comment']);
+		$this->approver_comment->setDbValue($row['approver_comment']);
+		$this->statuss->setDbValue($row['statuss']);
 		$this->approved_by->setDbValue($row['approved_by']);
 		$this->verified_date->setDbValue($row['verified_date']);
 		$this->verified_action->setDbValue($row['verified_action']);
 		$this->verified_comment->setDbValue($row['verified_comment']);
 		$this->verified_by->setDbValue($row['verified_by']);
-		$this->statuss->setDbValue($row['statuss']);
 	}
 
 	// Return a row with default values
 	function NewRow() {
 		$row = array();
 		$row['id'] = NULL;
-		$row['date'] = NULL;
+		$row['date_recieved'] = NULL;
 		$row['reference_id'] = NULL;
 		$row['staff_id'] = NULL;
 		$row['material_name'] = NULL;
-		$row['quantity_in'] = NULL;
-		$row['quantity_type'] = NULL;
-		$row['quantity_out'] = NULL;
-		$row['total_quantity'] = NULL;
-		$row['treated_by'] = NULL;
-		$row['issued_action'] = NULL;
-		$row['issued_comment'] = NULL;
-		$row['issued_by'] = NULL;
-		$row['approver_date'] = NULL;
+		$row['type'] = NULL;
+		$row['capacity'] = NULL;
+		$row['quantity'] = NULL;
+		$row['recieved_by'] = NULL;
+		$row['recieved_action'] = NULL;
+		$row['recieved_comment'] = NULL;
+		$row['date_approved'] = NULL;
 		$row['approver_action'] = NULL;
-		$row['approved_comment'] = NULL;
+		$row['approver_comment'] = NULL;
+		$row['statuss'] = NULL;
 		$row['approved_by'] = NULL;
 		$row['verified_date'] = NULL;
 		$row['verified_action'] = NULL;
 		$row['verified_comment'] = NULL;
 		$row['verified_by'] = NULL;
-		$row['statuss'] = NULL;
 		return $row;
 	}
 
@@ -1726,27 +1691,25 @@ class cissuance_tracking_list extends cissuance_tracking {
 			return;
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
-		$this->date->DbValue = $row['date'];
+		$this->date_recieved->DbValue = $row['date_recieved'];
 		$this->reference_id->DbValue = $row['reference_id'];
 		$this->staff_id->DbValue = $row['staff_id'];
 		$this->material_name->DbValue = $row['material_name'];
-		$this->quantity_in->DbValue = $row['quantity_in'];
-		$this->quantity_type->DbValue = $row['quantity_type'];
-		$this->quantity_out->DbValue = $row['quantity_out'];
-		$this->total_quantity->DbValue = $row['total_quantity'];
-		$this->treated_by->DbValue = $row['treated_by'];
-		$this->issued_action->DbValue = $row['issued_action'];
-		$this->issued_comment->DbValue = $row['issued_comment'];
-		$this->issued_by->DbValue = $row['issued_by'];
-		$this->approver_date->DbValue = $row['approver_date'];
+		$this->type->DbValue = $row['type'];
+		$this->capacity->DbValue = $row['capacity'];
+		$this->quantity->DbValue = $row['quantity'];
+		$this->recieved_by->DbValue = $row['recieved_by'];
+		$this->recieved_action->DbValue = $row['recieved_action'];
+		$this->recieved_comment->DbValue = $row['recieved_comment'];
+		$this->date_approved->DbValue = $row['date_approved'];
 		$this->approver_action->DbValue = $row['approver_action'];
-		$this->approved_comment->DbValue = $row['approved_comment'];
+		$this->approver_comment->DbValue = $row['approver_comment'];
+		$this->statuss->DbValue = $row['statuss'];
 		$this->approved_by->DbValue = $row['approved_by'];
 		$this->verified_date->DbValue = $row['verified_date'];
 		$this->verified_action->DbValue = $row['verified_action'];
 		$this->verified_comment->DbValue = $row['verified_comment'];
 		$this->verified_by->DbValue = $row['verified_by'];
-		$this->statuss->DbValue = $row['statuss'];
 	}
 
 	// Load old record
@@ -1788,27 +1751,25 @@ class cissuance_tracking_list extends cissuance_tracking {
 
 		// Common render codes for all row types
 		// id
-		// date
+		// date_recieved
 		// reference_id
 		// staff_id
 		// material_name
-		// quantity_in
-		// quantity_type
-		// quantity_out
-		// total_quantity
-		// treated_by
-		// issued_action
-		// issued_comment
-		// issued_by
-		// approver_date
+		// type
+		// capacity
+		// quantity
+		// recieved_by
+		// recieved_action
+		// recieved_comment
+		// date_approved
 		// approver_action
-		// approved_comment
+		// approver_comment
+		// statuss
 		// approved_by
 		// verified_date
 		// verified_action
 		// verified_comment
 		// verified_by
-		// statuss
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1816,10 +1777,10 @@ class cissuance_tracking_list extends cissuance_tracking {
 		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// date
-		$this->date->ViewValue = $this->date->CurrentValue;
-		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 0);
-		$this->date->ViewCustomAttributes = "";
+		// date_recieved
+		$this->date_recieved->ViewValue = $this->date_recieved->CurrentValue;
+		$this->date_recieved->ViewValue = ew_FormatDateTime($this->date_recieved->ViewValue, 0);
+		$this->date_recieved->ViewCustomAttributes = "";
 
 		// reference_id
 		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
@@ -1851,53 +1812,30 @@ class cissuance_tracking_list extends cissuance_tracking {
 		$this->staff_id->ViewCustomAttributes = "";
 
 		// material_name
-		if (strval($this->material_name->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory`";
-		$sWhereWrk = "";
-		$this->material_name->LookupFilters = array("dx1" => '`material_name`');
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->material_name->ViewValue = $this->material_name->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->material_name->ViewValue = $this->material_name->CurrentValue;
-			}
-		} else {
-			$this->material_name->ViewValue = NULL;
-		}
+		$this->material_name->ViewValue = $this->material_name->CurrentValue;
 		$this->material_name->ViewCustomAttributes = "";
 
-		// quantity_in
-		$this->quantity_in->ViewValue = $this->quantity_in->CurrentValue;
-		$this->quantity_in->ViewCustomAttributes = "";
+		// type
+		$this->type->ViewValue = $this->type->CurrentValue;
+		$this->type->ViewCustomAttributes = "";
 
-		// quantity_type
-		$this->quantity_type->ViewValue = $this->quantity_type->CurrentValue;
-		$this->quantity_type->ViewCustomAttributes = "";
+		// capacity
+		$this->capacity->ViewValue = $this->capacity->CurrentValue;
+		$this->capacity->ViewCustomAttributes = "";
 
-		// quantity_out
-		$this->quantity_out->ViewValue = $this->quantity_out->CurrentValue;
-		$this->quantity_out->ViewCustomAttributes = "";
+		// quantity
+		$this->quantity->ViewValue = $this->quantity->CurrentValue;
+		$this->quantity->ViewCustomAttributes = "";
 
-		// total_quantity
-		$this->total_quantity->ViewValue = $this->total_quantity->CurrentValue;
-		$this->total_quantity->ViewCustomAttributes = "";
-
-		// treated_by
-		$this->treated_by->ViewValue = $this->treated_by->CurrentValue;
-		if (strval($this->treated_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->treated_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		// recieved_by
+		$this->recieved_by->ViewValue = $this->recieved_by->CurrentValue;
+		if (strval($this->recieved_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->recieved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->treated_by->LookupFilters = array();
+		$this->recieved_by->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->treated_by, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->recieved_by, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
@@ -1905,58 +1843,32 @@ class cissuance_tracking_list extends cissuance_tracking {
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
 				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->treated_by->ViewValue = $this->treated_by->DisplayValue($arwrk);
+				$this->recieved_by->ViewValue = $this->recieved_by->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->treated_by->ViewValue = $this->treated_by->CurrentValue;
+				$this->recieved_by->ViewValue = $this->recieved_by->CurrentValue;
 			}
 		} else {
-			$this->treated_by->ViewValue = NULL;
+			$this->recieved_by->ViewValue = NULL;
 		}
-		$this->treated_by->ViewCustomAttributes = "";
+		$this->recieved_by->ViewCustomAttributes = "";
 
-		// issued_action
-		if (strval($this->issued_action->CurrentValue) <> "") {
-			$this->issued_action->ViewValue = $this->issued_action->OptionCaption($this->issued_action->CurrentValue);
+		// recieved_action
+		if (strval($this->recieved_action->CurrentValue) <> "") {
+			$this->recieved_action->ViewValue = $this->recieved_action->OptionCaption($this->recieved_action->CurrentValue);
 		} else {
-			$this->issued_action->ViewValue = NULL;
+			$this->recieved_action->ViewValue = NULL;
 		}
-		$this->issued_action->ViewCustomAttributes = "";
+		$this->recieved_action->ViewCustomAttributes = "";
 
-		// issued_comment
-		$this->issued_comment->ViewValue = $this->issued_comment->CurrentValue;
-		$this->issued_comment->ViewCustomAttributes = "";
+		// recieved_comment
+		$this->recieved_comment->ViewValue = $this->recieved_comment->CurrentValue;
+		$this->recieved_comment->ViewCustomAttributes = "";
 
-		// issued_by
-		$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
-		if (strval($this->issued_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->issued_by->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->issued_by->ViewValue = $this->issued_by->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
-			}
-		} else {
-			$this->issued_by->ViewValue = NULL;
-		}
-		$this->issued_by->ViewCustomAttributes = "";
-
-		// approver_date
-		$this->approver_date->ViewValue = $this->approver_date->CurrentValue;
-		$this->approver_date->ViewValue = ew_FormatDateTime($this->approver_date->ViewValue, 0);
-		$this->approver_date->ViewCustomAttributes = "";
+		// date_approved
+		$this->date_approved->ViewValue = $this->date_approved->CurrentValue;
+		$this->date_approved->ViewValue = ew_FormatDateTime($this->date_approved->ViewValue, 0);
+		$this->date_approved->ViewCustomAttributes = "";
 
 		// approver_action
 		if (strval($this->approver_action->CurrentValue) <> "") {
@@ -1966,9 +1878,32 @@ class cissuance_tracking_list extends cissuance_tracking {
 		}
 		$this->approver_action->ViewCustomAttributes = "";
 
-		// approved_comment
-		$this->approved_comment->ViewValue = $this->approved_comment->CurrentValue;
-		$this->approved_comment->ViewCustomAttributes = "";
+		// approver_comment
+		$this->approver_comment->ViewValue = $this->approver_comment->CurrentValue;
+		$this->approver_comment->ViewCustomAttributes = "";
+
+		// statuss
+		if (strval($this->statuss->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
+		$sWhereWrk = "";
+		$this->statuss->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->statuss->ViewValue = $this->statuss->CurrentValue;
+			}
+		} else {
+			$this->statuss->ViewValue = NULL;
+		}
+		$this->statuss->ViewCustomAttributes = "";
 
 		// approved_by
 		$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
@@ -2039,33 +1974,10 @@ class cissuance_tracking_list extends cissuance_tracking {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
-		// statuss
-		if (strval($this->statuss->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
-		$sWhereWrk = "";
-		$this->statuss->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->statuss->ViewValue = $this->statuss->CurrentValue;
-			}
-		} else {
-			$this->statuss->ViewValue = NULL;
-		}
-		$this->statuss->ViewCustomAttributes = "";
-
-			// date
-			$this->date->LinkCustomAttributes = "";
-			$this->date->HrefValue = "";
-			$this->date->TooltipValue = "";
+			// date_recieved
+			$this->date_recieved->LinkCustomAttributes = "";
+			$this->date_recieved->HrefValue = "";
+			$this->date_recieved->TooltipValue = "";
 
 			// reference_id
 			$this->reference_id->LinkCustomAttributes = "";
@@ -2077,60 +1989,40 @@ class cissuance_tracking_list extends cissuance_tracking {
 			$this->material_name->HrefValue = "";
 			$this->material_name->TooltipValue = "";
 
-			// quantity_in
-			$this->quantity_in->LinkCustomAttributes = "";
-			$this->quantity_in->HrefValue = "";
-			$this->quantity_in->TooltipValue = "";
+			// type
+			$this->type->LinkCustomAttributes = "";
+			$this->type->HrefValue = "";
+			$this->type->TooltipValue = "";
 
-			// quantity_type
-			$this->quantity_type->LinkCustomAttributes = "";
-			$this->quantity_type->HrefValue = "";
-			$this->quantity_type->TooltipValue = "";
+			// capacity
+			$this->capacity->LinkCustomAttributes = "";
+			$this->capacity->HrefValue = "";
+			$this->capacity->TooltipValue = "";
 
-			// quantity_out
-			$this->quantity_out->LinkCustomAttributes = "";
-			$this->quantity_out->HrefValue = "";
-			$this->quantity_out->TooltipValue = "";
+			// quantity
+			$this->quantity->LinkCustomAttributes = "";
+			$this->quantity->HrefValue = "";
+			$this->quantity->TooltipValue = "";
 
-			// total_quantity
-			$this->total_quantity->LinkCustomAttributes = "";
-			$this->total_quantity->HrefValue = "";
-			$this->total_quantity->TooltipValue = "";
+			// recieved_by
+			$this->recieved_by->LinkCustomAttributes = "";
+			$this->recieved_by->HrefValue = "";
+			$this->recieved_by->TooltipValue = "";
 
-			// issued_comment
-			$this->issued_comment->LinkCustomAttributes = "";
-			$this->issued_comment->HrefValue = "";
-			$this->issued_comment->TooltipValue = "";
-
-			// issued_by
-			$this->issued_by->LinkCustomAttributes = "";
-			$this->issued_by->HrefValue = "";
-			$this->issued_by->TooltipValue = "";
-
-			// approved_comment
-			$this->approved_comment->LinkCustomAttributes = "";
-			$this->approved_comment->HrefValue = "";
-			$this->approved_comment->TooltipValue = "";
+			// statuss
+			$this->statuss->LinkCustomAttributes = "";
+			$this->statuss->HrefValue = "";
+			$this->statuss->TooltipValue = "";
 
 			// approved_by
 			$this->approved_by->LinkCustomAttributes = "";
 			$this->approved_by->HrefValue = "";
 			$this->approved_by->TooltipValue = "";
 
-			// verified_comment
-			$this->verified_comment->LinkCustomAttributes = "";
-			$this->verified_comment->HrefValue = "";
-			$this->verified_comment->TooltipValue = "";
-
 			// verified_by
 			$this->verified_by->LinkCustomAttributes = "";
 			$this->verified_by->HrefValue = "";
 			$this->verified_by->TooltipValue = "";
-
-			// statuss
-			$this->statuss->LinkCustomAttributes = "";
-			$this->statuss->HrefValue = "";
-			$this->statuss->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2180,7 +2072,7 @@ class cissuance_tracking_list extends cissuance_tracking {
 		// Export to Email
 		$item = &$this->ExportOptions->Add("email");
 		$url = "";
-		$item->Body = "<button id=\"emf_issuance_tracking\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_issuance_tracking',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fissuance_trackinglist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
+		$item->Body = "<button id=\"emf_inventory_tracking_statysafe\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_inventory_tracking_statysafe',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.finventory_tracking_statysafelist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
 		$item->Visible = FALSE;
 
 		// Drop down button for export
@@ -2439,31 +2331,31 @@ class cissuance_tracking_list extends cissuance_tracking {
 <?php
 
 // Create page object
-if (!isset($issuance_tracking_list)) $issuance_tracking_list = new cissuance_tracking_list();
+if (!isset($inventory_tracking_statysafe_list)) $inventory_tracking_statysafe_list = new cinventory_tracking_statysafe_list();
 
 // Page init
-$issuance_tracking_list->Page_Init();
+$inventory_tracking_statysafe_list->Page_Init();
 
 // Page main
-$issuance_tracking_list->Page_Main();
+$inventory_tracking_statysafe_list->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$issuance_tracking_list->Page_Render();
+$inventory_tracking_statysafe_list->Page_Render();
 ?>
 <?php include_once "header.php" ?>
-<?php if ($issuance_tracking->Export == "") { ?>
+<?php if ($inventory_tracking_statysafe->Export == "") { ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "list";
-var CurrentForm = fissuance_trackinglist = new ew_Form("fissuance_trackinglist", "list");
-fissuance_trackinglist.FormKeyCountName = '<?php echo $issuance_tracking_list->FormKeyCountName ?>';
+var CurrentForm = finventory_tracking_statysafelist = new ew_Form("finventory_tracking_statysafelist", "list");
+finventory_tracking_statysafelist.FormKeyCountName = '<?php echo $inventory_tracking_statysafe_list->FormKeyCountName ?>';
 
 // Form_CustomValidate event
-fissuance_trackinglist.Form_CustomValidate = 
+finventory_tracking_statysafelist.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid.
@@ -2471,92 +2363,90 @@ fissuance_trackinglist.Form_CustomValidate =
  }
 
 // Use JavaScript validation or not
-fissuance_trackinglist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+finventory_tracking_statysafelist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-fissuance_trackinglist.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory"};
-fissuance_trackinglist.Lists["x_material_name"].Data = "<?php echo $issuance_tracking_list->material_name->LookupFilterQuery(FALSE, "list") ?>";
-fissuance_trackinglist.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fissuance_trackinglist.Lists["x_issued_by"].Data = "<?php echo $issuance_tracking_list->issued_by->LookupFilterQuery(FALSE, "list") ?>";
-fissuance_trackinglist.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_tracking_list->issued_by->LookupFilterQuery(TRUE, "list"))) ?>;
-fissuance_trackinglist.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fissuance_trackinglist.Lists["x_approved_by"].Data = "<?php echo $issuance_tracking_list->approved_by->LookupFilterQuery(FALSE, "list") ?>";
-fissuance_trackinglist.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_tracking_list->approved_by->LookupFilterQuery(TRUE, "list"))) ?>;
-fissuance_trackinglist.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fissuance_trackinglist.Lists["x_verified_by"].Data = "<?php echo $issuance_tracking_list->verified_by->LookupFilterQuery(FALSE, "list") ?>";
-fissuance_trackinglist.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_tracking_list->verified_by->LookupFilterQuery(TRUE, "list"))) ?>;
-fissuance_trackinglist.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
-fissuance_trackinglist.Lists["x_statuss"].Data = "<?php echo $issuance_tracking_list->statuss->LookupFilterQuery(FALSE, "list") ?>";
+finventory_tracking_statysafelist.Lists["x_recieved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventory_tracking_statysafelist.Lists["x_recieved_by"].Data = "<?php echo $inventory_tracking_statysafe_list->recieved_by->LookupFilterQuery(FALSE, "list") ?>";
+finventory_tracking_statysafelist.AutoSuggests["x_recieved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_tracking_statysafe_list->recieved_by->LookupFilterQuery(TRUE, "list"))) ?>;
+finventory_tracking_statysafelist.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
+finventory_tracking_statysafelist.Lists["x_statuss"].Data = "<?php echo $inventory_tracking_statysafe_list->statuss->LookupFilterQuery(FALSE, "list") ?>";
+finventory_tracking_statysafelist.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventory_tracking_statysafelist.Lists["x_approved_by"].Data = "<?php echo $inventory_tracking_statysafe_list->approved_by->LookupFilterQuery(FALSE, "list") ?>";
+finventory_tracking_statysafelist.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_tracking_statysafe_list->approved_by->LookupFilterQuery(TRUE, "list"))) ?>;
+finventory_tracking_statysafelist.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+finventory_tracking_statysafelist.Lists["x_verified_by"].Data = "<?php echo $inventory_tracking_statysafe_list->verified_by->LookupFilterQuery(FALSE, "list") ?>";
+finventory_tracking_statysafelist.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $inventory_tracking_statysafe_list->verified_by->LookupFilterQuery(TRUE, "list"))) ?>;
 
 // Form object for search
-var CurrentSearchForm = fissuance_trackinglistsrch = new ew_Form("fissuance_trackinglistsrch");
+var CurrentSearchForm = finventory_tracking_statysafelistsrch = new ew_Form("finventory_tracking_statysafelistsrch");
 </script>
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
 </script>
 <?php } ?>
-<?php if ($issuance_tracking->Export == "") { ?>
+<?php if ($inventory_tracking_statysafe->Export == "") { ?>
 <div class="ewToolbar">
-<?php if ($issuance_tracking_list->TotalRecs > 0 && $issuance_tracking_list->ExportOptions->Visible()) { ?>
-<?php $issuance_tracking_list->ExportOptions->Render("body") ?>
+<?php if ($inventory_tracking_statysafe_list->TotalRecs > 0 && $inventory_tracking_statysafe_list->ExportOptions->Visible()) { ?>
+<?php $inventory_tracking_statysafe_list->ExportOptions->Render("body") ?>
 <?php } ?>
-<?php if ($issuance_tracking_list->SearchOptions->Visible()) { ?>
-<?php $issuance_tracking_list->SearchOptions->Render("body") ?>
+<?php if ($inventory_tracking_statysafe_list->SearchOptions->Visible()) { ?>
+<?php $inventory_tracking_statysafe_list->SearchOptions->Render("body") ?>
 <?php } ?>
-<?php if ($issuance_tracking_list->FilterOptions->Visible()) { ?>
-<?php $issuance_tracking_list->FilterOptions->Render("body") ?>
+<?php if ($inventory_tracking_statysafe_list->FilterOptions->Visible()) { ?>
+<?php $inventory_tracking_statysafe_list->FilterOptions->Render("body") ?>
 <?php } ?>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
 <?php
-	$bSelectLimit = $issuance_tracking_list->UseSelectLimit;
+	$bSelectLimit = $inventory_tracking_statysafe_list->UseSelectLimit;
 	if ($bSelectLimit) {
-		if ($issuance_tracking_list->TotalRecs <= 0)
-			$issuance_tracking_list->TotalRecs = $issuance_tracking->ListRecordCount();
+		if ($inventory_tracking_statysafe_list->TotalRecs <= 0)
+			$inventory_tracking_statysafe_list->TotalRecs = $inventory_tracking_statysafe->ListRecordCount();
 	} else {
-		if (!$issuance_tracking_list->Recordset && ($issuance_tracking_list->Recordset = $issuance_tracking_list->LoadRecordset()))
-			$issuance_tracking_list->TotalRecs = $issuance_tracking_list->Recordset->RecordCount();
+		if (!$inventory_tracking_statysafe_list->Recordset && ($inventory_tracking_statysafe_list->Recordset = $inventory_tracking_statysafe_list->LoadRecordset()))
+			$inventory_tracking_statysafe_list->TotalRecs = $inventory_tracking_statysafe_list->Recordset->RecordCount();
 	}
-	$issuance_tracking_list->StartRec = 1;
-	if ($issuance_tracking_list->DisplayRecs <= 0 || ($issuance_tracking->Export <> "" && $issuance_tracking->ExportAll)) // Display all records
-		$issuance_tracking_list->DisplayRecs = $issuance_tracking_list->TotalRecs;
-	if (!($issuance_tracking->Export <> "" && $issuance_tracking->ExportAll))
-		$issuance_tracking_list->SetupStartRec(); // Set up start record position
+	$inventory_tracking_statysafe_list->StartRec = 1;
+	if ($inventory_tracking_statysafe_list->DisplayRecs <= 0 || ($inventory_tracking_statysafe->Export <> "" && $inventory_tracking_statysafe->ExportAll)) // Display all records
+		$inventory_tracking_statysafe_list->DisplayRecs = $inventory_tracking_statysafe_list->TotalRecs;
+	if (!($inventory_tracking_statysafe->Export <> "" && $inventory_tracking_statysafe->ExportAll))
+		$inventory_tracking_statysafe_list->SetupStartRec(); // Set up start record position
 	if ($bSelectLimit)
-		$issuance_tracking_list->Recordset = $issuance_tracking_list->LoadRecordset($issuance_tracking_list->StartRec-1, $issuance_tracking_list->DisplayRecs);
+		$inventory_tracking_statysafe_list->Recordset = $inventory_tracking_statysafe_list->LoadRecordset($inventory_tracking_statysafe_list->StartRec-1, $inventory_tracking_statysafe_list->DisplayRecs);
 
 	// Set no record found message
-	if ($issuance_tracking->CurrentAction == "" && $issuance_tracking_list->TotalRecs == 0) {
+	if ($inventory_tracking_statysafe->CurrentAction == "" && $inventory_tracking_statysafe_list->TotalRecs == 0) {
 		if (!$Security->CanList())
-			$issuance_tracking_list->setWarningMessage(ew_DeniedMsg());
-		if ($issuance_tracking_list->SearchWhere == "0=101")
-			$issuance_tracking_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
+			$inventory_tracking_statysafe_list->setWarningMessage(ew_DeniedMsg());
+		if ($inventory_tracking_statysafe_list->SearchWhere == "0=101")
+			$inventory_tracking_statysafe_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
 		else
-			$issuance_tracking_list->setWarningMessage($Language->Phrase("NoRecord"));
+			$inventory_tracking_statysafe_list->setWarningMessage($Language->Phrase("NoRecord"));
 	}
-$issuance_tracking_list->RenderOtherOptions();
+$inventory_tracking_statysafe_list->RenderOtherOptions();
 ?>
 <?php if ($Security->CanSearch()) { ?>
-<?php if ($issuance_tracking->Export == "" && $issuance_tracking->CurrentAction == "") { ?>
-<form name="fissuance_trackinglistsrch" id="fissuance_trackinglistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
-<?php $SearchPanelClass = ($issuance_tracking_list->SearchWhere <> "") ? " in" : " in"; ?>
-<div id="fissuance_trackinglistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
+<?php if ($inventory_tracking_statysafe->Export == "" && $inventory_tracking_statysafe->CurrentAction == "") { ?>
+<form name="finventory_tracking_statysafelistsrch" id="finventory_tracking_statysafelistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
+<?php $SearchPanelClass = ($inventory_tracking_statysafe_list->SearchWhere <> "") ? " in" : " in"; ?>
+<div id="finventory_tracking_statysafelistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
 <input type="hidden" name="cmd" value="search">
-<input type="hidden" name="t" value="issuance_tracking">
+<input type="hidden" name="t" value="inventory_tracking_statysafe">
 	<div class="ewBasicSearch">
 <div id="xsr_1" class="ewRow">
 	<div class="ewQuickSearch input-group">
-	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($issuance_tracking_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
-	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($issuance_tracking_list->BasicSearch->getType()) ?>">
+	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($inventory_tracking_statysafe_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
+	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($inventory_tracking_statysafe_list->BasicSearch->getType()) ?>">
 	<div class="input-group-btn">
-		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $issuance_tracking_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
+		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $inventory_tracking_statysafe_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
 		<ul class="dropdown-menu pull-right" role="menu">
-			<li<?php if ($issuance_tracking_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
-			<li<?php if ($issuance_tracking_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
-			<li<?php if ($issuance_tracking_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
-			<li<?php if ($issuance_tracking_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
+			<li<?php if ($inventory_tracking_statysafe_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
+			<li<?php if ($inventory_tracking_statysafe_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
+			<li<?php if ($inventory_tracking_statysafe_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
+			<li<?php if ($inventory_tracking_statysafe_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
 		</ul>
 	<button class="btn btn-primary ewButton" name="btnsubmit" id="btnsubmit" type="submit"><?php echo $Language->Phrase("SearchBtn") ?></button>
 	</div>
@@ -2567,71 +2457,71 @@ $issuance_tracking_list->RenderOtherOptions();
 </form>
 <?php } ?>
 <?php } ?>
-<?php $issuance_tracking_list->ShowPageHeader(); ?>
+<?php $inventory_tracking_statysafe_list->ShowPageHeader(); ?>
 <?php
-$issuance_tracking_list->ShowMessage();
+$inventory_tracking_statysafe_list->ShowMessage();
 ?>
-<?php if ($issuance_tracking_list->TotalRecs > 0 || $issuance_tracking->CurrentAction <> "") { ?>
-<div class="box ewBox ewGrid<?php if ($issuance_tracking_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> issuance_tracking">
-<?php if ($issuance_tracking->Export == "") { ?>
+<?php if ($inventory_tracking_statysafe_list->TotalRecs > 0 || $inventory_tracking_statysafe->CurrentAction <> "") { ?>
+<div class="box ewBox ewGrid<?php if ($inventory_tracking_statysafe_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> inventory_tracking_statysafe">
+<?php if ($inventory_tracking_statysafe->Export == "") { ?>
 <div class="box-header ewGridUpperPanel">
-<?php if ($issuance_tracking->CurrentAction <> "gridadd" && $issuance_tracking->CurrentAction <> "gridedit") { ?>
+<?php if ($inventory_tracking_statysafe->CurrentAction <> "gridadd" && $inventory_tracking_statysafe->CurrentAction <> "gridedit") { ?>
 <form name="ewPagerForm" class="form-inline ewForm ewPagerForm" action="<?php echo ew_CurrentPage() ?>">
-<?php if (!isset($issuance_tracking_list->Pager)) $issuance_tracking_list->Pager = new cPrevNextPager($issuance_tracking_list->StartRec, $issuance_tracking_list->DisplayRecs, $issuance_tracking_list->TotalRecs, $issuance_tracking_list->AutoHidePager) ?>
-<?php if ($issuance_tracking_list->Pager->RecordCount > 0 && $issuance_tracking_list->Pager->Visible) { ?>
+<?php if (!isset($inventory_tracking_statysafe_list->Pager)) $inventory_tracking_statysafe_list->Pager = new cPrevNextPager($inventory_tracking_statysafe_list->StartRec, $inventory_tracking_statysafe_list->DisplayRecs, $inventory_tracking_statysafe_list->TotalRecs, $inventory_tracking_statysafe_list->AutoHidePager) ?>
+<?php if ($inventory_tracking_statysafe_list->Pager->RecordCount > 0 && $inventory_tracking_statysafe_list->Pager->Visible) { ?>
 <div class="ewPager">
 <span><?php echo $Language->Phrase("Page") ?>&nbsp;</span>
 <div class="ewPrevNext"><div class="input-group">
 <div class="input-group-btn">
 <!--first page button-->
-	<?php if ($issuance_tracking_list->Pager->FirstButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $issuance_tracking_list->PageUrl() ?>start=<?php echo $issuance_tracking_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
+	<?php if ($inventory_tracking_statysafe_list->Pager->FirstButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $inventory_tracking_statysafe_list->PageUrl() ?>start=<?php echo $inventory_tracking_statysafe_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerFirst") ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } ?>
 <!--previous page button-->
-	<?php if ($issuance_tracking_list->Pager->PrevButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $issuance_tracking_list->PageUrl() ?>start=<?php echo $issuance_tracking_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php if ($inventory_tracking_statysafe_list->Pager->PrevButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $inventory_tracking_statysafe_list->PageUrl() ?>start=<?php echo $inventory_tracking_statysafe_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerPrevious") ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } ?>
 </div>
 <!--current page number-->
-	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $issuance_tracking_list->Pager->CurrentPage ?>">
+	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $inventory_tracking_statysafe_list->Pager->CurrentPage ?>">
 <div class="input-group-btn">
 <!--next page button-->
-	<?php if ($issuance_tracking_list->Pager->NextButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $issuance_tracking_list->PageUrl() ?>start=<?php echo $issuance_tracking_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
+	<?php if ($inventory_tracking_statysafe_list->Pager->NextButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $inventory_tracking_statysafe_list->PageUrl() ?>start=<?php echo $inventory_tracking_statysafe_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerNext") ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } ?>
 <!--last page button-->
-	<?php if ($issuance_tracking_list->Pager->LastButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $issuance_tracking_list->PageUrl() ?>start=<?php echo $issuance_tracking_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
+	<?php if ($inventory_tracking_statysafe_list->Pager->LastButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $inventory_tracking_statysafe_list->PageUrl() ?>start=<?php echo $inventory_tracking_statysafe_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerLast") ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } ?>
 </div>
 </div>
 </div>
-<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $issuance_tracking_list->Pager->PageCount ?></span>
+<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $inventory_tracking_statysafe_list->Pager->PageCount ?></span>
 </div>
 <?php } ?>
-<?php if ($issuance_tracking_list->Pager->RecordCount > 0) { ?>
+<?php if ($inventory_tracking_statysafe_list->Pager->RecordCount > 0) { ?>
 <div class="ewPager ewRec">
-	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $issuance_tracking_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $issuance_tracking_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $issuance_tracking_list->Pager->RecordCount ?></span>
+	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $inventory_tracking_statysafe_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $inventory_tracking_statysafe_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $inventory_tracking_statysafe_list->Pager->RecordCount ?></span>
 </div>
 <?php } ?>
-<?php if ($issuance_tracking_list->TotalRecs > 0 && (!$issuance_tracking_list->AutoHidePageSizeSelector || $issuance_tracking_list->Pager->Visible)) { ?>
+<?php if ($inventory_tracking_statysafe_list->TotalRecs > 0 && (!$inventory_tracking_statysafe_list->AutoHidePageSizeSelector || $inventory_tracking_statysafe_list->Pager->Visible)) { ?>
 <div class="ewPager">
-<input type="hidden" name="t" value="issuance_tracking">
+<input type="hidden" name="t" value="inventory_tracking_statysafe">
 <select name="<?php echo EW_TABLE_REC_PER_PAGE ?>" class="form-control input-sm ewTooltip" title="<?php echo $Language->Phrase("RecordsPerPage") ?>" onchange="this.form.submit();">
-<option value="5"<?php if ($issuance_tracking_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
-<option value="10"<?php if ($issuance_tracking_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
-<option value="15"<?php if ($issuance_tracking_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
-<option value="20"<?php if ($issuance_tracking_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
-<option value="50"<?php if ($issuance_tracking_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
-<option value="ALL"<?php if ($issuance_tracking->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
+<option value="5"<?php if ($inventory_tracking_statysafe_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
+<option value="10"<?php if ($inventory_tracking_statysafe_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
+<option value="15"<?php if ($inventory_tracking_statysafe_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
+<option value="20"<?php if ($inventory_tracking_statysafe_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
+<option value="50"<?php if ($inventory_tracking_statysafe_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
+<option value="ALL"<?php if ($inventory_tracking_statysafe->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
 </select>
 </div>
 <?php } ?>
@@ -2639,353 +2529,285 @@ $issuance_tracking_list->ShowMessage();
 <?php } ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($issuance_tracking_list->OtherOptions as &$option)
+	foreach ($inventory_tracking_statysafe_list->OtherOptions as &$option)
 		$option->Render("body");
 ?>
 </div>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
-<form name="fissuance_trackinglist" id="fissuance_trackinglist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($issuance_tracking_list->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $issuance_tracking_list->Token ?>">
+<form name="finventory_tracking_statysafelist" id="finventory_tracking_statysafelist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($inventory_tracking_statysafe_list->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $inventory_tracking_statysafe_list->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="issuance_tracking">
-<div id="gmp_issuance_tracking" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
-<?php if ($issuance_tracking_list->TotalRecs > 0 || $issuance_tracking->CurrentAction == "gridedit") { ?>
-<table id="tbl_issuance_trackinglist" class="table ewTable">
+<input type="hidden" name="t" value="inventory_tracking_statysafe">
+<div id="gmp_inventory_tracking_statysafe" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
+<?php if ($inventory_tracking_statysafe_list->TotalRecs > 0 || $inventory_tracking_statysafe->CurrentAction == "gridedit") { ?>
+<table id="tbl_inventory_tracking_statysafelist" class="table ewTable">
 <thead>
 	<tr class="ewTableHeader">
 <?php
 
 // Header row
-$issuance_tracking_list->RowType = EW_ROWTYPE_HEADER;
+$inventory_tracking_statysafe_list->RowType = EW_ROWTYPE_HEADER;
 
 // Render list options
-$issuance_tracking_list->RenderListOptions();
+$inventory_tracking_statysafe_list->RenderListOptions();
 
 // Render list options (header, left)
-$issuance_tracking_list->ListOptions->Render("header", "left");
+$inventory_tracking_statysafe_list->ListOptions->Render("header", "left");
 ?>
-<?php if ($issuance_tracking->date->Visible) { // date ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->date) == "") { ?>
-		<th data-name="date" class="<?php echo $issuance_tracking->date->HeaderCellClass() ?>"><div id="elh_issuance_tracking_date" class="issuance_tracking_date"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->date->FldCaption() ?></div></div></th>
+<?php if ($inventory_tracking_statysafe->date_recieved->Visible) { // date_recieved ?>
+	<?php if ($inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->date_recieved) == "") { ?>
+		<th data-name="date_recieved" class="<?php echo $inventory_tracking_statysafe->date_recieved->HeaderCellClass() ?>"><div id="elh_inventory_tracking_statysafe_date_recieved" class="inventory_tracking_statysafe_date_recieved"><div class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->date_recieved->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="date" class="<?php echo $issuance_tracking->date->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->date) ?>',1);"><div id="elh_issuance_tracking_date" class="issuance_tracking_date">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->date->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->date->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->date->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="date_recieved" class="<?php echo $inventory_tracking_statysafe->date_recieved->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->date_recieved) ?>',1);"><div id="elh_inventory_tracking_statysafe_date_recieved" class="inventory_tracking_statysafe_date_recieved">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->date_recieved->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_tracking_statysafe->date_recieved->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_tracking_statysafe->date_recieved->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($issuance_tracking->reference_id->Visible) { // reference_id ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->reference_id) == "") { ?>
-		<th data-name="reference_id" class="<?php echo $issuance_tracking->reference_id->HeaderCellClass() ?>"><div id="elh_issuance_tracking_reference_id" class="issuance_tracking_reference_id"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->reference_id->FldCaption() ?></div></div></th>
+<?php if ($inventory_tracking_statysafe->reference_id->Visible) { // reference_id ?>
+	<?php if ($inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->reference_id) == "") { ?>
+		<th data-name="reference_id" class="<?php echo $inventory_tracking_statysafe->reference_id->HeaderCellClass() ?>"><div id="elh_inventory_tracking_statysafe_reference_id" class="inventory_tracking_statysafe_reference_id"><div class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->reference_id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="reference_id" class="<?php echo $issuance_tracking->reference_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->reference_id) ?>',1);"><div id="elh_issuance_tracking_reference_id" class="issuance_tracking_reference_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->reference_id->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->reference_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->reference_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="reference_id" class="<?php echo $inventory_tracking_statysafe->reference_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->reference_id) ?>',1);"><div id="elh_inventory_tracking_statysafe_reference_id" class="inventory_tracking_statysafe_reference_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->reference_id->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_tracking_statysafe->reference_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_tracking_statysafe->reference_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($issuance_tracking->material_name->Visible) { // material_name ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->material_name) == "") { ?>
-		<th data-name="material_name" class="<?php echo $issuance_tracking->material_name->HeaderCellClass() ?>"><div id="elh_issuance_tracking_material_name" class="issuance_tracking_material_name"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->material_name->FldCaption() ?></div></div></th>
+<?php if ($inventory_tracking_statysafe->material_name->Visible) { // material_name ?>
+	<?php if ($inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->material_name) == "") { ?>
+		<th data-name="material_name" class="<?php echo $inventory_tracking_statysafe->material_name->HeaderCellClass() ?>"><div id="elh_inventory_tracking_statysafe_material_name" class="inventory_tracking_statysafe_material_name"><div class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->material_name->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="material_name" class="<?php echo $issuance_tracking->material_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->material_name) ?>',1);"><div id="elh_issuance_tracking_material_name" class="issuance_tracking_material_name">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->material_name->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->material_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->material_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="material_name" class="<?php echo $inventory_tracking_statysafe->material_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->material_name) ?>',1);"><div id="elh_inventory_tracking_statysafe_material_name" class="inventory_tracking_statysafe_material_name">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->material_name->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_tracking_statysafe->material_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_tracking_statysafe->material_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($issuance_tracking->quantity_in->Visible) { // quantity_in ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->quantity_in) == "") { ?>
-		<th data-name="quantity_in" class="<?php echo $issuance_tracking->quantity_in->HeaderCellClass() ?>"><div id="elh_issuance_tracking_quantity_in" class="issuance_tracking_quantity_in"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->quantity_in->FldCaption() ?></div></div></th>
+<?php if ($inventory_tracking_statysafe->type->Visible) { // type ?>
+	<?php if ($inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->type) == "") { ?>
+		<th data-name="type" class="<?php echo $inventory_tracking_statysafe->type->HeaderCellClass() ?>"><div id="elh_inventory_tracking_statysafe_type" class="inventory_tracking_statysafe_type"><div class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->type->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="quantity_in" class="<?php echo $issuance_tracking->quantity_in->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->quantity_in) ?>',1);"><div id="elh_issuance_tracking_quantity_in" class="issuance_tracking_quantity_in">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->quantity_in->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->quantity_in->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->quantity_in->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="type" class="<?php echo $inventory_tracking_statysafe->type->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->type) ?>',1);"><div id="elh_inventory_tracking_statysafe_type" class="inventory_tracking_statysafe_type">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->type->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_tracking_statysafe->type->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_tracking_statysafe->type->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($issuance_tracking->quantity_type->Visible) { // quantity_type ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->quantity_type) == "") { ?>
-		<th data-name="quantity_type" class="<?php echo $issuance_tracking->quantity_type->HeaderCellClass() ?>"><div id="elh_issuance_tracking_quantity_type" class="issuance_tracking_quantity_type"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->quantity_type->FldCaption() ?></div></div></th>
+<?php if ($inventory_tracking_statysafe->capacity->Visible) { // capacity ?>
+	<?php if ($inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->capacity) == "") { ?>
+		<th data-name="capacity" class="<?php echo $inventory_tracking_statysafe->capacity->HeaderCellClass() ?>"><div id="elh_inventory_tracking_statysafe_capacity" class="inventory_tracking_statysafe_capacity"><div class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->capacity->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="quantity_type" class="<?php echo $issuance_tracking->quantity_type->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->quantity_type) ?>',1);"><div id="elh_issuance_tracking_quantity_type" class="issuance_tracking_quantity_type">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->quantity_type->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->quantity_type->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->quantity_type->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="capacity" class="<?php echo $inventory_tracking_statysafe->capacity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->capacity) ?>',1);"><div id="elh_inventory_tracking_statysafe_capacity" class="inventory_tracking_statysafe_capacity">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->capacity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_tracking_statysafe->capacity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_tracking_statysafe->capacity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($issuance_tracking->quantity_out->Visible) { // quantity_out ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->quantity_out) == "") { ?>
-		<th data-name="quantity_out" class="<?php echo $issuance_tracking->quantity_out->HeaderCellClass() ?>"><div id="elh_issuance_tracking_quantity_out" class="issuance_tracking_quantity_out"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->quantity_out->FldCaption() ?></div></div></th>
+<?php if ($inventory_tracking_statysafe->quantity->Visible) { // quantity ?>
+	<?php if ($inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->quantity) == "") { ?>
+		<th data-name="quantity" class="<?php echo $inventory_tracking_statysafe->quantity->HeaderCellClass() ?>"><div id="elh_inventory_tracking_statysafe_quantity" class="inventory_tracking_statysafe_quantity"><div class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->quantity->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="quantity_out" class="<?php echo $issuance_tracking->quantity_out->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->quantity_out) ?>',1);"><div id="elh_issuance_tracking_quantity_out" class="issuance_tracking_quantity_out">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->quantity_out->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->quantity_out->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->quantity_out->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="quantity" class="<?php echo $inventory_tracking_statysafe->quantity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->quantity) ?>',1);"><div id="elh_inventory_tracking_statysafe_quantity" class="inventory_tracking_statysafe_quantity">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->quantity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($inventory_tracking_statysafe->quantity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_tracking_statysafe->quantity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($issuance_tracking->total_quantity->Visible) { // total_quantity ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->total_quantity) == "") { ?>
-		<th data-name="total_quantity" class="<?php echo $issuance_tracking->total_quantity->HeaderCellClass() ?>"><div id="elh_issuance_tracking_total_quantity" class="issuance_tracking_total_quantity"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->total_quantity->FldCaption() ?></div></div></th>
+<?php if ($inventory_tracking_statysafe->recieved_by->Visible) { // recieved_by ?>
+	<?php if ($inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->recieved_by) == "") { ?>
+		<th data-name="recieved_by" class="<?php echo $inventory_tracking_statysafe->recieved_by->HeaderCellClass() ?>"><div id="elh_inventory_tracking_statysafe_recieved_by" class="inventory_tracking_statysafe_recieved_by"><div class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->recieved_by->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="total_quantity" class="<?php echo $issuance_tracking->total_quantity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->total_quantity) ?>',1);"><div id="elh_issuance_tracking_total_quantity" class="issuance_tracking_total_quantity">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->total_quantity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->total_quantity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->total_quantity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="recieved_by" class="<?php echo $inventory_tracking_statysafe->recieved_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->recieved_by) ?>',1);"><div id="elh_inventory_tracking_statysafe_recieved_by" class="inventory_tracking_statysafe_recieved_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->recieved_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_tracking_statysafe->recieved_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_tracking_statysafe->recieved_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($issuance_tracking->issued_comment->Visible) { // issued_comment ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->issued_comment) == "") { ?>
-		<th data-name="issued_comment" class="<?php echo $issuance_tracking->issued_comment->HeaderCellClass() ?>"><div id="elh_issuance_tracking_issued_comment" class="issuance_tracking_issued_comment"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->issued_comment->FldCaption() ?></div></div></th>
+<?php if ($inventory_tracking_statysafe->statuss->Visible) { // statuss ?>
+	<?php if ($inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->statuss) == "") { ?>
+		<th data-name="statuss" class="<?php echo $inventory_tracking_statysafe->statuss->HeaderCellClass() ?>"><div id="elh_inventory_tracking_statysafe_statuss" class="inventory_tracking_statysafe_statuss"><div class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->statuss->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="issued_comment" class="<?php echo $issuance_tracking->issued_comment->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->issued_comment) ?>',1);"><div id="elh_issuance_tracking_issued_comment" class="issuance_tracking_issued_comment">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->issued_comment->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->issued_comment->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->issued_comment->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="statuss" class="<?php echo $inventory_tracking_statysafe->statuss->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->statuss) ?>',1);"><div id="elh_inventory_tracking_statysafe_statuss" class="inventory_tracking_statysafe_statuss">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->statuss->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_tracking_statysafe->statuss->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_tracking_statysafe->statuss->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($issuance_tracking->issued_by->Visible) { // issued_by ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->issued_by) == "") { ?>
-		<th data-name="issued_by" class="<?php echo $issuance_tracking->issued_by->HeaderCellClass() ?>"><div id="elh_issuance_tracking_issued_by" class="issuance_tracking_issued_by"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->issued_by->FldCaption() ?></div></div></th>
+<?php if ($inventory_tracking_statysafe->approved_by->Visible) { // approved_by ?>
+	<?php if ($inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->approved_by) == "") { ?>
+		<th data-name="approved_by" class="<?php echo $inventory_tracking_statysafe->approved_by->HeaderCellClass() ?>"><div id="elh_inventory_tracking_statysafe_approved_by" class="inventory_tracking_statysafe_approved_by"><div class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->approved_by->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="issued_by" class="<?php echo $issuance_tracking->issued_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->issued_by) ?>',1);"><div id="elh_issuance_tracking_issued_by" class="issuance_tracking_issued_by">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->issued_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->issued_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->issued_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="approved_by" class="<?php echo $inventory_tracking_statysafe->approved_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->approved_by) ?>',1);"><div id="elh_inventory_tracking_statysafe_approved_by" class="inventory_tracking_statysafe_approved_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->approved_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_tracking_statysafe->approved_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_tracking_statysafe->approved_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($issuance_tracking->approved_comment->Visible) { // approved_comment ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->approved_comment) == "") { ?>
-		<th data-name="approved_comment" class="<?php echo $issuance_tracking->approved_comment->HeaderCellClass() ?>"><div id="elh_issuance_tracking_approved_comment" class="issuance_tracking_approved_comment"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->approved_comment->FldCaption() ?></div></div></th>
+<?php if ($inventory_tracking_statysafe->verified_by->Visible) { // verified_by ?>
+	<?php if ($inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->verified_by) == "") { ?>
+		<th data-name="verified_by" class="<?php echo $inventory_tracking_statysafe->verified_by->HeaderCellClass() ?>"><div id="elh_inventory_tracking_statysafe_verified_by" class="inventory_tracking_statysafe_verified_by"><div class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->verified_by->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="approved_comment" class="<?php echo $issuance_tracking->approved_comment->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->approved_comment) ?>',1);"><div id="elh_issuance_tracking_approved_comment" class="issuance_tracking_approved_comment">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->approved_comment->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->approved_comment->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->approved_comment->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($issuance_tracking->approved_by->Visible) { // approved_by ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->approved_by) == "") { ?>
-		<th data-name="approved_by" class="<?php echo $issuance_tracking->approved_by->HeaderCellClass() ?>"><div id="elh_issuance_tracking_approved_by" class="issuance_tracking_approved_by"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->approved_by->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="approved_by" class="<?php echo $issuance_tracking->approved_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->approved_by) ?>',1);"><div id="elh_issuance_tracking_approved_by" class="issuance_tracking_approved_by">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->approved_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->approved_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->approved_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($issuance_tracking->verified_comment->Visible) { // verified_comment ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->verified_comment) == "") { ?>
-		<th data-name="verified_comment" class="<?php echo $issuance_tracking->verified_comment->HeaderCellClass() ?>"><div id="elh_issuance_tracking_verified_comment" class="issuance_tracking_verified_comment"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->verified_comment->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="verified_comment" class="<?php echo $issuance_tracking->verified_comment->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->verified_comment) ?>',1);"><div id="elh_issuance_tracking_verified_comment" class="issuance_tracking_verified_comment">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->verified_comment->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->verified_comment->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->verified_comment->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($issuance_tracking->verified_by->Visible) { // verified_by ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->verified_by) == "") { ?>
-		<th data-name="verified_by" class="<?php echo $issuance_tracking->verified_by->HeaderCellClass() ?>"><div id="elh_issuance_tracking_verified_by" class="issuance_tracking_verified_by"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->verified_by->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="verified_by" class="<?php echo $issuance_tracking->verified_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->verified_by) ?>',1);"><div id="elh_issuance_tracking_verified_by" class="issuance_tracking_verified_by">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->verified_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->verified_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->verified_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($issuance_tracking->statuss->Visible) { // statuss ?>
-	<?php if ($issuance_tracking->SortUrl($issuance_tracking->statuss) == "") { ?>
-		<th data-name="statuss" class="<?php echo $issuance_tracking->statuss->HeaderCellClass() ?>"><div id="elh_issuance_tracking_statuss" class="issuance_tracking_statuss"><div class="ewTableHeaderCaption"><?php echo $issuance_tracking->statuss->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="statuss" class="<?php echo $issuance_tracking->statuss->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_tracking->SortUrl($issuance_tracking->statuss) ?>',1);"><div id="elh_issuance_tracking_statuss" class="issuance_tracking_statuss">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_tracking->statuss->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_tracking->statuss->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_tracking->statuss->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="verified_by" class="<?php echo $inventory_tracking_statysafe->verified_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $inventory_tracking_statysafe->SortUrl($inventory_tracking_statysafe->verified_by) ?>',1);"><div id="elh_inventory_tracking_statysafe_verified_by" class="inventory_tracking_statysafe_verified_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $inventory_tracking_statysafe->verified_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($inventory_tracking_statysafe->verified_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($inventory_tracking_statysafe->verified_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
 <?php
 
 // Render list options (header, right)
-$issuance_tracking_list->ListOptions->Render("header", "right");
+$inventory_tracking_statysafe_list->ListOptions->Render("header", "right");
 ?>
 	</tr>
 </thead>
 <tbody>
 <?php
-if ($issuance_tracking->ExportAll && $issuance_tracking->Export <> "") {
-	$issuance_tracking_list->StopRec = $issuance_tracking_list->TotalRecs;
+if ($inventory_tracking_statysafe->ExportAll && $inventory_tracking_statysafe->Export <> "") {
+	$inventory_tracking_statysafe_list->StopRec = $inventory_tracking_statysafe_list->TotalRecs;
 } else {
 
 	// Set the last record to display
-	if ($issuance_tracking_list->TotalRecs > $issuance_tracking_list->StartRec + $issuance_tracking_list->DisplayRecs - 1)
-		$issuance_tracking_list->StopRec = $issuance_tracking_list->StartRec + $issuance_tracking_list->DisplayRecs - 1;
+	if ($inventory_tracking_statysafe_list->TotalRecs > $inventory_tracking_statysafe_list->StartRec + $inventory_tracking_statysafe_list->DisplayRecs - 1)
+		$inventory_tracking_statysafe_list->StopRec = $inventory_tracking_statysafe_list->StartRec + $inventory_tracking_statysafe_list->DisplayRecs - 1;
 	else
-		$issuance_tracking_list->StopRec = $issuance_tracking_list->TotalRecs;
+		$inventory_tracking_statysafe_list->StopRec = $inventory_tracking_statysafe_list->TotalRecs;
 }
-$issuance_tracking_list->RecCnt = $issuance_tracking_list->StartRec - 1;
-if ($issuance_tracking_list->Recordset && !$issuance_tracking_list->Recordset->EOF) {
-	$issuance_tracking_list->Recordset->MoveFirst();
-	$bSelectLimit = $issuance_tracking_list->UseSelectLimit;
-	if (!$bSelectLimit && $issuance_tracking_list->StartRec > 1)
-		$issuance_tracking_list->Recordset->Move($issuance_tracking_list->StartRec - 1);
-} elseif (!$issuance_tracking->AllowAddDeleteRow && $issuance_tracking_list->StopRec == 0) {
-	$issuance_tracking_list->StopRec = $issuance_tracking->GridAddRowCount;
+$inventory_tracking_statysafe_list->RecCnt = $inventory_tracking_statysafe_list->StartRec - 1;
+if ($inventory_tracking_statysafe_list->Recordset && !$inventory_tracking_statysafe_list->Recordset->EOF) {
+	$inventory_tracking_statysafe_list->Recordset->MoveFirst();
+	$bSelectLimit = $inventory_tracking_statysafe_list->UseSelectLimit;
+	if (!$bSelectLimit && $inventory_tracking_statysafe_list->StartRec > 1)
+		$inventory_tracking_statysafe_list->Recordset->Move($inventory_tracking_statysafe_list->StartRec - 1);
+} elseif (!$inventory_tracking_statysafe->AllowAddDeleteRow && $inventory_tracking_statysafe_list->StopRec == 0) {
+	$inventory_tracking_statysafe_list->StopRec = $inventory_tracking_statysafe->GridAddRowCount;
 }
 
 // Initialize aggregate
-$issuance_tracking->RowType = EW_ROWTYPE_AGGREGATEINIT;
-$issuance_tracking->ResetAttrs();
-$issuance_tracking_list->RenderRow();
-while ($issuance_tracking_list->RecCnt < $issuance_tracking_list->StopRec) {
-	$issuance_tracking_list->RecCnt++;
-	if (intval($issuance_tracking_list->RecCnt) >= intval($issuance_tracking_list->StartRec)) {
-		$issuance_tracking_list->RowCnt++;
+$inventory_tracking_statysafe->RowType = EW_ROWTYPE_AGGREGATEINIT;
+$inventory_tracking_statysafe->ResetAttrs();
+$inventory_tracking_statysafe_list->RenderRow();
+while ($inventory_tracking_statysafe_list->RecCnt < $inventory_tracking_statysafe_list->StopRec) {
+	$inventory_tracking_statysafe_list->RecCnt++;
+	if (intval($inventory_tracking_statysafe_list->RecCnt) >= intval($inventory_tracking_statysafe_list->StartRec)) {
+		$inventory_tracking_statysafe_list->RowCnt++;
 
 		// Set up key count
-		$issuance_tracking_list->KeyCount = $issuance_tracking_list->RowIndex;
+		$inventory_tracking_statysafe_list->KeyCount = $inventory_tracking_statysafe_list->RowIndex;
 
 		// Init row class and style
-		$issuance_tracking->ResetAttrs();
-		$issuance_tracking->CssClass = "";
-		if ($issuance_tracking->CurrentAction == "gridadd") {
+		$inventory_tracking_statysafe->ResetAttrs();
+		$inventory_tracking_statysafe->CssClass = "";
+		if ($inventory_tracking_statysafe->CurrentAction == "gridadd") {
 		} else {
-			$issuance_tracking_list->LoadRowValues($issuance_tracking_list->Recordset); // Load row values
+			$inventory_tracking_statysafe_list->LoadRowValues($inventory_tracking_statysafe_list->Recordset); // Load row values
 		}
-		$issuance_tracking->RowType = EW_ROWTYPE_VIEW; // Render view
+		$inventory_tracking_statysafe->RowType = EW_ROWTYPE_VIEW; // Render view
 
 		// Set up row id / data-rowindex
-		$issuance_tracking->RowAttrs = array_merge($issuance_tracking->RowAttrs, array('data-rowindex'=>$issuance_tracking_list->RowCnt, 'id'=>'r' . $issuance_tracking_list->RowCnt . '_issuance_tracking', 'data-rowtype'=>$issuance_tracking->RowType));
+		$inventory_tracking_statysafe->RowAttrs = array_merge($inventory_tracking_statysafe->RowAttrs, array('data-rowindex'=>$inventory_tracking_statysafe_list->RowCnt, 'id'=>'r' . $inventory_tracking_statysafe_list->RowCnt . '_inventory_tracking_statysafe', 'data-rowtype'=>$inventory_tracking_statysafe->RowType));
 
 		// Render row
-		$issuance_tracking_list->RenderRow();
+		$inventory_tracking_statysafe_list->RenderRow();
 
 		// Render list options
-		$issuance_tracking_list->RenderListOptions();
+		$inventory_tracking_statysafe_list->RenderListOptions();
 ?>
-	<tr<?php echo $issuance_tracking->RowAttributes() ?>>
+	<tr<?php echo $inventory_tracking_statysafe->RowAttributes() ?>>
 <?php
 
 // Render list options (body, left)
-$issuance_tracking_list->ListOptions->Render("body", "left", $issuance_tracking_list->RowCnt);
+$inventory_tracking_statysafe_list->ListOptions->Render("body", "left", $inventory_tracking_statysafe_list->RowCnt);
 ?>
-	<?php if ($issuance_tracking->date->Visible) { // date ?>
-		<td data-name="date"<?php echo $issuance_tracking->date->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_date" class="issuance_tracking_date">
-<span<?php echo $issuance_tracking->date->ViewAttributes() ?>>
-<?php echo $issuance_tracking->date->ListViewValue() ?></span>
+	<?php if ($inventory_tracking_statysafe->date_recieved->Visible) { // date_recieved ?>
+		<td data-name="date_recieved"<?php echo $inventory_tracking_statysafe->date_recieved->CellAttributes() ?>>
+<span id="el<?php echo $inventory_tracking_statysafe_list->RowCnt ?>_inventory_tracking_statysafe_date_recieved" class="inventory_tracking_statysafe_date_recieved">
+<span<?php echo $inventory_tracking_statysafe->date_recieved->ViewAttributes() ?>>
+<?php echo $inventory_tracking_statysafe->date_recieved->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($issuance_tracking->reference_id->Visible) { // reference_id ?>
-		<td data-name="reference_id"<?php echo $issuance_tracking->reference_id->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_reference_id" class="issuance_tracking_reference_id">
-<span<?php echo $issuance_tracking->reference_id->ViewAttributes() ?>>
-<?php echo $issuance_tracking->reference_id->ListViewValue() ?></span>
+	<?php if ($inventory_tracking_statysafe->reference_id->Visible) { // reference_id ?>
+		<td data-name="reference_id"<?php echo $inventory_tracking_statysafe->reference_id->CellAttributes() ?>>
+<span id="el<?php echo $inventory_tracking_statysafe_list->RowCnt ?>_inventory_tracking_statysafe_reference_id" class="inventory_tracking_statysafe_reference_id">
+<span<?php echo $inventory_tracking_statysafe->reference_id->ViewAttributes() ?>>
+<?php echo $inventory_tracking_statysafe->reference_id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($issuance_tracking->material_name->Visible) { // material_name ?>
-		<td data-name="material_name"<?php echo $issuance_tracking->material_name->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_material_name" class="issuance_tracking_material_name">
-<span<?php echo $issuance_tracking->material_name->ViewAttributes() ?>>
-<?php echo $issuance_tracking->material_name->ListViewValue() ?></span>
+	<?php if ($inventory_tracking_statysafe->material_name->Visible) { // material_name ?>
+		<td data-name="material_name"<?php echo $inventory_tracking_statysafe->material_name->CellAttributes() ?>>
+<span id="el<?php echo $inventory_tracking_statysafe_list->RowCnt ?>_inventory_tracking_statysafe_material_name" class="inventory_tracking_statysafe_material_name">
+<span<?php echo $inventory_tracking_statysafe->material_name->ViewAttributes() ?>>
+<?php echo $inventory_tracking_statysafe->material_name->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($issuance_tracking->quantity_in->Visible) { // quantity_in ?>
-		<td data-name="quantity_in"<?php echo $issuance_tracking->quantity_in->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_quantity_in" class="issuance_tracking_quantity_in">
-<span<?php echo $issuance_tracking->quantity_in->ViewAttributes() ?>>
-<?php echo $issuance_tracking->quantity_in->ListViewValue() ?></span>
+	<?php if ($inventory_tracking_statysafe->type->Visible) { // type ?>
+		<td data-name="type"<?php echo $inventory_tracking_statysafe->type->CellAttributes() ?>>
+<span id="el<?php echo $inventory_tracking_statysafe_list->RowCnt ?>_inventory_tracking_statysafe_type" class="inventory_tracking_statysafe_type">
+<span<?php echo $inventory_tracking_statysafe->type->ViewAttributes() ?>>
+<?php echo $inventory_tracking_statysafe->type->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($issuance_tracking->quantity_type->Visible) { // quantity_type ?>
-		<td data-name="quantity_type"<?php echo $issuance_tracking->quantity_type->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_quantity_type" class="issuance_tracking_quantity_type">
-<span<?php echo $issuance_tracking->quantity_type->ViewAttributes() ?>>
-<?php echo $issuance_tracking->quantity_type->ListViewValue() ?></span>
+	<?php if ($inventory_tracking_statysafe->capacity->Visible) { // capacity ?>
+		<td data-name="capacity"<?php echo $inventory_tracking_statysafe->capacity->CellAttributes() ?>>
+<span id="el<?php echo $inventory_tracking_statysafe_list->RowCnt ?>_inventory_tracking_statysafe_capacity" class="inventory_tracking_statysafe_capacity">
+<span<?php echo $inventory_tracking_statysafe->capacity->ViewAttributes() ?>>
+<?php echo $inventory_tracking_statysafe->capacity->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($issuance_tracking->quantity_out->Visible) { // quantity_out ?>
-		<td data-name="quantity_out"<?php echo $issuance_tracking->quantity_out->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_quantity_out" class="issuance_tracking_quantity_out">
-<span<?php echo $issuance_tracking->quantity_out->ViewAttributes() ?>>
-<?php echo $issuance_tracking->quantity_out->ListViewValue() ?></span>
+	<?php if ($inventory_tracking_statysafe->quantity->Visible) { // quantity ?>
+		<td data-name="quantity"<?php echo $inventory_tracking_statysafe->quantity->CellAttributes() ?>>
+<span id="el<?php echo $inventory_tracking_statysafe_list->RowCnt ?>_inventory_tracking_statysafe_quantity" class="inventory_tracking_statysafe_quantity">
+<span<?php echo $inventory_tracking_statysafe->quantity->ViewAttributes() ?>>
+<?php echo $inventory_tracking_statysafe->quantity->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($issuance_tracking->total_quantity->Visible) { // total_quantity ?>
-		<td data-name="total_quantity"<?php echo $issuance_tracking->total_quantity->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_total_quantity" class="issuance_tracking_total_quantity">
-<span<?php echo $issuance_tracking->total_quantity->ViewAttributes() ?>>
-<?php echo $issuance_tracking->total_quantity->ListViewValue() ?></span>
+	<?php if ($inventory_tracking_statysafe->recieved_by->Visible) { // recieved_by ?>
+		<td data-name="recieved_by"<?php echo $inventory_tracking_statysafe->recieved_by->CellAttributes() ?>>
+<span id="el<?php echo $inventory_tracking_statysafe_list->RowCnt ?>_inventory_tracking_statysafe_recieved_by" class="inventory_tracking_statysafe_recieved_by">
+<span<?php echo $inventory_tracking_statysafe->recieved_by->ViewAttributes() ?>>
+<?php echo $inventory_tracking_statysafe->recieved_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($issuance_tracking->issued_comment->Visible) { // issued_comment ?>
-		<td data-name="issued_comment"<?php echo $issuance_tracking->issued_comment->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_issued_comment" class="issuance_tracking_issued_comment">
-<span<?php echo $issuance_tracking->issued_comment->ViewAttributes() ?>>
-<?php echo $issuance_tracking->issued_comment->ListViewValue() ?></span>
+	<?php if ($inventory_tracking_statysafe->statuss->Visible) { // statuss ?>
+		<td data-name="statuss"<?php echo $inventory_tracking_statysafe->statuss->CellAttributes() ?>>
+<span id="el<?php echo $inventory_tracking_statysafe_list->RowCnt ?>_inventory_tracking_statysafe_statuss" class="inventory_tracking_statysafe_statuss">
+<span<?php echo $inventory_tracking_statysafe->statuss->ViewAttributes() ?>>
+<?php echo $inventory_tracking_statysafe->statuss->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($issuance_tracking->issued_by->Visible) { // issued_by ?>
-		<td data-name="issued_by"<?php echo $issuance_tracking->issued_by->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_issued_by" class="issuance_tracking_issued_by">
-<span<?php echo $issuance_tracking->issued_by->ViewAttributes() ?>>
-<?php echo $issuance_tracking->issued_by->ListViewValue() ?></span>
+	<?php if ($inventory_tracking_statysafe->approved_by->Visible) { // approved_by ?>
+		<td data-name="approved_by"<?php echo $inventory_tracking_statysafe->approved_by->CellAttributes() ?>>
+<span id="el<?php echo $inventory_tracking_statysafe_list->RowCnt ?>_inventory_tracking_statysafe_approved_by" class="inventory_tracking_statysafe_approved_by">
+<span<?php echo $inventory_tracking_statysafe->approved_by->ViewAttributes() ?>>
+<?php echo $inventory_tracking_statysafe->approved_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($issuance_tracking->approved_comment->Visible) { // approved_comment ?>
-		<td data-name="approved_comment"<?php echo $issuance_tracking->approved_comment->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_approved_comment" class="issuance_tracking_approved_comment">
-<span<?php echo $issuance_tracking->approved_comment->ViewAttributes() ?>>
-<?php echo $issuance_tracking->approved_comment->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($issuance_tracking->approved_by->Visible) { // approved_by ?>
-		<td data-name="approved_by"<?php echo $issuance_tracking->approved_by->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_approved_by" class="issuance_tracking_approved_by">
-<span<?php echo $issuance_tracking->approved_by->ViewAttributes() ?>>
-<?php echo $issuance_tracking->approved_by->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($issuance_tracking->verified_comment->Visible) { // verified_comment ?>
-		<td data-name="verified_comment"<?php echo $issuance_tracking->verified_comment->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_verified_comment" class="issuance_tracking_verified_comment">
-<span<?php echo $issuance_tracking->verified_comment->ViewAttributes() ?>>
-<?php echo $issuance_tracking->verified_comment->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($issuance_tracking->verified_by->Visible) { // verified_by ?>
-		<td data-name="verified_by"<?php echo $issuance_tracking->verified_by->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_verified_by" class="issuance_tracking_verified_by">
-<span<?php echo $issuance_tracking->verified_by->ViewAttributes() ?>>
-<?php echo $issuance_tracking->verified_by->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($issuance_tracking->statuss->Visible) { // statuss ?>
-		<td data-name="statuss"<?php echo $issuance_tracking->statuss->CellAttributes() ?>>
-<span id="el<?php echo $issuance_tracking_list->RowCnt ?>_issuance_tracking_statuss" class="issuance_tracking_statuss">
-<span<?php echo $issuance_tracking->statuss->ViewAttributes() ?>>
-<?php echo $issuance_tracking->statuss->ListViewValue() ?></span>
+	<?php if ($inventory_tracking_statysafe->verified_by->Visible) { // verified_by ?>
+		<td data-name="verified_by"<?php echo $inventory_tracking_statysafe->verified_by->CellAttributes() ?>>
+<span id="el<?php echo $inventory_tracking_statysafe_list->RowCnt ?>_inventory_tracking_statysafe_verified_by" class="inventory_tracking_statysafe_verified_by">
+<span<?php echo $inventory_tracking_statysafe->verified_by->ViewAttributes() ?>>
+<?php echo $inventory_tracking_statysafe->verified_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
 <?php
 
 // Render list options (body, right)
-$issuance_tracking_list->ListOptions->Render("body", "right", $issuance_tracking_list->RowCnt);
+$inventory_tracking_statysafe_list->ListOptions->Render("body", "right", $inventory_tracking_statysafe_list->RowCnt);
 ?>
 	</tr>
 <?php
 	}
-	if ($issuance_tracking->CurrentAction <> "gridadd")
-		$issuance_tracking_list->Recordset->MoveNext();
+	if ($inventory_tracking_statysafe->CurrentAction <> "gridadd")
+		$inventory_tracking_statysafe_list->Recordset->MoveNext();
 }
 ?>
 </tbody>
 </table>
 <?php } ?>
-<?php if ($issuance_tracking->CurrentAction == "") { ?>
+<?php if ($inventory_tracking_statysafe->CurrentAction == "") { ?>
 <input type="hidden" name="a_list" id="a_list" value="">
 <?php } ?>
 </div>
@@ -2993,15 +2815,15 @@ $issuance_tracking_list->ListOptions->Render("body", "right", $issuance_tracking
 <?php
 
 // Close recordset
-if ($issuance_tracking_list->Recordset)
-	$issuance_tracking_list->Recordset->Close();
+if ($inventory_tracking_statysafe_list->Recordset)
+	$inventory_tracking_statysafe_list->Recordset->Close();
 ?>
 </div>
 <?php } ?>
-<?php if ($issuance_tracking_list->TotalRecs == 0 && $issuance_tracking->CurrentAction == "") { // Show other options ?>
+<?php if ($inventory_tracking_statysafe_list->TotalRecs == 0 && $inventory_tracking_statysafe->CurrentAction == "") { // Show other options ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($issuance_tracking_list->OtherOptions as &$option) {
+	foreach ($inventory_tracking_statysafe_list->OtherOptions as &$option) {
 		$option->ButtonClass = "";
 		$option->Render("body", "");
 	}
@@ -3009,19 +2831,19 @@ if ($issuance_tracking_list->Recordset)
 </div>
 <div class="clearfix"></div>
 <?php } ?>
-<?php if ($issuance_tracking->Export == "") { ?>
+<?php if ($inventory_tracking_statysafe->Export == "") { ?>
 <script type="text/javascript">
-fissuance_trackinglistsrch.FilterList = <?php echo $issuance_tracking_list->GetFilterList() ?>;
-fissuance_trackinglistsrch.Init();
-fissuance_trackinglist.Init();
+finventory_tracking_statysafelistsrch.FilterList = <?php echo $inventory_tracking_statysafe_list->GetFilterList() ?>;
+finventory_tracking_statysafelistsrch.Init();
+finventory_tracking_statysafelist.Init();
 </script>
 <?php } ?>
 <?php
-$issuance_tracking_list->ShowPageFooter();
+$inventory_tracking_statysafe_list->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
-<?php if ($issuance_tracking->Export == "") { ?>
+<?php if ($inventory_tracking_statysafe->Export == "") { ?>
 <script type="text/javascript">
 
 // Write your table-specific startup script here
@@ -3031,5 +2853,5 @@ if (EW_DEBUG_ENABLED)
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php
-$issuance_tracking_list->Page_Terminate();
+$inventory_tracking_statysafe_list->Page_Terminate();
 ?>
