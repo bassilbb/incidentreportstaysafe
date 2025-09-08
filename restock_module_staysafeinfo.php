@@ -1417,9 +1417,9 @@ class crestock_module_staysafe extends cTable {
 			}
 
 			// Saved only
-			if ($this->recieved_action->CurrentValue == 0) {
+			if ($this->restocked_action->CurrentValue == 0) {
 				$rsnew["statuss"] = 0;			
-				$rsnew["recieved_action"] = 0; 
+				$rsnew["restocked_action"] = 0; 
 				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
 			}			
 		}
@@ -1436,9 +1436,9 @@ class crestock_module_staysafe extends cTable {
 			}
 
 			// Saved only
-			if ($this->recieved_action->CurrentValue == 0) {
+			if ($this->restocked_action->CurrentValue == 0) {
 				$rsnew["statuss"] = 0;			
-				$rsnew["recieved_action"] = 0; 
+				$rsnew["restocked_action"] = 0; 
 				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
 			}			
 		}
@@ -1479,7 +1479,8 @@ class crestock_module_staysafe extends cTable {
 			if ($this->restocked_action->CurrentValue == 0) {
 				$rsnew["statuss"] = 0;			
 				$rsnew["restocked_action"] = 0; 
-				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
+
+				//$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
 			}
 		}
 

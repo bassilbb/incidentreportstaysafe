@@ -71,7 +71,6 @@ class cissuance_store_staysafe extends cTable {
 		// date
 		$this->date = new cField('issuance_store_staysafe', 'issuance_store_staysafe', 'x_date', 'date', '`date`', ew_CastDateFieldForLike('`date`', 17, "DB"), 135, 17, FALSE, '`date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->date->Sortable = TRUE; // Allow sort
-		$this->date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
 		$this->fields['date'] = &$this->date;
 
 		// reference_id

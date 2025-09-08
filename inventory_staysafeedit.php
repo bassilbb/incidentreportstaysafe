@@ -2362,11 +2362,11 @@ $("#r_staff_id").hide();
 $("#r_recieved_by").hide();
 $("#r_approved_by").hide();
 $("#r_verified_by").hide();
-
-//$('#r_statuss').hide();
+$('#r_statuss').hide();
 $('#r_date_approved').hide();
 $('#r_verified_date').hide();
-$('#x_statuss').attr('readonly',true);
+
+//$('#x_statuss').attr('readonly',true);
 </script>
 <?php include_once "footer.php" ?>
 <?php

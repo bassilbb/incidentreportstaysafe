@@ -1438,6 +1438,45 @@ class crestock_module_staysafe_add extends crestock_module_staysafe {
 		// Check if validation required
 		if (!EW_SERVER_VALIDATE)
 			return ($gsFormError == "");
+		if (!$this->date_restocked->FldIsDetailKey && !is_null($this->date_restocked->FormValue) && $this->date_restocked->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->date_restocked->FldCaption(), $this->date_restocked->ReqErrMsg));
+		}
+		if (!$this->reference_id->FldIsDetailKey && !is_null($this->reference_id->FormValue) && $this->reference_id->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->reference_id->FldCaption(), $this->reference_id->ReqErrMsg));
+		}
+		if (!$this->material_name->FldIsDetailKey && !is_null($this->material_name->FormValue) && $this->material_name->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->material_name->FldCaption(), $this->material_name->ReqErrMsg));
+		}
+		if (!$this->type->FldIsDetailKey && !is_null($this->type->FormValue) && $this->type->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->type->FldCaption(), $this->type->ReqErrMsg));
+		}
+		if (!$this->capacity->FldIsDetailKey && !is_null($this->capacity->FormValue) && $this->capacity->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->capacity->FldCaption(), $this->capacity->ReqErrMsg));
+		}
+		if (!$this->stock_balance->FldIsDetailKey && !is_null($this->stock_balance->FormValue) && $this->stock_balance->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->stock_balance->FldCaption(), $this->stock_balance->ReqErrMsg));
+		}
+		if (!$this->quantity->FldIsDetailKey && !is_null($this->quantity->FormValue) && $this->quantity->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->quantity->FldCaption(), $this->quantity->ReqErrMsg));
+		}
+		if ($this->restocked_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->restocked_action->FldCaption(), $this->restocked_action->ReqErrMsg));
+		}
+		if (!$this->restocked_comment->FldIsDetailKey && !is_null($this->restocked_comment->FormValue) && $this->restocked_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->restocked_comment->FldCaption(), $this->restocked_comment->ReqErrMsg));
+		}
+		if ($this->approver_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->approver_action->FldCaption(), $this->approver_action->ReqErrMsg));
+		}
+		if (!$this->approver_comment->FldIsDetailKey && !is_null($this->approver_comment->FormValue) && $this->approver_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->approver_comment->FldCaption(), $this->approver_comment->ReqErrMsg));
+		}
+		if ($this->verified_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->verified_action->FldCaption(), $this->verified_action->ReqErrMsg));
+		}
+		if (!$this->verified_comment->FldIsDetailKey && !is_null($this->verified_comment->FormValue) && $this->verified_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->verified_comment->FldCaption(), $this->verified_comment->ReqErrMsg));
+		}
 
 		// Return validate result
 		$ValidateForm = ($gsFormError == "");
@@ -1780,6 +1819,45 @@ frestock_module_staysafeadd.Validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
+			elm = this.GetElements("x" + infix + "_date_restocked");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->date_restocked->FldCaption(), $restock_module_staysafe->date_restocked->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_reference_id");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->reference_id->FldCaption(), $restock_module_staysafe->reference_id->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_material_name");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->material_name->FldCaption(), $restock_module_staysafe->material_name->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_type");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->type->FldCaption(), $restock_module_staysafe->type->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_capacity");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->capacity->FldCaption(), $restock_module_staysafe->capacity->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_stock_balance");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->stock_balance->FldCaption(), $restock_module_staysafe->stock_balance->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_quantity");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->quantity->FldCaption(), $restock_module_staysafe->quantity->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_restocked_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->restocked_action->FldCaption(), $restock_module_staysafe->restocked_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_restocked_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->restocked_comment->FldCaption(), $restock_module_staysafe->restocked_comment->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_approver_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->approver_action->FldCaption(), $restock_module_staysafe->approver_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_approver_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->approver_comment->FldCaption(), $restock_module_staysafe->approver_comment->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_verified_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->verified_action->FldCaption(), $restock_module_staysafe->verified_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_verified_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $restock_module_staysafe->verified_comment->FldCaption(), $restock_module_staysafe->verified_comment->ReqErrMsg)) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -1878,7 +1956,7 @@ $restock_module_staysafe_add->ShowMessage();
 <div class="ewAddDiv"><!-- page* -->
 <?php if ($restock_module_staysafe->date_restocked->Visible) { // date_restocked ?>
 	<div id="r_date_restocked" class="form-group">
-		<label id="elh_restock_module_staysafe_date_restocked" for="x_date_restocked" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->date_restocked->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_date_restocked" for="x_date_restocked" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->date_restocked->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->date_restocked->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_date_restocked">
 <input type="text" data-table="restock_module_staysafe" data-field="x_date_restocked" data-format="17" name="x_date_restocked" id="x_date_restocked" size="30" placeholder="<?php echo ew_HtmlEncode($restock_module_staysafe->date_restocked->getPlaceHolder()) ?>" value="<?php echo $restock_module_staysafe->date_restocked->EditValue ?>"<?php echo $restock_module_staysafe->date_restocked->EditAttributes() ?>>
@@ -1888,7 +1966,7 @@ $restock_module_staysafe_add->ShowMessage();
 <?php } ?>
 <?php if ($restock_module_staysafe->reference_id->Visible) { // reference_id ?>
 	<div id="r_reference_id" class="form-group">
-		<label id="elh_restock_module_staysafe_reference_id" for="x_reference_id" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->reference_id->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_reference_id" for="x_reference_id" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->reference_id->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->reference_id->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_reference_id">
 <input type="text" data-table="restock_module_staysafe" data-field="x_reference_id" name="x_reference_id" id="x_reference_id" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_module_staysafe->reference_id->getPlaceHolder()) ?>" value="<?php echo $restock_module_staysafe->reference_id->EditValue ?>"<?php echo $restock_module_staysafe->reference_id->EditAttributes() ?>>
@@ -1898,7 +1976,7 @@ $restock_module_staysafe_add->ShowMessage();
 <?php } ?>
 <?php if ($restock_module_staysafe->material_name->Visible) { // material_name ?>
 	<div id="r_material_name" class="form-group">
-		<label id="elh_restock_module_staysafe_material_name" for="x_material_name" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->material_name->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_material_name" for="x_material_name" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->material_name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->material_name->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_material_name">
 <span class="ewLookupList">
@@ -1912,7 +1990,7 @@ $restock_module_staysafe_add->ShowMessage();
 <?php } ?>
 <?php if ($restock_module_staysafe->type->Visible) { // type ?>
 	<div id="r_type" class="form-group">
-		<label id="elh_restock_module_staysafe_type" for="x_type" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->type->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_type" for="x_type" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->type->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->type->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_type">
 <input type="text" data-table="restock_module_staysafe" data-field="x_type" name="x_type" id="x_type" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_module_staysafe->type->getPlaceHolder()) ?>" value="<?php echo $restock_module_staysafe->type->EditValue ?>"<?php echo $restock_module_staysafe->type->EditAttributes() ?>>
@@ -1922,7 +2000,7 @@ $restock_module_staysafe_add->ShowMessage();
 <?php } ?>
 <?php if ($restock_module_staysafe->capacity->Visible) { // capacity ?>
 	<div id="r_capacity" class="form-group">
-		<label id="elh_restock_module_staysafe_capacity" for="x_capacity" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->capacity->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_capacity" for="x_capacity" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->capacity->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->capacity->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_capacity">
 <input type="text" data-table="restock_module_staysafe" data-field="x_capacity" name="x_capacity" id="x_capacity" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_module_staysafe->capacity->getPlaceHolder()) ?>" value="<?php echo $restock_module_staysafe->capacity->EditValue ?>"<?php echo $restock_module_staysafe->capacity->EditAttributes() ?>>
@@ -1932,7 +2010,7 @@ $restock_module_staysafe_add->ShowMessage();
 <?php } ?>
 <?php if ($restock_module_staysafe->stock_balance->Visible) { // stock_balance ?>
 	<div id="r_stock_balance" class="form-group">
-		<label id="elh_restock_module_staysafe_stock_balance" for="x_stock_balance" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->stock_balance->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_stock_balance" for="x_stock_balance" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->stock_balance->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->stock_balance->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_stock_balance">
 <input type="text" data-table="restock_module_staysafe" data-field="x_stock_balance" name="x_stock_balance" id="x_stock_balance" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_module_staysafe->stock_balance->getPlaceHolder()) ?>" value="<?php echo $restock_module_staysafe->stock_balance->EditValue ?>"<?php echo $restock_module_staysafe->stock_balance->EditAttributes() ?>>
@@ -1942,7 +2020,7 @@ $restock_module_staysafe_add->ShowMessage();
 <?php } ?>
 <?php if ($restock_module_staysafe->quantity->Visible) { // quantity ?>
 	<div id="r_quantity" class="form-group">
-		<label id="elh_restock_module_staysafe_quantity" for="x_quantity" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->quantity->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_quantity" for="x_quantity" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->quantity->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->quantity->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_quantity">
 <input type="text" data-table="restock_module_staysafe" data-field="x_quantity" name="x_quantity" id="x_quantity" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($restock_module_staysafe->quantity->getPlaceHolder()) ?>" value="<?php echo $restock_module_staysafe->quantity->EditValue ?>"<?php echo $restock_module_staysafe->quantity->EditAttributes() ?>>
@@ -1964,7 +2042,7 @@ $restock_module_staysafe_add->ShowMessage();
 <?php } ?>
 <?php if ($restock_module_staysafe->restocked_action->Visible) { // restocked_action ?>
 	<div id="r_restocked_action" class="form-group">
-		<label id="elh_restock_module_staysafe_restocked_action" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->restocked_action->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_restocked_action" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->restocked_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->restocked_action->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_restocked_action">
 <div id="tp_x_restocked_action" class="ewTemplate"><input type="radio" data-table="restock_module_staysafe" data-field="x_restocked_action" data-value-separator="<?php echo $restock_module_staysafe->restocked_action->DisplayValueSeparatorAttribute() ?>" name="x_restocked_action" id="x_restocked_action" value="{value}"<?php echo $restock_module_staysafe->restocked_action->EditAttributes() ?>></div>
@@ -1977,7 +2055,7 @@ $restock_module_staysafe_add->ShowMessage();
 <?php } ?>
 <?php if ($restock_module_staysafe->restocked_comment->Visible) { // restocked_comment ?>
 	<div id="r_restocked_comment" class="form-group">
-		<label id="elh_restock_module_staysafe_restocked_comment" for="x_restocked_comment" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->restocked_comment->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_restocked_comment" for="x_restocked_comment" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->restocked_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->restocked_comment->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_restocked_comment">
 <textarea data-table="restock_module_staysafe" data-field="x_restocked_comment" name="x_restocked_comment" id="x_restocked_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($restock_module_staysafe->restocked_comment->getPlaceHolder()) ?>"<?php echo $restock_module_staysafe->restocked_comment->EditAttributes() ?>><?php echo $restock_module_staysafe->restocked_comment->EditValue ?></textarea>
@@ -2018,7 +2096,7 @@ frestock_module_staysafeadd.CreateAutoSuggest({"id":"x_restocked_by","forceSelec
 <?php } ?>
 <?php if ($restock_module_staysafe->approver_action->Visible) { // approver_action ?>
 	<div id="r_approver_action" class="form-group">
-		<label id="elh_restock_module_staysafe_approver_action" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->approver_action->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_approver_action" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->approver_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->approver_action->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_approver_action">
 <div id="tp_x_approver_action" class="ewTemplate"><input type="radio" data-table="restock_module_staysafe" data-field="x_approver_action" data-value-separator="<?php echo $restock_module_staysafe->approver_action->DisplayValueSeparatorAttribute() ?>" name="x_approver_action" id="x_approver_action" value="{value}"<?php echo $restock_module_staysafe->approver_action->EditAttributes() ?>></div>
@@ -2031,7 +2109,7 @@ frestock_module_staysafeadd.CreateAutoSuggest({"id":"x_restocked_by","forceSelec
 <?php } ?>
 <?php if ($restock_module_staysafe->approver_comment->Visible) { // approver_comment ?>
 	<div id="r_approver_comment" class="form-group">
-		<label id="elh_restock_module_staysafe_approver_comment" for="x_approver_comment" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->approver_comment->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_approver_comment" for="x_approver_comment" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->approver_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->approver_comment->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_approver_comment">
 <textarea data-table="restock_module_staysafe" data-field="x_approver_comment" name="x_approver_comment" id="x_approver_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($restock_module_staysafe->approver_comment->getPlaceHolder()) ?>"<?php echo $restock_module_staysafe->approver_comment->EditAttributes() ?>><?php echo $restock_module_staysafe->approver_comment->EditValue ?></textarea>
@@ -2072,7 +2150,7 @@ frestock_module_staysafeadd.CreateAutoSuggest({"id":"x_approved_by","forceSelect
 <?php } ?>
 <?php if ($restock_module_staysafe->verified_action->Visible) { // verified_action ?>
 	<div id="r_verified_action" class="form-group">
-		<label id="elh_restock_module_staysafe_verified_action" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->verified_action->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_verified_action" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->verified_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->verified_action->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_verified_action">
 <div id="tp_x_verified_action" class="ewTemplate"><input type="radio" data-table="restock_module_staysafe" data-field="x_verified_action" data-value-separator="<?php echo $restock_module_staysafe->verified_action->DisplayValueSeparatorAttribute() ?>" name="x_verified_action" id="x_verified_action" value="{value}"<?php echo $restock_module_staysafe->verified_action->EditAttributes() ?>></div>
@@ -2085,7 +2163,7 @@ frestock_module_staysafeadd.CreateAutoSuggest({"id":"x_approved_by","forceSelect
 <?php } ?>
 <?php if ($restock_module_staysafe->verified_comment->Visible) { // verified_comment ?>
 	<div id="r_verified_comment" class="form-group">
-		<label id="elh_restock_module_staysafe_verified_comment" for="x_verified_comment" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->verified_comment->FldCaption() ?></label>
+		<label id="elh_restock_module_staysafe_verified_comment" for="x_verified_comment" class="<?php echo $restock_module_staysafe_add->LeftColumnClass ?>"><?php echo $restock_module_staysafe->verified_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $restock_module_staysafe_add->RightColumnClass ?>"><div<?php echo $restock_module_staysafe->verified_comment->CellAttributes() ?>>
 <span id="el_restock_module_staysafe_verified_comment">
 <textarea data-table="restock_module_staysafe" data-field="x_verified_comment" name="x_verified_comment" id="x_verified_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($restock_module_staysafe->verified_comment->getPlaceHolder()) ?>"<?php echo $restock_module_staysafe->verified_comment->EditAttributes() ?>><?php echo $restock_module_staysafe->verified_comment->EditValue ?></textarea>

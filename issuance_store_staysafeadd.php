@@ -1577,9 +1577,6 @@ class cissuance_store_staysafe_add extends cissuance_store_staysafe {
 		if (!$this->date->FldIsDetailKey && !is_null($this->date->FormValue) && $this->date->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->date->FldCaption(), $this->date->ReqErrMsg));
 		}
-		if (!ew_CheckShortEuroDate($this->date->FormValue)) {
-			ew_AddMessage($gsFormError, $this->date->FldErrMsg());
-		}
 		if (!$this->reference_id->FldIsDetailKey && !is_null($this->reference_id->FormValue) && $this->reference_id->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->reference_id->FldCaption(), $this->reference_id->ReqErrMsg));
 		}
@@ -1589,17 +1586,44 @@ class cissuance_store_staysafe_add extends cissuance_store_staysafe {
 		if (!$this->quantity_in->FldIsDetailKey && !is_null($this->quantity_in->FormValue) && $this->quantity_in->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->quantity_in->FldCaption(), $this->quantity_in->ReqErrMsg));
 		}
+		if (!$this->quantity_out->FldIsDetailKey && !is_null($this->quantity_out->FormValue) && $this->quantity_out->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->quantity_out->FldCaption(), $this->quantity_out->ReqErrMsg));
+		}
+		if (!$this->total_quantity->FldIsDetailKey && !is_null($this->total_quantity->FormValue) && $this->total_quantity->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->total_quantity->FldCaption(), $this->total_quantity->ReqErrMsg));
+		}
+		if (!$this->quantity_type->FldIsDetailKey && !is_null($this->quantity_type->FormValue) && $this->quantity_type->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->quantity_type->FldCaption(), $this->quantity_type->ReqErrMsg));
+		}
 		if (!$this->treated_by->FldIsDetailKey && !is_null($this->treated_by->FormValue) && $this->treated_by->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->treated_by->FldCaption(), $this->treated_by->ReqErrMsg));
 		}
 		if (!$this->staff_id->FldIsDetailKey && !is_null($this->staff_id->FormValue) && $this->staff_id->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->staff_id->FldCaption(), $this->staff_id->ReqErrMsg));
 		}
+		if ($this->issued_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->issued_action->FldCaption(), $this->issued_action->ReqErrMsg));
+		}
+		if (!$this->issued_comment->FldIsDetailKey && !is_null($this->issued_comment->FormValue) && $this->issued_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->issued_comment->FldCaption(), $this->issued_comment->ReqErrMsg));
+		}
 		if (!ew_CheckDateDef($this->approver_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->approver_date->FldErrMsg());
 		}
+		if ($this->approver_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->approver_action->FldCaption(), $this->approver_action->ReqErrMsg));
+		}
+		if (!$this->approver_comment->FldIsDetailKey && !is_null($this->approver_comment->FormValue) && $this->approver_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->approver_comment->FldCaption(), $this->approver_comment->ReqErrMsg));
+		}
 		if (!ew_CheckDateDef($this->verified_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->verified_date->FldErrMsg());
+		}
+		if ($this->verified_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->verified_action->FldCaption(), $this->verified_action->ReqErrMsg));
+		}
+		if (!$this->verified_comment->FldIsDetailKey && !is_null($this->verified_comment->FormValue) && $this->verified_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->verified_comment->FldCaption(), $this->verified_comment->ReqErrMsg));
 		}
 
 		// Return validate result
@@ -2001,9 +2025,6 @@ fissuance_store_staysafeadd.Validate = function() {
 			elm = this.GetElements("x" + infix + "_date");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->date->FldCaption(), $issuance_store_staysafe->date->ReqErrMsg)) ?>");
-			elm = this.GetElements("x" + infix + "_date");
-			if (elm && !ew_CheckShortEuroDate(elm.value))
-				return this.OnError(elm, "<?php echo ew_JsEncode2($issuance_store_staysafe->date->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_reference_id");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->reference_id->FldCaption(), $issuance_store_staysafe->reference_id->ReqErrMsg)) ?>");
@@ -2013,18 +2034,45 @@ fissuance_store_staysafeadd.Validate = function() {
 			elm = this.GetElements("x" + infix + "_quantity_in");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->quantity_in->FldCaption(), $issuance_store_staysafe->quantity_in->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_quantity_out");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->quantity_out->FldCaption(), $issuance_store_staysafe->quantity_out->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_total_quantity");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->total_quantity->FldCaption(), $issuance_store_staysafe->total_quantity->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_quantity_type");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->quantity_type->FldCaption(), $issuance_store_staysafe->quantity_type->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_treated_by");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->treated_by->FldCaption(), $issuance_store_staysafe->treated_by->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_staff_id");
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->staff_id->FldCaption(), $issuance_store_staysafe->staff_id->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_issued_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->issued_action->FldCaption(), $issuance_store_staysafe->issued_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_issued_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->issued_comment->FldCaption(), $issuance_store_staysafe->issued_comment->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_approver_date");
 			if (elm && !ew_CheckDateDef(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($issuance_store_staysafe->approver_date->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_approver_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->approver_action->FldCaption(), $issuance_store_staysafe->approver_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_approver_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->approver_comment->FldCaption(), $issuance_store_staysafe->approver_comment->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_verified_date");
 			if (elm && !ew_CheckDateDef(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($issuance_store_staysafe->verified_date->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_verified_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->verified_action->FldCaption(), $issuance_store_staysafe->verified_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_verified_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $issuance_store_staysafe->verified_comment->FldCaption(), $issuance_store_staysafe->verified_comment->ReqErrMsg)) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -2207,7 +2255,7 @@ $issuance_store_staysafe_add->ShowMessage();
 <?php } ?>
 <?php if ($issuance_store_staysafe->quantity_out->Visible) { // quantity_out ?>
 	<div id="r_quantity_out" class="form-group">
-		<label id="elh_issuance_store_staysafe_quantity_out" for="x_quantity_out" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->quantity_out->FldCaption() ?></label>
+		<label id="elh_issuance_store_staysafe_quantity_out" for="x_quantity_out" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->quantity_out->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $issuance_store_staysafe_add->RightColumnClass ?>"><div<?php echo $issuance_store_staysafe->quantity_out->CellAttributes() ?>>
 <span id="el_issuance_store_staysafe_quantity_out">
 <input type="text" data-table="issuance_store_staysafe" data-field="x_quantity_out" name="x_quantity_out" id="x_quantity_out" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($issuance_store_staysafe->quantity_out->getPlaceHolder()) ?>" value="<?php echo $issuance_store_staysafe->quantity_out->EditValue ?>"<?php echo $issuance_store_staysafe->quantity_out->EditAttributes() ?>>
@@ -2217,7 +2265,7 @@ $issuance_store_staysafe_add->ShowMessage();
 <?php } ?>
 <?php if ($issuance_store_staysafe->total_quantity->Visible) { // total_quantity ?>
 	<div id="r_total_quantity" class="form-group">
-		<label id="elh_issuance_store_staysafe_total_quantity" for="x_total_quantity" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->total_quantity->FldCaption() ?></label>
+		<label id="elh_issuance_store_staysafe_total_quantity" for="x_total_quantity" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->total_quantity->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $issuance_store_staysafe_add->RightColumnClass ?>"><div<?php echo $issuance_store_staysafe->total_quantity->CellAttributes() ?>>
 <span id="el_issuance_store_staysafe_total_quantity">
 <input type="text" data-table="issuance_store_staysafe" data-field="x_total_quantity" name="x_total_quantity" id="x_total_quantity" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($issuance_store_staysafe->total_quantity->getPlaceHolder()) ?>" value="<?php echo $issuance_store_staysafe->total_quantity->EditValue ?>"<?php echo $issuance_store_staysafe->total_quantity->EditAttributes() ?>>
@@ -2227,7 +2275,7 @@ $issuance_store_staysafe_add->ShowMessage();
 <?php } ?>
 <?php if ($issuance_store_staysafe->quantity_type->Visible) { // quantity_type ?>
 	<div id="r_quantity_type" class="form-group">
-		<label id="elh_issuance_store_staysafe_quantity_type" for="x_quantity_type" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->quantity_type->FldCaption() ?></label>
+		<label id="elh_issuance_store_staysafe_quantity_type" for="x_quantity_type" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->quantity_type->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $issuance_store_staysafe_add->RightColumnClass ?>"><div<?php echo $issuance_store_staysafe->quantity_type->CellAttributes() ?>>
 <span id="el_issuance_store_staysafe_quantity_type">
 <input type="text" data-table="issuance_store_staysafe" data-field="x_quantity_type" name="x_quantity_type" id="x_quantity_type" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($issuance_store_staysafe->quantity_type->getPlaceHolder()) ?>" value="<?php echo $issuance_store_staysafe->quantity_type->EditValue ?>"<?php echo $issuance_store_staysafe->quantity_type->EditAttributes() ?>>
@@ -2291,7 +2339,7 @@ fissuance_store_staysafeadd.CreateAutoSuggest({"id":"x_staff_id","forceSelect":f
 <?php } ?>
 <?php if ($issuance_store_staysafe->issued_action->Visible) { // issued_action ?>
 	<div id="r_issued_action" class="form-group">
-		<label id="elh_issuance_store_staysafe_issued_action" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->issued_action->FldCaption() ?></label>
+		<label id="elh_issuance_store_staysafe_issued_action" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->issued_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $issuance_store_staysafe_add->RightColumnClass ?>"><div<?php echo $issuance_store_staysafe->issued_action->CellAttributes() ?>>
 <span id="el_issuance_store_staysafe_issued_action">
 <div id="tp_x_issued_action" class="ewTemplate"><input type="radio" data-table="issuance_store_staysafe" data-field="x_issued_action" data-value-separator="<?php echo $issuance_store_staysafe->issued_action->DisplayValueSeparatorAttribute() ?>" name="x_issued_action" id="x_issued_action" value="{value}"<?php echo $issuance_store_staysafe->issued_action->EditAttributes() ?>></div>
@@ -2304,7 +2352,7 @@ fissuance_store_staysafeadd.CreateAutoSuggest({"id":"x_staff_id","forceSelect":f
 <?php } ?>
 <?php if ($issuance_store_staysafe->issued_comment->Visible) { // issued_comment ?>
 	<div id="r_issued_comment" class="form-group">
-		<label id="elh_issuance_store_staysafe_issued_comment" for="x_issued_comment" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->issued_comment->FldCaption() ?></label>
+		<label id="elh_issuance_store_staysafe_issued_comment" for="x_issued_comment" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->issued_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $issuance_store_staysafe_add->RightColumnClass ?>"><div<?php echo $issuance_store_staysafe->issued_comment->CellAttributes() ?>>
 <span id="el_issuance_store_staysafe_issued_comment">
 <textarea data-table="issuance_store_staysafe" data-field="x_issued_comment" name="x_issued_comment" id="x_issued_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($issuance_store_staysafe->issued_comment->getPlaceHolder()) ?>"<?php echo $issuance_store_staysafe->issued_comment->EditAttributes() ?>><?php echo $issuance_store_staysafe->issued_comment->EditValue ?></textarea>
@@ -2345,7 +2393,7 @@ fissuance_store_staysafeadd.CreateAutoSuggest({"id":"x_issued_by","forceSelect":
 <?php } ?>
 <?php if ($issuance_store_staysafe->approver_action->Visible) { // approver_action ?>
 	<div id="r_approver_action" class="form-group">
-		<label id="elh_issuance_store_staysafe_approver_action" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->approver_action->FldCaption() ?></label>
+		<label id="elh_issuance_store_staysafe_approver_action" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->approver_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $issuance_store_staysafe_add->RightColumnClass ?>"><div<?php echo $issuance_store_staysafe->approver_action->CellAttributes() ?>>
 <span id="el_issuance_store_staysafe_approver_action">
 <div id="tp_x_approver_action" class="ewTemplate"><input type="radio" data-table="issuance_store_staysafe" data-field="x_approver_action" data-value-separator="<?php echo $issuance_store_staysafe->approver_action->DisplayValueSeparatorAttribute() ?>" name="x_approver_action" id="x_approver_action" value="{value}"<?php echo $issuance_store_staysafe->approver_action->EditAttributes() ?>></div>
@@ -2358,7 +2406,7 @@ fissuance_store_staysafeadd.CreateAutoSuggest({"id":"x_issued_by","forceSelect":
 <?php } ?>
 <?php if ($issuance_store_staysafe->approver_comment->Visible) { // approver_comment ?>
 	<div id="r_approver_comment" class="form-group">
-		<label id="elh_issuance_store_staysafe_approver_comment" for="x_approver_comment" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->approver_comment->FldCaption() ?></label>
+		<label id="elh_issuance_store_staysafe_approver_comment" for="x_approver_comment" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->approver_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $issuance_store_staysafe_add->RightColumnClass ?>"><div<?php echo $issuance_store_staysafe->approver_comment->CellAttributes() ?>>
 <span id="el_issuance_store_staysafe_approver_comment">
 <textarea data-table="issuance_store_staysafe" data-field="x_approver_comment" name="x_approver_comment" id="x_approver_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($issuance_store_staysafe->approver_comment->getPlaceHolder()) ?>"<?php echo $issuance_store_staysafe->approver_comment->EditAttributes() ?>><?php echo $issuance_store_staysafe->approver_comment->EditValue ?></textarea>
@@ -2399,7 +2447,7 @@ fissuance_store_staysafeadd.CreateAutoSuggest({"id":"x_approved_by","forceSelect
 <?php } ?>
 <?php if ($issuance_store_staysafe->verified_action->Visible) { // verified_action ?>
 	<div id="r_verified_action" class="form-group">
-		<label id="elh_issuance_store_staysafe_verified_action" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->verified_action->FldCaption() ?></label>
+		<label id="elh_issuance_store_staysafe_verified_action" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->verified_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $issuance_store_staysafe_add->RightColumnClass ?>"><div<?php echo $issuance_store_staysafe->verified_action->CellAttributes() ?>>
 <span id="el_issuance_store_staysafe_verified_action">
 <div id="tp_x_verified_action" class="ewTemplate"><input type="radio" data-table="issuance_store_staysafe" data-field="x_verified_action" data-value-separator="<?php echo $issuance_store_staysafe->verified_action->DisplayValueSeparatorAttribute() ?>" name="x_verified_action" id="x_verified_action" value="{value}"<?php echo $issuance_store_staysafe->verified_action->EditAttributes() ?>></div>
@@ -2412,7 +2460,7 @@ fissuance_store_staysafeadd.CreateAutoSuggest({"id":"x_approved_by","forceSelect
 <?php } ?>
 <?php if ($issuance_store_staysafe->verified_comment->Visible) { // verified_comment ?>
 	<div id="r_verified_comment" class="form-group">
-		<label id="elh_issuance_store_staysafe_verified_comment" for="x_verified_comment" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->verified_comment->FldCaption() ?></label>
+		<label id="elh_issuance_store_staysafe_verified_comment" for="x_verified_comment" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->verified_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $issuance_store_staysafe_add->RightColumnClass ?>"><div<?php echo $issuance_store_staysafe->verified_comment->CellAttributes() ?>>
 <span id="el_issuance_store_staysafe_verified_comment">
 <textarea data-table="issuance_store_staysafe" data-field="x_verified_comment" name="x_verified_comment" id="x_verified_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($issuance_store_staysafe->verified_comment->getPlaceHolder()) ?>"<?php echo $issuance_store_staysafe->verified_comment->EditAttributes() ?>><?php echo $issuance_store_staysafe->verified_comment->EditValue ?></textarea>
