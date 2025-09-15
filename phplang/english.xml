@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2025/9/8" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2025/9/15" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -723,6 +723,9 @@
     <menu id="334">
       <phrase id="menutext" value="inventory backuplive" />
     </menu>
+    <menu id="430">
+      <phrase id="menutext" value="status ssf" />
+    </menu>
     <menu id="34">
       <phrase id="menutext" value="Incidents" />
     </menu>
@@ -788,6 +791,15 @@
     </menu>
     <menu id="341">
       <phrase id="menutext" value="Inventory Store Tracking SSF" />
+    </menu>
+    <menu id="429">
+      <phrase id="menutext" value="Items Requisition" />
+    </menu>
+    <menu id="345">
+      <phrase id="menutext" value="Make Requisition" />
+    </menu>
+    <menu id="431">
+      <phrase id="menutext" value="Requisition Report" />
     </menu>
     <menu id="268">
       <phrase id="menutext" value="Inventory Issuance Module" />
@@ -4337,6 +4349,201 @@
       </field>
       <field id="verified_by">
         <phrase id="fldcaption" value="Verified By" />
+      </field>
+    </table>
+    <table id="requisition_module">
+      <phrase id="tblcaption" value="Requisition Module" />
+      <phrase id="tblpagecaption1" value="Requisition Information" />
+      <phrase id="tblpagecaption2" value="Authorizer Information" />
+      <phrase id="tblpagecaption3" value="Warehouse Rep information" />
+      <field id="code">
+        <phrase id="fldcaption" value="Code" />
+      </field>
+      <field id="date">
+        <phrase id="fldcaption" value="Date" />
+      </field>
+      <field id="reference">
+        <phrase id="fldcaption" value="Reference No" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="Staff ID" />
+      </field>
+      <field id="outward_location">
+        <phrase id="fldcaption" value="Outward Location" />
+      </field>
+      <field id="delivery_point">
+        <phrase id="fldcaption" value="Delivery Point" />
+      </field>
+      <field id="name">
+        <phrase id="fldcaption" value="Fullname" />
+      </field>
+      <field id="organization">
+        <phrase id="fldcaption" value="Organization" />
+      </field>
+      <field id="designation">
+        <phrase id="fldcaption" value="Designation" />
+      </field>
+      <field id="department">
+        <phrase id="fldcaption" value="Department" />
+      </field>
+      <field id="item_description">
+        <phrase id="fldcaption" value="Item Description" />
+      </field>
+      <field id="driver_name">
+        <phrase id="fldcaption" value="Driver Name" />
+      </field>
+      <field id="vehicle_no">
+        <phrase id="fldcaption" value="Vehicle No" />
+      </field>
+      <field id="requester_action">
+        <phrase id="fldcaption" value="Requester Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Save and Forward" />
+      </field>
+      <field id="requester_comment">
+        <phrase id="fldcaption" value="Requester Comment" />
+      </field>
+      <field id="date_authorized">
+        <phrase id="fldcaption" value="Date Authorized" />
+      </field>
+      <field id="authorizer_name">
+        <phrase id="fldcaption" value="Authorizer Name" />
+      </field>
+      <field id="authorizer_action">
+        <phrase id="fldcaption" value="Authorizer Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Declined" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Authorized" />
+      </field>
+      <field id="authorizer_comment">
+        <phrase id="fldcaption" value="Authorizer Comment" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="Status" />
+      </field>
+      <field id="rep_date">
+        <phrase id="fldcaption" value="Date Initiated" />
+      </field>
+      <field id="rep_name">
+        <phrase id="fldcaption" value="Rep Name" />
+      </field>
+      <field id="outward_datetime">
+        <phrase id="fldcaption" value="Outward Datetime" />
+      </field>
+      <field id="rep_action">
+        <phrase id="fldcaption" value="Rep Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Acknowledged" />
+      </field>
+      <field id="rep_comment">
+        <phrase id="fldcaption" value="Rep Comment" />
+      </field>
+    </table>
+    <table id="status_ssf">
+      <phrase id="tblcaption" value="status ssf" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="Description" />
+      </field>
+    </table>
+    <table id="requisition_report">
+      <phrase id="tblcaption" value="Requisition Report" />
+      <phrase id="tblpagecaption1" value="Requisition Information" />
+      <phrase id="tblpagecaption2" value="Authorizer Information" />
+      <phrase id="tblpagecaption3" value="Warehouse Rep Information" />
+      <field id="code">
+        <phrase id="fldcaption" value="Code" />
+      </field>
+      <field id="date">
+        <phrase id="fldcaption" value="Date" />
+      </field>
+      <field id="reference">
+        <phrase id="fldcaption" value="Reference No" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="Staff ID" />
+      </field>
+      <field id="outward_location">
+        <phrase id="fldcaption" value="Outward Location" />
+      </field>
+      <field id="delivery_point">
+        <phrase id="fldcaption" value="Delivery Point" />
+      </field>
+      <field id="name">
+        <phrase id="fldcaption" value="Fullname" />
+      </field>
+      <field id="organization">
+        <phrase id="fldcaption" value="Organization" />
+      </field>
+      <field id="designation">
+        <phrase id="fldcaption" value="Designation" />
+      </field>
+      <field id="department">
+        <phrase id="fldcaption" value="Department" />
+      </field>
+      <field id="item_description">
+        <phrase id="fldcaption" value="Item Description" />
+      </field>
+      <field id="driver_name">
+        <phrase id="fldcaption" value="Driver Name" />
+      </field>
+      <field id="vehicle_no">
+        <phrase id="fldcaption" value="Vehicle No" />
+      </field>
+      <field id="requester_action">
+        <phrase id="fldcaption" value="Requester Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Save and Forward" />
+      </field>
+      <field id="requester_comment">
+        <phrase id="fldcaption" value="Requester Comment" />
+      </field>
+      <field id="date_authorized">
+        <phrase id="fldcaption" value="Date Authorized" />
+      </field>
+      <field id="authorizer_name">
+        <phrase id="fldcaption" value="Authorizer Name" />
+      </field>
+      <field id="authorizer_action">
+        <phrase id="fldcaption" value="Authorizer Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Declined" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Authorized" />
+      </field>
+      <field id="authorizer_comment">
+        <phrase id="fldcaption" value="Authorizer Comment" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="Status" />
+      </field>
+      <field id="rep_date">
+        <phrase id="fldcaption" value="Date Initiated" />
+      </field>
+      <field id="rep_name">
+        <phrase id="fldcaption" value="Rep Name" />
+      </field>
+      <field id="outward_datetime">
+        <phrase id="fldcaption" value="Outward Datetime" />
+      </field>
+      <field id="rep_action">
+        <phrase id="fldcaption" value="Rep Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Acknowledged" />
+      </field>
+      <field id="rep_comment">
+        <phrase id="fldcaption" value="Rep Comment" />
       </field>
     </table>
   </project>

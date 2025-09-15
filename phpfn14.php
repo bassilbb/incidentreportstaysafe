@@ -5096,10 +5096,10 @@ class cAdvancedSecurity {
 
 		$_SESSION['Staff_ID'] = $rs['id'];
 		$_SESSION['Department'] = $rs['department'];
-
-		//$_SESSION['Departments'] = $rs['departments'];
+		$_SESSION['Designation'] = $rs['designation'];
 		$_SESSION['Firstname'] = $rs['firstname'];
 		$_SESSION['Branch'] = $rs['branch'];
+		$_SESSION['Name'] = $rs['name'];
 
 	//	$_SESSION['StfID'] = "";
 		$_SESSION['REF_ID'] = "";
@@ -5113,6 +5113,7 @@ class cAdvancedSecurity {
 		$_SESSION['INVN_ID'] = "";
 		$_SESSION['INSS_ID'] = "";
 		$_SESSION['RSTO_ID'] = "";
+		$_SESSION['REQ_ID'] = "";
 
 		//$_SESSION['STAffNO'] = "";
 		$_SESSION['MyReportCount'] = 0;

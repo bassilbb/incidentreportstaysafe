@@ -443,6 +443,12 @@ class cdefault {
 			$this->Page_Terminate("issunacestore_viewlist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'retock_tracking'))
 			$this->Page_Terminate("retock_trackinglist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'requisition_module'))
+			$this->Page_Terminate("requisition_modulelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'status_ssf'))
+			$this->Page_Terminate("status_ssflist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'requisition_report'))
+			$this->Page_Terminate("requisition_reportlist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {
