@@ -78,7 +78,7 @@ class crequisition_report extends cTable {
 		$this->fields['code'] = &$this->code;
 
 		// date
-		$this->date = new cField('requisition_report', 'requisition_report', 'x_date', 'date', '`date`', ew_CastDateFieldForLike('`date`', 14, "DB"), 133, 14, FALSE, '`date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date = new cField('requisition_report', 'requisition_report', 'x_date', 'date', '`date`', ew_CastDateFieldForLike('`date`', 0, "DB"), 133, 0, FALSE, '`date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->date->Sortable = TRUE; // Allow sort
 		$this->fields['date'] = &$this->date;
 
@@ -93,12 +93,12 @@ class crequisition_report extends cTable {
 		$this->fields['staff_id'] = &$this->staff_id;
 
 		// outward_location
-		$this->outward_location = new cField('requisition_report', 'requisition_report', 'x_outward_location', 'outward_location', '`outward_location`', '`outward_location`', 200, -1, FALSE, '`outward_location`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->outward_location = new cField('requisition_report', 'requisition_report', 'x_outward_location', 'outward_location', '`outward_location`', '`outward_location`', 200, -1, FALSE, '`outward_location`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->outward_location->Sortable = TRUE; // Allow sort
 		$this->fields['outward_location'] = &$this->outward_location;
 
 		// delivery_point
-		$this->delivery_point = new cField('requisition_report', 'requisition_report', 'x_delivery_point', 'delivery_point', '`delivery_point`', '`delivery_point`', 200, -1, FALSE, '`delivery_point`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->delivery_point = new cField('requisition_report', 'requisition_report', 'x_delivery_point', 'delivery_point', '`delivery_point`', '`delivery_point`', 200, -1, FALSE, '`delivery_point`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->delivery_point->Sortable = TRUE; // Allow sort
 		$this->fields['delivery_point'] = &$this->delivery_point;
 
@@ -110,10 +110,8 @@ class crequisition_report extends cTable {
 		$this->fields['name'] = &$this->name;
 
 		// organization
-		$this->organization = new cField('requisition_report', 'requisition_report', 'x_organization', 'organization', '`organization`', '`organization`', 200, -1, FALSE, '`organization`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->organization = new cField('requisition_report', 'requisition_report', 'x_organization', 'organization', '`organization`', '`organization`', 200, -1, FALSE, '`organization`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->organization->Sortable = TRUE; // Allow sort
-		$this->organization->UsePleaseSelect = TRUE; // Use PleaseSelect by default
-		$this->organization->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['organization'] = &$this->organization;
 
 		// designation
@@ -122,8 +120,10 @@ class crequisition_report extends cTable {
 		$this->fields['designation'] = &$this->designation;
 
 		// department
-		$this->department = new cField('requisition_report', 'requisition_report', 'x_department', 'department', '`department`', '`department`', 200, -1, FALSE, '`department`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->department = new cField('requisition_report', 'requisition_report', 'x_department', 'department', '`department`', '`department`', 200, -1, FALSE, '`department`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->department->Sortable = TRUE; // Allow sort
+		$this->department->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->department->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['department'] = &$this->department;
 
 		// item_description
@@ -156,11 +156,14 @@ class crequisition_report extends cTable {
 		// date_authorized
 		$this->date_authorized = new cField('requisition_report', 'requisition_report', 'x_date_authorized', 'date_authorized', '`date_authorized`', ew_CastDateFieldForLike('`date_authorized`', 17, "DB"), 135, 17, FALSE, '`date_authorized`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->date_authorized->Sortable = TRUE; // Allow sort
+		$this->date_authorized->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
 		$this->fields['date_authorized'] = &$this->date_authorized;
 
 		// authorizer_name
-		$this->authorizer_name = new cField('requisition_report', 'requisition_report', 'x_authorizer_name', 'authorizer_name', '`authorizer_name`', '`authorizer_name`', 200, -1, FALSE, '`authorizer_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->authorizer_name = new cField('requisition_report', 'requisition_report', 'x_authorizer_name', 'authorizer_name', '`authorizer_name`', '`authorizer_name`', 200, -1, FALSE, '`authorizer_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->authorizer_name->Sortable = TRUE; // Allow sort
+		$this->authorizer_name->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->authorizer_name->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['authorizer_name'] = &$this->authorizer_name;
 
 		// authorizer_action
@@ -176,17 +179,17 @@ class crequisition_report extends cTable {
 		$this->fields['authorizer_comment'] = &$this->authorizer_comment;
 
 		// status
-		$this->status = new cField('requisition_report', 'requisition_report', 'x_status', 'status', '`status`', '`status`', 3, -1, FALSE, '`status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->status = new cField('requisition_report', 'requisition_report', 'x_status', 'status', '`status`', '`status`', 3, -1, FALSE, '`status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->status->Sortable = TRUE; // Allow sort
-		$this->status->UsePleaseSelect = TRUE; // Use PleaseSelect by default
-		$this->status->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
-		$this->status->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->status->AdvancedSearch->SearchValueDefault = 0;
+		$this->status->AdvancedSearch->SearchOperatorDefault = "=";
+		$this->status->AdvancedSearch->SearchOperatorDefault2 = "";
+		$this->status->AdvancedSearch->SearchConditionDefault = "AND";
 		$this->fields['status'] = &$this->status;
 
 		// rep_date
 		$this->rep_date = new cField('requisition_report', 'requisition_report', 'x_rep_date', 'rep_date', '`rep_date`', ew_CastDateFieldForLike('`rep_date`', 17, "DB"), 133, 17, FALSE, '`rep_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->rep_date->Sortable = TRUE; // Allow sort
-		$this->rep_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
 		$this->fields['rep_date'] = &$this->rep_date;
 
 		// rep_name
@@ -197,7 +200,6 @@ class crequisition_report extends cTable {
 		// outward_datetime
 		$this->outward_datetime = new cField('requisition_report', 'requisition_report', 'x_outward_datetime', 'outward_datetime', '`outward_datetime`', ew_CastDateFieldForLike('`outward_datetime`', 17, "DB"), 135, 17, FALSE, '`outward_datetime`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->outward_datetime->Sortable = TRUE; // Allow sort
-		$this->outward_datetime->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
 		$this->fields['outward_datetime'] = &$this->outward_datetime;
 
 		// rep_action
@@ -208,7 +210,7 @@ class crequisition_report extends cTable {
 		$this->fields['rep_action'] = &$this->rep_action;
 
 		// rep_comment
-		$this->rep_comment = new cField('requisition_report', 'requisition_report', 'x_rep_comment', 'rep_comment', '`rep_comment`', '`rep_comment`', 200, -1, FALSE, '`rep_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->rep_comment = new cField('requisition_report', 'requisition_report', 'x_rep_comment', 'rep_comment', '`rep_comment`', '`rep_comment`', 200, -1, FALSE, '`rep_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->rep_comment->Sortable = TRUE; // Allow sort
 		$this->fields['rep_comment'] = &$this->rep_comment;
 	}
@@ -815,7 +817,7 @@ class crequisition_report extends cTable {
 
 		// date
 		$this->date->ViewValue = $this->date->CurrentValue;
-		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 14);
+		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 0);
 		$this->date->ViewCustomAttributes = "";
 
 		// reference
@@ -857,9 +859,9 @@ class crequisition_report extends cTable {
 		// name
 		if (strval($this->name->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->name->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+		$this->name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->name, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -868,7 +870,6 @@ class crequisition_report extends cTable {
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
 				$this->name->ViewValue = $this->name->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
@@ -880,11 +881,12 @@ class crequisition_report extends cTable {
 		$this->name->ViewCustomAttributes = "";
 
 		// organization
+		$this->organization->ViewValue = $this->organization->CurrentValue;
 		if (strval($this->organization->CurrentValue) <> "") {
 			$sFilterWrk = "`branch_id`" . ew_SearchString("=", $this->organization->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `branch_id`, `branch_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `branch`";
 		$sWhereWrk = "";
-		$this->organization->LookupFilters = array("dx1" => '`branch_name`');
+		$this->organization->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->organization, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -927,12 +929,11 @@ class crequisition_report extends cTable {
 		$this->designation->ViewCustomAttributes = "";
 
 		// department
-		$this->department->ViewValue = $this->department->CurrentValue;
 		if (strval($this->department->CurrentValue) <> "") {
 			$sFilterWrk = "`department_id`" . ew_SearchString("=", $this->department->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
 		$sWhereWrk = "";
-		$this->department->LookupFilters = array();
+		$this->department->LookupFilters = array("dx1" => '`department_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -980,7 +981,6 @@ class crequisition_report extends cTable {
 		$this->date_authorized->ViewCustomAttributes = "";
 
 		// authorizer_name
-		$this->authorizer_name->ViewValue = $this->authorizer_name->CurrentValue;
 		if (strval($this->authorizer_name->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->authorizer_name->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
@@ -1018,6 +1018,7 @@ class crequisition_report extends cTable {
 		$this->authorizer_comment->ViewCustomAttributes = "";
 
 		// status
+		$this->status->ViewValue = $this->status->CurrentValue;
 		if (strval($this->status->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `status_ssf`";
@@ -1236,7 +1237,7 @@ class crequisition_report extends cTable {
 		// date
 		$this->date->EditAttrs["class"] = "form-control";
 		$this->date->EditCustomAttributes = "";
-		$this->date->EditValue = ew_FormatDateTime($this->date->CurrentValue, 14);
+		$this->date->EditValue = ew_FormatDateTime($this->date->CurrentValue, 8);
 		$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
 
 		// reference
@@ -1270,6 +1271,8 @@ class crequisition_report extends cTable {
 		// organization
 		$this->organization->EditAttrs["class"] = "form-control";
 		$this->organization->EditCustomAttributes = "";
+		$this->organization->EditValue = $this->organization->CurrentValue;
+		$this->organization->PlaceHolder = ew_RemoveHtml($this->organization->FldCaption());
 
 		// designation
 		$this->designation->EditAttrs["class"] = "form-control";
@@ -1280,8 +1283,6 @@ class crequisition_report extends cTable {
 		// department
 		$this->department->EditAttrs["class"] = "form-control";
 		$this->department->EditCustomAttributes = "";
-		$this->department->EditValue = $this->department->CurrentValue;
-		$this->department->PlaceHolder = ew_RemoveHtml($this->department->FldCaption());
 
 		// item_description
 		$this->item_description->EditAttrs["class"] = "form-control";
@@ -1320,8 +1321,6 @@ class crequisition_report extends cTable {
 		// authorizer_name
 		$this->authorizer_name->EditAttrs["class"] = "form-control";
 		$this->authorizer_name->EditCustomAttributes = "";
-		$this->authorizer_name->EditValue = $this->authorizer_name->CurrentValue;
-		$this->authorizer_name->PlaceHolder = ew_RemoveHtml($this->authorizer_name->FldCaption());
 
 		// authorizer_action
 		$this->authorizer_action->EditCustomAttributes = "";
@@ -1336,6 +1335,8 @@ class crequisition_report extends cTable {
 		// status
 		$this->status->EditAttrs["class"] = "form-control";
 		$this->status->EditCustomAttributes = "";
+		$this->status->EditValue = $this->status->CurrentValue;
+		$this->status->PlaceHolder = ew_RemoveHtml($this->status->FldCaption());
 
 		// rep_date
 		$this->rep_date->EditAttrs["class"] = "form-control";
@@ -1838,120 +1839,7 @@ class crequisition_report extends cTable {
 
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
-			// Highligh rows in color based on the status
 
-		if (CurrentPageID() == "list") {
-
-			//$this->branch_code->Visible = FALSE;
-			if ($this->status->CurrentValue == 1) {
-				$this->code->CellCssStyle = "color: orange; text-align: left;";
-				$this->date->CellCssStyle = "color: orange; text-align: left;";
-				$this->staff_id->CellCssStyle = "color: orange; text-align: left;";
-				$this->outward_location->CellCssStyle = "color: orange; text-align: left;";
-				$this->delivery_point->CellCssStyle = "color: orange; text-align: left;";
-				$this->name->CellCssStyle = "color: orange; text-align: left;";
-				$this->organization->CellCssStyle = "color: orange; text-align: left;";
-				$this->reference->CellCssStyle = "color: orange; text-align: left;";
-				$this->designation->CellCssStyle = "color: orange; text-align: left;";
-				$this->department->CellCssStyle = "color: orange; text-align: left;";
-				$this->status->CellCssStyle = "color: orange; text-align: left;";
-				$this->item_description->CellCssStyle = "color: orange; text-align: left;";
-				$this->driver_name->CellCssStyle = "color: orange; text-align: left;";
-				$this->vehicle_no->CellCssStyle = "color: orange; text-align: left;";			
-				$this->requester_action->CellCssStyle = "color: orange; text-align: left;";
-				$this->requester_comment->CellCssStyle = "color: orange; text-align: left;";
-				$this->authorizer_action->CellCssStyle = "color: orange; text-align: left;";
-				$this->authorizer_comment->CellCssStyle = "color: orange; text-align: left;";
-				$this->authorizer_name->CellCssStyle = "color: orange; text-align: left;";
-				$this->authorized_date->CellCssStyle = "color: orange; text-align: left;";
-				$this->rep_date->CellCssStyle = "color: orange; text-align: left;";
-				$this->rep_name->CellCssStyle = "color: orange; text-align: left;";
-				$this->rep_action->CellCssStyle = "color: orange; text-align: left;";
-				$this->rep_comment->CellCssStyle = "color: orange; text-align: left;";
-				$this->outward_datetime->CellCssStyle = "color: orange; text-align: left;";			
-			}
-			if ($this->status->CurrentValue == 2) {
-				$this->code->CellCssStyle = "color: red; text-align: left;";
-				$this->date->CellCssStyle = "color: red; text-align: left;";
-				$this->staff_id->CellCssStyle = "color: red; text-align: left;";
-				$this->outward_location->CellCssStyle = "color: red; text-align: left;";
-				$this->delivery_point->CellCssStyle = "color: red; text-align: left;";
-				$this->name->CellCssStyle = "color: red; text-align: left;";
-				$this->organization->CellCssStyle = "color: red; text-align: left;";
-				$this->reference->CellCssStyle = "color: red; text-align: left;";
-				$this->designation->CellCssStyle = "color: red; text-align: left;";
-				$this->department->CellCssStyle = "color: red; text-align: left;";
-				$this->status->CellCssStyle = "color: red; text-align: left;";
-				$this->item_description->CellCssStyle = "color: red; text-align: left;";
-				$this->driver_name->CellCssStyle = "color: red; text-align: left;";
-				$this->vehicle_no->CellCssStyle = "color: red; text-align: left;";			
-				$this->requester_action->CellCssStyle = "color: red; text-align: left;";
-				$this->requester_comment->CellCssStyle = "color: red; text-align: left;";
-				$this->authorizer_action->CellCssStyle = "color: red; text-align: left;";
-				$this->authorizer_comment->CellCssStyle = "color: red; text-align: left;";
-				$this->authorizer_name->CellCssStyle = "color: red; text-align: left;";
-				$this->authorized_date->CellCssStyle = "color: red; text-align: left;";
-				$this->rep_date->CellCssStyle = "color: red; text-align: left;";
-				$this->rep_name->CellCssStyle = "color: red; text-align: left;";
-				$this->rep_action->CellCssStyle = "color: red; text-align: left;";
-				$this->rep_comment->CellCssStyle = "color: red; text-align: left;";
-				$this->outward_datetime->CellCssStyle = "color: red; text-align: left;";			
-			}
-			if ($this->status->CurrentValue == 3) {
-				$this->code->CellCssStyle = "color: blue; text-align: left;";
-				$this->date->CellCssStyle = "color: blue; text-align: left;";
-				$this->staff_id->CellCssStyle = "color: blue; text-align: left;";
-				$this->outward_location->CellCssStyle = "color: blue; text-align: left;";
-				$this->delivery_point->CellCssStyle = "color: blue; text-align: left;";
-				$this->name->CellCssStyle = "color: blue; text-align: left;";
-				$this->organization->CellCssStyle = "color: blue; text-align: left;";
-				$this->reference->CellCssStyle = "color: blue; text-align: left;";
-				$this->designation->CellCssStyle = "color: blue; text-align: left;";
-				$this->department->CellCssStyle = "color: blue; text-align: left;";
-				$this->status->CellCssStyle = "color: blue; text-align: left;";
-				$this->item_description->CellCssStyle = "color: blue; text-align: left;";
-				$this->driver_name->CellCssStyle = "color: blue; text-align: left;";
-				$this->vehicle_no->CellCssStyle = "color: blue; text-align: left;";			
-				$this->requester_action->CellCssStyle = "color: blue; text-align: left;";
-				$this->requester_comment->CellCssStyle = "color: blue; text-align: left;";
-				$this->authorizer_action->CellCssStyle = "color: blue; text-align: left;";
-				$this->authorizer_comment->CellCssStyle = "color: blue; text-align: left;";
-				$this->authorizer_name->CellCssStyle = "color: blue; text-align: left;";
-				$this->authorized_date->CellCssStyle = "color: blue; text-align: left;";
-				$this->rep_date->CellCssStyle = "color: blue; text-align: left;";
-				$this->rep_name->CellCssStyle = "color: blue; text-align: left;";
-				$this->rep_action->CellCssStyle = "color: blue; text-align: left;";
-				$this->rep_comment->CellCssStyle = "color: blue; text-align: left;";
-				$this->outward_datetime->CellCssStyle = "color: blue; text-align: left;";			
-			}
-			if ($this->status->CurrentValue == 4) {
-				$this->code->CellCssStyle = "color: green; text-align: left;";
-				$this->date->CellCssStyle = "color: green; text-align: left;";
-				$this->staff_id->CellCssStyle = "color: green; text-align: left;";
-				$this->outward_location->CellCssStyle = "color: green; text-align: left;";
-				$this->delivery_point->CellCssStyle = "color: green; text-align: left;";
-				$this->name->CellCssStyle = "color: green; text-align: left;";
-				$this->organization->CellCssStyle = "color: green; text-align: left;";
-				$this->reference->CellCssStyle = "color: green; text-align: left;";
-				$this->designation->CellCssStyle = "color: green; text-align: left;";
-				$this->department->CellCssStyle = "color: green; text-align: left;";
-				$this->status->CellCssStyle = "color: green; text-align: left;";
-				$this->item_description->CellCssStyle = "color: green; text-align: left;";
-				$this->driver_name->CellCssStyle = "color: green; text-align: left;";
-				$this->vehicle_no->CellCssStyle = "color: green; text-align: left;";			
-				$this->requester_action->CellCssStyle = "color: green; text-align: left;";
-				$this->requester_comment->CellCssStyle = "color: green; text-align: left;";
-				$this->authorizer_action->CellCssStyle = "color: green; text-align: left;";
-				$this->authorizer_comment->CellCssStyle = "color: green; text-align: left;";
-				$this->authorizer_name->CellCssStyle = "color: green; text-align: left;";
-				$this->authorized_date->CellCssStyle = "color: green; text-align: left;";
-				$this->rep_date->CellCssStyle = "color: green; text-align: left;";
-				$this->rep_name->CellCssStyle = "color: green; text-align: left;";
-				$this->rep_action->CellCssStyle = "color: green; text-align: left;";
-				$this->rep_comment->CellCssStyle = "color: green; text-align: left;";
-				$this->outward_datetime->CellCssStyle = "color: green; text-align: left;";			
-			}
-		}
 	}
 
 	// User ID Filtering event

@@ -726,7 +726,7 @@ class crequisition_report_search extends crequisition_report {
 
 		// date
 		$this->date->ViewValue = $this->date->CurrentValue;
-		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 14);
+		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 0);
 		$this->date->ViewCustomAttributes = "";
 
 		// reference
@@ -768,9 +768,9 @@ class crequisition_report_search extends crequisition_report {
 		// name
 		if (strval($this->name->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->name->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+		$this->name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->name, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -779,7 +779,6 @@ class crequisition_report_search extends crequisition_report {
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
 				$this->name->ViewValue = $this->name->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
@@ -791,11 +790,12 @@ class crequisition_report_search extends crequisition_report {
 		$this->name->ViewCustomAttributes = "";
 
 		// organization
+		$this->organization->ViewValue = $this->organization->CurrentValue;
 		if (strval($this->organization->CurrentValue) <> "") {
 			$sFilterWrk = "`branch_id`" . ew_SearchString("=", $this->organization->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `branch_id`, `branch_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `branch`";
 		$sWhereWrk = "";
-		$this->organization->LookupFilters = array("dx1" => '`branch_name`');
+		$this->organization->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->organization, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -838,12 +838,11 @@ class crequisition_report_search extends crequisition_report {
 		$this->designation->ViewCustomAttributes = "";
 
 		// department
-		$this->department->ViewValue = $this->department->CurrentValue;
 		if (strval($this->department->CurrentValue) <> "") {
 			$sFilterWrk = "`department_id`" . ew_SearchString("=", $this->department->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
 		$sWhereWrk = "";
-		$this->department->LookupFilters = array();
+		$this->department->LookupFilters = array("dx1" => '`department_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -891,7 +890,6 @@ class crequisition_report_search extends crequisition_report {
 		$this->date_authorized->ViewCustomAttributes = "";
 
 		// authorizer_name
-		$this->authorizer_name->ViewValue = $this->authorizer_name->CurrentValue;
 		if (strval($this->authorizer_name->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->authorizer_name->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
@@ -929,6 +927,7 @@ class crequisition_report_search extends crequisition_report {
 		$this->authorizer_comment->ViewCustomAttributes = "";
 
 		// status
+		$this->status->ViewValue = $this->status->CurrentValue;
 		if (strval($this->status->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `status_ssf`";
@@ -1134,11 +1133,11 @@ class crequisition_report_search extends crequisition_report {
 			// date
 			$this->date->EditAttrs["class"] = "form-control";
 			$this->date->EditCustomAttributes = "";
-			$this->date->EditValue = ew_HtmlEncode(ew_FormatDateTime(ew_UnFormatDateTime($this->date->AdvancedSearch->SearchValue, 14), 14));
+			$this->date->EditValue = ew_HtmlEncode(ew_FormatDateTime(ew_UnFormatDateTime($this->date->AdvancedSearch->SearchValue, 0), 8));
 			$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
 			$this->date->EditAttrs["class"] = "form-control";
 			$this->date->EditCustomAttributes = "";
-			$this->date->EditValue2 = ew_HtmlEncode(ew_FormatDateTime(ew_UnFormatDateTime($this->date->AdvancedSearch->SearchValue2, 14), 14));
+			$this->date->EditValue2 = ew_HtmlEncode(ew_FormatDateTime(ew_UnFormatDateTime($this->date->AdvancedSearch->SearchValue2, 0), 8));
 			$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
 
 			// reference
@@ -1192,9 +1191,9 @@ class crequisition_report_search extends crequisition_report {
 			} else {
 				$sFilterWrk = "`id`" . ew_SearchString("=", $this->name->AdvancedSearch->SearchValue, EW_DATATYPE_NUMBER, "");
 			}
-			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
 			$sWhereWrk = "";
-			$this->name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+			$this->name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
 			$this->Lookup_Selecting($this->name, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1203,7 +1202,6 @@ class crequisition_report_search extends crequisition_report {
 				$arwrk = array();
 				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
 				$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
-				$arwrk[3] = ew_HtmlEncode($rswrk->fields('Disp3Fld'));
 				$this->name->AdvancedSearch->ViewValue = $this->name->DisplayValue($arwrk);
 			} else {
 				$this->name->AdvancedSearch->ViewValue = $Language->Phrase("PleaseSelect");
@@ -1213,29 +1211,30 @@ class crequisition_report_search extends crequisition_report {
 			$this->name->EditValue = $arwrk;
 
 			// organization
+			$this->organization->EditAttrs["class"] = "form-control";
 			$this->organization->EditCustomAttributes = "";
-			if (trim(strval($this->organization->AdvancedSearch->SearchValue)) == "") {
-				$sFilterWrk = "0=1";
-			} else {
+			$this->organization->EditValue = ew_HtmlEncode($this->organization->AdvancedSearch->SearchValue);
+			if (strval($this->organization->AdvancedSearch->SearchValue) <> "") {
 				$sFilterWrk = "`branch_id`" . ew_SearchString("=", $this->organization->AdvancedSearch->SearchValue, EW_DATATYPE_NUMBER, "");
-			}
-			$sSqlWrk = "SELECT `branch_id`, `branch_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `branch`";
+			$sSqlWrk = "SELECT `branch_id`, `branch_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `branch`";
 			$sWhereWrk = "";
-			$this->organization->LookupFilters = array("dx1" => '`branch_name`');
+			$this->organization->LookupFilters = array();
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
 			$this->Lookup_Selecting($this->organization, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
-				$this->organization->AdvancedSearch->ViewValue = $this->organization->DisplayValue($arwrk);
+				$rswrk = Conn()->Execute($sSqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+					$this->organization->EditValue = $this->organization->DisplayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->organization->EditValue = ew_HtmlEncode($this->organization->AdvancedSearch->SearchValue);
+				}
 			} else {
-				$this->organization->AdvancedSearch->ViewValue = $Language->Phrase("PleaseSelect");
+				$this->organization->EditValue = NULL;
 			}
-			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
-			if ($rswrk) $rswrk->Close();
-			$this->organization->EditValue = $arwrk;
+			$this->organization->PlaceHolder = ew_RemoveHtml($this->organization->FldCaption());
 
 			// designation
 			$this->designation->EditAttrs["class"] = "form-control";
@@ -1264,30 +1263,29 @@ class crequisition_report_search extends crequisition_report {
 			$this->designation->PlaceHolder = ew_RemoveHtml($this->designation->FldCaption());
 
 			// department
-			$this->department->EditAttrs["class"] = "form-control";
 			$this->department->EditCustomAttributes = "";
-			$this->department->EditValue = ew_HtmlEncode($this->department->AdvancedSearch->SearchValue);
-			if (strval($this->department->AdvancedSearch->SearchValue) <> "") {
+			if (trim(strval($this->department->AdvancedSearch->SearchValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
 				$sFilterWrk = "`department_id`" . ew_SearchString("=", $this->department->AdvancedSearch->SearchValue, EW_DATATYPE_NUMBER, "");
-			$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
+			}
+			$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `depertment`";
 			$sWhereWrk = "";
-			$this->department->LookupFilters = array();
+			$this->department->LookupFilters = array("dx1" => '`department_name`');
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
 			$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-				$rswrk = Conn()->Execute($sSqlWrk);
-				if ($rswrk && !$rswrk->EOF) { // Lookup values found
-					$arwrk = array();
-					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
-					$this->department->EditValue = $this->department->DisplayValue($arwrk);
-					$rswrk->Close();
-				} else {
-					$this->department->EditValue = ew_HtmlEncode($this->department->AdvancedSearch->SearchValue);
-				}
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+				$this->department->AdvancedSearch->ViewValue = $this->department->DisplayValue($arwrk);
 			} else {
-				$this->department->EditValue = NULL;
+				$this->department->AdvancedSearch->ViewValue = $Language->Phrase("PleaseSelect");
 			}
-			$this->department->PlaceHolder = ew_RemoveHtml($this->department->FldCaption());
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->department->EditValue = $arwrk;
 
 			// item_description
 			$this->item_description->EditAttrs["class"] = "form-control";
@@ -1326,30 +1324,21 @@ class crequisition_report_search extends crequisition_report {
 			// authorizer_name
 			$this->authorizer_name->EditAttrs["class"] = "form-control";
 			$this->authorizer_name->EditCustomAttributes = "";
-			$this->authorizer_name->EditValue = ew_HtmlEncode($this->authorizer_name->AdvancedSearch->SearchValue);
-			if (strval($this->authorizer_name->AdvancedSearch->SearchValue) <> "") {
+			if (trim(strval($this->authorizer_name->AdvancedSearch->SearchValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
 				$sFilterWrk = "`id`" . ew_SearchString("=", $this->authorizer_name->AdvancedSearch->SearchValue, EW_DATATYPE_NUMBER, "");
-			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			}
+			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `users`";
 			$sWhereWrk = "";
 			$this->authorizer_name->LookupFilters = array();
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
 			$this->Lookup_Selecting($this->authorizer_name, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-				$rswrk = Conn()->Execute($sSqlWrk);
-				if ($rswrk && !$rswrk->EOF) { // Lookup values found
-					$arwrk = array();
-					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
-					$arwrk[2] = ew_HtmlEncode($rswrk->fields('Disp2Fld'));
-					$arwrk[3] = ew_HtmlEncode($rswrk->fields('Disp3Fld'));
-					$this->authorizer_name->EditValue = $this->authorizer_name->DisplayValue($arwrk);
-					$rswrk->Close();
-				} else {
-					$this->authorizer_name->EditValue = ew_HtmlEncode($this->authorizer_name->AdvancedSearch->SearchValue);
-				}
-			} else {
-				$this->authorizer_name->EditValue = NULL;
-			}
-			$this->authorizer_name->PlaceHolder = ew_RemoveHtml($this->authorizer_name->FldCaption());
+			$rswrk = Conn()->Execute($sSqlWrk);
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->authorizer_name->EditValue = $arwrk;
 
 			// authorizer_action
 			$this->authorizer_action->EditCustomAttributes = "";
@@ -1364,21 +1353,28 @@ class crequisition_report_search extends crequisition_report {
 			// status
 			$this->status->EditAttrs["class"] = "form-control";
 			$this->status->EditCustomAttributes = "";
-			if (trim(strval($this->status->AdvancedSearch->SearchValue)) == "") {
-				$sFilterWrk = "0=1";
-			} else {
+			$this->status->EditValue = ew_HtmlEncode($this->status->AdvancedSearch->SearchValue);
+			if (strval($this->status->AdvancedSearch->SearchValue) <> "") {
 				$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->AdvancedSearch->SearchValue, EW_DATATYPE_NUMBER, "");
-			}
-			$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `status_ssf`";
+			$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `status_ssf`";
 			$sWhereWrk = "";
 			$this->status->LookupFilters = array();
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
 			$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
-			if ($rswrk) $rswrk->Close();
-			$this->status->EditValue = $arwrk;
+				$rswrk = Conn()->Execute($sSqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+					$this->status->EditValue = $this->status->DisplayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->status->EditValue = ew_HtmlEncode($this->status->AdvancedSearch->SearchValue);
+				}
+			} else {
+				$this->status->EditValue = NULL;
+			}
+			$this->status->PlaceHolder = ew_RemoveHtml($this->status->FldCaption());
 
 			// rep_date
 			$this->rep_date->EditAttrs["class"] = "form-control";
@@ -1451,11 +1447,8 @@ class crequisition_report_search extends crequisition_report {
 		if (!ew_CheckInteger($this->code->AdvancedSearch->SearchValue)) {
 			ew_AddMessage($gsSearchError, $this->code->FldErrMsg());
 		}
-		if (!ew_CheckShortEuroDate($this->rep_date->AdvancedSearch->SearchValue)) {
-			ew_AddMessage($gsSearchError, $this->rep_date->FldErrMsg());
-		}
-		if (!ew_CheckShortEuroDate($this->outward_datetime->AdvancedSearch->SearchValue)) {
-			ew_AddMessage($gsSearchError, $this->outward_datetime->FldErrMsg());
+		if (!ew_CheckShortEuroDate($this->date_authorized->AdvancedSearch->SearchValue)) {
+			ew_AddMessage($gsSearchError, $this->date_authorized->FldErrMsg());
 		}
 
 		// Return validate result
@@ -1528,9 +1521,9 @@ class crequisition_report_search extends crequisition_report {
 			break;
 		case "x_name":
 			$sSqlWrk = "";
-			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 			$sWhereWrk = "{filter}";
-			$fld->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
+			$fld->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->name, $sWhereWrk); // Call Lookup Selecting
@@ -1542,7 +1535,7 @@ class crequisition_report_search extends crequisition_report {
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `branch_id` AS `LinkFld`, `branch_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `branch`";
 			$sWhereWrk = "{filter}";
-			$fld->LookupFilters = array("dx1" => '`branch_name`');
+			$fld->LookupFilters = array();
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`branch_id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->organization, $sWhereWrk); // Call Lookup Selecting
@@ -1566,7 +1559,7 @@ class crequisition_report_search extends crequisition_report {
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `department_id` AS `LinkFld`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
 			$sWhereWrk = "{filter}";
-			$fld->LookupFilters = array();
+			$fld->LookupFilters = array("dx1" => '`department_name`');
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`department_id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
@@ -1577,7 +1570,7 @@ class crequisition_report_search extends crequisition_report {
 		case "x_authorizer_name":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-			$sWhereWrk = "{filter}";
+			$sWhereWrk = "";
 			$fld->LookupFilters = array();
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
@@ -1589,7 +1582,7 @@ class crequisition_report_search extends crequisition_report {
 		case "x_status":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `status_ssf`";
-			$sWhereWrk = "";
+			$sWhereWrk = "{filter}";
 			$fld->LookupFilters = array();
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
@@ -1630,6 +1623,18 @@ class crequisition_report_search extends crequisition_report {
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
 			break;
+		case "x_organization":
+			$sSqlWrk = "";
+			$sSqlWrk = "SELECT `branch_id`, `branch_name` AS `DispFld` FROM `branch`";
+			$sWhereWrk = "`branch_name` LIKE '{query_value}%'";
+			$fld->LookupFilters = array();
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
+			$sSqlWrk = "";
+			$this->Lookup_Selecting($this->organization, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
 		case "x_designation":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `code`, `description` AS `DispFld` FROM `designation`";
@@ -1642,26 +1647,14 @@ class crequisition_report_search extends crequisition_report {
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
 			break;
-		case "x_department":
+		case "x_status":
 			$sSqlWrk = "";
-			$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld` FROM `depertment`";
-			$sWhereWrk = "`department_name` LIKE '{query_value}%'";
+			$sSqlWrk = "SELECT `id`, `description` AS `DispFld` FROM `status_ssf`";
+			$sWhereWrk = "`description` LIKE '{query_value}%'";
 			$fld->LookupFilters = array();
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
 			$sSqlWrk = "";
-			$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
-			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			if ($sSqlWrk <> "")
-				$fld->LookupFilters["s"] .= $sSqlWrk;
-			break;
-		case "x_authorizer_name":
-			$sSqlWrk = "";
-			$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld` FROM `users`";
-			$sWhereWrk = "`firstname` LIKE '{query_value}%' OR CONCAT(COALESCE(`firstname`, ''),'" . ew_ValueSeparator(1, $this->authorizer_name) . "',COALESCE(`lastname`,''),'" . ew_ValueSeparator(2, $this->authorizer_name) . "',COALESCE(`staffno`,'')) LIKE '{query_value}%'";
-			$fld->LookupFilters = array();
-			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "");
-			$sSqlWrk = "";
-			$this->Lookup_Selecting($this->authorizer_name, $sWhereWrk); // Call Lookup Selecting
+			$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			if ($sSqlWrk <> "")
 				$fld->LookupFilters["s"] .= $sSqlWrk;
@@ -1793,25 +1786,25 @@ frequisition_reportsearch.ValidateRequired = <?php echo json_encode(EW_CLIENT_VA
 frequisition_reportsearch.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_staffno","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 frequisition_reportsearch.Lists["x_staff_id"].Data = "<?php echo $requisition_report_search->staff_id->LookupFilterQuery(FALSE, "search") ?>";
 frequisition_reportsearch.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_search->staff_id->LookupFilterQuery(TRUE, "search"))) ?>;
-frequisition_reportsearch.Lists["x_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+frequisition_reportsearch.Lists["x_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 frequisition_reportsearch.Lists["x_name"].Data = "<?php echo $requisition_report_search->name->LookupFilterQuery(FALSE, "search") ?>";
 frequisition_reportsearch.Lists["x_organization"] = {"LinkField":"x_branch_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_branch_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"branch"};
 frequisition_reportsearch.Lists["x_organization"].Data = "<?php echo $requisition_report_search->organization->LookupFilterQuery(FALSE, "search") ?>";
+frequisition_reportsearch.AutoSuggests["x_organization"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_search->organization->LookupFilterQuery(TRUE, "search"))) ?>;
 frequisition_reportsearch.Lists["x_designation"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"designation"};
 frequisition_reportsearch.Lists["x_designation"].Data = "<?php echo $requisition_report_search->designation->LookupFilterQuery(FALSE, "search") ?>";
 frequisition_reportsearch.AutoSuggests["x_designation"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_search->designation->LookupFilterQuery(TRUE, "search"))) ?>;
 frequisition_reportsearch.Lists["x_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
 frequisition_reportsearch.Lists["x_department"].Data = "<?php echo $requisition_report_search->department->LookupFilterQuery(FALSE, "search") ?>";
-frequisition_reportsearch.AutoSuggests["x_department"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_search->department->LookupFilterQuery(TRUE, "search"))) ?>;
 frequisition_reportsearch.Lists["x_requester_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 frequisition_reportsearch.Lists["x_requester_action"].Options = <?php echo json_encode($requisition_report_search->requester_action->Options()) ?>;
 frequisition_reportsearch.Lists["x_authorizer_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 frequisition_reportsearch.Lists["x_authorizer_name"].Data = "<?php echo $requisition_report_search->authorizer_name->LookupFilterQuery(FALSE, "search") ?>";
-frequisition_reportsearch.AutoSuggests["x_authorizer_name"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_search->authorizer_name->LookupFilterQuery(TRUE, "search"))) ?>;
 frequisition_reportsearch.Lists["x_authorizer_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 frequisition_reportsearch.Lists["x_authorizer_action"].Options = <?php echo json_encode($requisition_report_search->authorizer_action->Options()) ?>;
 frequisition_reportsearch.Lists["x_status"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"status_ssf"};
 frequisition_reportsearch.Lists["x_status"].Data = "<?php echo $requisition_report_search->status->LookupFilterQuery(FALSE, "search") ?>";
+frequisition_reportsearch.AutoSuggests["x_status"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_search->status->LookupFilterQuery(TRUE, "search"))) ?>;
 frequisition_reportsearch.Lists["x_rep_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 frequisition_reportsearch.Lists["x_rep_name"].Data = "<?php echo $requisition_report_search->rep_name->LookupFilterQuery(FALSE, "search") ?>";
 frequisition_reportsearch.AutoSuggests["x_rep_name"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_search->rep_name->LookupFilterQuery(TRUE, "search"))) ?>;
@@ -1829,12 +1822,9 @@ frequisition_reportsearch.Validate = function(fobj) {
 	elm = this.GetElements("x" + infix + "_code");
 	if (elm && !ew_CheckInteger(elm.value))
 		return this.OnError(elm, "<?php echo ew_JsEncode2($requisition_report->code->FldErrMsg()) ?>");
-	elm = this.GetElements("x" + infix + "_rep_date");
+	elm = this.GetElements("x" + infix + "_date_authorized");
 	if (elm && !ew_CheckShortEuroDate(elm.value))
-		return this.OnError(elm, "<?php echo ew_JsEncode2($requisition_report->rep_date->FldErrMsg()) ?>");
-	elm = this.GetElements("x" + infix + "_outward_datetime");
-	if (elm && !ew_CheckShortEuroDate(elm.value))
-		return this.OnError(elm, "<?php echo ew_JsEncode2($requisition_report->outward_datetime->FldErrMsg()) ?>");
+		return this.OnError(elm, "<?php echo ew_JsEncode2($requisition_report->date_authorized->FldErrMsg()) ?>");
 
 	// Fire Form_CustomValidate event
 	if (!this.Form_CustomValidate(fobj))
@@ -1865,7 +1855,7 @@ $requisition_report_search->ShowMessage();
 		</label>
 		<div class="<?php echo $requisition_report_search->RightColumnClass ?>"><div<?php echo $requisition_report->code->CellAttributes() ?>>
 			<span id="el_requisition_report_code">
-<input type="text" data-table="requisition_report" data-field="x_code" name="x_code" id="x_code" size="30" placeholder="<?php echo ew_HtmlEncode($requisition_report->code->getPlaceHolder()) ?>" value="<?php echo $requisition_report->code->EditValue ?>"<?php echo $requisition_report->code->EditAttributes() ?>>
+<input type="text" data-table="requisition_report" data-field="x_code" name="x_code" id="x_code" placeholder="<?php echo ew_HtmlEncode($requisition_report->code->getPlaceHolder()) ?>" value="<?php echo $requisition_report->code->EditValue ?>"<?php echo $requisition_report->code->EditAttributes() ?>>
 </span>
 		</div></div>
 	</div>
@@ -1877,21 +1867,11 @@ $requisition_report_search->ShowMessage();
 		</label>
 		<div class="<?php echo $requisition_report_search->RightColumnClass ?>"><div<?php echo $requisition_report->date->CellAttributes() ?>>
 			<span id="el_requisition_report_date">
-<input type="text" data-table="requisition_report" data-field="x_date" data-format="14" name="x_date" id="x_date" size="30" placeholder="<?php echo ew_HtmlEncode($requisition_report->date->getPlaceHolder()) ?>" value="<?php echo $requisition_report->date->EditValue ?>"<?php echo $requisition_report->date->EditAttributes() ?>>
-<?php if (!$requisition_report->date->ReadOnly && !$requisition_report->date->Disabled && !isset($requisition_report->date->EditAttrs["readonly"]) && !isset($requisition_report->date->EditAttrs["disabled"])) { ?>
-<script type="text/javascript">
-ew_CreateDateTimePicker("frequisition_reportsearch", "x_date", {"ignoreReadonly":true,"useCurrent":false,"format":14});
-</script>
-<?php } ?>
+<input type="text" data-table="requisition_report" data-field="x_date" name="x_date" id="x_date" placeholder="<?php echo ew_HtmlEncode($requisition_report->date->getPlaceHolder()) ?>" value="<?php echo $requisition_report->date->EditValue ?>"<?php echo $requisition_report->date->EditAttributes() ?>>
 </span>
 			<span class="ewSearchCond btw1_date">&nbsp;<?php echo $Language->Phrase("AND") ?>&nbsp;</span>
 			<span id="e2_requisition_report_date" class="btw1_date">
-<input type="text" data-table="requisition_report" data-field="x_date" data-format="14" name="y_date" id="y_date" size="30" placeholder="<?php echo ew_HtmlEncode($requisition_report->date->getPlaceHolder()) ?>" value="<?php echo $requisition_report->date->EditValue2 ?>"<?php echo $requisition_report->date->EditAttributes() ?>>
-<?php if (!$requisition_report->date->ReadOnly && !$requisition_report->date->Disabled && !isset($requisition_report->date->EditAttrs["readonly"]) && !isset($requisition_report->date->EditAttrs["disabled"])) { ?>
-<script type="text/javascript">
-ew_CreateDateTimePicker("frequisition_reportsearch", "y_date", {"ignoreReadonly":true,"useCurrent":false,"format":14});
-</script>
-<?php } ?>
+<input type="text" data-table="requisition_report" data-field="x_date" name="y_date" id="y_date" placeholder="<?php echo ew_HtmlEncode($requisition_report->date->getPlaceHolder()) ?>" value="<?php echo $requisition_report->date->EditValue2 ?>"<?php echo $requisition_report->date->EditAttributes() ?>>
 </span>
 		</div></div>
 	</div>
@@ -1973,16 +1953,23 @@ frequisition_reportsearch.CreateAutoSuggest({"id":"x_staff_id","forceSelect":fal
 <?php } ?>
 <?php if ($requisition_report->organization->Visible) { // organization ?>
 	<div id="r_organization" class="form-group">
-		<label for="x_organization" class="<?php echo $requisition_report_search->LeftColumnClass ?>"><span id="elh_requisition_report_organization"><?php echo $requisition_report->organization->FldCaption() ?></span>
+		<label class="<?php echo $requisition_report_search->LeftColumnClass ?>"><span id="elh_requisition_report_organization"><?php echo $requisition_report->organization->FldCaption() ?></span>
 		<p class="form-control-static ewSearchOperator"><?php echo $Language->Phrase("LIKE") ?><input type="hidden" name="z_organization" id="z_organization" value="LIKE"></p>
 		</label>
 		<div class="<?php echo $requisition_report_search->RightColumnClass ?>"><div<?php echo $requisition_report->organization->CellAttributes() ?>>
 			<span id="el_requisition_report_organization">
-<span class="ewLookupList">
-	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_organization"><?php echo (strval($requisition_report->organization->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $requisition_report->organization->AdvancedSearch->ViewValue); ?></span>
+<?php
+$wrkonchange = trim(" " . @$requisition_report->organization->EditAttrs["onchange"]);
+if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
+$requisition_report->organization->EditAttrs["onchange"] = "";
+?>
+<span id="as_x_organization" style="white-space: nowrap; z-index: 8920">
+	<input type="text" name="sv_x_organization" id="sv_x_organization" value="<?php echo $requisition_report->organization->EditValue ?>" size="30" maxlength="60" placeholder="<?php echo ew_HtmlEncode($requisition_report->organization->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($requisition_report->organization->getPlaceHolder()) ?>"<?php echo $requisition_report->organization->EditAttributes() ?>>
 </span>
-<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($requisition_report->organization->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_organization',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($requisition_report->organization->ReadOnly || $requisition_report->organization->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
-<input type="hidden" data-table="requisition_report" data-field="x_organization" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $requisition_report->organization->DisplayValueSeparatorAttribute() ?>" name="x_organization" id="x_organization" value="<?php echo $requisition_report->organization->AdvancedSearch->SearchValue ?>"<?php echo $requisition_report->organization->EditAttributes() ?>>
+<input type="hidden" data-table="requisition_report" data-field="x_organization" data-value-separator="<?php echo $requisition_report->organization->DisplayValueSeparatorAttribute() ?>" name="x_organization" id="x_organization" value="<?php echo ew_HtmlEncode($requisition_report->organization->AdvancedSearch->SearchValue) ?>"<?php echo $wrkonchange ?>>
+<script type="text/javascript">
+frequisition_reportsearch.CreateAutoSuggest({"id":"x_organization","forceSelect":false});
+</script>
 </span>
 		</div></div>
 	</div>
@@ -2012,23 +1999,16 @@ frequisition_reportsearch.CreateAutoSuggest({"id":"x_designation","forceSelect":
 <?php } ?>
 <?php if ($requisition_report->department->Visible) { // department ?>
 	<div id="r_department" class="form-group">
-		<label class="<?php echo $requisition_report_search->LeftColumnClass ?>"><span id="elh_requisition_report_department"><?php echo $requisition_report->department->FldCaption() ?></span>
+		<label for="x_department" class="<?php echo $requisition_report_search->LeftColumnClass ?>"><span id="elh_requisition_report_department"><?php echo $requisition_report->department->FldCaption() ?></span>
 		<p class="form-control-static ewSearchOperator"><?php echo $Language->Phrase("LIKE") ?><input type="hidden" name="z_department" id="z_department" value="LIKE"></p>
 		</label>
 		<div class="<?php echo $requisition_report_search->RightColumnClass ?>"><div<?php echo $requisition_report->department->CellAttributes() ?>>
 			<span id="el_requisition_report_department">
-<?php
-$wrkonchange = trim(" " . @$requisition_report->department->EditAttrs["onchange"]);
-if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
-$requisition_report->department->EditAttrs["onchange"] = "";
-?>
-<span id="as_x_department" style="white-space: nowrap; z-index: 8900">
-	<input type="text" name="sv_x_department" id="sv_x_department" value="<?php echo $requisition_report->department->EditValue ?>" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($requisition_report->department->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($requisition_report->department->getPlaceHolder()) ?>"<?php echo $requisition_report->department->EditAttributes() ?>>
+<span class="ewLookupList">
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_department"><?php echo (strval($requisition_report->department->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $requisition_report->department->AdvancedSearch->ViewValue); ?></span>
 </span>
-<input type="hidden" data-table="requisition_report" data-field="x_department" data-value-separator="<?php echo $requisition_report->department->DisplayValueSeparatorAttribute() ?>" name="x_department" id="x_department" value="<?php echo ew_HtmlEncode($requisition_report->department->AdvancedSearch->SearchValue) ?>"<?php echo $wrkonchange ?>>
-<script type="text/javascript">
-frequisition_reportsearch.CreateAutoSuggest({"id":"x_department","forceSelect":false});
-</script>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($requisition_report->department->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_department',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($requisition_report->department->ReadOnly || $requisition_report->department->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="requisition_report" data-field="x_department" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $requisition_report->department->DisplayValueSeparatorAttribute() ?>" name="x_department" id="x_department" value="<?php echo $requisition_report->department->AdvancedSearch->SearchValue ?>"<?php echo $requisition_report->department->EditAttributes() ?>>
 </span>
 		</div></div>
 	</div>
@@ -2040,7 +2020,7 @@ frequisition_reportsearch.CreateAutoSuggest({"id":"x_department","forceSelect":f
 		</label>
 		<div class="<?php echo $requisition_report_search->RightColumnClass ?>"><div<?php echo $requisition_report->item_description->CellAttributes() ?>>
 			<span id="el_requisition_report_item_description">
-<input type="text" data-table="requisition_report" data-field="x_item_description" name="x_item_description" id="x_item_description" size="30" maxlength="255" placeholder="<?php echo ew_HtmlEncode($requisition_report->item_description->getPlaceHolder()) ?>" value="<?php echo $requisition_report->item_description->EditValue ?>"<?php echo $requisition_report->item_description->EditAttributes() ?>>
+<input type="text" data-table="requisition_report" data-field="x_item_description" name="x_item_description" id="x_item_description" maxlength="255" placeholder="<?php echo ew_HtmlEncode($requisition_report->item_description->getPlaceHolder()) ?>" value="<?php echo $requisition_report->item_description->EditValue ?>"<?php echo $requisition_report->item_description->EditAttributes() ?>>
 </span>
 		</div></div>
 	</div>
@@ -2103,30 +2083,21 @@ frequisition_reportsearch.CreateAutoSuggest({"id":"x_department","forceSelect":f
 		</label>
 		<div class="<?php echo $requisition_report_search->RightColumnClass ?>"><div<?php echo $requisition_report->date_authorized->CellAttributes() ?>>
 			<span id="el_requisition_report_date_authorized">
-<input type="text" data-table="requisition_report" data-field="x_date_authorized" data-format="17" name="x_date_authorized" id="x_date_authorized" size="30" placeholder="<?php echo ew_HtmlEncode($requisition_report->date_authorized->getPlaceHolder()) ?>" value="<?php echo $requisition_report->date_authorized->EditValue ?>"<?php echo $requisition_report->date_authorized->EditAttributes() ?>>
+<input type="text" data-table="requisition_report" data-field="x_date_authorized" data-format="17" name="x_date_authorized" id="x_date_authorized" placeholder="<?php echo ew_HtmlEncode($requisition_report->date_authorized->getPlaceHolder()) ?>" value="<?php echo $requisition_report->date_authorized->EditValue ?>"<?php echo $requisition_report->date_authorized->EditAttributes() ?>>
 </span>
 		</div></div>
 	</div>
 <?php } ?>
 <?php if ($requisition_report->authorizer_name->Visible) { // authorizer_name ?>
 	<div id="r_authorizer_name" class="form-group">
-		<label class="<?php echo $requisition_report_search->LeftColumnClass ?>"><span id="elh_requisition_report_authorizer_name"><?php echo $requisition_report->authorizer_name->FldCaption() ?></span>
+		<label for="x_authorizer_name" class="<?php echo $requisition_report_search->LeftColumnClass ?>"><span id="elh_requisition_report_authorizer_name"><?php echo $requisition_report->authorizer_name->FldCaption() ?></span>
 		<p class="form-control-static ewSearchOperator"><?php echo $Language->Phrase("LIKE") ?><input type="hidden" name="z_authorizer_name" id="z_authorizer_name" value="LIKE"></p>
 		</label>
 		<div class="<?php echo $requisition_report_search->RightColumnClass ?>"><div<?php echo $requisition_report->authorizer_name->CellAttributes() ?>>
 			<span id="el_requisition_report_authorizer_name">
-<?php
-$wrkonchange = trim(" " . @$requisition_report->authorizer_name->EditAttrs["onchange"]);
-if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
-$requisition_report->authorizer_name->EditAttrs["onchange"] = "";
-?>
-<span id="as_x_authorizer_name" style="white-space: nowrap; z-index: 8830">
-	<input type="text" name="sv_x_authorizer_name" id="sv_x_authorizer_name" value="<?php echo $requisition_report->authorizer_name->EditValue ?>" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($requisition_report->authorizer_name->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($requisition_report->authorizer_name->getPlaceHolder()) ?>"<?php echo $requisition_report->authorizer_name->EditAttributes() ?>>
-</span>
-<input type="hidden" data-table="requisition_report" data-field="x_authorizer_name" data-value-separator="<?php echo $requisition_report->authorizer_name->DisplayValueSeparatorAttribute() ?>" name="x_authorizer_name" id="x_authorizer_name" value="<?php echo ew_HtmlEncode($requisition_report->authorizer_name->AdvancedSearch->SearchValue) ?>"<?php echo $wrkonchange ?>>
-<script type="text/javascript">
-frequisition_reportsearch.CreateAutoSuggest({"id":"x_authorizer_name","forceSelect":false});
-</script>
+<select data-table="requisition_report" data-field="x_authorizer_name" data-value-separator="<?php echo $requisition_report->authorizer_name->DisplayValueSeparatorAttribute() ?>" id="x_authorizer_name" name="x_authorizer_name"<?php echo $requisition_report->authorizer_name->EditAttributes() ?>>
+<?php echo $requisition_report->authorizer_name->SelectOptionListHtml("x_authorizer_name") ?>
+</select>
 </span>
 		</div></div>
 	</div>
@@ -2160,14 +2131,23 @@ frequisition_reportsearch.CreateAutoSuggest({"id":"x_authorizer_name","forceSele
 <?php } ?>
 <?php if ($requisition_report->status->Visible) { // status ?>
 	<div id="r_status" class="form-group">
-		<label for="x_status" class="<?php echo $requisition_report_search->LeftColumnClass ?>"><span id="elh_requisition_report_status"><?php echo $requisition_report->status->FldCaption() ?></span>
+		<label class="<?php echo $requisition_report_search->LeftColumnClass ?>"><span id="elh_requisition_report_status"><?php echo $requisition_report->status->FldCaption() ?></span>
 		<p class="form-control-static ewSearchOperator"><?php echo $Language->Phrase("=") ?><input type="hidden" name="z_status" id="z_status" value="="></p>
 		</label>
 		<div class="<?php echo $requisition_report_search->RightColumnClass ?>"><div<?php echo $requisition_report->status->CellAttributes() ?>>
 			<span id="el_requisition_report_status">
-<select data-table="requisition_report" data-field="x_status" data-value-separator="<?php echo $requisition_report->status->DisplayValueSeparatorAttribute() ?>" id="x_status" name="x_status"<?php echo $requisition_report->status->EditAttributes() ?>>
-<?php echo $requisition_report->status->SelectOptionListHtml("x_status") ?>
-</select>
+<?php
+$wrkonchange = trim(" " . @$requisition_report->status->EditAttrs["onchange"]);
+if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
+$requisition_report->status->EditAttrs["onchange"] = "";
+?>
+<span id="as_x_status" style="white-space: nowrap; z-index: 8800">
+	<input type="text" name="sv_x_status" id="sv_x_status" value="<?php echo $requisition_report->status->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($requisition_report->status->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($requisition_report->status->getPlaceHolder()) ?>"<?php echo $requisition_report->status->EditAttributes() ?>>
+</span>
+<input type="hidden" data-table="requisition_report" data-field="x_status" data-value-separator="<?php echo $requisition_report->status->DisplayValueSeparatorAttribute() ?>" name="x_status" id="x_status" value="<?php echo ew_HtmlEncode($requisition_report->status->AdvancedSearch->SearchValue) ?>"<?php echo $wrkonchange ?>>
+<script type="text/javascript">
+frequisition_reportsearch.CreateAutoSuggest({"id":"x_status","forceSelect":false});
+</script>
 </span>
 		</div></div>
 	</div>
@@ -2179,7 +2159,7 @@ frequisition_reportsearch.CreateAutoSuggest({"id":"x_authorizer_name","forceSele
 		</label>
 		<div class="<?php echo $requisition_report_search->RightColumnClass ?>"><div<?php echo $requisition_report->rep_date->CellAttributes() ?>>
 			<span id="el_requisition_report_rep_date">
-<input type="text" data-table="requisition_report" data-field="x_rep_date" data-format="17" name="x_rep_date" id="x_rep_date" size="30" placeholder="<?php echo ew_HtmlEncode($requisition_report->rep_date->getPlaceHolder()) ?>" value="<?php echo $requisition_report->rep_date->EditValue ?>"<?php echo $requisition_report->rep_date->EditAttributes() ?>>
+<input type="text" data-table="requisition_report" data-field="x_rep_date" data-format="17" name="x_rep_date" id="x_rep_date" placeholder="<?php echo ew_HtmlEncode($requisition_report->rep_date->getPlaceHolder()) ?>" value="<?php echo $requisition_report->rep_date->EditValue ?>"<?php echo $requisition_report->rep_date->EditAttributes() ?>>
 </span>
 		</div></div>
 	</div>
@@ -2215,11 +2195,6 @@ frequisition_reportsearch.CreateAutoSuggest({"id":"x_rep_name","forceSelect":fal
 		<div class="<?php echo $requisition_report_search->RightColumnClass ?>"><div<?php echo $requisition_report->outward_datetime->CellAttributes() ?>>
 			<span id="el_requisition_report_outward_datetime">
 <input type="text" data-table="requisition_report" data-field="x_outward_datetime" data-format="17" name="x_outward_datetime" id="x_outward_datetime" placeholder="<?php echo ew_HtmlEncode($requisition_report->outward_datetime->getPlaceHolder()) ?>" value="<?php echo $requisition_report->outward_datetime->EditValue ?>"<?php echo $requisition_report->outward_datetime->EditAttributes() ?>>
-<?php if (!$requisition_report->outward_datetime->ReadOnly && !$requisition_report->outward_datetime->Disabled && !isset($requisition_report->outward_datetime->EditAttrs["readonly"]) && !isset($requisition_report->outward_datetime->EditAttrs["disabled"])) { ?>
-<script type="text/javascript">
-ew_CreateDateTimePicker("frequisition_reportsearch", "x_outward_datetime", {"ignoreReadonly":true,"useCurrent":false,"format":17});
-</script>
-<?php } ?>
 </span>
 		</div></div>
 	</div>
