@@ -1706,7 +1706,7 @@ $requisition_report_view->ShowMessage();
 <input type="hidden" name="t" value="requisition_report">
 <input type="hidden" name="modal" value="<?php echo intval($requisition_report_view->IsModal) ?>">
 
-<button class="btn btn-primary ewButton" name="btnAction" id="btnAction" onclick="ShowCertificate();" type="button"><?php echo "View Material Outward Note"; ?></button>
+<button class="btn btn-primar ewButton" name="btnAction" id="btnAction" onclick="ShowCertificate();" type="button"><?php echo "View Material Outward Note"; ?></button>
 
 <?php if ($requisition_report->Export == "") { ?>
 <div class="ewMultiPage">
