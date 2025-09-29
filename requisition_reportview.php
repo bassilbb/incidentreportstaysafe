@@ -1704,8 +1704,12 @@ $requisition_report_view->ShowMessage();
 <?php } ?>
 <form name="frequisition_reportview" id="frequisition_reportview" class="form-inline ewForm ewViewForm" action="<?php echo ew_CurrentPage() ?>" method="post">
 <?php if ($requisition_report_view->CheckToken) { ?>
+<button class="btn btn-primary ewButton" name="btnAction" id="btnAction" onclick="ShowCertificate();" type="button"><?php echo "View Material Outward Note"; ?></button>
+
 <input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $requisition_report_view->Token ?>">
 <?php } ?>
+<button class="btn btn-primary ewButton" name="btnAction" id="btnAction" onclick="ShowCertificate();" type="button"><?php echo "View Material Outward Note"; ?></button>
+
 <input type="hidden" name="t" value="requisition_report">
 <input type="hidden" name="modal" value="<?php echo intval($requisition_report_view->IsModal) ?>">
 
