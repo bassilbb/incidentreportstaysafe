@@ -1706,6 +1706,8 @@ $requisition_report_view->ShowMessage();
 <input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $requisition_report_view->Token ?>">
 <?php } ?>
 <input type="hidden" name="t" value="requisition_report">
+<button class="btn btn-primary ewButton" name="btnAction" id="btnAction" onclick="ShowCertificate();" type="button"><?php echo "View Material Outward Note"; ?></button>
+
 <input type="hidden" name="modal" value="<?php echo intval($requisition_report_view->IsModal) ?>">
 
 <button class="btn btn-primary ewButton" name="btnAction" id="btnAction" onclick="ShowCertificate();" type="button"><?php echo "View Material Outward Note"; ?></button>
