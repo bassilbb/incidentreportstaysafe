@@ -340,7 +340,7 @@ $materialnote_php->Page_Main();
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 ?>
-<?php include_once "header.php" ?>
+<?php// include_once "header.php" ?>
 <!-- %%Custom page content begin%% -->
  
 <?php 
@@ -715,7 +715,7 @@ function gotoPage(page) {
 
 
 <!-- %%Custom page content end%% --><?php if (EW_DEBUG_ENABLED) echo ew_DebugMsg(); ?>
-<?php include_once "footer.php" ?>
+<?php //include_once "footer.php" ?>
 <?php
 $materialnote_php->Page_Terminate();
 ?>
