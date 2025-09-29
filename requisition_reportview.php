@@ -1631,12 +1631,14 @@ frequisition_reportview.Lists["x_rep_action"].Options = <?php echo json_encode($
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
+
 function ShowCertificate() {
 
 
 	var curCode = "<?php echo $requisition_report->code->ViewValue ?>";
 	window.location.href='material_note.php?code='+curCode;
 }
+
 
 </script>
 <?php } ?>
@@ -1706,15 +1708,9 @@ $requisition_report_view->ShowMessage();
 <input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $requisition_report_view->Token ?>">
 <?php } ?>
 <input type="hidden" name="t" value="requisition_report">
-<button class="btn btn-primary ewButton" name="btnAction" id="btnAction" onclick="ShowCertificate();" type="button"><?php echo "View Material Outward Note"; ?></button>
-
 <input type="hidden" name="modal" value="<?php echo intval($requisition_report_view->IsModal) ?>">
 
 <button class="btn btn-primary ewButton" name="btnAction" id="btnAction" onclick="ShowCertificate();" type="button"><?php echo "View Material Outward Note"; ?></button>
-
-<button type="button" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-  Save
-</button>
 
 <?php if ($requisition_report->Export == "") { ?>
 <div class="ewMultiPage">

@@ -1,8 +1,8 @@
 <?php
 if (!isset($EW_RELATIVE_PATH)) $EW_RELATIVE_PATH = "";
 if (!isset($EW_ERROR_FN)) $EW_ERROR_FN = "ew_ErrorFn";
-if (!defined("EW_USE_ADODB")) define("EW_USE_ADODB", FALSE, TRUE); // Use ADOdb
-if (!defined("EW_USE_MYSQLI")) define("EW_USE_MYSQLI", extension_loaded("mysqli"), TRUE); // Use MySQLi
+if (!defined("EW_USE_ADODB")) define("EW_USE_ADODB", FALSE); // Use ADOdb
+if (!defined("EW_USE_MYSQLI")) define("EW_USE_MYSQLI", extension_loaded("mysqli")); // Use MySQLi
 ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
 <?php
@@ -28,20 +28,12 @@ if (!function_exists('DbHelper')) {
 class cstaysafedb_db extends cDbHelper {
 
 	// Database connection info
-
 	var $Host = getEnv('DB_HOST');
 	var $Port = getEnv('DB_PORT');
 	var $Username = getEnv('DB_USERNAME');
 	var $Password = getEnv('DB_PASSWORD');
 	var $DbName = getEnv('DB_NAME');
 	var $CharSet = "utf-8";
-
-	// var $Host = 'localhost';
-	// var $Port = 3306;
-	// var $Username = 'root';
-	// var $Password = '';
-	// var $DbName = 'staysafedb';
-	// var $CharSet = "utf-8";
 
 	// ADODB (Access/SQL Server)
 	var $CodePage = 65001; // Code page
