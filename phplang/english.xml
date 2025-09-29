@@ -618,6 +618,9 @@
   <project>
     <phrase id="bodytitle" value="INCIDENT REPORT APPLICATION" />
     <phrase id="footertext" value="&amp;copy;2025 e.Mquid Integrated Solution Ltd. All rights reserved." />
+    <menu id="432">
+      <phrase id="menutext" value="Material note" />
+    </menu>
     <menu id="17">
       <phrase id="menutext" value="Home Page" />
     </menu>
@@ -799,7 +802,7 @@
       <phrase id="menutext" value="Make Requisition" />
     </menu>
     <menu id="431">
-      <phrase id="menutext" value="Requisition Report" />
+      <phrase id="menutext" value="requisition report" />
     </menu>
     <menu id="268">
       <phrase id="menutext" value="Inventory Issuance Module" />
@@ -4454,97 +4457,100 @@
       </field>
     </table>
     <table id="requisition_report">
-      <phrase id="tblcaption" value="Requisition Report" />
+      <phrase id="tblcaption" value="requisition report" />
       <phrase id="tblpagecaption1" value="Requisition Information" />
       <phrase id="tblpagecaption2" value="Authorizer Information" />
       <phrase id="tblpagecaption3" value="Warehouse Rep Information" />
       <field id="code">
-        <phrase id="fldcaption" value="Code" />
+        <phrase id="fldcaption" value="code" />
       </field>
       <field id="date">
-        <phrase id="fldcaption" value="Date" />
+        <phrase id="fldcaption" value="date" />
       </field>
       <field id="reference">
-        <phrase id="fldcaption" value="Reference" />
+        <phrase id="fldcaption" value="reference" />
       </field>
       <field id="staff_id">
-        <phrase id="fldcaption" value="Staff ID" />
+        <phrase id="fldcaption" value="staff id" />
       </field>
       <field id="outward_location">
-        <phrase id="fldcaption" value="Outward Location" />
+        <phrase id="fldcaption" value="outward location" />
       </field>
       <field id="delivery_point">
-        <phrase id="fldcaption" value="Delivery Point" />
+        <phrase id="fldcaption" value="delivery point" />
       </field>
       <field id="name">
-        <phrase id="fldcaption" value="Requester Name" />
+        <phrase id="fldcaption" value="name" />
       </field>
       <field id="organization">
-        <phrase id="fldcaption" value="Organization" />
+        <phrase id="fldcaption" value="organization" />
       </field>
       <field id="designation">
-        <phrase id="fldcaption" value="Designation" />
+        <phrase id="fldcaption" value="designation" />
       </field>
       <field id="department">
-        <phrase id="fldcaption" value="Department" />
+        <phrase id="fldcaption" value="department" />
       </field>
       <field id="item_description">
-        <phrase id="fldcaption" value="Item Description" />
+        <phrase id="fldcaption" value="item description" />
       </field>
       <field id="driver_name">
-        <phrase id="fldcaption" value="Driver Name" />
+        <phrase id="fldcaption" value="driver name" />
       </field>
       <field id="vehicle_no">
-        <phrase id="fldcaption" value="Vehicle No" />
+        <phrase id="fldcaption" value="vehicle no" />
       </field>
       <field id="requester_action">
-        <phrase id="fldcaption" value="Requester Action" />
+        <phrase id="fldcaption" value="requester action" />
         <phrase id="fldtagvalue1" value="0" />
         <phrase id="fldtagcaption1" value="Save Only" />
         <phrase id="fldtagvalue2" value="1" />
         <phrase id="fldtagcaption2" value="Save and Forward" />
       </field>
       <field id="requester_comment">
-        <phrase id="fldcaption" value="Requester Comment" />
+        <phrase id="fldcaption" value="requester comment" />
       </field>
       <field id="date_authorized">
-        <phrase id="fldcaption" value="Date Authorized" />
+        <phrase id="fldcaption" value="date authorized" />
       </field>
       <field id="authorizer_name">
-        <phrase id="fldcaption" value="Authorizer Name" />
+        <phrase id="fldcaption" value="authorizer name" />
       </field>
       <field id="authorizer_action">
-        <phrase id="fldcaption" value="Authorizer Action" />
+        <phrase id="fldcaption" value="authorizer action" />
         <phrase id="fldtagvalue1" value="0" />
         <phrase id="fldtagcaption1" value="Declined" />
         <phrase id="fldtagvalue2" value="1" />
         <phrase id="fldtagcaption2" value="Authorized" />
       </field>
       <field id="authorizer_comment">
-        <phrase id="fldcaption" value="Aauthorizer Comment" />
+        <phrase id="fldcaption" value="authorizer comment" />
       </field>
       <field id="status">
-        <phrase id="fldcaption" value="Status" />
+        <phrase id="fldcaption" value="status" />
       </field>
       <field id="rep_date">
-        <phrase id="fldcaption" value="Rep Date" />
+        <phrase id="fldcaption" value="rep date" />
       </field>
       <field id="rep_name">
-        <phrase id="fldcaption" value="Rep Name" />
+        <phrase id="fldcaption" value="rep name" />
       </field>
       <field id="outward_datetime">
-        <phrase id="fldcaption" value="Outward Datetime" />
+        <phrase id="fldcaption" value="outward datetime" />
       </field>
       <field id="rep_action">
-        <phrase id="fldcaption" value="Rep Action" />
+        <phrase id="fldcaption" value="rep action" />
         <phrase id="fldtagvalue1" value="0" />
         <phrase id="fldtagcaption1" value="Save Only" />
         <phrase id="fldtagvalue2" value="1" />
         <phrase id="fldtagcaption2" value="Acknowledged" />
       </field>
       <field id="rep_comment">
-        <phrase id="fldcaption" value="Rep Comment" />
+        <phrase id="fldcaption" value="rep comment" />
       </field>
+    </table>
+    <table id="materialnote_php">
+      <phrase id="tblcaption" value="Material note" />
     </table>
   </project>
 </ew-language>

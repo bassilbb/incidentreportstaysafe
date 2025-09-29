@@ -449,6 +449,8 @@ class cdefault {
 			$this->Page_Terminate("status_ssflist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'requisition_report'))
 			$this->Page_Terminate("requisition_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'materialnote.php'))
+			$this->Page_Terminate("materialnote.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {
