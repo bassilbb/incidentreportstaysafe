@@ -1631,6 +1631,14 @@ frequisition_reportview.Lists["x_rep_action"].Options = <?php echo json_encode($
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
+function ShowCertificate() {
+
+
+	var curCode = "<?php echo $requisition_module->code->ViewValue ?>";
+	window.location.href='material_note.php?code='+curCode;
+}
+
+
 </script>
 <?php } ?>
 <?php if ($requisition_report->Export == "") { ?>
@@ -1700,6 +1708,10 @@ $requisition_report_view->ShowMessage();
 <?php } ?>
 <input type="hidden" name="t" value="requisition_report">
 <input type="hidden" name="modal" value="<?php echo intval($requisition_report_view->IsModal) ?>">
+
+<button class="btn btn-primary ewButton" name="btnAction" id="btnAction" onclick="ShowCertificate();" type="button"><?php echo "View Material Outward Note"; ?></button>
+
+
 <?php if ($requisition_report->Export == "") { ?>
 <div class="ewMultiPage">
 <div class="nav-tabs-custom" id="requisition_report_view">
