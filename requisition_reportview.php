@@ -1712,6 +1712,10 @@ $requisition_report_view->ShowMessage();
 
 <button class="btn btn-primary ewButton" name="btnAction" id="btnAction" onclick="ShowCertificate();" type="button"><?php echo "View Material Outward Note"; ?></button>
 
+<button type="button" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+  Save
+</button>
+
 <?php if ($requisition_report->Export == "") { ?>
 <div class="ewMultiPage">
 <div class="nav-tabs-custom" id="requisition_report_view">
