@@ -4457,7 +4457,7 @@
       </field>
     </table>
     <table id="requisition_report">
-      <phrase id="tblcaption" value="requisition report" />
+      <phrase id="tblcaption" value="Requisition Report" />
       <phrase id="tblpagecaption1" value="Requisition Information" />
       <phrase id="tblpagecaption2" value="Authorizer Information" />
       <phrase id="tblpagecaption3" value="Warehouse Rep Information" />
