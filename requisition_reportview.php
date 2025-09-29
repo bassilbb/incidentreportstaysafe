@@ -1632,7 +1632,7 @@ frequisition_reportview.Lists["x_rep_action"].Options = <?php echo json_encode($
 function ShowCertificate() {
 
 
-	var curCode = "<?php echo $requisition_module->code->ViewValue ?>";
+	var curCode = "<?php echo $requisition_report->code->ViewValue ?>";
 	window.location.href='material_note.php?code='+curCode;
 }
 
