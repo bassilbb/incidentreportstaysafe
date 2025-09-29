@@ -893,7 +893,7 @@ class crequisition_report_view extends crequisition_report {
 
 		// date
 		$this->date->ViewValue = $this->date->CurrentValue;
-		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 0);
+		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 14);
 		$this->date->ViewCustomAttributes = "";
 
 		// reference
@@ -935,9 +935,9 @@ class crequisition_report_view extends crequisition_report {
 		// name
 		if (strval($this->name->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->name->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`');
+		$this->name->LookupFilters = array("dx1" => '`firstname`', "dx2" => '`lastname`', "dx3" => '`staffno`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->name, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -946,6 +946,7 @@ class crequisition_report_view extends crequisition_report {
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
 				$this->name->ViewValue = $this->name->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
@@ -957,12 +958,11 @@ class crequisition_report_view extends crequisition_report {
 		$this->name->ViewCustomAttributes = "";
 
 		// organization
-		$this->organization->ViewValue = $this->organization->CurrentValue;
 		if (strval($this->organization->CurrentValue) <> "") {
 			$sFilterWrk = "`branch_id`" . ew_SearchString("=", $this->organization->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `branch_id`, `branch_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `branch`";
 		$sWhereWrk = "";
-		$this->organization->LookupFilters = array();
+		$this->organization->LookupFilters = array("dx1" => '`branch_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->organization, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1005,11 +1005,12 @@ class crequisition_report_view extends crequisition_report {
 		$this->designation->ViewCustomAttributes = "";
 
 		// department
+		$this->department->ViewValue = $this->department->CurrentValue;
 		if (strval($this->department->CurrentValue) <> "") {
 			$sFilterWrk = "`department_id`" . ew_SearchString("=", $this->department->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `department_id`, `department_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `depertment`";
 		$sWhereWrk = "";
-		$this->department->LookupFilters = array("dx1" => '`department_name`');
+		$this->department->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->department, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1057,6 +1058,7 @@ class crequisition_report_view extends crequisition_report {
 		$this->date_authorized->ViewCustomAttributes = "";
 
 		// authorizer_name
+		$this->authorizer_name->ViewValue = $this->authorizer_name->CurrentValue;
 		if (strval($this->authorizer_name->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->authorizer_name->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
@@ -1094,7 +1096,6 @@ class crequisition_report_view extends crequisition_report {
 		$this->authorizer_comment->ViewCustomAttributes = "";
 
 		// status
-		$this->status->ViewValue = $this->status->CurrentValue;
 		if (strval($this->status->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `status_ssf`";
@@ -1601,25 +1602,25 @@ frequisition_reportview.MultiPage = new ew_MultiPage("frequisition_reportview");
 frequisition_reportview.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_staffno","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 frequisition_reportview.Lists["x_staff_id"].Data = "<?php echo $requisition_report_view->staff_id->LookupFilterQuery(FALSE, "view") ?>";
 frequisition_reportview.AutoSuggests["x_staff_id"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_view->staff_id->LookupFilterQuery(TRUE, "view"))) ?>;
-frequisition_reportview.Lists["x_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+frequisition_reportview.Lists["x_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 frequisition_reportview.Lists["x_name"].Data = "<?php echo $requisition_report_view->name->LookupFilterQuery(FALSE, "view") ?>";
 frequisition_reportview.Lists["x_organization"] = {"LinkField":"x_branch_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_branch_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"branch"};
 frequisition_reportview.Lists["x_organization"].Data = "<?php echo $requisition_report_view->organization->LookupFilterQuery(FALSE, "view") ?>";
-frequisition_reportview.AutoSuggests["x_organization"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_view->organization->LookupFilterQuery(TRUE, "view"))) ?>;
 frequisition_reportview.Lists["x_designation"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"designation"};
 frequisition_reportview.Lists["x_designation"].Data = "<?php echo $requisition_report_view->designation->LookupFilterQuery(FALSE, "view") ?>";
 frequisition_reportview.AutoSuggests["x_designation"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_view->designation->LookupFilterQuery(TRUE, "view"))) ?>;
 frequisition_reportview.Lists["x_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
 frequisition_reportview.Lists["x_department"].Data = "<?php echo $requisition_report_view->department->LookupFilterQuery(FALSE, "view") ?>";
+frequisition_reportview.AutoSuggests["x_department"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_view->department->LookupFilterQuery(TRUE, "view"))) ?>;
 frequisition_reportview.Lists["x_requester_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 frequisition_reportview.Lists["x_requester_action"].Options = <?php echo json_encode($requisition_report_view->requester_action->Options()) ?>;
 frequisition_reportview.Lists["x_authorizer_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 frequisition_reportview.Lists["x_authorizer_name"].Data = "<?php echo $requisition_report_view->authorizer_name->LookupFilterQuery(FALSE, "view") ?>";
+frequisition_reportview.AutoSuggests["x_authorizer_name"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_view->authorizer_name->LookupFilterQuery(TRUE, "view"))) ?>;
 frequisition_reportview.Lists["x_authorizer_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 frequisition_reportview.Lists["x_authorizer_action"].Options = <?php echo json_encode($requisition_report_view->authorizer_action->Options()) ?>;
 frequisition_reportview.Lists["x_status"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"status_ssf"};
 frequisition_reportview.Lists["x_status"].Data = "<?php echo $requisition_report_view->status->LookupFilterQuery(FALSE, "view") ?>";
-frequisition_reportview.AutoSuggests["x_status"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_view->status->LookupFilterQuery(TRUE, "view"))) ?>;
 frequisition_reportview.Lists["x_rep_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
 frequisition_reportview.Lists["x_rep_name"].Data = "<?php echo $requisition_report_view->rep_name->LookupFilterQuery(FALSE, "view") ?>";
 frequisition_reportview.AutoSuggests["x_rep_name"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_view->rep_name->LookupFilterQuery(TRUE, "view"))) ?>;
@@ -1631,7 +1632,6 @@ frequisition_reportview.Lists["x_rep_action"].Options = <?php echo json_encode($
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
-
 function ShowCertificate() {
 
 
