@@ -1701,6 +1701,7 @@ class crequisition_module extends cTable {
 		}
 		if (CurrentUserLevel() == 13) {
 			ew_AddFilter($filter, "`status` in (1)");
+			ew_AddFilter($filter, "`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."' OR (`status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."')");
 		}
 		if (CurrentUserLevel() == 9) {
 			ew_AddFilter($filter, "`status` in (3)");
