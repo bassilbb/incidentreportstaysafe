@@ -2,10 +2,10 @@
 
 // Menu
 $RootMenu = new cMenu("RootMenu", TRUE);
-$RootMenu->AddMenuItem(432, "mi_materialnote_php", $Language->MenuPhrase("432", "MenuText"), "materialnote.php", -1, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}materialnote.php'), FALSE, TRUE, "");
 $RootMenu->AddMenuItem(17, "mi_home_php", $Language->MenuPhrase("17", "MenuText"), "home.php", -1, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}home.php'), FALSE, TRUE, "far fa-home");
 $RootMenu->AddMenuItem(43, "mi_news", $Language->MenuPhrase("43", "MenuText"), "newslist.php", 17, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}news'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(47, "mi_testing_php", $Language->MenuPhrase("47", "MenuText"), "testing.php", 17, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}testing.php'), FALSE, TRUE, "fas fa-indent");
+$RootMenu->AddMenuItem(432, "mi_materialnote_php", $Language->MenuPhrase("432", "MenuText"), "materialnote.php", 17, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}materialnote.php'), FALSE, TRUE, "fas fa-indent");
 $RootMenu->AddMenuItem(33, "mci_Administrator", $Language->MenuPhrase("33", "MenuText"), "", -1, "", IsLoggedIn(), FALSE, TRUE, "fas fa-user");
 $RootMenu->AddMenuItem(1, "mi_branch", $Language->MenuPhrase("1", "MenuText"), "branchlist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}branch'), FALSE, FALSE, "fas fa-transgender-alt");
 $RootMenu->AddMenuItem(3, "mi_client", $Language->MenuPhrase("3", "MenuText"), "clientlist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}client'), FALSE, FALSE, "fas fa-user");
