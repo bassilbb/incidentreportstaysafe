@@ -957,12 +957,11 @@ class crequisition_report_view extends crequisition_report {
 		$this->name->ViewCustomAttributes = "";
 
 		// organization
-		$this->organization->ViewValue = $this->organization->CurrentValue;
 		if (strval($this->organization->CurrentValue) <> "") {
 			$sFilterWrk = "`branch_id`" . ew_SearchString("=", $this->organization->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `branch_id`, `branch_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `branch`";
 		$sWhereWrk = "";
-		$this->organization->LookupFilters = array();
+		$this->organization->LookupFilters = array("dx1" => '`branch_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->organization, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1605,7 +1604,6 @@ frequisition_reportview.Lists["x_name"] = {"LinkField":"x_id","Ajax":true,"AutoF
 frequisition_reportview.Lists["x_name"].Data = "<?php echo $requisition_report_view->name->LookupFilterQuery(FALSE, "view") ?>";
 frequisition_reportview.Lists["x_organization"] = {"LinkField":"x_branch_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_branch_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"branch"};
 frequisition_reportview.Lists["x_organization"].Data = "<?php echo $requisition_report_view->organization->LookupFilterQuery(FALSE, "view") ?>";
-frequisition_reportview.AutoSuggests["x_organization"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_view->organization->LookupFilterQuery(TRUE, "view"))) ?>;
 frequisition_reportview.Lists["x_designation"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"designation"};
 frequisition_reportview.Lists["x_designation"].Data = "<?php echo $requisition_report_view->designation->LookupFilterQuery(FALSE, "view") ?>";
 frequisition_reportview.AutoSuggests["x_designation"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $requisition_report_view->designation->LookupFilterQuery(TRUE, "view"))) ?>;
@@ -1631,14 +1629,12 @@ frequisition_reportview.Lists["x_rep_action"].Options = <?php echo json_encode($
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
-
 function ShowCertificate() {
 
 
-	var curCode = "<?php echo $requisition_report->code->ViewValue ?>";
+	var curCode = "<?php echo $requisition_module->code->ViewValue ?>";
 	window.location.href='material_note.php?code='+curCode;
 }
-
 
 </script>
 <?php } ?>
