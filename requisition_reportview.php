@@ -1634,7 +1634,7 @@ function ShowCertificate() {
 
 
 	var curCode = "<?php echo $requisition_report->code->ViewValue ?>";
-	window.location.href='material_note.php?code='+curCode;
+	window.location.href='materialnote.php?code='+curCode;
 }
 </script>
 <?php } ?>
