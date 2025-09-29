@@ -110,8 +110,10 @@ class crequisition_report extends cTable {
 		$this->fields['name'] = &$this->name;
 
 		// organization
-		$this->organization = new cField('requisition_report', 'requisition_report', 'x_organization', 'organization', '`organization`', '`organization`', 200, -1, FALSE, '`organization`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->organization = new cField('requisition_report', 'requisition_report', 'x_organization', 'organization', '`organization`', '`organization`', 200, -1, FALSE, '`organization`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->organization->Sortable = TRUE; // Allow sort
+		$this->organization->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->organization->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['organization'] = &$this->organization;
 
 		// designation
@@ -881,12 +883,11 @@ class crequisition_report extends cTable {
 		$this->name->ViewCustomAttributes = "";
 
 		// organization
-		$this->organization->ViewValue = $this->organization->CurrentValue;
 		if (strval($this->organization->CurrentValue) <> "") {
 			$sFilterWrk = "`branch_id`" . ew_SearchString("=", $this->organization->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `branch_id`, `branch_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `branch`";
 		$sWhereWrk = "";
-		$this->organization->LookupFilters = array();
+		$this->organization->LookupFilters = array("dx1" => '`branch_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->organization, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1271,8 +1272,6 @@ class crequisition_report extends cTable {
 		// organization
 		$this->organization->EditAttrs["class"] = "form-control";
 		$this->organization->EditCustomAttributes = "";
-		$this->organization->EditValue = $this->organization->CurrentValue;
-		$this->organization->PlaceHolder = ew_RemoveHtml($this->organization->FldCaption());
 
 		// designation
 		$this->designation->EditAttrs["class"] = "form-control";
