@@ -449,7 +449,7 @@ Page_Rendering();
 		DATE_FORMAT(r.outward_datetime, '%r') AS outward_time   -- 12-hour format with AM/PM
 
 
-		FROM requisition_report r
+		FROM requisition_module r
 		LEFT JOIN users u 
 			ON r.name = u.id                -- requester
 		LEFT JOIN users a 
