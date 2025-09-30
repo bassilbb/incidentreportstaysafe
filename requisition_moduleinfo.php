@@ -1700,9 +1700,16 @@ class crequisition_module extends cTable {
 			ew_AddFilter($filter, "`status` in (0,2)");
 		}
 		if (CurrentUserLevel() == 13) {
-			ew_AddFilter($filter, "`status` in (1)");
-			ew_AddFilter($filter, "`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."' OR (`status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."')");
-		}
+
+				//ew_AddFilter($filter, "`status` in (1)");
+			ew_AddFilter($filter, "`status` in (1) AND `organization` in (1) ");
+			}
+		if (CurrentUserLevel() == 3) {
+				ew_AddFilter($filter, "`status` in (1) AND `organization` = 3 ");
+			}
+		if (CurrentUserLevel() == 3) {
+				ew_AddFilter($filter, "`status` in (1) AND `organization` = 2 ");
+			}
 		if (CurrentUserLevel() == 9) {
 			ew_AddFilter($filter, "`status` in (3)");
 		}
@@ -1805,7 +1812,7 @@ class crequisition_module extends cTable {
 		}
 
 		// Supervisor
-		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 12 || CurrentUserLevel() == 14)) {
+		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 13 || CurrentUserLevel() == 3)) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$rsnew["date_authorized"] = $now->format('Y-m-d H:i:s');
@@ -1813,7 +1820,7 @@ class crequisition_module extends cTable {
 		}
 
 		// Administartor - Don't change field values captured by tenant
-		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 12 || CurrentUserLevel() == 14)) {
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 13 || CurrentUserLevel() == 3)) {
 			$rsnew["code"] = $rsold["code"];
 			$rsnew["date"] = $rsold["date"];
 			$rsnew["reference"] = $rsold["reference"];
@@ -1838,7 +1845,7 @@ class crequisition_module extends cTable {
 		}
 
 		// Warehouse Rep Area
-		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 13 || CurrentUserLevel() == 14)) {
+		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 9 || CurrentUserLevel() == 14)) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$rsnew["rep_date"] = $now->format('Y-m-d H:i:s');
@@ -1846,7 +1853,7 @@ class crequisition_module extends cTable {
 		}
 
 		// Warehouse Rep - Don't change field values captured by tenant
-		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 13 || CurrentUserLevel() == 14)) {
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 9 || CurrentUserLevel() == 14)) {
 			$rsnew["code"] = $rsold["code"];
 			$rsnew["date"] = $rsold["date"];
 			$rsnew["reference"] = $rsold["reference"];
@@ -1870,7 +1877,7 @@ class crequisition_module extends cTable {
 		}
 
 			// Approved by Authorizer
-			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 13 || CurrentUserLevel() == 14) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 13 || CurrentUserLevel() == 3) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
 				$rsnew["date_authorized"] = $now->format('Y-m-d H:i:s');
 				$rsnew["authorizer_name"] = $_SESSION['Staff_ID'];
 
@@ -2040,6 +2047,14 @@ class crequisition_module extends cTable {
 			$this->authorizer_name->CurrentValue = $_SESSION['Staff_ID'];
 			$this->authorizer_name->EditValue = $this->authorizer_name->CurrentValue;
 		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 ) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_authorized->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_authorized->EditValue = $this->date_authorized->CurrentValue;
+			$this->authorizer_name->CurrentValue = $_SESSION['Staff_ID'];
+			$this->authorizer_name->EditValue = $this->authorizer_name->CurrentValue;
+		}
 		if (CurrentPageID() == "edit" && CurrentUserLevel() == 9 ) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
@@ -2107,6 +2122,31 @@ class crequisition_module extends cTable {
 			  $this->rep_name->Visible = FALSE;
 			  $this->outward_datetime->Visible = FALSE;
 				}
+			if (CurrentUserLevel() == 3) {
+		      $this->date->ReadOnly = TRUE;
+			  $this->reference->ReadOnly = TRUE;
+			  $this->outward_location->Visible = TRUE;
+			  $this->delivery_point->Visible = TRUE;
+			  $this->name->ReadOnly = TRUE;
+			  $this->staff_id->ReadOnly = TRUE;
+			  $this->organization->ReadOnly = TRUE;
+			  $this->designation->ReadOnly = TRUE;
+			  $this->department->ReadOnly = TRUE;
+			  $this->item_description->Visible = TRUE;
+			  $this->driver_name->Visible = TRUE;
+			  $this->vehicle_no->Visible = TRUE;
+			  $this->requester_action->Visible = TRUE;
+			  $this->requester_comment->Visible = TRUE;
+			  $this->date_authorized->Visible = FALSE;
+			  $this->authorizer_name->Visible = FALSE;
+			  $this->authorizer_action->Visible = FALSE;
+			  $this->authorizer_comment->Visible = FALSE;
+			  $this->rep_date->Visible = FALSE;
+			  $this->rep_action->Visible = FALSE;
+			  $this->rep_comment->Visible = FALSE;
+			  $this->rep_name->Visible = FALSE;
+			  $this->outward_datetime->Visible = FALSE;
+				}
 			}
 
 		// Edit Page
@@ -2136,7 +2176,32 @@ class crequisition_module extends cTable {
 			  $this->rep_name->Visible = FALSE;
 			  $this->outward_datetime->Visible = FALSE;
 			}
-			if (CurrentUserLevel() == 13) {
+			if(CurrentUserLevel() == 13) {
+			  $this->date->ReadOnly = TRUE;
+			  $this->reference->ReadOnly = TRUE;
+			  $this->outward_location->ReadOnly = TRUE;
+			  $this->delivery_point->ReadOnly = TRUE;
+			  $this->name->ReadOnly = TRUE;
+			  $this->staff_id->ReadOnly = TRUE;
+			  $this->organization->ReadOnly = TRUE;
+			  $this->designation->ReadOnly = TRUE;
+			  $this->department->ReadOnly = TRUE;
+			  $this->item_description->ReadOnly = TRUE;
+			  $this->driver_name->ReadOnly = TRUE;
+			  $this->vehicle_no->ReadOnly = TRUE;
+			  $this->requester_action->ReadOnly = TRUE;
+			  $this->requester_comment->ReadOnly = TRUE;
+			  $this->date_authorized->ReadOnly = TRUE;
+			  $this->authorizer_action->Visible = TRUE;
+			  $this->authorizer_name->ReadOnly = TRUE;
+			  $this->authorizer_comment->Visible = TRUE;
+			  $this->rep_date->Visible = FALSE;
+			  $this->rep_action->Visible = FALSE;
+			  $this->rep_comment->Visible = FALSE;
+			  $this->rep_name->Visible = FALSE;
+			  $this->outward_datetime->Visible = FALSE;
+			}
+			if(CurrentUserLevel() == 3) {
 			  $this->date->ReadOnly = TRUE;
 			  $this->reference->ReadOnly = TRUE;
 			  $this->outward_location->ReadOnly = TRUE;
@@ -2212,7 +2277,7 @@ class crequisition_module extends cTable {
 				$this->authorizer_action->CellCssStyle = "color: orange; text-align: left;";
 				$this->authorizer_comment->CellCssStyle = "color: orange; text-align: left;";
 				$this->authorizer_name->CellCssStyle = "color: orange; text-align: left;";
-				$this->authorized_date->CellCssStyle = "color: orange; text-align: left;";
+				$this->date_authorized->CellCssStyle = "color: orange; text-align: left;";
 				$this->rep_date->CellCssStyle = "color: orange; text-align: left;";
 				$this->rep_name->CellCssStyle = "color: orange; text-align: left;";
 				$this->rep_action->CellCssStyle = "color: orange; text-align: left;";
@@ -2239,7 +2304,7 @@ class crequisition_module extends cTable {
 				$this->authorizer_action->CellCssStyle = "color: red; text-align: left;";
 				$this->authorizer_comment->CellCssStyle = "color: red; text-align: left;";
 				$this->authorizer_name->CellCssStyle = "color: red; text-align: left;";
-				$this->authorized_date->CellCssStyle = "color: red; text-align: left;";
+				$this->date_authorized->CellCssStyle = "color: red; text-align: left;";
 				$this->rep_date->CellCssStyle = "color: red; text-align: left;";
 				$this->rep_name->CellCssStyle = "color: red; text-align: left;";
 				$this->rep_action->CellCssStyle = "color: red; text-align: left;";
@@ -2266,7 +2331,7 @@ class crequisition_module extends cTable {
 				$this->authorizer_action->CellCssStyle = "color: blue; text-align: left;";
 				$this->authorizer_comment->CellCssStyle = "color: blue; text-align: left;";
 				$this->authorizer_name->CellCssStyle = "color: blue; text-align: left;";
-				$this->authorized_date->CellCssStyle = "color: blue; text-align: left;";
+				$this->date_authorized->CellCssStyle = "color: blue; text-align: left;";
 				$this->rep_date->CellCssStyle = "color: blue; text-align: left;";
 				$this->rep_name->CellCssStyle = "color: blue; text-align: left;";
 				$this->rep_action->CellCssStyle = "color: blue; text-align: left;";
@@ -2293,7 +2358,7 @@ class crequisition_module extends cTable {
 				$this->authorizer_action->CellCssStyle = "color: green; text-align: left;";
 				$this->authorizer_comment->CellCssStyle = "color: green; text-align: left;";
 				$this->authorizer_name->CellCssStyle = "color: green; text-align: left;";
-				$this->authorized_date->CellCssStyle = "color: green; text-align: left;";
+				$this->date_authorized->CellCssStyle = "color: green; text-align: left;";
 				$this->rep_date->CellCssStyle = "color: green; text-align: left;";
 				$this->rep_name->CellCssStyle = "color: green; text-align: left;";
 				$this->rep_action->CellCssStyle = "color: green; text-align: left;";

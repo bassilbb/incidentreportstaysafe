@@ -1838,7 +1838,120 @@ class crequisition_report extends cTable {
 
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
+			// Highligh rows in color based on the status
 
+		if (CurrentPageID() == "list") {
+
+			//$this->branch_code->Visible = FALSE;
+			if ($this->status->CurrentValue == 1) {
+				$this->code->CellCssStyle = "color: orange; text-align: left;";
+				$this->date->CellCssStyle = "color: orange; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: orange; text-align: left;";
+				$this->outward_location->CellCssStyle = "color: orange; text-align: left;";
+				$this->delivery_point->CellCssStyle = "color: orange; text-align: left;";
+				$this->name->CellCssStyle = "color: orange; text-align: left;";
+				$this->organization->CellCssStyle = "color: orange; text-align: left;";
+				$this->reference->CellCssStyle = "color: orange; text-align: left;";
+				$this->designation->CellCssStyle = "color: orange; text-align: left;";
+				$this->department->CellCssStyle = "color: orange; text-align: left;";
+				$this->status->CellCssStyle = "color: orange; text-align: left;";
+				$this->item_description->CellCssStyle = "color: orange; text-align: left;";
+				$this->driver_name->CellCssStyle = "color: orange; text-align: left;";
+				$this->vehicle_no->CellCssStyle = "color: orange; text-align: left;";			
+				$this->requester_action->CellCssStyle = "color: orange; text-align: left;";
+				$this->requester_comment->CellCssStyle = "color: orange; text-align: left;";
+				$this->authorizer_action->CellCssStyle = "color: orange; text-align: left;";
+				$this->authorizer_comment->CellCssStyle = "color: orange; text-align: left;";
+				$this->authorizer_name->CellCssStyle = "color: orange; text-align: left;";
+				$this->date_authorized->CellCssStyle = "color: orange; text-align: left;";
+				$this->rep_date->CellCssStyle = "color: orange; text-align: left;";
+				$this->rep_name->CellCssStyle = "color: orange; text-align: left;";
+				$this->rep_action->CellCssStyle = "color: orange; text-align: left;";
+				$this->rep_comment->CellCssStyle = "color: orange; text-align: left;";
+				$this->outward_datetime->CellCssStyle = "color: orange; text-align: left;";			
+			}
+			if ($this->status->CurrentValue == 2) {
+				$this->code->CellCssStyle = "color: red; text-align: left;";
+				$this->date->CellCssStyle = "color: red; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: red; text-align: left;";
+				$this->outward_location->CellCssStyle = "color: red; text-align: left;";
+				$this->delivery_point->CellCssStyle = "color: red; text-align: left;";
+				$this->name->CellCssStyle = "color: red; text-align: left;";
+				$this->organization->CellCssStyle = "color: red; text-align: left;";
+				$this->reference->CellCssStyle = "color: red; text-align: left;";
+				$this->designation->CellCssStyle = "color: red; text-align: left;";
+				$this->department->CellCssStyle = "color: red; text-align: left;";
+				$this->status->CellCssStyle = "color: red; text-align: left;";
+				$this->item_description->CellCssStyle = "color: red; text-align: left;";
+				$this->driver_name->CellCssStyle = "color: red; text-align: left;";
+				$this->vehicle_no->CellCssStyle = "color: red; text-align: left;";			
+				$this->requester_action->CellCssStyle = "color: red; text-align: left;";
+				$this->requester_comment->CellCssStyle = "color: red; text-align: left;";
+				$this->authorizer_action->CellCssStyle = "color: red; text-align: left;";
+				$this->authorizer_comment->CellCssStyle = "color: red; text-align: left;";
+				$this->authorizer_name->CellCssStyle = "color: red; text-align: left;";
+				$this->date_authorized->CellCssStyle = "color: red; text-align: left;";
+				$this->rep_date->CellCssStyle = "color: red; text-align: left;";
+				$this->rep_name->CellCssStyle = "color: red; text-align: left;";
+				$this->rep_action->CellCssStyle = "color: red; text-align: left;";
+				$this->rep_comment->CellCssStyle = "color: red; text-align: left;";
+				$this->outward_datetime->CellCssStyle = "color: red; text-align: left;";			
+			}
+			if ($this->status->CurrentValue == 3) {
+				$this->code->CellCssStyle = "color: blue; text-align: left;";
+				$this->date->CellCssStyle = "color: blue; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: blue; text-align: left;";
+				$this->outward_location->CellCssStyle = "color: blue; text-align: left;";
+				$this->delivery_point->CellCssStyle = "color: blue; text-align: left;";
+				$this->name->CellCssStyle = "color: blue; text-align: left;";
+				$this->organization->CellCssStyle = "color: blue; text-align: left;";
+				$this->reference->CellCssStyle = "color: blue; text-align: left;";
+				$this->designation->CellCssStyle = "color: blue; text-align: left;";
+				$this->department->CellCssStyle = "color: blue; text-align: left;";
+				$this->status->CellCssStyle = "color: blue; text-align: left;";
+				$this->item_description->CellCssStyle = "color: blue; text-align: left;";
+				$this->driver_name->CellCssStyle = "color: blue; text-align: left;";
+				$this->vehicle_no->CellCssStyle = "color: blue; text-align: left;";			
+				$this->requester_action->CellCssStyle = "color: blue; text-align: left;";
+				$this->requester_comment->CellCssStyle = "color: blue; text-align: left;";
+				$this->authorizer_action->CellCssStyle = "color: blue; text-align: left;";
+				$this->authorizer_comment->CellCssStyle = "color: blue; text-align: left;";
+				$this->authorizer_name->CellCssStyle = "color: blue; text-align: left;";
+				$this->date_authorized->CellCssStyle = "color: blue; text-align: left;";
+				$this->rep_date->CellCssStyle = "color: blue; text-align: left;";
+				$this->rep_name->CellCssStyle = "color: blue; text-align: left;";
+				$this->rep_action->CellCssStyle = "color: blue; text-align: left;";
+				$this->rep_comment->CellCssStyle = "color: blue; text-align: left;";
+				$this->outward_datetime->CellCssStyle = "color: blue; text-align: left;";			
+			}
+			if ($this->status->CurrentValue == 4) {
+				$this->code->CellCssStyle = "color: green; text-align: left;";
+				$this->date->CellCssStyle = "color: green; text-align: left;";
+				$this->staff_id->CellCssStyle = "color: green; text-align: left;";
+				$this->outward_location->CellCssStyle = "color: green; text-align: left;";
+				$this->delivery_point->CellCssStyle = "color: green; text-align: left;";
+				$this->name->CellCssStyle = "color: green; text-align: left;";
+				$this->organization->CellCssStyle = "color: green; text-align: left;";
+				$this->reference->CellCssStyle = "color: green; text-align: left;";
+				$this->designation->CellCssStyle = "color: green; text-align: left;";
+				$this->department->CellCssStyle = "color: green; text-align: left;";
+				$this->status->CellCssStyle = "color: green; text-align: left;";
+				$this->item_description->CellCssStyle = "color: green; text-align: left;";
+				$this->driver_name->CellCssStyle = "color: green; text-align: left;";
+				$this->vehicle_no->CellCssStyle = "color: green; text-align: left;";			
+				$this->requester_action->CellCssStyle = "color: green; text-align: left;";
+				$this->requester_comment->CellCssStyle = "color: green; text-align: left;";
+				$this->authorizer_action->CellCssStyle = "color: green; text-align: left;";
+				$this->authorizer_comment->CellCssStyle = "color: green; text-align: left;";
+				$this->authorizer_name->CellCssStyle = "color: green; text-align: left;";
+				$this->date_authorized->CellCssStyle = "color: green; text-align: left;";
+				$this->rep_date->CellCssStyle = "color: green; text-align: left;";
+				$this->rep_name->CellCssStyle = "color: green; text-align: left;";
+				$this->rep_action->CellCssStyle = "color: green; text-align: left;";
+				$this->rep_comment->CellCssStyle = "color: green; text-align: left;";
+				$this->outward_datetime->CellCssStyle = "color: green; text-align: left;";			
+			}
+		}
 	}
 
 	// User ID Filtering event

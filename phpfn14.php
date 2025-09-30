@@ -5099,6 +5099,7 @@ class cAdvancedSecurity {
 		$_SESSION['Designation'] = $rs['designation'];
 		$_SESSION['Firstname'] = $rs['firstname'];
 		$_SESSION['Branch'] = $rs['branch'];
+		$_SESSION['Organization'] = $rs['organization'];
 		$_SESSION['Name'] = $rs['name'];
 
 	//	$_SESSION['StfID'] = "";
