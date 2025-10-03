@@ -2475,7 +2475,7 @@ if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchang
 $requisition_module->name->EditAttrs["onchange"] = "";
 ?>
 <span id="as_x_name" style="white-space: nowrap; z-index: 8930">
-	<input type="text" name="sv_x_name" id="sv_x_name" value="<?php echo $requisition_module->name->EditValue ?>" size="30" maxlength="60" placeholder="<?php echo ew_HtmlEncode($requisition_module->name->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($requisition_module->name->getPlaceHolder()) ?>"<?php echo $requisition_module->name->EditAttributes() ?>>
+	<input type="text" name="sv_x_name" id="sv_x_name" value="<?php echo $requisition_module->name->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($requisition_module->name->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($requisition_module->name->getPlaceHolder()) ?>"<?php echo $requisition_module->name->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="requisition_module" data-field="x_name" data-page="1" data-value-separator="<?php echo $requisition_module->name->DisplayValueSeparatorAttribute() ?>" name="x_name" id="x_name" value="<?php echo ew_HtmlEncode($requisition_module->name->CurrentValue) ?>"<?php echo $wrkonchange ?>>
 <script type="text/javascript">
