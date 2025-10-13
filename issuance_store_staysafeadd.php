@@ -881,7 +881,7 @@ class cissuance_store_staysafe_add extends cissuance_store_staysafe {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory_staysafe`";
 		$sWhereWrk = "";
-		$this->material_name->LookupFilters = array();
+		$this->material_name->LookupFilters = array("dx1" => '`material_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1230,7 +1230,6 @@ class cissuance_store_staysafe_add extends cissuance_store_staysafe {
 			$this->reference_id->PlaceHolder = ew_RemoveHtml($this->reference_id->FldCaption());
 
 			// material_name
-			$this->material_name->EditAttrs["class"] = "form-control";
 			$this->material_name->EditCustomAttributes = "";
 			if (trim(strval($this->material_name->CurrentValue)) == "") {
 				$sFilterWrk = "0=1";
@@ -1239,12 +1238,19 @@ class cissuance_store_staysafe_add extends cissuance_store_staysafe {
 			}
 			$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `inventory_staysafe`";
 			$sWhereWrk = "";
-			$this->material_name->LookupFilters = array();
+			$this->material_name->LookupFilters = array("dx1" => '`material_name`');
 			ew_AddFilter($sWhereWrk, $sFilterWrk);
 			$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
 			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$sSqlWrk .= " ORDER BY `id` ASC";
 			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+				$this->material_name->ViewValue = $this->material_name->DisplayValue($arwrk);
+			} else {
+				$this->material_name->ViewValue = $Language->Phrase("PleaseSelect");
+			}
 			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
 			if ($rswrk) $rswrk->Close();
 			$this->material_name->EditValue = $arwrk;
@@ -1760,8 +1766,8 @@ class cissuance_store_staysafe_add extends cissuance_store_staysafe {
 		case "x_material_name":
 			$sSqlWrk = "";
 			$sSqlWrk = "SELECT `id` AS `LinkFld`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory_staysafe`";
-			$sWhereWrk = "";
-			$fld->LookupFilters = array();
+			$sWhereWrk = "{filter}";
+			$fld->LookupFilters = array("dx1" => '`material_name`');
 			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
 			$sSqlWrk = "";
 			$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
@@ -2236,9 +2242,11 @@ $issuance_store_staysafe_add->ShowMessage();
 		<label id="elh_issuance_store_staysafe_material_name" for="x_material_name" class="<?php echo $issuance_store_staysafe_add->LeftColumnClass ?>"><?php echo $issuance_store_staysafe->material_name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $issuance_store_staysafe_add->RightColumnClass ?>"><div<?php echo $issuance_store_staysafe->material_name->CellAttributes() ?>>
 <span id="el_issuance_store_staysafe_material_name">
-<select data-table="issuance_store_staysafe" data-field="x_material_name" data-value-separator="<?php echo $issuance_store_staysafe->material_name->DisplayValueSeparatorAttribute() ?>" id="x_material_name" name="x_material_name"<?php echo $issuance_store_staysafe->material_name->EditAttributes() ?>>
-<?php echo $issuance_store_staysafe->material_name->SelectOptionListHtml("x_material_name") ?>
-</select>
+<span class="ewLookupList">
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_material_name"><?php echo (strval($issuance_store_staysafe->material_name->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $issuance_store_staysafe->material_name->ViewValue); ?></span>
+</span>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($issuance_store_staysafe->material_name->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_material_name',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($issuance_store_staysafe->material_name->ReadOnly || $issuance_store_staysafe->material_name->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="issuance_store_staysafe" data-field="x_material_name" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $issuance_store_staysafe->material_name->DisplayValueSeparatorAttribute() ?>" name="x_material_name" id="x_material_name" value="<?php echo $issuance_store_staysafe->material_name->CurrentValue ?>"<?php echo $issuance_store_staysafe->material_name->EditAttributes() ?>>
 </span>
 <?php echo $issuance_store_staysafe->material_name->CustomMsg ?></div></div>
 	</div>
