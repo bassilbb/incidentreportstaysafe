@@ -1514,9 +1514,7 @@ class crestock_module_staysafe extends cTable {
 		}
 
 		// Supervisor
-		   //if(CurrentPageID() == "edit" && CurrentUserLevel() == 11) {
-
-		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 11 || CurrentUserLevel() == 3) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+		   if(CurrentPageID() == "edit" && CurrentUserLevel() == 11) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
@@ -1524,9 +1522,7 @@ class crestock_module_staysafe extends cTable {
 		}
 
 		// Verified By Guard - Don't change field values captured by tenant
-		//if (CurrentPageID() == "edit" && CurrentUserLevel() == 11) {
-
-		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 11 || CurrentUserLevel() == 3) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 11) {
 			$rsnew["code"] = $rsold["code"];
 			$rsnew["date_restocked"] = $rsold["date_restocked"];
 			$rsnew["reference_id"] = $rsold["reference_id"];
@@ -1573,9 +1569,7 @@ class crestock_module_staysafe extends cTable {
 			}
 
 			// Verified by Guard=========================================================================================
-			//if (CurrentPageID() == "edit" && CurrentUserLevel() == 11) {
-
-			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 11 || CurrentUserLevel() == 3) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+			if (CurrentPageID() == "edit" && CurrentUserLevel() == 11) {
 				$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
 				$rsnew["verified_by"] = $_SESSION['Staff_ID'];
 
