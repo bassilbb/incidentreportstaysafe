@@ -1371,6 +1371,9 @@ class cinventory_staysafe extends cTable {
 		if (CurrentUserLevel() == 11) {
 			ew_AddFilter($filter, "`statuss` in (3)");
 		}
+		if (CurrentUserLevel() == 3) {
+			ew_AddFilter($filter, "`statuss` in (3)");
+		}
 	}
 
 	// Recordset Selected event
@@ -1576,6 +1579,32 @@ class cinventory_staysafe extends cTable {
 			$rsnew["approver_comment"] = $rsold["approver_comment"];
 		}
 
+		// Supervisor
+		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
+			$rsnew["verified_by"] = $_SESSION['Staff_ID'];
+		}
+
+		// Verified By Guard - Don't change field values captured by tenant
+		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+			$rsnew["id"] = $rsold["id"];
+			$rsnew["date_recieved"] = $rsold["date_recieved"];
+			$rsnew["reference_id"] = $rsold["reference_id"];
+			$rsnew["staff_id"] = $rsold["staff_id"];
+			$rsnew["material_name"] = $rsold["material_name"];
+			$rsnew["quantity"] = $rsold["quantity"];
+			$rsnew["type"] = $rsold["type"];
+			$rsnew["capacity"] = $rsold["capacity"];
+
+			//$rsnew["status"] = $rsold["status"];
+			$rsnew["recieved_action"] = $rsold["recieved_action"];
+			$rsnew["recieved_comment"] = $rsold["recieved_comment"];
+			$rsnew["approver_action"] = $rsold["approver_action"];
+			$rsnew["approver_comment"] = $rsold["approver_comment"];
+		}
+
 			// Approved by Administrators
 			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 10 || CurrentUserLevel() == 14) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
 				$rsnew["date_approved"] = $now->format('Y-m-d H:i:s');
@@ -1594,10 +1623,10 @@ class cinventory_staysafe extends cTable {
 				}
 
 				// Approved by Administrators
-				if ($this->approver_action->CurrentValue == 1 ) {
+				if ($this->approver_action->CurrentValue == 1 && $this->statuss->CurrentValue == 1 ) {
 
 					// New
-					if ($this->statuss->CurrentValue == 1) {
+					if ($this->statuss->CurrentValue == 1 && CurrentUserLevel() == 10) {
 						$rsnew["statuss"] = 3;					
 						$rsnew["approver_action"] = 1;
 					}
@@ -1605,7 +1634,7 @@ class cinventory_staysafe extends cTable {
 				}
 
 			// Verified by Guard=========================================================================================
-			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 11 && $this->status->CurrentValue == 3)) {
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 11 && $this->statuss->CurrentValue == 3)) {
 				$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
 				$rsnew["verified_by"] = $_SESSION['Staff_ID'];
 			  }
@@ -1626,6 +1655,37 @@ class cinventory_staysafe extends cTable {
 
 					// New
 					if ($this->statuss->CurrentValue == 3 && CurrentUserLevel() == 11 ) {
+						$rsnew["statuss"] = 4;					
+						$rsnew["verified_action"] = 2;
+
+						//$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
+					}
+					$this->setSuccessMessage("&#x25C9; Recieved Items successfully  Verified &#x2714;");
+				}
+
+				// Verified by Guard=========================================================================================
+			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 && $this->statuss->CurrentValue == 3)) {
+				$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
+				$rsnew["verified_by"] = $_SESSION['Staff_ID'];
+			  }
+
+			   	// Verified by Guard
+				if ($this->verified_action->CurrentValue == 0 && $this->statuss->CurrentValue == 3 ) {
+
+					// New
+					if ($this->statuss->CurrentValue == 3) {
+						$rsnew["statuss"] = 2;					
+						$rsnew["verified_action"] = 0;
+					}
+
+					//$this->setSuccessMessage("&#x25C9; Record Saved &#x2714;");
+				}
+
+				// Verified by Guard
+				if ($this->verified_action->CurrentValue == 2 ) {
+
+					// New
+					if ($this->statuss->CurrentValue == 3 && CurrentUserLevel() == 3 ) {
 						$rsnew["statuss"] = 4;					
 						$rsnew["verified_action"] = 2;
 
@@ -1752,6 +1812,16 @@ class cinventory_staysafe extends cTable {
 			$this->verified_by->CurrentValue = $_SESSION['Staff_ID'];
 			$this->verified_by->EditValue = $this->verified_by->CurrentValue;
 		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 ) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+		 	$this->verified_date->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->verified_date->EditValue = $this->verified_date->CurrentValue;
+			$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
+			$this->staff_id->EditValue = $this->staff_id->CurrentValue;
+			$this->verified_by->CurrentValue = $_SESSION['Staff_ID'];
+			$this->verified_by->EditValue = $this->verified_by->CurrentValue;
+		}
 	}
 
 	// Row Rendered event
@@ -1854,6 +1924,28 @@ class cinventory_staysafe extends cTable {
 					$this->verified_by->Visible = FALSE;
 				}
 				if (CurrentUserLevel() == 11) {
+					$this->date_recieved->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->material_name->ReadOnly = TRUE;
+					$this->quantity->ReadOnly = TRUE;
+					$this->type->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->recieved_by->ReadOnly = TRUE;
+					$this->recieved_by->ReadOnly = TRUE;
+					$this->recieved_action->ReadOnly = TRUE;
+					$this->recieved_comment->ReadOnly = TRUE;
+					$this->date_approved->ReadOnly = TRUE;
+					$this->approver_action->ReadOnly = TRUE;
+					$this->approver_comment->ReadOnly = TRUE;
+					$this->approved_by->ReadOnly = TRUE;
+					$this->verified_date->ReadOnly = TRUE;
+					$this->verified_action->Visible = TRUE;
+					$this->verified_comment->Visible = TRUE;
+
+					//$this->verified_by->ReadOnly = TRUE;
+				}
+				if (CurrentUserLevel() == 3) {
 					$this->date_recieved->ReadOnly = TRUE;
 					$this->reference_id->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
