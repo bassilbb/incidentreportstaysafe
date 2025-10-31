@@ -2159,6 +2159,27 @@ class cissuance_store extends cTable {
 					$this->verified_comment->Visible = FALSE;
 					$this->verified_by->Visible = FALSE;
 				}
+
+				if (CurrentUserLevel() == 4) {
+					$this->date->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->quantity_in->ReadOnly = TRUE;
+					$this->quantity_type->ReadOnly = TRUE;
+					$this->quantity_out->ReadOnly = TRUE;
+					$this->total_quantity->ReadOnly = TRUE;
+					$this->issued_action->ReadOnly = TRUE;
+					$this->issued_comment->ReadOnly = TRUE;
+					$this->issued_by->ReadOnly = TRUE;
+					$this->approver_date->Visible = FALSE;
+					$this->approver_action->Visible = TRUE;
+					$this->approved_comment->Visible = TRUE;
+					$this->approved_by->Visible = FALSE;
+					$this->verified_date->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+				}
 				if (CurrentUserLevel() == 5) {
 					$this->date->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
