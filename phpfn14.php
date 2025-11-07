@@ -5115,6 +5115,8 @@ class cAdvancedSecurity {
 		$_SESSION['INSS_ID'] = "";
 		$_SESSION['RSTO_ID'] = "";
 		$_SESSION['REQ_ID'] = "";
+		$_SESSION['REFI_NO'] = "";
+		$_SESSION['SYSTO_ID'] = "";
 
 		//$_SESSION['STAffNO'] = "";
 		$_SESSION['MyReportCount'] = 0;

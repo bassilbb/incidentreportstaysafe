@@ -16,11 +16,16 @@ class cpc_issuance extends cTable {
 	var $id;
 	var $issued_date;
 	var $reference_id;
+	var $material_name;
 	var $asset_tag;
 	var $make;
 	var $ram;
 	var $hard_disk;
 	var $color;
+	var $capacity;
+	var $quantity_in;
+	var $quantity_out;
+	var $total_quantity;
 	var $department;
 	var $designation;
 	var $assign_to;
@@ -83,6 +88,13 @@ class cpc_issuance extends cTable {
 		$this->reference_id->Sortable = TRUE; // Allow sort
 		$this->fields['reference_id'] = &$this->reference_id;
 
+		// material_name
+		$this->material_name = new cField('pc_issuance', 'pc_issuance', 'x_material_name', 'material_name', '`material_name`', '`material_name`', 3, -1, FALSE, '`material_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->material_name->Sortable = TRUE; // Allow sort
+		$this->material_name->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->material_name->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
+		$this->fields['material_name'] = &$this->material_name;
+
 		// asset_tag
 		$this->asset_tag = new cField('pc_issuance', 'pc_issuance', 'x_asset_tag', 'asset_tag', '`asset_tag`', '`asset_tag`', 200, -1, FALSE, '`asset_tag`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->asset_tag->Sortable = TRUE; // Allow sort
@@ -107,6 +119,26 @@ class cpc_issuance extends cTable {
 		$this->color = new cField('pc_issuance', 'pc_issuance', 'x_color', 'color', '`color`', '`color`', 200, -1, FALSE, '`color`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->color->Sortable = TRUE; // Allow sort
 		$this->fields['color'] = &$this->color;
+
+		// capacity
+		$this->capacity = new cField('pc_issuance', 'pc_issuance', 'x_capacity', 'capacity', '`capacity`', '`capacity`', 200, -1, FALSE, '`capacity`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->capacity->Sortable = TRUE; // Allow sort
+		$this->fields['capacity'] = &$this->capacity;
+
+		// quantity_in
+		$this->quantity_in = new cField('pc_issuance', 'pc_issuance', 'x_quantity_in', 'quantity_in', '`quantity_in`', '`quantity_in`', 200, -1, FALSE, '`quantity_in`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->quantity_in->Sortable = TRUE; // Allow sort
+		$this->fields['quantity_in'] = &$this->quantity_in;
+
+		// quantity_out
+		$this->quantity_out = new cField('pc_issuance', 'pc_issuance', 'x_quantity_out', 'quantity_out', '`quantity_out`', '`quantity_out`', 200, -1, FALSE, '`quantity_out`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->quantity_out->Sortable = TRUE; // Allow sort
+		$this->fields['quantity_out'] = &$this->quantity_out;
+
+		// total_quantity
+		$this->total_quantity = new cField('pc_issuance', 'pc_issuance', 'x_total_quantity', 'total_quantity', '`total_quantity`', '`total_quantity`', 200, -1, FALSE, '`total_quantity`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->total_quantity->Sortable = TRUE; // Allow sort
+		$this->fields['total_quantity'] = &$this->total_quantity;
 
 		// department
 		$this->department = new cField('pc_issuance', 'pc_issuance', 'x_department', 'department', '`department`', '`department`', 3, -1, FALSE, '`department`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
@@ -732,11 +764,16 @@ class cpc_issuance extends cTable {
 		$this->id->setDbValue($rs->fields('id'));
 		$this->issued_date->setDbValue($rs->fields('issued_date'));
 		$this->reference_id->setDbValue($rs->fields('reference_id'));
+		$this->material_name->setDbValue($rs->fields('material_name'));
 		$this->asset_tag->setDbValue($rs->fields('asset_tag'));
 		$this->make->setDbValue($rs->fields('make'));
 		$this->ram->setDbValue($rs->fields('ram'));
 		$this->hard_disk->setDbValue($rs->fields('hard_disk'));
 		$this->color->setDbValue($rs->fields('color'));
+		$this->capacity->setDbValue($rs->fields('capacity'));
+		$this->quantity_in->setDbValue($rs->fields('quantity_in'));
+		$this->quantity_out->setDbValue($rs->fields('quantity_out'));
+		$this->total_quantity->setDbValue($rs->fields('total_quantity'));
 		$this->department->setDbValue($rs->fields('department'));
 		$this->designation->setDbValue($rs->fields('designation'));
 		$this->assign_to->setDbValue($rs->fields('assign_to'));
@@ -763,11 +800,16 @@ class cpc_issuance extends cTable {
 		// id
 		// issued_date
 		// reference_id
+		// material_name
 		// asset_tag
 		// make
 		// ram
 		// hard_disk
 		// color
+		// capacity
+		// quantity_in
+		// quantity_out
+		// total_quantity
 		// department
 		// designation
 		// assign_to
@@ -795,6 +837,29 @@ class cpc_issuance extends cTable {
 		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
 		$this->reference_id->ViewCustomAttributes = "";
 
+		// material_name
+		if (strval($this->material_name->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `system_inventory`";
+		$sWhereWrk = "";
+		$this->material_name->LookupFilters = array("dx1" => '`material_name`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->material_name->ViewValue = $this->material_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->material_name->ViewValue = $this->material_name->CurrentValue;
+			}
+		} else {
+			$this->material_name->ViewValue = NULL;
+		}
+		$this->material_name->ViewCustomAttributes = "";
+
 		// asset_tag
 		$this->asset_tag->ViewValue = $this->asset_tag->CurrentValue;
 		$this->asset_tag->ViewCustomAttributes = "";
@@ -814,6 +879,22 @@ class cpc_issuance extends cTable {
 		// color
 		$this->color->ViewValue = $this->color->CurrentValue;
 		$this->color->ViewCustomAttributes = "";
+
+		// capacity
+		$this->capacity->ViewValue = $this->capacity->CurrentValue;
+		$this->capacity->ViewCustomAttributes = "";
+
+		// quantity_in
+		$this->quantity_in->ViewValue = $this->quantity_in->CurrentValue;
+		$this->quantity_in->ViewCustomAttributes = "";
+
+		// quantity_out
+		$this->quantity_out->ViewValue = $this->quantity_out->CurrentValue;
+		$this->quantity_out->ViewCustomAttributes = "";
+
+		// total_quantity
+		$this->total_quantity->ViewValue = $this->total_quantity->CurrentValue;
+		$this->total_quantity->ViewCustomAttributes = "";
 
 		// department
 		if (strval($this->department->CurrentValue) <> "") {
@@ -1044,6 +1125,11 @@ class cpc_issuance extends cTable {
 		$this->reference_id->HrefValue = "";
 		$this->reference_id->TooltipValue = "";
 
+		// material_name
+		$this->material_name->LinkCustomAttributes = "";
+		$this->material_name->HrefValue = "";
+		$this->material_name->TooltipValue = "";
+
 		// asset_tag
 		$this->asset_tag->LinkCustomAttributes = "";
 		$this->asset_tag->HrefValue = "";
@@ -1068,6 +1154,26 @@ class cpc_issuance extends cTable {
 		$this->color->LinkCustomAttributes = "";
 		$this->color->HrefValue = "";
 		$this->color->TooltipValue = "";
+
+		// capacity
+		$this->capacity->LinkCustomAttributes = "";
+		$this->capacity->HrefValue = "";
+		$this->capacity->TooltipValue = "";
+
+		// quantity_in
+		$this->quantity_in->LinkCustomAttributes = "";
+		$this->quantity_in->HrefValue = "";
+		$this->quantity_in->TooltipValue = "";
+
+		// quantity_out
+		$this->quantity_out->LinkCustomAttributes = "";
+		$this->quantity_out->HrefValue = "";
+		$this->quantity_out->TooltipValue = "";
+
+		// total_quantity
+		$this->total_quantity->LinkCustomAttributes = "";
+		$this->total_quantity->HrefValue = "";
+		$this->total_quantity->TooltipValue = "";
 
 		// department
 		$this->department->LinkCustomAttributes = "";
@@ -1166,6 +1272,10 @@ class cpc_issuance extends cTable {
 		$this->reference_id->EditValue = $this->reference_id->CurrentValue;
 		$this->reference_id->PlaceHolder = ew_RemoveHtml($this->reference_id->FldCaption());
 
+		// material_name
+		$this->material_name->EditAttrs["class"] = "form-control";
+		$this->material_name->EditCustomAttributes = "";
+
 		// asset_tag
 		$this->asset_tag->EditAttrs["class"] = "form-control";
 		$this->asset_tag->EditCustomAttributes = "";
@@ -1195,6 +1305,30 @@ class cpc_issuance extends cTable {
 		$this->color->EditCustomAttributes = "";
 		$this->color->EditValue = $this->color->CurrentValue;
 		$this->color->PlaceHolder = ew_RemoveHtml($this->color->FldCaption());
+
+		// capacity
+		$this->capacity->EditAttrs["class"] = "form-control";
+		$this->capacity->EditCustomAttributes = "";
+		$this->capacity->EditValue = $this->capacity->CurrentValue;
+		$this->capacity->PlaceHolder = ew_RemoveHtml($this->capacity->FldCaption());
+
+		// quantity_in
+		$this->quantity_in->EditAttrs["class"] = "form-control";
+		$this->quantity_in->EditCustomAttributes = "";
+		$this->quantity_in->EditValue = $this->quantity_in->CurrentValue;
+		$this->quantity_in->PlaceHolder = ew_RemoveHtml($this->quantity_in->FldCaption());
+
+		// quantity_out
+		$this->quantity_out->EditAttrs["class"] = "form-control";
+		$this->quantity_out->EditCustomAttributes = "";
+		$this->quantity_out->EditValue = $this->quantity_out->CurrentValue;
+		$this->quantity_out->PlaceHolder = ew_RemoveHtml($this->quantity_out->FldCaption());
+
+		// total_quantity
+		$this->total_quantity->EditAttrs["class"] = "form-control";
+		$this->total_quantity->EditCustomAttributes = "";
+		$this->total_quantity->EditValue = $this->total_quantity->CurrentValue;
+		$this->total_quantity->PlaceHolder = ew_RemoveHtml($this->total_quantity->FldCaption());
 
 		// department
 		$this->department->EditAttrs["class"] = "form-control";
@@ -1288,11 +1422,16 @@ class cpc_issuance extends cTable {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->issued_date->Exportable) $Doc->ExportCaption($this->issued_date);
 					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
+					if ($this->material_name->Exportable) $Doc->ExportCaption($this->material_name);
 					if ($this->asset_tag->Exportable) $Doc->ExportCaption($this->asset_tag);
 					if ($this->make->Exportable) $Doc->ExportCaption($this->make);
 					if ($this->ram->Exportable) $Doc->ExportCaption($this->ram);
 					if ($this->hard_disk->Exportable) $Doc->ExportCaption($this->hard_disk);
 					if ($this->color->Exportable) $Doc->ExportCaption($this->color);
+					if ($this->capacity->Exportable) $Doc->ExportCaption($this->capacity);
+					if ($this->quantity_in->Exportable) $Doc->ExportCaption($this->quantity_in);
+					if ($this->quantity_out->Exportable) $Doc->ExportCaption($this->quantity_out);
+					if ($this->total_quantity->Exportable) $Doc->ExportCaption($this->total_quantity);
 					if ($this->department->Exportable) $Doc->ExportCaption($this->department);
 					if ($this->designation->Exportable) $Doc->ExportCaption($this->designation);
 					if ($this->assign_to->Exportable) $Doc->ExportCaption($this->assign_to);
@@ -1310,11 +1449,16 @@ class cpc_issuance extends cTable {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->issued_date->Exportable) $Doc->ExportCaption($this->issued_date);
 					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
+					if ($this->material_name->Exportable) $Doc->ExportCaption($this->material_name);
 					if ($this->asset_tag->Exportable) $Doc->ExportCaption($this->asset_tag);
 					if ($this->make->Exportable) $Doc->ExportCaption($this->make);
 					if ($this->ram->Exportable) $Doc->ExportCaption($this->ram);
 					if ($this->hard_disk->Exportable) $Doc->ExportCaption($this->hard_disk);
 					if ($this->color->Exportable) $Doc->ExportCaption($this->color);
+					if ($this->capacity->Exportable) $Doc->ExportCaption($this->capacity);
+					if ($this->quantity_in->Exportable) $Doc->ExportCaption($this->quantity_in);
+					if ($this->quantity_out->Exportable) $Doc->ExportCaption($this->quantity_out);
+					if ($this->total_quantity->Exportable) $Doc->ExportCaption($this->total_quantity);
 					if ($this->department->Exportable) $Doc->ExportCaption($this->department);
 					if ($this->designation->Exportable) $Doc->ExportCaption($this->designation);
 					if ($this->assign_to->Exportable) $Doc->ExportCaption($this->assign_to);
@@ -1360,11 +1504,16 @@ class cpc_issuance extends cTable {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->issued_date->Exportable) $Doc->ExportField($this->issued_date);
 						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
+						if ($this->material_name->Exportable) $Doc->ExportField($this->material_name);
 						if ($this->asset_tag->Exportable) $Doc->ExportField($this->asset_tag);
 						if ($this->make->Exportable) $Doc->ExportField($this->make);
 						if ($this->ram->Exportable) $Doc->ExportField($this->ram);
 						if ($this->hard_disk->Exportable) $Doc->ExportField($this->hard_disk);
 						if ($this->color->Exportable) $Doc->ExportField($this->color);
+						if ($this->capacity->Exportable) $Doc->ExportField($this->capacity);
+						if ($this->quantity_in->Exportable) $Doc->ExportField($this->quantity_in);
+						if ($this->quantity_out->Exportable) $Doc->ExportField($this->quantity_out);
+						if ($this->total_quantity->Exportable) $Doc->ExportField($this->total_quantity);
 						if ($this->department->Exportable) $Doc->ExportField($this->department);
 						if ($this->designation->Exportable) $Doc->ExportField($this->designation);
 						if ($this->assign_to->Exportable) $Doc->ExportField($this->assign_to);
@@ -1382,11 +1531,16 @@ class cpc_issuance extends cTable {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->issued_date->Exportable) $Doc->ExportField($this->issued_date);
 						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
+						if ($this->material_name->Exportable) $Doc->ExportField($this->material_name);
 						if ($this->asset_tag->Exportable) $Doc->ExportField($this->asset_tag);
 						if ($this->make->Exportable) $Doc->ExportField($this->make);
 						if ($this->ram->Exportable) $Doc->ExportField($this->ram);
 						if ($this->hard_disk->Exportable) $Doc->ExportField($this->hard_disk);
 						if ($this->color->Exportable) $Doc->ExportField($this->color);
+						if ($this->capacity->Exportable) $Doc->ExportField($this->capacity);
+						if ($this->quantity_in->Exportable) $Doc->ExportField($this->quantity_in);
+						if ($this->quantity_out->Exportable) $Doc->ExportField($this->quantity_out);
+						if ($this->total_quantity->Exportable) $Doc->ExportField($this->total_quantity);
 						if ($this->department->Exportable) $Doc->ExportField($this->department);
 						if ($this->designation->Exportable) $Doc->ExportField($this->designation);
 						if ($this->assign_to->Exportable) $Doc->ExportField($this->assign_to);
@@ -1599,6 +1753,9 @@ class cpc_issuance extends cTable {
 	function Row_Selected(&$rs) {
 
 		//echo "Row Selected";
+		// Row_Inserted event
+		//ew_Execute("UPDATE system_inventory SET quantity = quantity - {$qty} WHERE id = {$id}");
+
 	}
 
 	// Row Inserting event
@@ -1713,6 +1870,7 @@ class cpc_issuance extends cTable {
 	function Row_Inserted($rsold, &$rsnew) {
 
 		//echo "Row Inserted"
+		ew_Execute("UPDATE `system_inventory` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
 	}
 
 	// Row Updating event
@@ -1919,6 +2077,11 @@ class cpc_issuance extends cTable {
 	function Row_Updated($rsold, &$rsnew) {
 
 		//echo "Row Updated";
+		  if (CurrentPageID() == "edit" && (CurrentUserLevel() == 6 && $rsnew["statuse"] == 1 )) {
+		   ew_Execute("UPDATE `system_inventory` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
+
+		   	  // ew_Execute("UPDATE `system_inventory` SET `quantity`= $this->total_quantity->CurrentValue  WHERE `id`= ".$this->items_name->CurrentValue."");
+		}
 	}
 
 	// Row Update Conflict event
@@ -2071,6 +2234,10 @@ class cpc_issuance extends cTable {
 					$this->reference_id->ReadOnly = TRUE;
 
 					//$this->staff_id->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->quantity_in->ReadOnly = TRUE;
+					$this->quantity_out->Visible = TRUE;
+					$this->total_quantity->ReadOnly = TRUE;
 					$this->date_retrieved->Visible = FALSE;
 					$this->retriever_action->Visible = FALSE;
 					$this->retriever_comment->Visible = FALSE;
@@ -2082,6 +2249,10 @@ class cpc_issuance extends cTable {
 					$this->reference_id->ReadOnly = TRUE;
 
 					//$this->staff_id->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->quantity_in->ReadOnly = TRUE;
+					$this->quantity_out->Visible = TRUE;
+					$this->total_quantity->ReadOnly = TRUE;				
 					$this->date_retrieved->Visible = FALSE;
 					$this->retriever_action->Visible = FALSE;
 					$this->retriever_comment->Visible = FALSE;
@@ -2093,6 +2264,10 @@ class cpc_issuance extends cTable {
 					$this->reference_id->ReadOnly = TRUE;
 
 					//$this->staff_id->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->quantity_in->ReadOnly = TRUE;
+					$this->quantity_out->Visible = TRUE;
+					$this->total_quantity->ReadOnly = TRUE;					
 					$this->date_retrieved->Visible = FALSE;
 					$this->retriever_action->Visible = FALSE;
 					$this->retriever_comment->Visible = FALSE;
@@ -2104,6 +2279,10 @@ class cpc_issuance extends cTable {
 					$this->reference_id->ReadOnly = TRUE;
 
 					//$this->staff_id->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->quantity_in->ReadOnly = TRUE;
+					$this->quantity_out->Visible = TRUE;
+					$this->total_quantity->ReadOnly = TRUE;					
 					$this->date_retrieved->Visible = FALSE;
 					$this->retriever_action->Visible = FALSE;
 					$this->retriever_comment->Visible = FALSE;
@@ -2129,6 +2308,10 @@ class cpc_issuance extends cTable {
 					$this->assign_action->Visible = TRUE;
 					$this->assign_comment->Visible = TRUE;
 					$this->assign_by->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->quantity_in->ReadOnly = TRUE;
+					$this->quantity_out->Visible = TRUE;
+					$this->total_quantity->ReadOnly = TRUE;	
 
 					//$this->staff_id->ReadOnly = TRUE;
 					$this->date_retrieved->Visible = FALSE;
@@ -2155,6 +2338,10 @@ class cpc_issuance extends cTable {
 					$this->assign_by->ReadOnly = TRUE;
 
 					//$this->staff_id->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->quantity_in->ReadOnly = TRUE;
+					$this->quantity_out->ReadOnly = TRUE;
+					$this->total_quantity->ReadOnly = TRUE;	
 					$this->date_retrieved->ReadOnly = FALSE;
 					$this->retriever_action->Visible = TRUE;
 					$this->retriever_comment->Visible = TRUE;
@@ -2179,6 +2366,10 @@ class cpc_issuance extends cTable {
 					$this->assign_by->ReadOnly = TRUE;
 
 					//$this->staff_id->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->quantity_in->ReadOnly = TRUE;
+					$this->quantity_out->ReadOnly = TRUE;
+					$this->total_quantity->ReadOnly = TRUE;	
 					$this->date_retrieved->ReadOnly = FALSE;
 					$this->retriever_action->Visible = TRUE;
 					$this->retriever_comment->Visible = TRUE;
@@ -2201,6 +2392,10 @@ class cpc_issuance extends cTable {
 					$this->assign_action->Visible = TRUE;
 					$this->assign_comment->Visible = TRUE;
 					$this->assign_by->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->quantity_in->ReadOnly = TRUE;
+					$this->quantity_out->ReadOnly = TRUE;
+					$this->total_quantity->ReadOnly = TRUE;	
 
 					//$this->staff_id->ReadOnly = TRUE;
 					$this->date_retrieved->ReadOnly = FALSE;
@@ -2222,6 +2417,10 @@ class cpc_issuance extends cTable {
 					$this->designation->ReadOnly = TRUE;
 					$this->assign_to->ReadOnly = TRUE;
 					$this->date_assign->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->quantity_in->ReadOnly = TRUE;
+					$this->quantity_out->ReadOnly = TRUE;
+					$this->total_quantity->ReadOnly = TRUE;	
 
 					//$this->assign_action->Visible = TRUE;
 					//$this->assign_comment->Visible = TRUE;
@@ -2249,6 +2448,10 @@ class cpc_issuance extends cTable {
 					$this->assign_action->Visible = TRUE;
 					$this->assign_comment->Visible = TRUE;
 					$this->assign_by->ReadOnly = TRUE;
+					$this->capacity->ReadOnly = TRUE;
+					$this->quantity_in->ReadOnly = TRUE;
+					$this->quantity_out->ReadOnly = TRUE;
+					$this->total_quantity->ReadOnly = TRUE;	
 
 					//$this->staff_id->ReadOnly = TRUE;
 					$this->date_retrieved->ReadOnly = TRUE;
@@ -2281,6 +2484,10 @@ class cpc_issuance extends cTable {
 				$this->hard_disk->CellCssStyle = "color: orange; text-align: left;";
 				$this->assign_by->CellCssStyle = "color: orange; text-align: left;";
 				$this->retrieved_by->CellCssStyle = "color: orange; text-align: left;";
+				$this->quantity_in->CellCssStyle = "color: orange; text-align: left;";
+				$this->quantity_out->CellCssStyle = "color: orange; text-align: left;";
+				$this->total_quantity->CellCssStyle = "color: orange; text-align: left;";
+				$this->capacity->CellCssStyle = "color: orange; text-align: left;";
 			}
 			if ($this->statuse->CurrentValue == 0) {
 				$this->id->CellCssStyle = "color: red; text-align: left;";
@@ -2299,6 +2506,10 @@ class cpc_issuance extends cTable {
 				$this->hard_disk->CellCssStyle = "color: red; text-align: left;";
 				$this->assign_by->CellCssStyle = "color: red; text-align: left;";
 				$this->retrieved_by->CellCssStyle = "color: red; text-align: left;";
+				$this->quantity_in->CellCssStyle = "color: red; text-align: left;";
+				$this->quantity_out->CellCssStyle = "color: red; text-align: left;";
+				$this->total_quantity->CellCssStyle = "color: red; text-align: left;";
+				$this->capacity->CellCssStyle = "color: red; text-align: left;";
 			}
 			if ($this->statuse->CurrentValue == 2) {
 				$this->id->CellCssStyle = "color: blue; text-align: left;";
@@ -2317,6 +2528,10 @@ class cpc_issuance extends cTable {
 				$this->hard_disk->CellCssStyle = "color: blue; text-align: left;";
 				$this->assign_by->CellCssStyle = "color: blue; text-align: left;";
 				$this->retrieved_by->CellCssStyle = "color: blue; text-align: left;";
+				$this->quantity_in->CellCssStyle = "color: blue; text-align: left;";
+				$this->quantity_out->CellCssStyle = "color: blue; text-align: left;";
+				$this->total_quantity->CellCssStyle = "color: blue; text-align: left;";
+				$this->capacity->CellCssStyle = "color: blue; text-align: left;";
 			}
 			if ($this->statuse->CurrentValue == 1) {
 				$this->id->CellCssStyle = "color: green; text-align: left;";
@@ -2335,6 +2550,10 @@ class cpc_issuance extends cTable {
 				$this->hard_disk->CellCssStyle = "color: green; text-align: left;";
 				$this->assign_by->CellCssStyle = "color: green; text-align: left;";
 				$this->retrieved_by->CellCssStyle = "color: green; text-align: left;";
+				$this->quantity_in->CellCssStyle = "color: green; text-align: left;";
+				$this->quantity_out->CellCssStyle = "color: green; text-align: left;";
+				$this->total_quantity->CellCssStyle = "color: green; text-align: left;";
+				$this->capacity->CellCssStyle = "color: green; text-align: left;";
 			}
 		}
 	}

@@ -451,6 +451,10 @@ class cdefault {
 			$this->Page_Terminate("requisition_reportlist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'materialnote.php'))
 			$this->Page_Terminate("materialnote.php");
+		if ($Security->AllowList(CurrentProjectID() . 'system_inventory'))
+			$this->Page_Terminate("system_inventorylist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'system_restock'))
+			$this->Page_Terminate("system_restocklist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

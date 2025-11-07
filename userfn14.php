@@ -265,6 +265,16 @@ $randStrs =	mt_rand(000000012,999999999);
 return "REQ".$randStrs;
 }
 
+function generateREFIKey(){
+$randStrs =	mt_rand(000000012,999999999);
+return "REFI".$randStrs;
+}
+
+function generateSYSTOKey(){
+$randStrs =	mt_rand(000000012,999999999);
+return "SYSTO".$randStrs;
+}
+
 //
 //$conn = mysqli_connect("localhost", "root","","incident_report");
 

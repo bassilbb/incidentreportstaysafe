@@ -322,11 +322,11 @@ class cpc_issuance_list extends cpc_issuance {
 
 		// Page ID
 		if (!defined("EW_PAGE_ID"))
-			define("EW_PAGE_ID", 'list', TRUE);
+			define("EW_PAGE_ID", 'list');
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'pc_issuance', TRUE);
+			define("EW_TABLE_NAME", 'pc_issuance');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -454,11 +454,16 @@ class cpc_issuance_list extends cpc_issuance {
 		$this->SetupExportOptions();
 		$this->issued_date->SetVisibility();
 		$this->reference_id->SetVisibility();
+		$this->material_name->SetVisibility();
 		$this->asset_tag->SetVisibility();
 		$this->make->SetVisibility();
 		$this->ram->SetVisibility();
 		$this->hard_disk->SetVisibility();
 		$this->color->SetVisibility();
+		$this->capacity->SetVisibility();
+		$this->quantity_in->SetVisibility();
+		$this->quantity_out->SetVisibility();
+		$this->total_quantity->SetVisibility();
 		$this->department->SetVisibility();
 		$this->designation->SetVisibility();
 		$this->assign_to->SetVisibility();
@@ -826,11 +831,16 @@ class cpc_issuance_list extends cpc_issuance {
 		$sFilterList = ew_Concat($sFilterList, $this->id->AdvancedSearch->ToJson(), ","); // Field id
 		$sFilterList = ew_Concat($sFilterList, $this->issued_date->AdvancedSearch->ToJson(), ","); // Field issued_date
 		$sFilterList = ew_Concat($sFilterList, $this->reference_id->AdvancedSearch->ToJson(), ","); // Field reference_id
+		$sFilterList = ew_Concat($sFilterList, $this->material_name->AdvancedSearch->ToJson(), ","); // Field material_name
 		$sFilterList = ew_Concat($sFilterList, $this->asset_tag->AdvancedSearch->ToJson(), ","); // Field asset_tag
 		$sFilterList = ew_Concat($sFilterList, $this->make->AdvancedSearch->ToJson(), ","); // Field make
 		$sFilterList = ew_Concat($sFilterList, $this->ram->AdvancedSearch->ToJson(), ","); // Field ram
 		$sFilterList = ew_Concat($sFilterList, $this->hard_disk->AdvancedSearch->ToJson(), ","); // Field hard_disk
 		$sFilterList = ew_Concat($sFilterList, $this->color->AdvancedSearch->ToJson(), ","); // Field color
+		$sFilterList = ew_Concat($sFilterList, $this->capacity->AdvancedSearch->ToJson(), ","); // Field capacity
+		$sFilterList = ew_Concat($sFilterList, $this->quantity_in->AdvancedSearch->ToJson(), ","); // Field quantity_in
+		$sFilterList = ew_Concat($sFilterList, $this->quantity_out->AdvancedSearch->ToJson(), ","); // Field quantity_out
+		$sFilterList = ew_Concat($sFilterList, $this->total_quantity->AdvancedSearch->ToJson(), ","); // Field total_quantity
 		$sFilterList = ew_Concat($sFilterList, $this->department->AdvancedSearch->ToJson(), ","); // Field department
 		$sFilterList = ew_Concat($sFilterList, $this->designation->AdvancedSearch->ToJson(), ","); // Field designation
 		$sFilterList = ew_Concat($sFilterList, $this->assign_to->AdvancedSearch->ToJson(), ","); // Field assign_to
@@ -912,6 +922,14 @@ class cpc_issuance_list extends cpc_issuance {
 		$this->reference_id->AdvancedSearch->SearchOperator2 = @$filter["w_reference_id"];
 		$this->reference_id->AdvancedSearch->Save();
 
+		// Field material_name
+		$this->material_name->AdvancedSearch->SearchValue = @$filter["x_material_name"];
+		$this->material_name->AdvancedSearch->SearchOperator = @$filter["z_material_name"];
+		$this->material_name->AdvancedSearch->SearchCondition = @$filter["v_material_name"];
+		$this->material_name->AdvancedSearch->SearchValue2 = @$filter["y_material_name"];
+		$this->material_name->AdvancedSearch->SearchOperator2 = @$filter["w_material_name"];
+		$this->material_name->AdvancedSearch->Save();
+
 		// Field asset_tag
 		$this->asset_tag->AdvancedSearch->SearchValue = @$filter["x_asset_tag"];
 		$this->asset_tag->AdvancedSearch->SearchOperator = @$filter["z_asset_tag"];
@@ -951,6 +969,38 @@ class cpc_issuance_list extends cpc_issuance {
 		$this->color->AdvancedSearch->SearchValue2 = @$filter["y_color"];
 		$this->color->AdvancedSearch->SearchOperator2 = @$filter["w_color"];
 		$this->color->AdvancedSearch->Save();
+
+		// Field capacity
+		$this->capacity->AdvancedSearch->SearchValue = @$filter["x_capacity"];
+		$this->capacity->AdvancedSearch->SearchOperator = @$filter["z_capacity"];
+		$this->capacity->AdvancedSearch->SearchCondition = @$filter["v_capacity"];
+		$this->capacity->AdvancedSearch->SearchValue2 = @$filter["y_capacity"];
+		$this->capacity->AdvancedSearch->SearchOperator2 = @$filter["w_capacity"];
+		$this->capacity->AdvancedSearch->Save();
+
+		// Field quantity_in
+		$this->quantity_in->AdvancedSearch->SearchValue = @$filter["x_quantity_in"];
+		$this->quantity_in->AdvancedSearch->SearchOperator = @$filter["z_quantity_in"];
+		$this->quantity_in->AdvancedSearch->SearchCondition = @$filter["v_quantity_in"];
+		$this->quantity_in->AdvancedSearch->SearchValue2 = @$filter["y_quantity_in"];
+		$this->quantity_in->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_in"];
+		$this->quantity_in->AdvancedSearch->Save();
+
+		// Field quantity_out
+		$this->quantity_out->AdvancedSearch->SearchValue = @$filter["x_quantity_out"];
+		$this->quantity_out->AdvancedSearch->SearchOperator = @$filter["z_quantity_out"];
+		$this->quantity_out->AdvancedSearch->SearchCondition = @$filter["v_quantity_out"];
+		$this->quantity_out->AdvancedSearch->SearchValue2 = @$filter["y_quantity_out"];
+		$this->quantity_out->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_out"];
+		$this->quantity_out->AdvancedSearch->Save();
+
+		// Field total_quantity
+		$this->total_quantity->AdvancedSearch->SearchValue = @$filter["x_total_quantity"];
+		$this->total_quantity->AdvancedSearch->SearchOperator = @$filter["z_total_quantity"];
+		$this->total_quantity->AdvancedSearch->SearchCondition = @$filter["v_total_quantity"];
+		$this->total_quantity->AdvancedSearch->SearchValue2 = @$filter["y_total_quantity"];
+		$this->total_quantity->AdvancedSearch->SearchOperator2 = @$filter["w_total_quantity"];
+		$this->total_quantity->AdvancedSearch->Save();
 
 		// Field department
 		$this->department->AdvancedSearch->SearchValue = @$filter["x_department"];
@@ -1063,11 +1113,16 @@ class cpc_issuance_list extends cpc_issuance {
 	function BasicSearchSQL($arKeywords, $type) {
 		$sWhere = "";
 		$this->BuildBasicSearchSQL($sWhere, $this->reference_id, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->material_name, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->asset_tag, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->make, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->ram, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->hard_disk, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->color, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->capacity, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->quantity_in, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->quantity_out, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->total_quantity, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->assign_comment, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->statuse, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->retriever_comment, $arKeywords, $type);
@@ -1219,11 +1274,16 @@ class cpc_issuance_list extends cpc_issuance {
 			$this->CurrentOrderType = @$_GET["ordertype"];
 			$this->UpdateSort($this->issued_date); // issued_date
 			$this->UpdateSort($this->reference_id); // reference_id
+			$this->UpdateSort($this->material_name); // material_name
 			$this->UpdateSort($this->asset_tag); // asset_tag
 			$this->UpdateSort($this->make); // make
 			$this->UpdateSort($this->ram); // ram
 			$this->UpdateSort($this->hard_disk); // hard_disk
 			$this->UpdateSort($this->color); // color
+			$this->UpdateSort($this->capacity); // capacity
+			$this->UpdateSort($this->quantity_in); // quantity_in
+			$this->UpdateSort($this->quantity_out); // quantity_out
+			$this->UpdateSort($this->total_quantity); // total_quantity
 			$this->UpdateSort($this->department); // department
 			$this->UpdateSort($this->designation); // designation
 			$this->UpdateSort($this->assign_to); // assign_to
@@ -1266,11 +1326,16 @@ class cpc_issuance_list extends cpc_issuance {
 				$this->setSessionOrderBy($sOrderBy);
 				$this->issued_date->setSort("");
 				$this->reference_id->setSort("");
+				$this->material_name->setSort("");
 				$this->asset_tag->setSort("");
 				$this->make->setSort("");
 				$this->ram->setSort("");
 				$this->hard_disk->setSort("");
 				$this->color->setSort("");
+				$this->capacity->setSort("");
+				$this->quantity_in->setSort("");
+				$this->quantity_out->setSort("");
+				$this->total_quantity->setSort("");
 				$this->department->setSort("");
 				$this->designation->setSort("");
 				$this->assign_to->setSort("");
@@ -1739,11 +1804,16 @@ class cpc_issuance_list extends cpc_issuance {
 		$this->id->setDbValue($row['id']);
 		$this->issued_date->setDbValue($row['issued_date']);
 		$this->reference_id->setDbValue($row['reference_id']);
+		$this->material_name->setDbValue($row['material_name']);
 		$this->asset_tag->setDbValue($row['asset_tag']);
 		$this->make->setDbValue($row['make']);
 		$this->ram->setDbValue($row['ram']);
 		$this->hard_disk->setDbValue($row['hard_disk']);
 		$this->color->setDbValue($row['color']);
+		$this->capacity->setDbValue($row['capacity']);
+		$this->quantity_in->setDbValue($row['quantity_in']);
+		$this->quantity_out->setDbValue($row['quantity_out']);
+		$this->total_quantity->setDbValue($row['total_quantity']);
 		$this->department->setDbValue($row['department']);
 		$this->designation->setDbValue($row['designation']);
 		$this->assign_to->setDbValue($row['assign_to']);
@@ -1765,11 +1835,16 @@ class cpc_issuance_list extends cpc_issuance {
 		$row['id'] = NULL;
 		$row['issued_date'] = NULL;
 		$row['reference_id'] = NULL;
+		$row['material_name'] = NULL;
 		$row['asset_tag'] = NULL;
 		$row['make'] = NULL;
 		$row['ram'] = NULL;
 		$row['hard_disk'] = NULL;
 		$row['color'] = NULL;
+		$row['capacity'] = NULL;
+		$row['quantity_in'] = NULL;
+		$row['quantity_out'] = NULL;
+		$row['total_quantity'] = NULL;
 		$row['department'] = NULL;
 		$row['designation'] = NULL;
 		$row['assign_to'] = NULL;
@@ -1794,11 +1869,16 @@ class cpc_issuance_list extends cpc_issuance {
 		$this->id->DbValue = $row['id'];
 		$this->issued_date->DbValue = $row['issued_date'];
 		$this->reference_id->DbValue = $row['reference_id'];
+		$this->material_name->DbValue = $row['material_name'];
 		$this->asset_tag->DbValue = $row['asset_tag'];
 		$this->make->DbValue = $row['make'];
 		$this->ram->DbValue = $row['ram'];
 		$this->hard_disk->DbValue = $row['hard_disk'];
 		$this->color->DbValue = $row['color'];
+		$this->capacity->DbValue = $row['capacity'];
+		$this->quantity_in->DbValue = $row['quantity_in'];
+		$this->quantity_out->DbValue = $row['quantity_out'];
+		$this->total_quantity->DbValue = $row['total_quantity'];
 		$this->department->DbValue = $row['department'];
 		$this->designation->DbValue = $row['designation'];
 		$this->assign_to->DbValue = $row['assign_to'];
@@ -1855,11 +1935,16 @@ class cpc_issuance_list extends cpc_issuance {
 		// id
 		// issued_date
 		// reference_id
+		// material_name
 		// asset_tag
 		// make
 		// ram
 		// hard_disk
 		// color
+		// capacity
+		// quantity_in
+		// quantity_out
+		// total_quantity
 		// department
 		// designation
 		// assign_to
@@ -1889,6 +1974,29 @@ class cpc_issuance_list extends cpc_issuance {
 		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
 		$this->reference_id->ViewCustomAttributes = "";
 
+		// material_name
+		if (strval($this->material_name->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `system_inventory`";
+		$sWhereWrk = "";
+		$this->material_name->LookupFilters = array("dx1" => '`material_name`');
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->material_name->ViewValue = $this->material_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->material_name->ViewValue = $this->material_name->CurrentValue;
+			}
+		} else {
+			$this->material_name->ViewValue = NULL;
+		}
+		$this->material_name->ViewCustomAttributes = "";
+
 		// asset_tag
 		$this->asset_tag->ViewValue = $this->asset_tag->CurrentValue;
 		$this->asset_tag->ViewCustomAttributes = "";
@@ -1908,6 +2016,22 @@ class cpc_issuance_list extends cpc_issuance {
 		// color
 		$this->color->ViewValue = $this->color->CurrentValue;
 		$this->color->ViewCustomAttributes = "";
+
+		// capacity
+		$this->capacity->ViewValue = $this->capacity->CurrentValue;
+		$this->capacity->ViewCustomAttributes = "";
+
+		// quantity_in
+		$this->quantity_in->ViewValue = $this->quantity_in->CurrentValue;
+		$this->quantity_in->ViewCustomAttributes = "";
+
+		// quantity_out
+		$this->quantity_out->ViewValue = $this->quantity_out->CurrentValue;
+		$this->quantity_out->ViewCustomAttributes = "";
+
+		// total_quantity
+		$this->total_quantity->ViewValue = $this->total_quantity->CurrentValue;
+		$this->total_quantity->ViewCustomAttributes = "";
 
 		// department
 		if (strval($this->department->CurrentValue) <> "") {
@@ -2125,6 +2249,11 @@ class cpc_issuance_list extends cpc_issuance {
 			$this->reference_id->HrefValue = "";
 			$this->reference_id->TooltipValue = "";
 
+			// material_name
+			$this->material_name->LinkCustomAttributes = "";
+			$this->material_name->HrefValue = "";
+			$this->material_name->TooltipValue = "";
+
 			// asset_tag
 			$this->asset_tag->LinkCustomAttributes = "";
 			$this->asset_tag->HrefValue = "";
@@ -2149,6 +2278,26 @@ class cpc_issuance_list extends cpc_issuance {
 			$this->color->LinkCustomAttributes = "";
 			$this->color->HrefValue = "";
 			$this->color->TooltipValue = "";
+
+			// capacity
+			$this->capacity->LinkCustomAttributes = "";
+			$this->capacity->HrefValue = "";
+			$this->capacity->TooltipValue = "";
+
+			// quantity_in
+			$this->quantity_in->LinkCustomAttributes = "";
+			$this->quantity_in->HrefValue = "";
+			$this->quantity_in->TooltipValue = "";
+
+			// quantity_out
+			$this->quantity_out->LinkCustomAttributes = "";
+			$this->quantity_out->HrefValue = "";
+			$this->quantity_out->TooltipValue = "";
+
+			// total_quantity
+			$this->total_quantity->LinkCustomAttributes = "";
+			$this->total_quantity->HrefValue = "";
+			$this->total_quantity->TooltipValue = "";
 
 			// department
 			$this->department->LinkCustomAttributes = "";
@@ -2535,6 +2684,8 @@ fpc_issuancelist.Form_CustomValidate =
 fpc_issuancelist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+fpc_issuancelist.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"system_inventory"};
+fpc_issuancelist.Lists["x_material_name"].Data = "<?php echo $pc_issuance_list->material_name->LookupFilterQuery(FALSE, "list") ?>";
 fpc_issuancelist.Lists["x_department"] = {"LinkField":"x_department_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_department_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"depertment"};
 fpc_issuancelist.Lists["x_department"].Data = "<?php echo $pc_issuance_list->department->LookupFilterQuery(FALSE, "list") ?>";
 fpc_issuancelist.Lists["x_designation"] = {"LinkField":"x_code","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"designation"};
@@ -2752,6 +2903,15 @@ $pc_issuance_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
+<?php if ($pc_issuance->material_name->Visible) { // material_name ?>
+	<?php if ($pc_issuance->SortUrl($pc_issuance->material_name) == "") { ?>
+		<th data-name="material_name" class="<?php echo $pc_issuance->material_name->HeaderCellClass() ?>"><div id="elh_pc_issuance_material_name" class="pc_issuance_material_name"><div class="ewTableHeaderCaption"><?php echo $pc_issuance->material_name->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="material_name" class="<?php echo $pc_issuance->material_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $pc_issuance->SortUrl($pc_issuance->material_name) ?>',1);"><div id="elh_pc_issuance_material_name" class="pc_issuance_material_name">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $pc_issuance->material_name->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($pc_issuance->material_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($pc_issuance->material_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
 <?php if ($pc_issuance->asset_tag->Visible) { // asset_tag ?>
 	<?php if ($pc_issuance->SortUrl($pc_issuance->asset_tag) == "") { ?>
 		<th data-name="asset_tag" class="<?php echo $pc_issuance->asset_tag->HeaderCellClass() ?>"><div id="elh_pc_issuance_asset_tag" class="pc_issuance_asset_tag"><div class="ewTableHeaderCaption"><?php echo $pc_issuance->asset_tag->FldCaption() ?></div></div></th>
@@ -2794,6 +2954,42 @@ $pc_issuance_list->ListOptions->Render("header", "left");
 	<?php } else { ?>
 		<th data-name="color" class="<?php echo $pc_issuance->color->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $pc_issuance->SortUrl($pc_issuance->color) ?>',1);"><div id="elh_pc_issuance_color" class="pc_issuance_color">
 			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $pc_issuance->color->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($pc_issuance->color->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($pc_issuance->color->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($pc_issuance->capacity->Visible) { // capacity ?>
+	<?php if ($pc_issuance->SortUrl($pc_issuance->capacity) == "") { ?>
+		<th data-name="capacity" class="<?php echo $pc_issuance->capacity->HeaderCellClass() ?>"><div id="elh_pc_issuance_capacity" class="pc_issuance_capacity"><div class="ewTableHeaderCaption"><?php echo $pc_issuance->capacity->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="capacity" class="<?php echo $pc_issuance->capacity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $pc_issuance->SortUrl($pc_issuance->capacity) ?>',1);"><div id="elh_pc_issuance_capacity" class="pc_issuance_capacity">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $pc_issuance->capacity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($pc_issuance->capacity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($pc_issuance->capacity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($pc_issuance->quantity_in->Visible) { // quantity_in ?>
+	<?php if ($pc_issuance->SortUrl($pc_issuance->quantity_in) == "") { ?>
+		<th data-name="quantity_in" class="<?php echo $pc_issuance->quantity_in->HeaderCellClass() ?>"><div id="elh_pc_issuance_quantity_in" class="pc_issuance_quantity_in"><div class="ewTableHeaderCaption"><?php echo $pc_issuance->quantity_in->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="quantity_in" class="<?php echo $pc_issuance->quantity_in->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $pc_issuance->SortUrl($pc_issuance->quantity_in) ?>',1);"><div id="elh_pc_issuance_quantity_in" class="pc_issuance_quantity_in">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $pc_issuance->quantity_in->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($pc_issuance->quantity_in->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($pc_issuance->quantity_in->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($pc_issuance->quantity_out->Visible) { // quantity_out ?>
+	<?php if ($pc_issuance->SortUrl($pc_issuance->quantity_out) == "") { ?>
+		<th data-name="quantity_out" class="<?php echo $pc_issuance->quantity_out->HeaderCellClass() ?>"><div id="elh_pc_issuance_quantity_out" class="pc_issuance_quantity_out"><div class="ewTableHeaderCaption"><?php echo $pc_issuance->quantity_out->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="quantity_out" class="<?php echo $pc_issuance->quantity_out->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $pc_issuance->SortUrl($pc_issuance->quantity_out) ?>',1);"><div id="elh_pc_issuance_quantity_out" class="pc_issuance_quantity_out">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $pc_issuance->quantity_out->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($pc_issuance->quantity_out->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($pc_issuance->quantity_out->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($pc_issuance->total_quantity->Visible) { // total_quantity ?>
+	<?php if ($pc_issuance->SortUrl($pc_issuance->total_quantity) == "") { ?>
+		<th data-name="total_quantity" class="<?php echo $pc_issuance->total_quantity->HeaderCellClass() ?>"><div id="elh_pc_issuance_total_quantity" class="pc_issuance_total_quantity"><div class="ewTableHeaderCaption"><?php echo $pc_issuance->total_quantity->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="total_quantity" class="<?php echo $pc_issuance->total_quantity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $pc_issuance->SortUrl($pc_issuance->total_quantity) ?>',1);"><div id="elh_pc_issuance_total_quantity" class="pc_issuance_total_quantity">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $pc_issuance->total_quantity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($pc_issuance->total_quantity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($pc_issuance->total_quantity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -2950,6 +3146,14 @@ $pc_issuance_list->ListOptions->Render("body", "left", $pc_issuance_list->RowCnt
 </span>
 </td>
 	<?php } ?>
+	<?php if ($pc_issuance->material_name->Visible) { // material_name ?>
+		<td data-name="material_name"<?php echo $pc_issuance->material_name->CellAttributes() ?>>
+<span id="el<?php echo $pc_issuance_list->RowCnt ?>_pc_issuance_material_name" class="pc_issuance_material_name">
+<span<?php echo $pc_issuance->material_name->ViewAttributes() ?>>
+<?php echo $pc_issuance->material_name->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
 	<?php if ($pc_issuance->asset_tag->Visible) { // asset_tag ?>
 		<td data-name="asset_tag"<?php echo $pc_issuance->asset_tag->CellAttributes() ?>>
 <span id="el<?php echo $pc_issuance_list->RowCnt ?>_pc_issuance_asset_tag" class="pc_issuance_asset_tag">
@@ -2987,6 +3191,38 @@ $pc_issuance_list->ListOptions->Render("body", "left", $pc_issuance_list->RowCnt
 <span id="el<?php echo $pc_issuance_list->RowCnt ?>_pc_issuance_color" class="pc_issuance_color">
 <span<?php echo $pc_issuance->color->ViewAttributes() ?>>
 <?php echo $pc_issuance->color->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($pc_issuance->capacity->Visible) { // capacity ?>
+		<td data-name="capacity"<?php echo $pc_issuance->capacity->CellAttributes() ?>>
+<span id="el<?php echo $pc_issuance_list->RowCnt ?>_pc_issuance_capacity" class="pc_issuance_capacity">
+<span<?php echo $pc_issuance->capacity->ViewAttributes() ?>>
+<?php echo $pc_issuance->capacity->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($pc_issuance->quantity_in->Visible) { // quantity_in ?>
+		<td data-name="quantity_in"<?php echo $pc_issuance->quantity_in->CellAttributes() ?>>
+<span id="el<?php echo $pc_issuance_list->RowCnt ?>_pc_issuance_quantity_in" class="pc_issuance_quantity_in">
+<span<?php echo $pc_issuance->quantity_in->ViewAttributes() ?>>
+<?php echo $pc_issuance->quantity_in->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($pc_issuance->quantity_out->Visible) { // quantity_out ?>
+		<td data-name="quantity_out"<?php echo $pc_issuance->quantity_out->CellAttributes() ?>>
+<span id="el<?php echo $pc_issuance_list->RowCnt ?>_pc_issuance_quantity_out" class="pc_issuance_quantity_out">
+<span<?php echo $pc_issuance->quantity_out->ViewAttributes() ?>>
+<?php echo $pc_issuance->quantity_out->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($pc_issuance->total_quantity->Visible) { // total_quantity ?>
+		<td data-name="total_quantity"<?php echo $pc_issuance->total_quantity->CellAttributes() ?>>
+<span id="el<?php echo $pc_issuance_list->RowCnt ?>_pc_issuance_total_quantity" class="pc_issuance_total_quantity">
+<span<?php echo $pc_issuance->total_quantity->ViewAttributes() ?>>
+<?php echo $pc_issuance->total_quantity->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
