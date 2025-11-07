@@ -454,12 +454,7 @@ class csystem_restock_list extends csystem_restock {
 		$this->material_name->SetVisibility();
 		$this->quantity->SetVisibility();
 		$this->restocked_by->SetVisibility();
-		$this->statuss->SetVisibility();
 		$this->restocked_action->SetVisibility();
-		$this->approver_date->SetVisibility();
-		$this->approver_action->SetVisibility();
-		$this->approver_comment->SetVisibility();
-		$this->approved_by->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -1139,12 +1134,7 @@ class csystem_restock_list extends csystem_restock {
 			$this->UpdateSort($this->material_name); // material_name
 			$this->UpdateSort($this->quantity); // quantity
 			$this->UpdateSort($this->restocked_by); // restocked_by
-			$this->UpdateSort($this->statuss); // statuss
 			$this->UpdateSort($this->restocked_action); // restocked_action
-			$this->UpdateSort($this->approver_date); // approver_date
-			$this->UpdateSort($this->approver_action); // approver_action
-			$this->UpdateSort($this->approver_comment); // approver_comment
-			$this->UpdateSort($this->approved_by); // approved_by
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1183,12 +1173,7 @@ class csystem_restock_list extends csystem_restock {
 				$this->material_name->setSort("");
 				$this->quantity->setSort("");
 				$this->restocked_by->setSort("");
-				$this->statuss->setSort("");
 				$this->restocked_action->setSort("");
-				$this->approver_date->setSort("");
-				$this->approver_action->setSort("");
-				$this->approver_comment->setSort("");
-				$this->approved_by->setSort("");
 			}
 
 			// Reset start position
@@ -1792,7 +1777,27 @@ class csystem_restock_list extends csystem_restock {
 		$this->quantity->ViewCustomAttributes = "";
 
 		// restocked_by
-		$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
+		if (strval($this->restocked_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->restocked_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->restocked_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->restocked_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->restocked_by->ViewValue = $this->restocked_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
+			}
+		} else {
+			$this->restocked_by->ViewValue = NULL;
+		}
 		$this->restocked_by->ViewCustomAttributes = "";
 
 		// statuss
@@ -1853,35 +1858,10 @@ class csystem_restock_list extends csystem_restock {
 			$this->restocked_by->HrefValue = "";
 			$this->restocked_by->TooltipValue = "";
 
-			// statuss
-			$this->statuss->LinkCustomAttributes = "";
-			$this->statuss->HrefValue = "";
-			$this->statuss->TooltipValue = "";
-
 			// restocked_action
 			$this->restocked_action->LinkCustomAttributes = "";
 			$this->restocked_action->HrefValue = "";
 			$this->restocked_action->TooltipValue = "";
-
-			// approver_date
-			$this->approver_date->LinkCustomAttributes = "";
-			$this->approver_date->HrefValue = "";
-			$this->approver_date->TooltipValue = "";
-
-			// approver_action
-			$this->approver_action->LinkCustomAttributes = "";
-			$this->approver_action->HrefValue = "";
-			$this->approver_action->TooltipValue = "";
-
-			// approver_comment
-			$this->approver_comment->LinkCustomAttributes = "";
-			$this->approver_comment->HrefValue = "";
-			$this->approver_comment->TooltipValue = "";
-
-			// approved_by
-			$this->approved_by->LinkCustomAttributes = "";
-			$this->approved_by->HrefValue = "";
-			$this->approved_by->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2230,6 +2210,8 @@ fsystem_restocklist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE
 // Dynamic selection lists
 fsystem_restocklist.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"system_inventory"};
 fsystem_restocklist.Lists["x_material_name"].Data = "<?php echo $system_restock_list->material_name->LookupFilterQuery(FALSE, "list") ?>";
+fsystem_restocklist.Lists["x_restocked_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fsystem_restocklist.Lists["x_restocked_by"].Data = "<?php echo $system_restock_list->restocked_by->LookupFilterQuery(FALSE, "list") ?>";
 fsystem_restocklist.Lists["x_restocked_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 fsystem_restocklist.Lists["x_restocked_action"].Options = <?php echo json_encode($system_restock_list->restocked_action->Options()) ?>;
 
@@ -2466,57 +2448,12 @@ $system_restock_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($system_restock->statuss->Visible) { // statuss ?>
-	<?php if ($system_restock->SortUrl($system_restock->statuss) == "") { ?>
-		<th data-name="statuss" class="<?php echo $system_restock->statuss->HeaderCellClass() ?>"><div id="elh_system_restock_statuss" class="system_restock_statuss"><div class="ewTableHeaderCaption"><?php echo $system_restock->statuss->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="statuss" class="<?php echo $system_restock->statuss->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $system_restock->SortUrl($system_restock->statuss) ?>',1);"><div id="elh_system_restock_statuss" class="system_restock_statuss">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $system_restock->statuss->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($system_restock->statuss->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($system_restock->statuss->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php if ($system_restock->restocked_action->Visible) { // restocked_action ?>
 	<?php if ($system_restock->SortUrl($system_restock->restocked_action) == "") { ?>
 		<th data-name="restocked_action" class="<?php echo $system_restock->restocked_action->HeaderCellClass() ?>"><div id="elh_system_restock_restocked_action" class="system_restock_restocked_action"><div class="ewTableHeaderCaption"><?php echo $system_restock->restocked_action->FldCaption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="restocked_action" class="<?php echo $system_restock->restocked_action->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $system_restock->SortUrl($system_restock->restocked_action) ?>',1);"><div id="elh_system_restock_restocked_action" class="system_restock_restocked_action">
 			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $system_restock->restocked_action->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($system_restock->restocked_action->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($system_restock->restocked_action->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($system_restock->approver_date->Visible) { // approver_date ?>
-	<?php if ($system_restock->SortUrl($system_restock->approver_date) == "") { ?>
-		<th data-name="approver_date" class="<?php echo $system_restock->approver_date->HeaderCellClass() ?>"><div id="elh_system_restock_approver_date" class="system_restock_approver_date"><div class="ewTableHeaderCaption"><?php echo $system_restock->approver_date->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="approver_date" class="<?php echo $system_restock->approver_date->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $system_restock->SortUrl($system_restock->approver_date) ?>',1);"><div id="elh_system_restock_approver_date" class="system_restock_approver_date">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $system_restock->approver_date->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($system_restock->approver_date->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($system_restock->approver_date->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($system_restock->approver_action->Visible) { // approver_action ?>
-	<?php if ($system_restock->SortUrl($system_restock->approver_action) == "") { ?>
-		<th data-name="approver_action" class="<?php echo $system_restock->approver_action->HeaderCellClass() ?>"><div id="elh_system_restock_approver_action" class="system_restock_approver_action"><div class="ewTableHeaderCaption"><?php echo $system_restock->approver_action->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="approver_action" class="<?php echo $system_restock->approver_action->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $system_restock->SortUrl($system_restock->approver_action) ?>',1);"><div id="elh_system_restock_approver_action" class="system_restock_approver_action">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $system_restock->approver_action->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($system_restock->approver_action->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($system_restock->approver_action->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($system_restock->approver_comment->Visible) { // approver_comment ?>
-	<?php if ($system_restock->SortUrl($system_restock->approver_comment) == "") { ?>
-		<th data-name="approver_comment" class="<?php echo $system_restock->approver_comment->HeaderCellClass() ?>"><div id="elh_system_restock_approver_comment" class="system_restock_approver_comment"><div class="ewTableHeaderCaption"><?php echo $system_restock->approver_comment->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="approver_comment" class="<?php echo $system_restock->approver_comment->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $system_restock->SortUrl($system_restock->approver_comment) ?>',1);"><div id="elh_system_restock_approver_comment" class="system_restock_approver_comment">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $system_restock->approver_comment->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($system_restock->approver_comment->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($system_restock->approver_comment->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($system_restock->approved_by->Visible) { // approved_by ?>
-	<?php if ($system_restock->SortUrl($system_restock->approved_by) == "") { ?>
-		<th data-name="approved_by" class="<?php echo $system_restock->approved_by->HeaderCellClass() ?>"><div id="elh_system_restock_approved_by" class="system_restock_approved_by"><div class="ewTableHeaderCaption"><?php echo $system_restock->approved_by->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="approved_by" class="<?php echo $system_restock->approved_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $system_restock->SortUrl($system_restock->approved_by) ?>',1);"><div id="elh_system_restock_approved_by" class="system_restock_approved_by">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $system_restock->approved_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($system_restock->approved_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($system_restock->approved_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -2633,51 +2570,11 @@ $system_restock_list->ListOptions->Render("body", "left", $system_restock_list->
 </span>
 </td>
 	<?php } ?>
-	<?php if ($system_restock->statuss->Visible) { // statuss ?>
-		<td data-name="statuss"<?php echo $system_restock->statuss->CellAttributes() ?>>
-<span id="el<?php echo $system_restock_list->RowCnt ?>_system_restock_statuss" class="system_restock_statuss">
-<span<?php echo $system_restock->statuss->ViewAttributes() ?>>
-<?php echo $system_restock->statuss->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
 	<?php if ($system_restock->restocked_action->Visible) { // restocked_action ?>
 		<td data-name="restocked_action"<?php echo $system_restock->restocked_action->CellAttributes() ?>>
 <span id="el<?php echo $system_restock_list->RowCnt ?>_system_restock_restocked_action" class="system_restock_restocked_action">
 <span<?php echo $system_restock->restocked_action->ViewAttributes() ?>>
 <?php echo $system_restock->restocked_action->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($system_restock->approver_date->Visible) { // approver_date ?>
-		<td data-name="approver_date"<?php echo $system_restock->approver_date->CellAttributes() ?>>
-<span id="el<?php echo $system_restock_list->RowCnt ?>_system_restock_approver_date" class="system_restock_approver_date">
-<span<?php echo $system_restock->approver_date->ViewAttributes() ?>>
-<?php echo $system_restock->approver_date->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($system_restock->approver_action->Visible) { // approver_action ?>
-		<td data-name="approver_action"<?php echo $system_restock->approver_action->CellAttributes() ?>>
-<span id="el<?php echo $system_restock_list->RowCnt ?>_system_restock_approver_action" class="system_restock_approver_action">
-<span<?php echo $system_restock->approver_action->ViewAttributes() ?>>
-<?php echo $system_restock->approver_action->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($system_restock->approver_comment->Visible) { // approver_comment ?>
-		<td data-name="approver_comment"<?php echo $system_restock->approver_comment->CellAttributes() ?>>
-<span id="el<?php echo $system_restock_list->RowCnt ?>_system_restock_approver_comment" class="system_restock_approver_comment">
-<span<?php echo $system_restock->approver_comment->ViewAttributes() ?>>
-<?php echo $system_restock->approver_comment->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($system_restock->approved_by->Visible) { // approved_by ?>
-		<td data-name="approved_by"<?php echo $system_restock->approved_by->CellAttributes() ?>>
-<span id="el<?php echo $system_restock_list->RowCnt ?>_system_restock_approved_by" class="system_restock_approved_by">
-<span<?php echo $system_restock->approved_by->ViewAttributes() ?>>
-<?php echo $system_restock->approved_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

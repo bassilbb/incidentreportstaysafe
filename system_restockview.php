@@ -892,7 +892,27 @@ class csystem_restock_view extends csystem_restock {
 		$this->quantity->ViewCustomAttributes = "";
 
 		// restocked_by
-		$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
+		if (strval($this->restocked_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->restocked_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->restocked_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->restocked_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->restocked_by->ViewValue = $this->restocked_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
+			}
+		} else {
+			$this->restocked_by->ViewValue = NULL;
+		}
 		$this->restocked_by->ViewCustomAttributes = "";
 
 		// statuss
@@ -1288,6 +1308,8 @@ fsystem_restockview.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE
 // Dynamic selection lists
 fsystem_restockview.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"system_inventory"};
 fsystem_restockview.Lists["x_material_name"].Data = "<?php echo $system_restock_view->material_name->LookupFilterQuery(FALSE, "view") ?>";
+fsystem_restockview.Lists["x_restocked_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fsystem_restockview.Lists["x_restocked_by"].Data = "<?php echo $system_restock_view->restocked_by->LookupFilterQuery(FALSE, "view") ?>";
 fsystem_restockview.Lists["x_restocked_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 fsystem_restockview.Lists["x_restocked_action"].Options = <?php echo json_encode($system_restock_view->restocked_action->Options()) ?>;
 

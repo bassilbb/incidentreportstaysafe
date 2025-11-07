@@ -83,8 +83,10 @@ class csystem_restock extends cTable {
 		$this->fields['quantity'] = &$this->quantity;
 
 		// restocked_by
-		$this->restocked_by = new cField('system_restock', 'system_restock', 'x_restocked_by', 'restocked_by', '`restocked_by`', '`restocked_by`', 3, -1, FALSE, '`restocked_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->restocked_by = new cField('system_restock', 'system_restock', 'x_restocked_by', 'restocked_by', '`restocked_by`', '`restocked_by`', 3, -1, FALSE, '`restocked_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->restocked_by->Sortable = TRUE; // Allow sort
+		$this->restocked_by->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->restocked_by->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->restocked_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['restocked_by'] = &$this->restocked_by;
 
@@ -733,7 +735,27 @@ class csystem_restock extends cTable {
 		$this->quantity->ViewCustomAttributes = "";
 
 		// restocked_by
-		$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
+		if (strval($this->restocked_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->restocked_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->restocked_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->restocked_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->restocked_by->ViewValue = $this->restocked_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
+			}
+		} else {
+			$this->restocked_by->ViewValue = NULL;
+		}
 		$this->restocked_by->ViewCustomAttributes = "";
 
 		// statuss
@@ -878,8 +900,6 @@ class csystem_restock extends cTable {
 		// restocked_by
 		$this->restocked_by->EditAttrs["class"] = "form-control";
 		$this->restocked_by->EditCustomAttributes = "";
-		$this->restocked_by->EditValue = $this->restocked_by->CurrentValue;
-		$this->restocked_by->PlaceHolder = ew_RemoveHtml($this->restocked_by->FldCaption());
 
 		// statuss
 		$this->statuss->EditAttrs["class"] = "form-control";

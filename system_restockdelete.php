@@ -325,12 +325,7 @@ class csystem_restock_delete extends csystem_restock {
 		$this->material_name->SetVisibility();
 		$this->quantity->SetVisibility();
 		$this->restocked_by->SetVisibility();
-		$this->statuss->SetVisibility();
 		$this->restocked_action->SetVisibility();
-		$this->approver_date->SetVisibility();
-		$this->approver_action->SetVisibility();
-		$this->approver_comment->SetVisibility();
-		$this->approved_by->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -631,7 +626,27 @@ class csystem_restock_delete extends csystem_restock {
 		$this->quantity->ViewCustomAttributes = "";
 
 		// restocked_by
-		$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
+		if (strval($this->restocked_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->restocked_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->restocked_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->restocked_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->restocked_by->ViewValue = $this->restocked_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->restocked_by->ViewValue = $this->restocked_by->CurrentValue;
+			}
+		} else {
+			$this->restocked_by->ViewValue = NULL;
+		}
 		$this->restocked_by->ViewCustomAttributes = "";
 
 		// statuss
@@ -692,35 +707,10 @@ class csystem_restock_delete extends csystem_restock {
 			$this->restocked_by->HrefValue = "";
 			$this->restocked_by->TooltipValue = "";
 
-			// statuss
-			$this->statuss->LinkCustomAttributes = "";
-			$this->statuss->HrefValue = "";
-			$this->statuss->TooltipValue = "";
-
 			// restocked_action
 			$this->restocked_action->LinkCustomAttributes = "";
 			$this->restocked_action->HrefValue = "";
 			$this->restocked_action->TooltipValue = "";
-
-			// approver_date
-			$this->approver_date->LinkCustomAttributes = "";
-			$this->approver_date->HrefValue = "";
-			$this->approver_date->TooltipValue = "";
-
-			// approver_action
-			$this->approver_action->LinkCustomAttributes = "";
-			$this->approver_action->HrefValue = "";
-			$this->approver_action->TooltipValue = "";
-
-			// approver_comment
-			$this->approver_comment->LinkCustomAttributes = "";
-			$this->approver_comment->HrefValue = "";
-			$this->approver_comment->TooltipValue = "";
-
-			// approved_by
-			$this->approved_by->LinkCustomAttributes = "";
-			$this->approved_by->HrefValue = "";
-			$this->approved_by->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -937,6 +927,8 @@ fsystem_restockdelete.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDA
 // Dynamic selection lists
 fsystem_restockdelete.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"system_inventory"};
 fsystem_restockdelete.Lists["x_material_name"].Data = "<?php echo $system_restock_delete->material_name->LookupFilterQuery(FALSE, "delete") ?>";
+fsystem_restockdelete.Lists["x_restocked_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fsystem_restockdelete.Lists["x_restocked_by"].Data = "<?php echo $system_restock_delete->restocked_by->LookupFilterQuery(FALSE, "delete") ?>";
 fsystem_restockdelete.Lists["x_restocked_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
 fsystem_restockdelete.Lists["x_restocked_action"].Options = <?php echo json_encode($system_restock_delete->restocked_action->Options()) ?>;
 
@@ -983,23 +975,8 @@ $system_restock_delete->ShowMessage();
 <?php if ($system_restock->restocked_by->Visible) { // restocked_by ?>
 		<th class="<?php echo $system_restock->restocked_by->HeaderCellClass() ?>"><span id="elh_system_restock_restocked_by" class="system_restock_restocked_by"><?php echo $system_restock->restocked_by->FldCaption() ?></span></th>
 <?php } ?>
-<?php if ($system_restock->statuss->Visible) { // statuss ?>
-		<th class="<?php echo $system_restock->statuss->HeaderCellClass() ?>"><span id="elh_system_restock_statuss" class="system_restock_statuss"><?php echo $system_restock->statuss->FldCaption() ?></span></th>
-<?php } ?>
 <?php if ($system_restock->restocked_action->Visible) { // restocked_action ?>
 		<th class="<?php echo $system_restock->restocked_action->HeaderCellClass() ?>"><span id="elh_system_restock_restocked_action" class="system_restock_restocked_action"><?php echo $system_restock->restocked_action->FldCaption() ?></span></th>
-<?php } ?>
-<?php if ($system_restock->approver_date->Visible) { // approver_date ?>
-		<th class="<?php echo $system_restock->approver_date->HeaderCellClass() ?>"><span id="elh_system_restock_approver_date" class="system_restock_approver_date"><?php echo $system_restock->approver_date->FldCaption() ?></span></th>
-<?php } ?>
-<?php if ($system_restock->approver_action->Visible) { // approver_action ?>
-		<th class="<?php echo $system_restock->approver_action->HeaderCellClass() ?>"><span id="elh_system_restock_approver_action" class="system_restock_approver_action"><?php echo $system_restock->approver_action->FldCaption() ?></span></th>
-<?php } ?>
-<?php if ($system_restock->approver_comment->Visible) { // approver_comment ?>
-		<th class="<?php echo $system_restock->approver_comment->HeaderCellClass() ?>"><span id="elh_system_restock_approver_comment" class="system_restock_approver_comment"><?php echo $system_restock->approver_comment->FldCaption() ?></span></th>
-<?php } ?>
-<?php if ($system_restock->approved_by->Visible) { // approved_by ?>
-		<th class="<?php echo $system_restock->approved_by->HeaderCellClass() ?>"><span id="elh_system_restock_approved_by" class="system_restock_approved_by"><?php echo $system_restock->approved_by->FldCaption() ?></span></th>
 <?php } ?>
 	</tr>
 	</thead>
@@ -1070,51 +1047,11 @@ while (!$system_restock_delete->Recordset->EOF) {
 </span>
 </td>
 <?php } ?>
-<?php if ($system_restock->statuss->Visible) { // statuss ?>
-		<td<?php echo $system_restock->statuss->CellAttributes() ?>>
-<span id="el<?php echo $system_restock_delete->RowCnt ?>_system_restock_statuss" class="system_restock_statuss">
-<span<?php echo $system_restock->statuss->ViewAttributes() ?>>
-<?php echo $system_restock->statuss->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
 <?php if ($system_restock->restocked_action->Visible) { // restocked_action ?>
 		<td<?php echo $system_restock->restocked_action->CellAttributes() ?>>
 <span id="el<?php echo $system_restock_delete->RowCnt ?>_system_restock_restocked_action" class="system_restock_restocked_action">
 <span<?php echo $system_restock->restocked_action->ViewAttributes() ?>>
 <?php echo $system_restock->restocked_action->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($system_restock->approver_date->Visible) { // approver_date ?>
-		<td<?php echo $system_restock->approver_date->CellAttributes() ?>>
-<span id="el<?php echo $system_restock_delete->RowCnt ?>_system_restock_approver_date" class="system_restock_approver_date">
-<span<?php echo $system_restock->approver_date->ViewAttributes() ?>>
-<?php echo $system_restock->approver_date->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($system_restock->approver_action->Visible) { // approver_action ?>
-		<td<?php echo $system_restock->approver_action->CellAttributes() ?>>
-<span id="el<?php echo $system_restock_delete->RowCnt ?>_system_restock_approver_action" class="system_restock_approver_action">
-<span<?php echo $system_restock->approver_action->ViewAttributes() ?>>
-<?php echo $system_restock->approver_action->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($system_restock->approver_comment->Visible) { // approver_comment ?>
-		<td<?php echo $system_restock->approver_comment->CellAttributes() ?>>
-<span id="el<?php echo $system_restock_delete->RowCnt ?>_system_restock_approver_comment" class="system_restock_approver_comment">
-<span<?php echo $system_restock->approver_comment->ViewAttributes() ?>>
-<?php echo $system_restock->approver_comment->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($system_restock->approved_by->Visible) { // approved_by ?>
-		<td<?php echo $system_restock->approved_by->CellAttributes() ?>>
-<span id="el<?php echo $system_restock_delete->RowCnt ?>_system_restock_approved_by" class="system_restock_approved_by">
-<span<?php echo $system_restock->approved_by->ViewAttributes() ?>>
-<?php echo $system_restock->approved_by->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>
