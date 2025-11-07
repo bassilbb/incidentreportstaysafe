@@ -317,9 +317,6 @@ class csystem_restock_delete extends csystem_restock {
 		// 
 
 		$this->CurrentAction = (@$_GET["a"] <> "") ? $_GET["a"] : @$_POST["a_list"]; // Set up current action
-		$this->code->SetVisibility();
-		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
-			$this->code->Visible = FALSE;
 		$this->date_restocked->SetVisibility();
 		$this->reference_id->SetVisibility();
 		$this->material_name->SetVisibility();
@@ -677,11 +674,6 @@ class csystem_restock_delete extends csystem_restock {
 		$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
 		$this->approved_by->ViewCustomAttributes = "";
 
-			// code
-			$this->code->LinkCustomAttributes = "";
-			$this->code->HrefValue = "";
-			$this->code->TooltipValue = "";
-
 			// date_restocked
 			$this->date_restocked->LinkCustomAttributes = "";
 			$this->date_restocked->HrefValue = "";
@@ -957,9 +949,6 @@ $system_restock_delete->ShowMessage();
 <table class="table ewTable">
 	<thead>
 	<tr class="ewTableHeader">
-<?php if ($system_restock->code->Visible) { // code ?>
-		<th class="<?php echo $system_restock->code->HeaderCellClass() ?>"><span id="elh_system_restock_code" class="system_restock_code"><?php echo $system_restock->code->FldCaption() ?></span></th>
-<?php } ?>
 <?php if ($system_restock->date_restocked->Visible) { // date_restocked ?>
 		<th class="<?php echo $system_restock->date_restocked->HeaderCellClass() ?>"><span id="elh_system_restock_date_restocked" class="system_restock_date_restocked"><?php echo $system_restock->date_restocked->FldCaption() ?></span></th>
 <?php } ?>
@@ -999,14 +988,6 @@ while (!$system_restock_delete->Recordset->EOF) {
 	$system_restock_delete->RenderRow();
 ?>
 	<tr<?php echo $system_restock->RowAttributes() ?>>
-<?php if ($system_restock->code->Visible) { // code ?>
-		<td<?php echo $system_restock->code->CellAttributes() ?>>
-<span id="el<?php echo $system_restock_delete->RowCnt ?>_system_restock_code" class="system_restock_code">
-<span<?php echo $system_restock->code->ViewAttributes() ?>>
-<?php echo $system_restock->code->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
 <?php if ($system_restock->date_restocked->Visible) { // date_restocked ?>
 		<td<?php echo $system_restock->date_restocked->CellAttributes() ?>>
 <span id="el<?php echo $system_restock_delete->RowCnt ?>_system_restock_date_restocked" class="system_restock_date_restocked">

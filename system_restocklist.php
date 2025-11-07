@@ -446,9 +446,6 @@ class csystem_restock_list extends csystem_restock {
 
 		// Setup export options
 		$this->SetupExportOptions();
-		$this->code->SetVisibility();
-		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
-			$this->code->Visible = FALSE;
 		$this->date_restocked->SetVisibility();
 		$this->reference_id->SetVisibility();
 		$this->material_name->SetVisibility();
@@ -1128,7 +1125,6 @@ class csystem_restock_list extends csystem_restock {
 		if (@$_GET["order"] <> "") {
 			$this->CurrentOrder = @$_GET["order"];
 			$this->CurrentOrderType = @$_GET["ordertype"];
-			$this->UpdateSort($this->code); // code
 			$this->UpdateSort($this->date_restocked); // date_restocked
 			$this->UpdateSort($this->reference_id); // reference_id
 			$this->UpdateSort($this->material_name); // material_name
@@ -1167,7 +1163,6 @@ class csystem_restock_list extends csystem_restock {
 			if ($this->Command == "resetsort") {
 				$sOrderBy = "";
 				$this->setSessionOrderBy($sOrderBy);
-				$this->code->setSort("");
 				$this->date_restocked->setSort("");
 				$this->reference_id->setSort("");
 				$this->material_name->setSort("");
@@ -1828,11 +1823,6 @@ class csystem_restock_list extends csystem_restock {
 		$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
 		$this->approved_by->ViewCustomAttributes = "";
 
-			// code
-			$this->code->LinkCustomAttributes = "";
-			$this->code->HrefValue = "";
-			$this->code->TooltipValue = "";
-
 			// date_restocked
 			$this->date_restocked->LinkCustomAttributes = "";
 			$this->date_restocked->HrefValue = "";
@@ -2394,15 +2384,6 @@ $system_restock_list->RenderListOptions();
 // Render list options (header, left)
 $system_restock_list->ListOptions->Render("header", "left");
 ?>
-<?php if ($system_restock->code->Visible) { // code ?>
-	<?php if ($system_restock->SortUrl($system_restock->code) == "") { ?>
-		<th data-name="code" class="<?php echo $system_restock->code->HeaderCellClass() ?>"><div id="elh_system_restock_code" class="system_restock_code"><div class="ewTableHeaderCaption"><?php echo $system_restock->code->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="code" class="<?php echo $system_restock->code->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $system_restock->SortUrl($system_restock->code) ?>',1);"><div id="elh_system_restock_code" class="system_restock_code">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $system_restock->code->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($system_restock->code->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($system_restock->code->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php if ($system_restock->date_restocked->Visible) { // date_restocked ?>
 	<?php if ($system_restock->SortUrl($system_restock->date_restocked) == "") { ?>
 		<th data-name="date_restocked" class="<?php echo $system_restock->date_restocked->HeaderCellClass() ?>"><div id="elh_system_restock_date_restocked" class="system_restock_date_restocked"><div class="ewTableHeaderCaption"><?php echo $system_restock->date_restocked->FldCaption() ?></div></div></th>
@@ -2522,14 +2503,6 @@ while ($system_restock_list->RecCnt < $system_restock_list->StopRec) {
 // Render list options (body, left)
 $system_restock_list->ListOptions->Render("body", "left", $system_restock_list->RowCnt);
 ?>
-	<?php if ($system_restock->code->Visible) { // code ?>
-		<td data-name="code"<?php echo $system_restock->code->CellAttributes() ?>>
-<span id="el<?php echo $system_restock_list->RowCnt ?>_system_restock_code" class="system_restock_code">
-<span<?php echo $system_restock->code->ViewAttributes() ?>>
-<?php echo $system_restock->code->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
 	<?php if ($system_restock->date_restocked->Visible) { // date_restocked ?>
 		<td data-name="date_restocked"<?php echo $system_restock->date_restocked->CellAttributes() ?>>
 <span id="el<?php echo $system_restock_list->RowCnt ?>_system_restock_date_restocked" class="system_restock_date_restocked">
