@@ -2488,6 +2488,7 @@ class cpc_issuance extends cTable {
 				$this->quantity_out->CellCssStyle = "color: orange; text-align: left;";
 				$this->total_quantity->CellCssStyle = "color: orange; text-align: left;";
 				$this->capacity->CellCssStyle = "color: orange; text-align: left;";
+				$this->material_name->CellCssStyle = "color: orange; text-align: left;";
 			}
 			if ($this->statuse->CurrentValue == 0) {
 				$this->id->CellCssStyle = "color: red; text-align: left;";
@@ -2510,6 +2511,7 @@ class cpc_issuance extends cTable {
 				$this->quantity_out->CellCssStyle = "color: red; text-align: left;";
 				$this->total_quantity->CellCssStyle = "color: red; text-align: left;";
 				$this->capacity->CellCssStyle = "color: red; text-align: left;";
+				$this->material_name->CellCssStyle = "color: red; text-align: left;";
 			}
 			if ($this->statuse->CurrentValue == 2) {
 				$this->id->CellCssStyle = "color: blue; text-align: left;";
@@ -2532,6 +2534,7 @@ class cpc_issuance extends cTable {
 				$this->quantity_out->CellCssStyle = "color: blue; text-align: left;";
 				$this->total_quantity->CellCssStyle = "color: blue; text-align: left;";
 				$this->capacity->CellCssStyle = "color: blue; text-align: left;";
+				$this->material_name->CellCssStyle = "color: blue; text-align: left;";
 			}
 			if ($this->statuse->CurrentValue == 1) {
 				$this->id->CellCssStyle = "color: green; text-align: left;";
@@ -2554,6 +2557,7 @@ class cpc_issuance extends cTable {
 				$this->quantity_out->CellCssStyle = "color: green; text-align: left;";
 				$this->total_quantity->CellCssStyle = "color: green; text-align: left;";
 				$this->capacity->CellCssStyle = "color: green; text-align: left;";
+				$this->material_name->CellCssStyle = "color: green; text-align: left;";
 			}
 		}
 	}
