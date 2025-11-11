@@ -832,6 +832,7 @@ class cissuance_store extends cTable {
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+		$sSqlWrk .= " ORDER BY `id` ASC";
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
@@ -1739,6 +1740,7 @@ class cissuance_store extends cTable {
 	function Row_Inserted($rsold, &$rsnew) {
 
 		//echo "Row Inserted"
+			   ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
 	}
 
 	// Row Updating event
@@ -1914,16 +1916,14 @@ class cissuance_store extends cTable {
 		   ///ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
 		   //exit;
 		//}
-
-			if (CurrentPageID() == "edit" && (CurrentUserLevel() == 5 && $rsnew["statuss"] == 4 )) {
-
+			//if (CurrentPageID() == "edit" && (CurrentUserLevel() == 5 && $rsnew["statuss"] == 4 )) {
 		//	echo "Status -> " . $this->statuss->CurrentValue . "</br>";
 		//	echo "UserLevel -> " . CurrentUserLevel() . "</br>";
 		  // ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $rsnew["quantity_out"] . ") WHERE `id`= ".$rsnew["material_name"]."");
-
-		   ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
-
+		  	//this was working i only had to put it on row inserted
+		   ///ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
 		   //exit;
+
 		}
 	}
 
@@ -2034,7 +2034,7 @@ class cissuance_store extends cTable {
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
 
-		if (CurrentPageID() == "add") {
+		 if (CurrentPageID() == "add") {
 				if (CurrentUserLevel() == 1) {
 					$this->date->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
@@ -2094,28 +2094,6 @@ class cissuance_store extends cTable {
 					$this->verified_comment->Visible = FALSE;
 					$this->verified_by->Visible = FALSE;
 				}
-
-				if (CurrentUserLevel() == 4) {
-					$this->date->ReadOnly = TRUE;
-					$this->staff_id->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->quantity_in->ReadOnly = TRUE;
-					$this->quantity_type->ReadOnly = TRUE;
-					$this->total_quantity->ReadOnly = TRUE;
-					$this->issued_action->Visible = FALSE;
-					$this->issued_comment->Visible = FALSE;
-					$this->issued_by->Visible = FALSE;
-
-					//$this->approver_date->ReadOnly = TRUE;
-					$this->verified_date->Visible = FALSE;
-					$this->approver_date->Visible = FALSE;
-					$this->approver_action->Visible = FALSE;
-					$this->approved_comment->Visible = FALSE;
-					$this->approved_by->Visible = FALSE;
-					$this->verified_action->Visible = FALSE;
-					$this->verified_comment->Visible = FALSE;
-					$this->verified_by->Visible = FALSE;
-				}
 			}
 
 				// Edit Page
@@ -2140,27 +2118,6 @@ class cissuance_store extends cTable {
 					$this->verified_by->Visible = FALSE;
 				}
 				if (CurrentUserLevel() == 3) {
-					$this->date->ReadOnly = TRUE;
-					$this->staff_id->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->quantity_in->ReadOnly = TRUE;
-					$this->quantity_type->ReadOnly = TRUE;
-					$this->quantity_out->ReadOnly = TRUE;
-					$this->total_quantity->ReadOnly = TRUE;
-					$this->issued_action->ReadOnly = TRUE;
-					$this->issued_comment->ReadOnly = TRUE;
-					$this->issued_by->ReadOnly = TRUE;
-					$this->approver_date->Visible = FALSE;
-					$this->approver_action->Visible = TRUE;
-					$this->approved_comment->Visible = TRUE;
-					$this->approved_by->Visible = FALSE;
-					$this->verified_date->Visible = FALSE;
-					$this->verified_action->Visible = FALSE;
-					$this->verified_comment->Visible = FALSE;
-					$this->verified_by->Visible = FALSE;
-				}
-
-				if (CurrentUserLevel() == 4) {
 					$this->date->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
 					$this->reference_id->ReadOnly = TRUE;
