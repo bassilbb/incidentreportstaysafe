@@ -1571,6 +1571,7 @@ class cissuance_store_staysafe extends cTable {
 	function Row_Inserted($rsold, &$rsnew) {
 
 		//echo "Row Inserted"
+		ew_Execute("UPDATE `inventory_staysafe` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
 	}
 
 	// Row Updating event
@@ -1796,9 +1797,10 @@ class cissuance_store_staysafe extends cTable {
 	function Row_Updated($rsold, &$rsnew) {
 
 		//echo "Row Updated";
-		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 11 && $rsnew["statuss"] == 4 )) {
-		   ew_Execute("UPDATE `inventory_staysafe` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
-		}
+		//if (CurrentPageID() == "edit" && (CurrentUserLevel() == 11 && $rsnew["statuss"] == 4 )) {
+		  // ew_Execute("UPDATE `inventory_staysafe` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
+		//}
+
 	}
 
 	// Row Update Conflict event
