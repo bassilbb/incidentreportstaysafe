@@ -428,7 +428,6 @@ class csparepart_module_view extends csparepart_module {
 		$this->part_name->SetVisibility();
 		$this->quantity->SetVisibility();
 		$this->cost->SetVisibility();
-		$this->gen_maintenance->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -761,7 +760,6 @@ class csparepart_module_view extends csparepart_module {
 		$this->part_name->setDbValue($row['part_name']);
 		$this->quantity->setDbValue($row['quantity']);
 		$this->cost->setDbValue($row['cost']);
-		$this->gen_maintenance->setDbValue($row['gen_maintenance']);
 	}
 
 	// Return a row with default values
@@ -771,7 +769,6 @@ class csparepart_module_view extends csparepart_module {
 		$row['part_name'] = NULL;
 		$row['quantity'] = NULL;
 		$row['cost'] = NULL;
-		$row['gen_maintenance'] = NULL;
 		return $row;
 	}
 
@@ -784,7 +781,6 @@ class csparepart_module_view extends csparepart_module {
 		$this->part_name->DbValue = $row['part_name'];
 		$this->quantity->DbValue = $row['quantity'];
 		$this->cost->DbValue = $row['cost'];
-		$this->gen_maintenance->DbValue = $row['gen_maintenance'];
 	}
 
 	// Render row values based on field settings
@@ -811,7 +807,6 @@ class csparepart_module_view extends csparepart_module {
 		// part_name
 		// quantity
 		// cost
-		// gen_maintenance
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -830,10 +825,6 @@ class csparepart_module_view extends csparepart_module {
 		// cost
 		$this->cost->ViewValue = $this->cost->CurrentValue;
 		$this->cost->ViewCustomAttributes = "";
-
-		// gen_maintenance
-		$this->gen_maintenance->ViewValue = $this->gen_maintenance->CurrentValue;
-		$this->gen_maintenance->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
@@ -854,11 +845,6 @@ class csparepart_module_view extends csparepart_module {
 			$this->cost->LinkCustomAttributes = "";
 			$this->cost->HrefValue = "";
 			$this->cost->TooltipValue = "";
-
-			// gen_maintenance
-			$this->gen_maintenance->LinkCustomAttributes = "";
-			$this->gen_maintenance->HrefValue = "";
-			$this->gen_maintenance->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1270,17 +1256,6 @@ $sparepart_module_view->ShowMessage();
 <span id="el_sparepart_module_cost">
 <span<?php echo $sparepart_module->cost->ViewAttributes() ?>>
 <?php echo $sparepart_module->cost->ViewValue ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($sparepart_module->gen_maintenance->Visible) { // gen_maintenance ?>
-	<tr id="r_gen_maintenance">
-		<td class="col-sm-2"><span id="elh_sparepart_module_gen_maintenance"><?php echo $sparepart_module->gen_maintenance->FldCaption() ?></span></td>
-		<td data-name="gen_maintenance"<?php echo $sparepart_module->gen_maintenance->CellAttributes() ?>>
-<span id="el_sparepart_module_gen_maintenance">
-<span<?php echo $sparepart_module->gen_maintenance->ViewAttributes() ?>>
-<?php echo $sparepart_module->gen_maintenance->ViewValue ?></span>
 </span>
 </td>
 	</tr>

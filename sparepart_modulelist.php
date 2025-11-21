@@ -452,7 +452,6 @@ class csparepart_module_list extends csparepart_module {
 		$this->part_name->SetVisibility();
 		$this->quantity->SetVisibility();
 		$this->cost->SetVisibility();
-		$this->gen_maintenance->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -813,7 +812,6 @@ class csparepart_module_list extends csparepart_module {
 		$sFilterList = ew_Concat($sFilterList, $this->part_name->AdvancedSearch->ToJson(), ","); // Field part_name
 		$sFilterList = ew_Concat($sFilterList, $this->quantity->AdvancedSearch->ToJson(), ","); // Field quantity
 		$sFilterList = ew_Concat($sFilterList, $this->cost->AdvancedSearch->ToJson(), ","); // Field cost
-		$sFilterList = ew_Concat($sFilterList, $this->gen_maintenance->AdvancedSearch->ToJson(), ","); // Field gen_maintenance
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -889,14 +887,6 @@ class csparepart_module_list extends csparepart_module {
 		$this->cost->AdvancedSearch->SearchValue2 = @$filter["y_cost"];
 		$this->cost->AdvancedSearch->SearchOperator2 = @$filter["w_cost"];
 		$this->cost->AdvancedSearch->Save();
-
-		// Field gen_maintenance
-		$this->gen_maintenance->AdvancedSearch->SearchValue = @$filter["x_gen_maintenance"];
-		$this->gen_maintenance->AdvancedSearch->SearchOperator = @$filter["z_gen_maintenance"];
-		$this->gen_maintenance->AdvancedSearch->SearchCondition = @$filter["v_gen_maintenance"];
-		$this->gen_maintenance->AdvancedSearch->SearchValue2 = @$filter["y_gen_maintenance"];
-		$this->gen_maintenance->AdvancedSearch->SearchOperator2 = @$filter["w_gen_maintenance"];
-		$this->gen_maintenance->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
@@ -906,7 +896,6 @@ class csparepart_module_list extends csparepart_module {
 		$sWhere = "";
 		$this->BuildBasicSearchSQL($sWhere, $this->part_name, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->quantity, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->gen_maintenance, $arKeywords, $type);
 		return $sWhere;
 	}
 
@@ -1057,7 +1046,6 @@ class csparepart_module_list extends csparepart_module {
 			$this->UpdateSort($this->part_name); // part_name
 			$this->UpdateSort($this->quantity); // quantity
 			$this->UpdateSort($this->cost); // cost
-			$this->UpdateSort($this->gen_maintenance); // gen_maintenance
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1094,7 +1082,6 @@ class csparepart_module_list extends csparepart_module {
 				$this->part_name->setSort("");
 				$this->quantity->setSort("");
 				$this->cost->setSort("");
-				$this->gen_maintenance->setSort("");
 			}
 
 			// Reset start position
@@ -1553,7 +1540,6 @@ class csparepart_module_list extends csparepart_module {
 		$this->part_name->setDbValue($row['part_name']);
 		$this->quantity->setDbValue($row['quantity']);
 		$this->cost->setDbValue($row['cost']);
-		$this->gen_maintenance->setDbValue($row['gen_maintenance']);
 	}
 
 	// Return a row with default values
@@ -1563,7 +1549,6 @@ class csparepart_module_list extends csparepart_module {
 		$row['part_name'] = NULL;
 		$row['quantity'] = NULL;
 		$row['cost'] = NULL;
-		$row['gen_maintenance'] = NULL;
 		return $row;
 	}
 
@@ -1576,7 +1561,6 @@ class csparepart_module_list extends csparepart_module {
 		$this->part_name->DbValue = $row['part_name'];
 		$this->quantity->DbValue = $row['quantity'];
 		$this->cost->DbValue = $row['cost'];
-		$this->gen_maintenance->DbValue = $row['gen_maintenance'];
 	}
 
 	// Load old record
@@ -1625,7 +1609,6 @@ class csparepart_module_list extends csparepart_module {
 		// part_name
 		// quantity
 		// cost
-		// gen_maintenance
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1644,10 +1627,6 @@ class csparepart_module_list extends csparepart_module {
 		// cost
 		$this->cost->ViewValue = $this->cost->CurrentValue;
 		$this->cost->ViewCustomAttributes = "";
-
-		// gen_maintenance
-		$this->gen_maintenance->ViewValue = $this->gen_maintenance->CurrentValue;
-		$this->gen_maintenance->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
@@ -1668,11 +1647,6 @@ class csparepart_module_list extends csparepart_module {
 			$this->cost->LinkCustomAttributes = "";
 			$this->cost->HrefValue = "";
 			$this->cost->TooltipValue = "";
-
-			// gen_maintenance
-			$this->gen_maintenance->LinkCustomAttributes = "";
-			$this->gen_maintenance->HrefValue = "";
-			$this->gen_maintenance->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -2232,15 +2206,6 @@ $sparepart_module_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($sparepart_module->gen_maintenance->Visible) { // gen_maintenance ?>
-	<?php if ($sparepart_module->SortUrl($sparepart_module->gen_maintenance) == "") { ?>
-		<th data-name="gen_maintenance" class="<?php echo $sparepart_module->gen_maintenance->HeaderCellClass() ?>"><div id="elh_sparepart_module_gen_maintenance" class="sparepart_module_gen_maintenance"><div class="ewTableHeaderCaption"><?php echo $sparepart_module->gen_maintenance->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="gen_maintenance" class="<?php echo $sparepart_module->gen_maintenance->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $sparepart_module->SortUrl($sparepart_module->gen_maintenance) ?>',1);"><div id="elh_sparepart_module_gen_maintenance" class="sparepart_module_gen_maintenance">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $sparepart_module->gen_maintenance->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($sparepart_module->gen_maintenance->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($sparepart_module->gen_maintenance->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php
 
 // Render list options (header, right)
@@ -2335,14 +2300,6 @@ $sparepart_module_list->ListOptions->Render("body", "left", $sparepart_module_li
 <span id="el<?php echo $sparepart_module_list->RowCnt ?>_sparepart_module_cost" class="sparepart_module_cost">
 <span<?php echo $sparepart_module->cost->ViewAttributes() ?>>
 <?php echo $sparepart_module->cost->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($sparepart_module->gen_maintenance->Visible) { // gen_maintenance ?>
-		<td data-name="gen_maintenance"<?php echo $sparepart_module->gen_maintenance->CellAttributes() ?>>
-<span id="el<?php echo $sparepart_module_list->RowCnt ?>_sparepart_module_gen_maintenance" class="sparepart_module_gen_maintenance">
-<span<?php echo $sparepart_module->gen_maintenance->ViewAttributes() ?>>
-<?php echo $sparepart_module->gen_maintenance->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

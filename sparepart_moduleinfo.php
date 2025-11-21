@@ -11,7 +11,6 @@ class csparepart_module extends cTable {
 	var $part_name;
 	var $quantity;
 	var $cost;
-	var $gen_maintenance;
 
 	//
 	// Table class constructor
@@ -66,11 +65,6 @@ class csparepart_module extends cTable {
 		$this->cost->Sortable = TRUE; // Allow sort
 		$this->cost->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
 		$this->fields['cost'] = &$this->cost;
-
-		// gen_maintenance
-		$this->gen_maintenance = new cField('sparepart_module', 'sparepart_module', 'x_gen_maintenance', 'gen_maintenance', '`gen_maintenance`', '`gen_maintenance`', 200, -1, FALSE, '`gen_maintenance`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->gen_maintenance->Sortable = TRUE; // Allow sort
-		$this->fields['gen_maintenance'] = &$this->gen_maintenance;
 	}
 
 	// Field Visibility
@@ -602,7 +596,6 @@ class csparepart_module extends cTable {
 		$this->part_name->setDbValue($rs->fields('part_name'));
 		$this->quantity->setDbValue($rs->fields('quantity'));
 		$this->cost->setDbValue($rs->fields('cost'));
-		$this->gen_maintenance->setDbValue($rs->fields('gen_maintenance'));
 	}
 
 	// Render list row values
@@ -617,7 +610,6 @@ class csparepart_module extends cTable {
 		// part_name
 		// quantity
 		// cost
-		// gen_maintenance
 		// id
 
 		$this->id->ViewValue = $this->id->CurrentValue;
@@ -634,10 +626,6 @@ class csparepart_module extends cTable {
 		// cost
 		$this->cost->ViewValue = $this->cost->CurrentValue;
 		$this->cost->ViewCustomAttributes = "";
-
-		// gen_maintenance
-		$this->gen_maintenance->ViewValue = $this->gen_maintenance->CurrentValue;
-		$this->gen_maintenance->ViewCustomAttributes = "";
 
 		// id
 		$this->id->LinkCustomAttributes = "";
@@ -658,11 +646,6 @@ class csparepart_module extends cTable {
 		$this->cost->LinkCustomAttributes = "";
 		$this->cost->HrefValue = "";
 		$this->cost->TooltipValue = "";
-
-		// gen_maintenance
-		$this->gen_maintenance->LinkCustomAttributes = "";
-		$this->gen_maintenance->HrefValue = "";
-		$this->gen_maintenance->TooltipValue = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -703,12 +686,6 @@ class csparepart_module extends cTable {
 		$this->cost->PlaceHolder = ew_RemoveHtml($this->cost->FldCaption());
 		if (strval($this->cost->EditValue) <> "" && is_numeric($this->cost->EditValue)) $this->cost->EditValue = ew_FormatNumber($this->cost->EditValue, -2, -1, -2, 0);
 
-		// gen_maintenance
-		$this->gen_maintenance->EditAttrs["class"] = "form-control";
-		$this->gen_maintenance->EditCustomAttributes = "";
-		$this->gen_maintenance->EditValue = $this->gen_maintenance->CurrentValue;
-		$this->gen_maintenance->PlaceHolder = ew_RemoveHtml($this->gen_maintenance->FldCaption());
-
 		// Call Row Rendered event
 		$this->Row_Rendered();
 	}
@@ -740,13 +717,11 @@ class csparepart_module extends cTable {
 					if ($this->part_name->Exportable) $Doc->ExportCaption($this->part_name);
 					if ($this->quantity->Exportable) $Doc->ExportCaption($this->quantity);
 					if ($this->cost->Exportable) $Doc->ExportCaption($this->cost);
-					if ($this->gen_maintenance->Exportable) $Doc->ExportCaption($this->gen_maintenance);
 				} else {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->part_name->Exportable) $Doc->ExportCaption($this->part_name);
 					if ($this->quantity->Exportable) $Doc->ExportCaption($this->quantity);
 					if ($this->cost->Exportable) $Doc->ExportCaption($this->cost);
-					if ($this->gen_maintenance->Exportable) $Doc->ExportCaption($this->gen_maintenance);
 				}
 				$Doc->EndExportRow();
 			}
@@ -782,13 +757,11 @@ class csparepart_module extends cTable {
 						if ($this->part_name->Exportable) $Doc->ExportField($this->part_name);
 						if ($this->quantity->Exportable) $Doc->ExportField($this->quantity);
 						if ($this->cost->Exportable) $Doc->ExportField($this->cost);
-						if ($this->gen_maintenance->Exportable) $Doc->ExportField($this->gen_maintenance);
 					} else {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->part_name->Exportable) $Doc->ExportField($this->part_name);
 						if ($this->quantity->Exportable) $Doc->ExportField($this->quantity);
 						if ($this->cost->Exportable) $Doc->ExportField($this->cost);
-						if ($this->gen_maintenance->Exportable) $Doc->ExportField($this->gen_maintenance);
 					}
 					$Doc->EndExportRow($RowCnt);
 				}

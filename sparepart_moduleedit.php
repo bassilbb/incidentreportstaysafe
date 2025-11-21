@@ -328,7 +328,6 @@ class csparepart_module_edit extends csparepart_module {
 		$this->part_name->SetVisibility();
 		$this->quantity->SetVisibility();
 		$this->cost->SetVisibility();
-		$this->gen_maintenance->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -624,9 +623,6 @@ class csparepart_module_edit extends csparepart_module {
 		if (!$this->cost->FldIsDetailKey) {
 			$this->cost->setFormValue($objForm->GetValue("x_cost"));
 		}
-		if (!$this->gen_maintenance->FldIsDetailKey) {
-			$this->gen_maintenance->setFormValue($objForm->GetValue("x_gen_maintenance"));
-		}
 	}
 
 	// Restore form values
@@ -636,7 +632,6 @@ class csparepart_module_edit extends csparepart_module {
 		$this->part_name->CurrentValue = $this->part_name->FormValue;
 		$this->quantity->CurrentValue = $this->quantity->FormValue;
 		$this->cost->CurrentValue = $this->cost->FormValue;
-		$this->gen_maintenance->CurrentValue = $this->gen_maintenance->FormValue;
 	}
 
 	// Load recordset
@@ -702,7 +697,6 @@ class csparepart_module_edit extends csparepart_module {
 		$this->part_name->setDbValue($row['part_name']);
 		$this->quantity->setDbValue($row['quantity']);
 		$this->cost->setDbValue($row['cost']);
-		$this->gen_maintenance->setDbValue($row['gen_maintenance']);
 	}
 
 	// Return a row with default values
@@ -712,7 +706,6 @@ class csparepart_module_edit extends csparepart_module {
 		$row['part_name'] = NULL;
 		$row['quantity'] = NULL;
 		$row['cost'] = NULL;
-		$row['gen_maintenance'] = NULL;
 		return $row;
 	}
 
@@ -725,7 +718,6 @@ class csparepart_module_edit extends csparepart_module {
 		$this->part_name->DbValue = $row['part_name'];
 		$this->quantity->DbValue = $row['quantity'];
 		$this->cost->DbValue = $row['cost'];
-		$this->gen_maintenance->DbValue = $row['gen_maintenance'];
 	}
 
 	// Load old record
@@ -768,7 +760,6 @@ class csparepart_module_edit extends csparepart_module {
 		// part_name
 		// quantity
 		// cost
-		// gen_maintenance
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -787,10 +778,6 @@ class csparepart_module_edit extends csparepart_module {
 		// cost
 		$this->cost->ViewValue = $this->cost->CurrentValue;
 		$this->cost->ViewCustomAttributes = "";
-
-		// gen_maintenance
-		$this->gen_maintenance->ViewValue = $this->gen_maintenance->CurrentValue;
-		$this->gen_maintenance->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
@@ -811,11 +798,6 @@ class csparepart_module_edit extends csparepart_module {
 			$this->cost->LinkCustomAttributes = "";
 			$this->cost->HrefValue = "";
 			$this->cost->TooltipValue = "";
-
-			// gen_maintenance
-			$this->gen_maintenance->LinkCustomAttributes = "";
-			$this->gen_maintenance->HrefValue = "";
-			$this->gen_maintenance->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_EDIT) { // Edit row
 
 			// id
@@ -843,12 +825,6 @@ class csparepart_module_edit extends csparepart_module {
 			$this->cost->PlaceHolder = ew_RemoveHtml($this->cost->FldCaption());
 			if (strval($this->cost->EditValue) <> "" && is_numeric($this->cost->EditValue)) $this->cost->EditValue = ew_FormatNumber($this->cost->EditValue, -2, -1, -2, 0);
 
-			// gen_maintenance
-			$this->gen_maintenance->EditAttrs["class"] = "form-control";
-			$this->gen_maintenance->EditCustomAttributes = "";
-			$this->gen_maintenance->EditValue = ew_HtmlEncode($this->gen_maintenance->CurrentValue);
-			$this->gen_maintenance->PlaceHolder = ew_RemoveHtml($this->gen_maintenance->FldCaption());
-
 			// Edit refer script
 			// id
 
@@ -866,10 +842,6 @@ class csparepart_module_edit extends csparepart_module {
 			// cost
 			$this->cost->LinkCustomAttributes = "";
 			$this->cost->HrefValue = "";
-
-			// gen_maintenance
-			$this->gen_maintenance->LinkCustomAttributes = "";
-			$this->gen_maintenance->HrefValue = "";
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD || $this->RowType == EW_ROWTYPE_EDIT || $this->RowType == EW_ROWTYPE_SEARCH) // Add/Edit/Search row
 			$this->SetupFieldTitles();
@@ -936,9 +908,6 @@ class csparepart_module_edit extends csparepart_module {
 
 			// cost
 			$this->cost->SetDbValueDef($rsnew, $this->cost->CurrentValue, NULL, $this->cost->ReadOnly);
-
-			// gen_maintenance
-			$this->gen_maintenance->SetDbValueDef($rsnew, $this->gen_maintenance->CurrentValue, NULL, $this->gen_maintenance->ReadOnly);
 
 			// Call Row Updating event
 			$bUpdateRow = $this->Row_Updating($rsold, $rsnew);
@@ -1242,16 +1211,6 @@ $sparepart_module_edit->ShowMessage();
 <input type="text" data-table="sparepart_module" data-field="x_cost" name="x_cost" id="x_cost" size="30" placeholder="<?php echo ew_HtmlEncode($sparepart_module->cost->getPlaceHolder()) ?>" value="<?php echo $sparepart_module->cost->EditValue ?>"<?php echo $sparepart_module->cost->EditAttributes() ?>>
 </span>
 <?php echo $sparepart_module->cost->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
-<?php if ($sparepart_module->gen_maintenance->Visible) { // gen_maintenance ?>
-	<div id="r_gen_maintenance" class="form-group">
-		<label id="elh_sparepart_module_gen_maintenance" for="x_gen_maintenance" class="<?php echo $sparepart_module_edit->LeftColumnClass ?>"><?php echo $sparepart_module->gen_maintenance->FldCaption() ?></label>
-		<div class="<?php echo $sparepart_module_edit->RightColumnClass ?>"><div<?php echo $sparepart_module->gen_maintenance->CellAttributes() ?>>
-<span id="el_sparepart_module_gen_maintenance">
-<input type="text" data-table="sparepart_module" data-field="x_gen_maintenance" name="x_gen_maintenance" id="x_gen_maintenance" size="30" maxlength="255" placeholder="<?php echo ew_HtmlEncode($sparepart_module->gen_maintenance->getPlaceHolder()) ?>" value="<?php echo $sparepart_module->gen_maintenance->EditValue ?>"<?php echo $sparepart_module->gen_maintenance->EditAttributes() ?>>
-</span>
-<?php echo $sparepart_module->gen_maintenance->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 </div><!-- /page* -->

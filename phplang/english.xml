@@ -4792,9 +4792,6 @@
       <field id="cost">
         <phrase id="fldcaption" value="Cost" />
       </field>
-      <field id="gen_maintenance">
-        <phrase id="fldcaption" value="gen maintenance" />
-      </field>
     </table>
     <table id="spare_part_usage">
       <phrase id="tblcaption" value="Sparepart Usaged" />
