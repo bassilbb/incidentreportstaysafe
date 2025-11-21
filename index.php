@@ -455,6 +455,24 @@ class cdefault {
 			$this->Page_Terminate("system_inventorylist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'system_restock'))
 			$this->Page_Terminate("system_restocklist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'gen_maintenance'))
+			$this->Page_Terminate("gen_maintenancelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'generator_registration'))
+			$this->Page_Terminate("generator_registrationlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'maintenance_type'))
+			$this->Page_Terminate("maintenance_typelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'sparepart_module'))
+			$this->Page_Terminate("sparepart_modulelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'spare_part_usage'))
+			$this->Page_Terminate("spare_part_usagelist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'sparepart_view'))
+			$this->Page_Terminate("sparepart_viewlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'gen_status'))
+			$this->Page_Terminate("gen_statuslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'genmaintenance_report'))
+			$this->Page_Terminate("genmaintenance_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'sparepart_report'))
+			$this->Page_Terminate("sparepart_reportlist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

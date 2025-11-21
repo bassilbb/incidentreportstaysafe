@@ -26,7 +26,10 @@ spl_autoload_register("ew_AutoLoad");
 
 // Create Database helper class
 function &DbHelper($dbid = "") {
-	$dbclass = "cstaysafedb_db";
+	if ($dbid == "staysafedb1" || $dbid === 1) // staysafedb1
+		$dbclass = "cstaysafedb1_db";
+	else // DB
+		$dbclass = "cstaysafedb_db";
 	$dbhelper = new $dbclass();
 	return $dbhelper;
 }

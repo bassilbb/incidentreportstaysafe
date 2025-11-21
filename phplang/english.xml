@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2025/11/11" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2025/11/21" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -729,6 +729,9 @@
     <menu id="430">
       <phrase id="menutext" value="status ssf" />
     </menu>
+    <menu id="532">
+      <phrase id="menutext" value="Gen Status" />
+    </menu>
     <menu id="34">
       <phrase id="menutext" value="Incidents" />
     </menu>
@@ -887,6 +890,33 @@
     </menu>
     <menu id="344">
       <phrase id="menutext" value="Retocked Tracking SSF" />
+    </menu>
+    <menu id="529">
+      <phrase id="menutext" value="Generator Moudle" />
+    </menu>
+    <menu id="435">
+      <phrase id="menutext" value="Generator Maintenance" />
+    </menu>
+    <menu id="436">
+      <phrase id="menutext" value="Generator Registration" />
+    </menu>
+    <menu id="437">
+      <phrase id="menutext" value="Maintenance Type" />
+    </menu>
+    <menu id="438">
+      <phrase id="menutext" value="Sparepart Store" />
+    </menu>
+    <menu id="530">
+      <phrase id="menutext" value="Sparepart Usaged" />
+    </menu>
+    <menu id="533">
+      <phrase id="menutext" value="Genmaintenance Report" />
+    </menu>
+    <menu id="531">
+      <phrase id="menutext" value="Sparepart View" />
+    </menu>
+    <menu id="534">
+      <phrase id="menutext" value="Sparepart Report" />
     </menu>
     <table id="branch">
       <phrase id="tblcaption" value="Organization" />
@@ -4659,6 +4689,262 @@
       </field>
       <field id="approved_by">
         <phrase id="fldcaption" value="Approved By" />
+      </field>
+    </table>
+    <table id="gen_maintenance">
+      <phrase id="tblcaption" value="Gen Maintenance" />
+      <phrase id="tblpagecaption1" value="Gen Maintenance Info" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="datetime">
+        <phrase id="fldcaption" value="Datetime" />
+      </field>
+      <field id="gen_name">
+        <phrase id="fldcaption" value="Generator Name" />
+      </field>
+      <field id="maintenance_type">
+        <phrase id="fldcaption" value="Maintenance Type" />
+      </field>
+      <field id="running_hours">
+        <phrase id="fldcaption" value="Present Running Hours" />
+      </field>
+      <field id="cost">
+        <phrase id="fldcaption" value="Cost" />
+      </field>
+      <field id="labour_fee">
+        <phrase id="fldcaption" value="Labour Fee" />
+      </field>
+      <field id="total">
+        <phrase id="fldcaption" value="Total" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="Staff Name" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="status" />
+      </field>
+      <field id="initiator_action">
+        <phrase id="fldcaption" value="Initiator Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Save and Forward" />
+      </field>
+      <field id="initiator_comment">
+        <phrase id="fldcaption" value="Initiator Comment" />
+      </field>
+      <field id="approver_date">
+        <phrase id="fldcaption" value="approver date" />
+      </field>
+      <field id="approver_action">
+        <phrase id="fldcaption" value="approver action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Decliend" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Approved" />
+      </field>
+      <field id="approver_comment">
+        <phrase id="fldcaption" value="approver comment" />
+      </field>
+      <field id="approved_by">
+        <phrase id="fldcaption" value="approved by" />
+      </field>
+    </table>
+    <table id="generator_registration">
+      <phrase id="tblcaption" value="Generator Registration" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="registered_date">
+        <phrase id="fldcaption" value="Registered Date" />
+      </field>
+      <field id="gen_name">
+        <phrase id="fldcaption" value="Generator Name" />
+      </field>
+      <field id="location">
+        <phrase id="fldcaption" value="Location" />
+      </field>
+      <field id="kva">
+        <phrase id="fldcaption" value="KVA" />
+      </field>
+    </table>
+    <table id="maintenance_type">
+      <phrase id="tblcaption" value="Maintenance Type" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="Description" />
+      </field>
+    </table>
+    <table id="sparepart_module">
+      <phrase id="tblcaption" value="Sparepart Module" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="part_name">
+        <phrase id="fldcaption" value="Spare Part Name" />
+      </field>
+      <field id="quantity">
+        <phrase id="fldcaption" value="Quantity" />
+      </field>
+      <field id="cost">
+        <phrase id="fldcaption" value="Cost" />
+      </field>
+      <field id="gen_maintenance">
+        <phrase id="fldcaption" value="gen maintenance" />
+      </field>
+    </table>
+    <table id="spare_part_usage">
+      <phrase id="tblcaption" value="Sparepart Usaged" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="date">
+        <phrase id="fldcaption" value="Date" />
+      </field>
+      <field id="part_name">
+        <phrase id="fldcaption" value="Sparepart Nmae" />
+      </field>
+      <field id="maintenance_id">
+        <phrase id="fldcaption" value="Maintenance Category" />
+      </field>
+      <field id="quantity_in">
+        <phrase id="fldcaption" value="Quantity In" />
+      </field>
+      <field id="quantity_used">
+        <phrase id="fldcaption" value="Quantity Used" />
+      </field>
+      <field id="cost">
+        <phrase id="fldcaption" value="Cost" />
+      </field>
+      <field id="total_quantity">
+        <phrase id="fldcaption" value="Total Quantity" />
+      </field>
+      <field id="total_cost">
+        <phrase id="fldcaption" value="Total Cost" />
+      </field>
+      <field id="maintenance_total_cost">
+        <phrase id="fldcaption" value="Maintenance Total Cost" />
+      </field>
+    </table>
+    <table id="sparepart_view">
+      <phrase id="tblcaption" value="Sparepart View" />
+      <field id="maintenance_id">
+        <phrase id="fldcaption" value="maintenance id" />
+      </field>
+      <field id="generator_name">
+        <phrase id="fldcaption" value="generator name" />
+      </field>
+      <field id="generator_location">
+        <phrase id="fldcaption" value="generator location" />
+      </field>
+      <field id="generator_kva">
+        <phrase id="fldcaption" value="generator kva" />
+      </field>
+    </table>
+    <table id="gen_status">
+      <phrase id="tblcaption" value="Gen Status" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="description">
+        <phrase id="fldcaption" value="description" />
+      </field>
+    </table>
+    <table id="genmaintenance_report">
+      <phrase id="tblcaption" value="Gen Maintenance Report" />
+      <phrase id="tblpagecaption1" value="Gen Maintenance Info" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="datetime">
+        <phrase id="fldcaption" value="Datetime" />
+      </field>
+      <field id="gen_name">
+        <phrase id="fldcaption" value="Generator Name" />
+      </field>
+      <field id="maintenance_type">
+        <phrase id="fldcaption" value="Maintenance Type" />
+      </field>
+      <field id="running_hours">
+        <phrase id="fldcaption" value="Present Running Hours" />
+      </field>
+      <field id="cost">
+        <phrase id="fldcaption" value="Cost" />
+      </field>
+      <field id="labour_fee">
+        <phrase id="fldcaption" value="Labour Fee" />
+      </field>
+      <field id="total">
+        <phrase id="fldcaption" value="Total" />
+      </field>
+      <field id="staff_id">
+        <phrase id="fldcaption" value="Staff Name" />
+      </field>
+      <field id="status">
+        <phrase id="fldcaption" value="status" />
+      </field>
+      <field id="initiator_action">
+        <phrase id="fldcaption" value="Initiator Action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Save and Forward" />
+      </field>
+      <field id="initiator_comment">
+        <phrase id="fldcaption" value="Initiator Comment" />
+      </field>
+      <field id="approver_date">
+        <phrase id="fldcaption" value="approver date" />
+      </field>
+      <field id="approver_action">
+        <phrase id="fldcaption" value="approver action" />
+        <phrase id="fldtagvalue1" value="0" />
+        <phrase id="fldtagcaption1" value="Decliend" />
+        <phrase id="fldtagvalue2" value="1" />
+        <phrase id="fldtagcaption2" value="Approved" />
+      </field>
+      <field id="approver_comment">
+        <phrase id="fldcaption" value="approver comment" />
+      </field>
+      <field id="approved_by">
+        <phrase id="fldcaption" value="approved by" />
+      </field>
+    </table>
+    <table id="sparepart_report">
+      <phrase id="tblcaption" value="Sparepart Report" />
+      <phrase id="tblpagecaption1" value="Spare Part usaged Info" />
+      <field id="id">
+        <phrase id="fldcaption" value="ID" />
+      </field>
+      <field id="date">
+        <phrase id="fldcaption" value="Date" />
+      </field>
+      <field id="part_name">
+        <phrase id="fldcaption" value="Sparepart Name" />
+      </field>
+      <field id="maintenance_id">
+        <phrase id="fldcaption" value="Maintenance Category" />
+      </field>
+      <field id="quantity_in">
+        <phrase id="fldcaption" value="Quantity In" />
+      </field>
+      <field id="quantity_used">
+        <phrase id="fldcaption" value="Quantity Used" />
+      </field>
+      <field id="cost">
+        <phrase id="fldcaption" value="Cost" />
+      </field>
+      <field id="total_quantity">
+        <phrase id="fldcaption" value="Total Quantity" />
+      </field>
+      <field id="total_cost">
+        <phrase id="fldcaption" value="Total Cost" />
+      </field>
+      <field id="maintenance_total_cost">
+        <phrase id="fldcaption" value="Maintenance Total Cost" />
       </field>
     </table>
   </project>
