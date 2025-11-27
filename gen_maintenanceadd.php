@@ -329,6 +329,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		$objForm = new cFormObj();
 		$this->CurrentAction = (@$_GET["a"] <> "") ? $_GET["a"] : @$_POST["a_list"]; // Set up current action
 		$this->datetime->SetVisibility();
+		$this->reference_id->SetVisibility();
 		$this->gen_name->SetVisibility();
 		$this->maintenance_type->SetVisibility();
 		$this->running_hours->SetVisibility();
@@ -343,6 +344,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		$this->approver_action->SetVisibility();
 		$this->approver_comment->SetVisibility();
 		$this->approved_by->SetVisibility();
+		$this->flag->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -512,7 +514,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 				if ($this->AddRow($this->OldRecordset)) { // Add successful
 					if ($this->getSuccessMessage() == "")
 						$this->setSuccessMessage($Language->Phrase("AddSuccess")); // Set up success message
-					$sReturnUrl = $this->GetAddUrl();
+					$sReturnUrl = $this->getReturnUrl();
 					if (ew_GetPageName($sReturnUrl) == "gen_maintenancelist.php")
 						$sReturnUrl = $this->AddMasterUrl($sReturnUrl); // List page, return to List page with correct master key if necessary
 					elseif (ew_GetPageName($sReturnUrl) == "gen_maintenanceview.php")
@@ -528,11 +530,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		$this->SetupBreadcrumb();
 
 		// Render row based on row type
-		if ($this->CurrentAction == "F") { // Confirm page
-			$this->RowType = EW_ROWTYPE_VIEW; // Render view type
-		} else {
-			$this->RowType = EW_ROWTYPE_ADD; // Render add type
-		}
+		$this->RowType = EW_ROWTYPE_ADD; // Render add type
 
 		// Render row
 		$this->ResetAttrs();
@@ -552,6 +550,8 @@ class cgen_maintenance_add extends cgen_maintenance {
 		$this->id->OldValue = $this->id->CurrentValue;
 		$this->datetime->CurrentValue = NULL;
 		$this->datetime->OldValue = $this->datetime->CurrentValue;
+		$this->reference_id->CurrentValue = NULL;
+		$this->reference_id->OldValue = $this->reference_id->CurrentValue;
 		$this->gen_name->CurrentValue = NULL;
 		$this->gen_name->OldValue = $this->gen_name->CurrentValue;
 		$this->maintenance_type->CurrentValue = NULL;
@@ -579,6 +579,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		$this->approver_comment->OldValue = $this->approver_comment->CurrentValue;
 		$this->approved_by->CurrentValue = NULL;
 		$this->approved_by->OldValue = $this->approved_by->CurrentValue;
+		$this->flag->CurrentValue = 0;
 	}
 
 	// Load form values
@@ -589,6 +590,9 @@ class cgen_maintenance_add extends cgen_maintenance {
 		if (!$this->datetime->FldIsDetailKey) {
 			$this->datetime->setFormValue($objForm->GetValue("x_datetime"));
 			$this->datetime->CurrentValue = ew_UnFormatDateTime($this->datetime->CurrentValue, 0);
+		}
+		if (!$this->reference_id->FldIsDetailKey) {
+			$this->reference_id->setFormValue($objForm->GetValue("x_reference_id"));
 		}
 		if (!$this->gen_name->FldIsDetailKey) {
 			$this->gen_name->setFormValue($objForm->GetValue("x_gen_name"));
@@ -633,6 +637,9 @@ class cgen_maintenance_add extends cgen_maintenance {
 		if (!$this->approved_by->FldIsDetailKey) {
 			$this->approved_by->setFormValue($objForm->GetValue("x_approved_by"));
 		}
+		if (!$this->flag->FldIsDetailKey) {
+			$this->flag->setFormValue($objForm->GetValue("x_flag"));
+		}
 	}
 
 	// Restore form values
@@ -640,6 +647,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		global $objForm;
 		$this->datetime->CurrentValue = $this->datetime->FormValue;
 		$this->datetime->CurrentValue = ew_UnFormatDateTime($this->datetime->CurrentValue, 0);
+		$this->reference_id->CurrentValue = $this->reference_id->FormValue;
 		$this->gen_name->CurrentValue = $this->gen_name->FormValue;
 		$this->maintenance_type->CurrentValue = $this->maintenance_type->FormValue;
 		$this->running_hours->CurrentValue = $this->running_hours->FormValue;
@@ -655,6 +663,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		$this->approver_action->CurrentValue = $this->approver_action->FormValue;
 		$this->approver_comment->CurrentValue = $this->approver_comment->FormValue;
 		$this->approved_by->CurrentValue = $this->approved_by->FormValue;
+		$this->flag->CurrentValue = $this->flag->FormValue;
 	}
 
 	// Load row based on key values
@@ -692,6 +701,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 			return;
 		$this->id->setDbValue($row['id']);
 		$this->datetime->setDbValue($row['datetime']);
+		$this->reference_id->setDbValue($row['reference_id']);
 		$this->gen_name->setDbValue($row['gen_name']);
 		$this->maintenance_type->setDbValue($row['maintenance_type']);
 		$this->running_hours->setDbValue($row['running_hours']);
@@ -706,6 +716,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		$this->approver_action->setDbValue($row['approver_action']);
 		$this->approver_comment->setDbValue($row['approver_comment']);
 		$this->approved_by->setDbValue($row['approved_by']);
+		$this->flag->setDbValue($row['flag']);
 	}
 
 	// Return a row with default values
@@ -714,6 +725,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		$row = array();
 		$row['id'] = $this->id->CurrentValue;
 		$row['datetime'] = $this->datetime->CurrentValue;
+		$row['reference_id'] = $this->reference_id->CurrentValue;
 		$row['gen_name'] = $this->gen_name->CurrentValue;
 		$row['maintenance_type'] = $this->maintenance_type->CurrentValue;
 		$row['running_hours'] = $this->running_hours->CurrentValue;
@@ -728,6 +740,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		$row['approver_action'] = $this->approver_action->CurrentValue;
 		$row['approver_comment'] = $this->approver_comment->CurrentValue;
 		$row['approved_by'] = $this->approved_by->CurrentValue;
+		$row['flag'] = $this->flag->CurrentValue;
 		return $row;
 	}
 
@@ -738,6 +751,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
 		$this->datetime->DbValue = $row['datetime'];
+		$this->reference_id->DbValue = $row['reference_id'];
 		$this->gen_name->DbValue = $row['gen_name'];
 		$this->maintenance_type->DbValue = $row['maintenance_type'];
 		$this->running_hours->DbValue = $row['running_hours'];
@@ -752,6 +766,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		$this->approver_action->DbValue = $row['approver_action'];
 		$this->approver_comment->DbValue = $row['approver_comment'];
 		$this->approved_by->DbValue = $row['approved_by'];
+		$this->flag->DbValue = $row['flag'];
 	}
 
 	// Load old record
@@ -800,6 +815,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		// Common render codes for all row types
 		// id
 		// datetime
+		// reference_id
 		// gen_name
 		// maintenance_type
 		// running_hours
@@ -814,6 +830,7 @@ class cgen_maintenance_add extends cgen_maintenance {
 		// approver_action
 		// approver_comment
 		// approved_by
+		// flag
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -825,6 +842,10 @@ class cgen_maintenance_add extends cgen_maintenance {
 		$this->datetime->ViewValue = $this->datetime->CurrentValue;
 		$this->datetime->ViewValue = ew_FormatDateTime($this->datetime->ViewValue, 0);
 		$this->datetime->ViewCustomAttributes = "";
+
+		// reference_id
+		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
+		$this->reference_id->ViewCustomAttributes = "";
 
 		// gen_name
 		if (strval($this->gen_name->CurrentValue) <> "") {
@@ -991,10 +1012,19 @@ class cgen_maintenance_add extends cgen_maintenance {
 		}
 		$this->approved_by->ViewCustomAttributes = "";
 
+		// flag
+		$this->flag->ViewValue = $this->flag->CurrentValue;
+		$this->flag->ViewCustomAttributes = "";
+
 			// datetime
 			$this->datetime->LinkCustomAttributes = "";
 			$this->datetime->HrefValue = "";
 			$this->datetime->TooltipValue = "";
+
+			// reference_id
+			$this->reference_id->LinkCustomAttributes = "";
+			$this->reference_id->HrefValue = "";
+			$this->reference_id->TooltipValue = "";
 
 			// gen_name
 			$this->gen_name->LinkCustomAttributes = "";
@@ -1065,6 +1095,11 @@ class cgen_maintenance_add extends cgen_maintenance {
 			$this->approved_by->LinkCustomAttributes = "";
 			$this->approved_by->HrefValue = "";
 			$this->approved_by->TooltipValue = "";
+
+			// flag
+			$this->flag->LinkCustomAttributes = "";
+			$this->flag->HrefValue = "";
+			$this->flag->TooltipValue = "";
 		} elseif ($this->RowType == EW_ROWTYPE_ADD) { // Add row
 
 			// datetime
@@ -1072,6 +1107,12 @@ class cgen_maintenance_add extends cgen_maintenance {
 			$this->datetime->EditCustomAttributes = "";
 			$this->datetime->EditValue = ew_HtmlEncode(ew_FormatDateTime($this->datetime->CurrentValue, 8));
 			$this->datetime->PlaceHolder = ew_RemoveHtml($this->datetime->FldCaption());
+
+			// reference_id
+			$this->reference_id->EditAttrs["class"] = "form-control";
+			$this->reference_id->EditCustomAttributes = "";
+			$this->reference_id->EditValue = ew_HtmlEncode($this->reference_id->CurrentValue);
+			$this->reference_id->PlaceHolder = ew_RemoveHtml($this->reference_id->FldCaption());
 
 			// gen_name
 			$this->gen_name->EditAttrs["class"] = "form-control";
@@ -1229,11 +1270,21 @@ class cgen_maintenance_add extends cgen_maintenance {
 			}
 			$this->approved_by->PlaceHolder = ew_RemoveHtml($this->approved_by->FldCaption());
 
+			// flag
+			$this->flag->EditAttrs["class"] = "form-control";
+			$this->flag->EditCustomAttributes = "";
+			$this->flag->EditValue = ew_HtmlEncode($this->flag->CurrentValue);
+			$this->flag->PlaceHolder = ew_RemoveHtml($this->flag->FldCaption());
+
 			// Add refer script
 			// datetime
 
 			$this->datetime->LinkCustomAttributes = "";
 			$this->datetime->HrefValue = "";
+
+			// reference_id
+			$this->reference_id->LinkCustomAttributes = "";
+			$this->reference_id->HrefValue = "";
 
 			// gen_name
 			$this->gen_name->LinkCustomAttributes = "";
@@ -1290,6 +1341,10 @@ class cgen_maintenance_add extends cgen_maintenance {
 			// approved_by
 			$this->approved_by->LinkCustomAttributes = "";
 			$this->approved_by->HrefValue = "";
+
+			// flag
+			$this->flag->LinkCustomAttributes = "";
+			$this->flag->HrefValue = "";
 		}
 		if ($this->RowType == EW_ROWTYPE_ADD || $this->RowType == EW_ROWTYPE_EDIT || $this->RowType == EW_ROWTYPE_SEARCH) // Add/Edit/Search row
 			$this->SetupFieldTitles();
@@ -1312,6 +1367,15 @@ class cgen_maintenance_add extends cgen_maintenance {
 		if (!ew_CheckDateDef($this->datetime->FormValue)) {
 			ew_AddMessage($gsFormError, $this->datetime->FldErrMsg());
 		}
+		if (!$this->gen_name->FldIsDetailKey && !is_null($this->gen_name->FormValue) && $this->gen_name->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->gen_name->FldCaption(), $this->gen_name->ReqErrMsg));
+		}
+		if (!$this->maintenance_type->FldIsDetailKey && !is_null($this->maintenance_type->FormValue) && $this->maintenance_type->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->maintenance_type->FldCaption(), $this->maintenance_type->ReqErrMsg));
+		}
+		if (!$this->running_hours->FldIsDetailKey && !is_null($this->running_hours->FormValue) && $this->running_hours->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->running_hours->FldCaption(), $this->running_hours->ReqErrMsg));
+		}
 		if (!ew_CheckNumber($this->cost->FormValue)) {
 			ew_AddMessage($gsFormError, $this->cost->FldErrMsg());
 		}
@@ -1321,11 +1385,20 @@ class cgen_maintenance_add extends cgen_maintenance {
 		if (!ew_CheckNumber($this->total->FormValue)) {
 			ew_AddMessage($gsFormError, $this->total->FldErrMsg());
 		}
+		if ($this->initiator_action->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->initiator_action->FldCaption(), $this->initiator_action->ReqErrMsg));
+		}
+		if (!$this->initiator_comment->FldIsDetailKey && !is_null($this->initiator_comment->FormValue) && $this->initiator_comment->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->initiator_comment->FldCaption(), $this->initiator_comment->ReqErrMsg));
+		}
 		if (!ew_CheckDateDef($this->approver_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->approver_date->FldErrMsg());
 		}
 		if (!ew_CheckInteger($this->approved_by->FormValue)) {
 			ew_AddMessage($gsFormError, $this->approved_by->FldErrMsg());
+		}
+		if (!ew_CheckInteger($this->flag->FormValue)) {
+			ew_AddMessage($gsFormError, $this->flag->FldErrMsg());
 		}
 
 		// Return validate result
@@ -1353,6 +1426,9 @@ class cgen_maintenance_add extends cgen_maintenance {
 
 		// datetime
 		$this->datetime->SetDbValueDef($rsnew, ew_UnFormatDateTime($this->datetime->CurrentValue, 0), NULL, FALSE);
+
+		// reference_id
+		$this->reference_id->SetDbValueDef($rsnew, $this->reference_id->CurrentValue, NULL, FALSE);
 
 		// gen_name
 		$this->gen_name->SetDbValueDef($rsnew, $this->gen_name->CurrentValue, NULL, FALSE);
@@ -1395,6 +1471,9 @@ class cgen_maintenance_add extends cgen_maintenance {
 
 		// approved_by
 		$this->approved_by->SetDbValueDef($rsnew, $this->approved_by->CurrentValue, NULL, FALSE);
+
+		// flag
+		$this->flag->SetDbValueDef($rsnew, $this->flag->CurrentValue, NULL, FALSE);
 
 		// Call Row Inserting event
 		$rs = ($rsold == NULL) ? NULL : $rsold->fields;
@@ -1635,6 +1714,15 @@ fgen_maintenanceadd.Validate = function() {
 			elm = this.GetElements("x" + infix + "_datetime");
 			if (elm && !ew_CheckDateDef(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($gen_maintenance->datetime->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_gen_name");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $gen_maintenance->gen_name->FldCaption(), $gen_maintenance->gen_name->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_maintenance_type");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $gen_maintenance->maintenance_type->FldCaption(), $gen_maintenance->maintenance_type->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_running_hours");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $gen_maintenance->running_hours->FldCaption(), $gen_maintenance->running_hours->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_cost");
 			if (elm && !ew_CheckNumber(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($gen_maintenance->cost->FldErrMsg()) ?>");
@@ -1644,12 +1732,21 @@ fgen_maintenanceadd.Validate = function() {
 			elm = this.GetElements("x" + infix + "_total");
 			if (elm && !ew_CheckNumber(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($gen_maintenance->total->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_initiator_action");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $gen_maintenance->initiator_action->FldCaption(), $gen_maintenance->initiator_action->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_initiator_comment");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $gen_maintenance->initiator_comment->FldCaption(), $gen_maintenance->initiator_comment->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_approver_date");
 			if (elm && !ew_CheckDateDef(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($gen_maintenance->approver_date->FldErrMsg()) ?>");
 			elm = this.GetElements("x" + infix + "_approved_by");
 			if (elm && !ew_CheckInteger(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($gen_maintenance->approved_by->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_flag");
+			if (elm && !ew_CheckInteger(elm.value))
+				return this.OnError(elm, "<?php echo ew_JsEncode2($gen_maintenance->flag->FldErrMsg()) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -1710,87 +1807,60 @@ $gen_maintenance_add->ShowMessage();
 <input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $gen_maintenance_add->Token ?>">
 <?php } ?>
 <input type="hidden" name="t" value="gen_maintenance">
-<?php if ($gen_maintenance->CurrentAction == "F") { // Confirm page ?>
 <input type="hidden" name="a_add" id="a_add" value="A">
-<input type="hidden" name="a_confirm" id="a_confirm" value="F">
-<?php } else { ?>
-<input type="hidden" name="a_add" id="a_add" value="F">
-<?php } ?>
 <input type="hidden" name="modal" value="<?php echo intval($gen_maintenance_add->IsModal) ?>">
 <div class="ewAddDiv"><!-- page* -->
 <?php if ($gen_maintenance->datetime->Visible) { // datetime ?>
 	<div id="r_datetime" class="form-group">
 		<label id="elh_gen_maintenance_datetime" for="x_datetime" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->datetime->FldCaption() ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->datetime->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_datetime">
 <input type="text" data-table="gen_maintenance" data-field="x_datetime" data-page="1" name="x_datetime" id="x_datetime" size="30" placeholder="<?php echo ew_HtmlEncode($gen_maintenance->datetime->getPlaceHolder()) ?>" value="<?php echo $gen_maintenance->datetime->EditValue ?>"<?php echo $gen_maintenance->datetime->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_datetime">
-<span<?php echo $gen_maintenance->datetime->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->datetime->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_datetime" data-page="1" name="x_datetime" id="x_datetime" value="<?php echo ew_HtmlEncode($gen_maintenance->datetime->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->datetime->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($gen_maintenance->reference_id->Visible) { // reference_id ?>
+	<div id="r_reference_id" class="form-group">
+		<label id="elh_gen_maintenance_reference_id" for="x_reference_id" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->reference_id->FldCaption() ?></label>
+		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->reference_id->CellAttributes() ?>>
+<span id="el_gen_maintenance_reference_id">
+<input type="text" data-table="gen_maintenance" data-field="x_reference_id" data-page="1" name="x_reference_id" id="x_reference_id" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($gen_maintenance->reference_id->getPlaceHolder()) ?>" value="<?php echo $gen_maintenance->reference_id->EditValue ?>"<?php echo $gen_maintenance->reference_id->EditAttributes() ?>>
+</span>
+<?php echo $gen_maintenance->reference_id->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($gen_maintenance->gen_name->Visible) { // gen_name ?>
 	<div id="r_gen_name" class="form-group">
-		<label id="elh_gen_maintenance_gen_name" for="x_gen_name" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->gen_name->FldCaption() ?></label>
+		<label id="elh_gen_maintenance_gen_name" for="x_gen_name" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->gen_name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->gen_name->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_gen_name">
 <select data-table="gen_maintenance" data-field="x_gen_name" data-page="1" data-value-separator="<?php echo $gen_maintenance->gen_name->DisplayValueSeparatorAttribute() ?>" id="x_gen_name" name="x_gen_name"<?php echo $gen_maintenance->gen_name->EditAttributes() ?>>
 <?php echo $gen_maintenance->gen_name->SelectOptionListHtml("x_gen_name") ?>
 </select>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_gen_name">
-<span<?php echo $gen_maintenance->gen_name->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->gen_name->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_gen_name" data-page="1" name="x_gen_name" id="x_gen_name" value="<?php echo ew_HtmlEncode($gen_maintenance->gen_name->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->gen_name->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($gen_maintenance->maintenance_type->Visible) { // maintenance_type ?>
 	<div id="r_maintenance_type" class="form-group">
-		<label id="elh_gen_maintenance_maintenance_type" for="x_maintenance_type" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->maintenance_type->FldCaption() ?></label>
+		<label id="elh_gen_maintenance_maintenance_type" for="x_maintenance_type" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->maintenance_type->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->maintenance_type->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_maintenance_type">
 <select data-table="gen_maintenance" data-field="x_maintenance_type" data-page="1" data-value-separator="<?php echo $gen_maintenance->maintenance_type->DisplayValueSeparatorAttribute() ?>" id="x_maintenance_type" name="x_maintenance_type"<?php echo $gen_maintenance->maintenance_type->EditAttributes() ?>>
 <?php echo $gen_maintenance->maintenance_type->SelectOptionListHtml("x_maintenance_type") ?>
 </select>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_maintenance_type">
-<span<?php echo $gen_maintenance->maintenance_type->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->maintenance_type->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_maintenance_type" data-page="1" name="x_maintenance_type" id="x_maintenance_type" value="<?php echo ew_HtmlEncode($gen_maintenance->maintenance_type->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->maintenance_type->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($gen_maintenance->running_hours->Visible) { // running_hours ?>
 	<div id="r_running_hours" class="form-group">
-		<label id="elh_gen_maintenance_running_hours" for="x_running_hours" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->running_hours->FldCaption() ?></label>
+		<label id="elh_gen_maintenance_running_hours" for="x_running_hours" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->running_hours->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->running_hours->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_running_hours">
 <input type="text" data-table="gen_maintenance" data-field="x_running_hours" data-page="1" name="x_running_hours" id="x_running_hours" size="30" maxlength="255" placeholder="<?php echo ew_HtmlEncode($gen_maintenance->running_hours->getPlaceHolder()) ?>" value="<?php echo $gen_maintenance->running_hours->EditValue ?>"<?php echo $gen_maintenance->running_hours->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_running_hours">
-<span<?php echo $gen_maintenance->running_hours->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->running_hours->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_running_hours" data-page="1" name="x_running_hours" id="x_running_hours" value="<?php echo ew_HtmlEncode($gen_maintenance->running_hours->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->running_hours->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
@@ -1798,17 +1868,9 @@ $gen_maintenance_add->ShowMessage();
 	<div id="r_cost" class="form-group">
 		<label id="elh_gen_maintenance_cost" for="x_cost" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->cost->FldCaption() ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->cost->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_cost">
 <input type="text" data-table="gen_maintenance" data-field="x_cost" data-page="1" name="x_cost" id="x_cost" size="30" placeholder="<?php echo ew_HtmlEncode($gen_maintenance->cost->getPlaceHolder()) ?>" value="<?php echo $gen_maintenance->cost->EditValue ?>"<?php echo $gen_maintenance->cost->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_cost">
-<span<?php echo $gen_maintenance->cost->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->cost->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_cost" data-page="1" name="x_cost" id="x_cost" value="<?php echo ew_HtmlEncode($gen_maintenance->cost->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->cost->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
@@ -1816,17 +1878,9 @@ $gen_maintenance_add->ShowMessage();
 	<div id="r_labour_fee" class="form-group">
 		<label id="elh_gen_maintenance_labour_fee" for="x_labour_fee" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->labour_fee->FldCaption() ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->labour_fee->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_labour_fee">
 <input type="text" data-table="gen_maintenance" data-field="x_labour_fee" data-page="1" name="x_labour_fee" id="x_labour_fee" size="30" placeholder="<?php echo ew_HtmlEncode($gen_maintenance->labour_fee->getPlaceHolder()) ?>" value="<?php echo $gen_maintenance->labour_fee->EditValue ?>"<?php echo $gen_maintenance->labour_fee->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_labour_fee">
-<span<?php echo $gen_maintenance->labour_fee->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->labour_fee->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_labour_fee" data-page="1" name="x_labour_fee" id="x_labour_fee" value="<?php echo ew_HtmlEncode($gen_maintenance->labour_fee->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->labour_fee->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
@@ -1834,17 +1888,9 @@ $gen_maintenance_add->ShowMessage();
 	<div id="r_total" class="form-group">
 		<label id="elh_gen_maintenance_total" for="x_total" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->total->FldCaption() ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->total->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_total">
 <input type="text" data-table="gen_maintenance" data-field="x_total" data-page="1" name="x_total" id="x_total" size="30" placeholder="<?php echo ew_HtmlEncode($gen_maintenance->total->getPlaceHolder()) ?>" value="<?php echo $gen_maintenance->total->EditValue ?>"<?php echo $gen_maintenance->total->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_total">
-<span<?php echo $gen_maintenance->total->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->total->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_total" data-page="1" name="x_total" id="x_total" value="<?php echo ew_HtmlEncode($gen_maintenance->total->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->total->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
@@ -1852,19 +1898,11 @@ $gen_maintenance_add->ShowMessage();
 	<div id="r_staff_id" class="form-group">
 		<label id="elh_gen_maintenance_staff_id" for="x_staff_id" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->staff_id->FldCaption() ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->staff_id->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_staff_id">
 <select data-table="gen_maintenance" data-field="x_staff_id" data-page="1" data-value-separator="<?php echo $gen_maintenance->staff_id->DisplayValueSeparatorAttribute() ?>" id="x_staff_id" name="x_staff_id"<?php echo $gen_maintenance->staff_id->EditAttributes() ?>>
 <?php echo $gen_maintenance->staff_id->SelectOptionListHtml("x_staff_id") ?>
 </select>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_staff_id">
-<span<?php echo $gen_maintenance->staff_id->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->staff_id->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_staff_id" data-page="1" name="x_staff_id" id="x_staff_id" value="<?php echo ew_HtmlEncode($gen_maintenance->staff_id->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->staff_id->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
@@ -1872,58 +1910,34 @@ $gen_maintenance_add->ShowMessage();
 	<div id="r_status" class="form-group">
 		<label id="elh_gen_maintenance_status" for="x_status" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->status->FldCaption() ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->status->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_status">
 <select data-table="gen_maintenance" data-field="x_status" data-page="1" data-value-separator="<?php echo $gen_maintenance->status->DisplayValueSeparatorAttribute() ?>" id="x_status" name="x_status"<?php echo $gen_maintenance->status->EditAttributes() ?>>
 <?php echo $gen_maintenance->status->SelectOptionListHtml("x_status") ?>
 </select>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_status">
-<span<?php echo $gen_maintenance->status->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->status->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_status" data-page="1" name="x_status" id="x_status" value="<?php echo ew_HtmlEncode($gen_maintenance->status->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->status->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($gen_maintenance->initiator_action->Visible) { // initiator_action ?>
 	<div id="r_initiator_action" class="form-group">
-		<label id="elh_gen_maintenance_initiator_action" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->initiator_action->FldCaption() ?></label>
+		<label id="elh_gen_maintenance_initiator_action" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->initiator_action->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->initiator_action->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_initiator_action">
 <div id="tp_x_initiator_action" class="ewTemplate"><input type="radio" data-table="gen_maintenance" data-field="x_initiator_action" data-page="1" data-value-separator="<?php echo $gen_maintenance->initiator_action->DisplayValueSeparatorAttribute() ?>" name="x_initiator_action" id="x_initiator_action" value="{value}"<?php echo $gen_maintenance->initiator_action->EditAttributes() ?>></div>
 <div id="dsl_x_initiator_action" data-repeatcolumn="5" class="ewItemList" style="display: none;"><div>
 <?php echo $gen_maintenance->initiator_action->RadioButtonListHtml(FALSE, "x_initiator_action", 1) ?>
 </div></div>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_initiator_action">
-<span<?php echo $gen_maintenance->initiator_action->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->initiator_action->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_initiator_action" data-page="1" name="x_initiator_action" id="x_initiator_action" value="<?php echo ew_HtmlEncode($gen_maintenance->initiator_action->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->initiator_action->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($gen_maintenance->initiator_comment->Visible) { // initiator_comment ?>
 	<div id="r_initiator_comment" class="form-group">
-		<label id="elh_gen_maintenance_initiator_comment" for="x_initiator_comment" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->initiator_comment->FldCaption() ?></label>
+		<label id="elh_gen_maintenance_initiator_comment" for="x_initiator_comment" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->initiator_comment->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->initiator_comment->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_initiator_comment">
 <textarea data-table="gen_maintenance" data-field="x_initiator_comment" data-page="1" name="x_initiator_comment" id="x_initiator_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($gen_maintenance->initiator_comment->getPlaceHolder()) ?>"<?php echo $gen_maintenance->initiator_comment->EditAttributes() ?>><?php echo $gen_maintenance->initiator_comment->EditValue ?></textarea>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_initiator_comment">
-<span<?php echo $gen_maintenance->initiator_comment->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->initiator_comment->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_initiator_comment" data-page="1" name="x_initiator_comment" id="x_initiator_comment" value="<?php echo ew_HtmlEncode($gen_maintenance->initiator_comment->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->initiator_comment->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
@@ -1931,17 +1945,9 @@ $gen_maintenance_add->ShowMessage();
 	<div id="r_approver_date" class="form-group">
 		<label id="elh_gen_maintenance_approver_date" for="x_approver_date" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->approver_date->FldCaption() ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->approver_date->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_approver_date">
 <input type="text" data-table="gen_maintenance" data-field="x_approver_date" data-page="1" name="x_approver_date" id="x_approver_date" size="30" placeholder="<?php echo ew_HtmlEncode($gen_maintenance->approver_date->getPlaceHolder()) ?>" value="<?php echo $gen_maintenance->approver_date->EditValue ?>"<?php echo $gen_maintenance->approver_date->EditAttributes() ?>>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_approver_date">
-<span<?php echo $gen_maintenance->approver_date->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->approver_date->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_approver_date" data-page="1" name="x_approver_date" id="x_approver_date" value="<?php echo ew_HtmlEncode($gen_maintenance->approver_date->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->approver_date->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
@@ -1949,20 +1955,12 @@ $gen_maintenance_add->ShowMessage();
 	<div id="r_approver_action" class="form-group">
 		<label id="elh_gen_maintenance_approver_action" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->approver_action->FldCaption() ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->approver_action->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_approver_action">
 <div id="tp_x_approver_action" class="ewTemplate"><input type="radio" data-table="gen_maintenance" data-field="x_approver_action" data-page="1" data-value-separator="<?php echo $gen_maintenance->approver_action->DisplayValueSeparatorAttribute() ?>" name="x_approver_action" id="x_approver_action" value="{value}"<?php echo $gen_maintenance->approver_action->EditAttributes() ?>></div>
 <div id="dsl_x_approver_action" data-repeatcolumn="5" class="ewItemList" style="display: none;"><div>
 <?php echo $gen_maintenance->approver_action->RadioButtonListHtml(FALSE, "x_approver_action", 1) ?>
 </div></div>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_approver_action">
-<span<?php echo $gen_maintenance->approver_action->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->approver_action->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_approver_action" data-page="1" name="x_approver_action" id="x_approver_action" value="<?php echo ew_HtmlEncode($gen_maintenance->approver_action->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->approver_action->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
@@ -1970,17 +1968,9 @@ $gen_maintenance_add->ShowMessage();
 	<div id="r_approver_comment" class="form-group">
 		<label id="elh_gen_maintenance_approver_comment" for="x_approver_comment" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->approver_comment->FldCaption() ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->approver_comment->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_approver_comment">
 <textarea data-table="gen_maintenance" data-field="x_approver_comment" data-page="1" name="x_approver_comment" id="x_approver_comment" cols="30" rows="4" placeholder="<?php echo ew_HtmlEncode($gen_maintenance->approver_comment->getPlaceHolder()) ?>"<?php echo $gen_maintenance->approver_comment->EditAttributes() ?>><?php echo $gen_maintenance->approver_comment->EditValue ?></textarea>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_approver_comment">
-<span<?php echo $gen_maintenance->approver_comment->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->approver_comment->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_approver_comment" data-page="1" name="x_approver_comment" id="x_approver_comment" value="<?php echo ew_HtmlEncode($gen_maintenance->approver_comment->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->approver_comment->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
@@ -1988,14 +1978,13 @@ $gen_maintenance_add->ShowMessage();
 	<div id="r_approved_by" class="form-group">
 		<label id="elh_gen_maintenance_approved_by" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->approved_by->FldCaption() ?></label>
 		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->approved_by->CellAttributes() ?>>
-<?php if ($gen_maintenance->CurrentAction <> "F") { ?>
 <span id="el_gen_maintenance_approved_by">
 <?php
 $wrkonchange = trim(" " . @$gen_maintenance->approved_by->EditAttrs["onchange"]);
 if ($wrkonchange <> "") $wrkonchange = " onchange=\"" . ew_JsEncode2($wrkonchange) . "\"";
 $gen_maintenance->approved_by->EditAttrs["onchange"] = "";
 ?>
-<span id="as_x_approved_by" style="white-space: nowrap; z-index: 8840">
+<span id="as_x_approved_by" style="white-space: nowrap; z-index: 8830">
 	<input type="text" name="sv_x_approved_by" id="sv_x_approved_by" value="<?php echo $gen_maintenance->approved_by->EditValue ?>" size="30" placeholder="<?php echo ew_HtmlEncode($gen_maintenance->approved_by->getPlaceHolder()) ?>" data-placeholder="<?php echo ew_HtmlEncode($gen_maintenance->approved_by->getPlaceHolder()) ?>"<?php echo $gen_maintenance->approved_by->EditAttributes() ?>>
 </span>
 <input type="hidden" data-table="gen_maintenance" data-field="x_approved_by" data-page="1" data-value-separator="<?php echo $gen_maintenance->approved_by->DisplayValueSeparatorAttribute() ?>" name="x_approved_by" id="x_approved_by" value="<?php echo ew_HtmlEncode($gen_maintenance->approved_by->CurrentValue) ?>"<?php echo $wrkonchange ?>>
@@ -2003,27 +1992,25 @@ $gen_maintenance->approved_by->EditAttrs["onchange"] = "";
 fgen_maintenanceadd.CreateAutoSuggest({"id":"x_approved_by","forceSelect":false});
 </script>
 </span>
-<?php } else { ?>
-<span id="el_gen_maintenance_approved_by">
-<span<?php echo $gen_maintenance->approved_by->ViewAttributes() ?>>
-<p class="form-control-static"><?php echo $gen_maintenance->approved_by->ViewValue ?></p></span>
-</span>
-<input type="hidden" data-table="gen_maintenance" data-field="x_approved_by" data-page="1" name="x_approved_by" id="x_approved_by" value="<?php echo ew_HtmlEncode($gen_maintenance->approved_by->FormValue) ?>">
-<?php } ?>
 <?php echo $gen_maintenance->approved_by->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($gen_maintenance->flag->Visible) { // flag ?>
+	<div id="r_flag" class="form-group">
+		<label id="elh_gen_maintenance_flag" for="x_flag" class="<?php echo $gen_maintenance_add->LeftColumnClass ?>"><?php echo $gen_maintenance->flag->FldCaption() ?></label>
+		<div class="<?php echo $gen_maintenance_add->RightColumnClass ?>"><div<?php echo $gen_maintenance->flag->CellAttributes() ?>>
+<span id="el_gen_maintenance_flag">
+<input type="text" data-table="gen_maintenance" data-field="x_flag" data-page="1" name="x_flag" id="x_flag" size="30" placeholder="<?php echo ew_HtmlEncode($gen_maintenance->flag->getPlaceHolder()) ?>" value="<?php echo $gen_maintenance->flag->EditValue ?>"<?php echo $gen_maintenance->flag->EditAttributes() ?>>
+</span>
+<?php echo $gen_maintenance->flag->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 </div><!-- /page* -->
 <?php if (!$gen_maintenance_add->IsModal) { ?>
 <div class="form-group"><!-- buttons .form-group -->
 	<div class="<?php echo $gen_maintenance_add->OffsetColumnClass ?>"><!-- buttons offset -->
-<?php if ($gen_maintenance->CurrentAction <> "F") { // Confirm page ?>
-<button class="btn btn-primary ewButton" name="btnAction" id="btnAction" type="submit" onclick="this.form.a_add.value='F';"><?php echo $Language->Phrase("AddBtn") ?></button>
+<button class="btn btn-primary ewButton" name="btnAction" id="btnAction" type="submit"><?php echo $Language->Phrase("AddBtn") ?></button>
 <button class="btn btn-default ewButton" name="btnCancel" id="btnCancel" type="button" data-href="<?php echo $gen_maintenance_add->getReturnUrl() ?>"><?php echo $Language->Phrase("CancelBtn") ?></button>
-<?php } else { ?>
-<button class="btn btn-primary ewButton" name="btnAction" id="btnAction" type="submit"><?php echo $Language->Phrase("ConfirmBtn") ?></button>
-<button class="btn btn-default ewButton" name="btnCancel" id="btnCancel" type="submit" onclick="this.form.a_add.value='X';"><?php echo $Language->Phrase("CancelBtn") ?></button>
-<?php } ?>
 	</div><!-- /buttons offset -->
 </div><!-- /buttons .form-group -->
 <?php } ?>
@@ -2044,6 +2031,10 @@ if (EW_DEBUG_ENABLED)
 $('#x_status').attr('readonly',true);
 $("#r_staff_id").hide();
 $("#r_approved_by").hide();
+$("#r_cost").hide();
+$("#r_total").hide();
+$("#r_labour_fee").hide();
+$("#r_flag").hide();
 </script>
 <?php include_once "footer.php" ?>
 <?php

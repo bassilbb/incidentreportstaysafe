@@ -323,10 +323,8 @@ class cgen_maintenance_delete extends cgen_maintenance {
 		// 
 
 		$this->CurrentAction = (@$_GET["a"] <> "") ? $_GET["a"] : @$_POST["a_list"]; // Set up current action
-		$this->id->SetVisibility();
-		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
-			$this->id->Visible = FALSE;
 		$this->datetime->SetVisibility();
+		$this->reference_id->SetVisibility();
 		$this->gen_name->SetVisibility();
 		$this->maintenance_type->SetVisibility();
 		$this->running_hours->SetVisibility();
@@ -335,12 +333,7 @@ class cgen_maintenance_delete extends cgen_maintenance {
 		$this->total->SetVisibility();
 		$this->staff_id->SetVisibility();
 		$this->status->SetVisibility();
-		$this->initiator_action->SetVisibility();
-		$this->initiator_comment->SetVisibility();
-		$this->approver_date->SetVisibility();
-		$this->approver_action->SetVisibility();
-		$this->approver_comment->SetVisibility();
-		$this->approved_by->SetVisibility();
+		$this->flag->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -522,6 +515,7 @@ class cgen_maintenance_delete extends cgen_maintenance {
 			return;
 		$this->id->setDbValue($row['id']);
 		$this->datetime->setDbValue($row['datetime']);
+		$this->reference_id->setDbValue($row['reference_id']);
 		$this->gen_name->setDbValue($row['gen_name']);
 		$this->maintenance_type->setDbValue($row['maintenance_type']);
 		$this->running_hours->setDbValue($row['running_hours']);
@@ -536,6 +530,7 @@ class cgen_maintenance_delete extends cgen_maintenance {
 		$this->approver_action->setDbValue($row['approver_action']);
 		$this->approver_comment->setDbValue($row['approver_comment']);
 		$this->approved_by->setDbValue($row['approved_by']);
+		$this->flag->setDbValue($row['flag']);
 	}
 
 	// Return a row with default values
@@ -543,6 +538,7 @@ class cgen_maintenance_delete extends cgen_maintenance {
 		$row = array();
 		$row['id'] = NULL;
 		$row['datetime'] = NULL;
+		$row['reference_id'] = NULL;
 		$row['gen_name'] = NULL;
 		$row['maintenance_type'] = NULL;
 		$row['running_hours'] = NULL;
@@ -557,6 +553,7 @@ class cgen_maintenance_delete extends cgen_maintenance {
 		$row['approver_action'] = NULL;
 		$row['approver_comment'] = NULL;
 		$row['approved_by'] = NULL;
+		$row['flag'] = NULL;
 		return $row;
 	}
 
@@ -567,6 +564,7 @@ class cgen_maintenance_delete extends cgen_maintenance {
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
 		$this->datetime->DbValue = $row['datetime'];
+		$this->reference_id->DbValue = $row['reference_id'];
 		$this->gen_name->DbValue = $row['gen_name'];
 		$this->maintenance_type->DbValue = $row['maintenance_type'];
 		$this->running_hours->DbValue = $row['running_hours'];
@@ -581,6 +579,7 @@ class cgen_maintenance_delete extends cgen_maintenance {
 		$this->approver_action->DbValue = $row['approver_action'];
 		$this->approver_comment->DbValue = $row['approver_comment'];
 		$this->approved_by->DbValue = $row['approved_by'];
+		$this->flag->DbValue = $row['flag'];
 	}
 
 	// Render row values based on field settings
@@ -607,6 +606,7 @@ class cgen_maintenance_delete extends cgen_maintenance {
 		// Common render codes for all row types
 		// id
 		// datetime
+		// reference_id
 		// gen_name
 		// maintenance_type
 		// running_hours
@@ -621,6 +621,7 @@ class cgen_maintenance_delete extends cgen_maintenance {
 		// approver_action
 		// approver_comment
 		// approved_by
+		// flag
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -632,6 +633,10 @@ class cgen_maintenance_delete extends cgen_maintenance {
 		$this->datetime->ViewValue = $this->datetime->CurrentValue;
 		$this->datetime->ViewValue = ew_FormatDateTime($this->datetime->ViewValue, 0);
 		$this->datetime->ViewCustomAttributes = "";
+
+		// reference_id
+		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
+		$this->reference_id->ViewCustomAttributes = "";
 
 		// gen_name
 		if (strval($this->gen_name->CurrentValue) <> "") {
@@ -798,15 +803,19 @@ class cgen_maintenance_delete extends cgen_maintenance {
 		}
 		$this->approved_by->ViewCustomAttributes = "";
 
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
+		// flag
+		$this->flag->ViewValue = $this->flag->CurrentValue;
+		$this->flag->ViewCustomAttributes = "";
 
 			// datetime
 			$this->datetime->LinkCustomAttributes = "";
 			$this->datetime->HrefValue = "";
 			$this->datetime->TooltipValue = "";
+
+			// reference_id
+			$this->reference_id->LinkCustomAttributes = "";
+			$this->reference_id->HrefValue = "";
+			$this->reference_id->TooltipValue = "";
 
 			// gen_name
 			$this->gen_name->LinkCustomAttributes = "";
@@ -848,35 +857,10 @@ class cgen_maintenance_delete extends cgen_maintenance {
 			$this->status->HrefValue = "";
 			$this->status->TooltipValue = "";
 
-			// initiator_action
-			$this->initiator_action->LinkCustomAttributes = "";
-			$this->initiator_action->HrefValue = "";
-			$this->initiator_action->TooltipValue = "";
-
-			// initiator_comment
-			$this->initiator_comment->LinkCustomAttributes = "";
-			$this->initiator_comment->HrefValue = "";
-			$this->initiator_comment->TooltipValue = "";
-
-			// approver_date
-			$this->approver_date->LinkCustomAttributes = "";
-			$this->approver_date->HrefValue = "";
-			$this->approver_date->TooltipValue = "";
-
-			// approver_action
-			$this->approver_action->LinkCustomAttributes = "";
-			$this->approver_action->HrefValue = "";
-			$this->approver_action->TooltipValue = "";
-
-			// approver_comment
-			$this->approver_comment->LinkCustomAttributes = "";
-			$this->approver_comment->HrefValue = "";
-			$this->approver_comment->TooltipValue = "";
-
-			// approved_by
-			$this->approved_by->LinkCustomAttributes = "";
-			$this->approved_by->HrefValue = "";
-			$this->approved_by->TooltipValue = "";
+			// flag
+			$this->flag->LinkCustomAttributes = "";
+			$this->flag->HrefValue = "";
+			$this->flag->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1102,13 +1086,6 @@ fgen_maintenancedelete.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"Au
 fgen_maintenancedelete.Lists["x_staff_id"].Data = "<?php echo $gen_maintenance_delete->staff_id->LookupFilterQuery(FALSE, "delete") ?>";
 fgen_maintenancedelete.Lists["x_status"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"gen_status"};
 fgen_maintenancedelete.Lists["x_status"].Data = "<?php echo $gen_maintenance_delete->status->LookupFilterQuery(FALSE, "delete") ?>";
-fgen_maintenancedelete.Lists["x_initiator_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-fgen_maintenancedelete.Lists["x_initiator_action"].Options = <?php echo json_encode($gen_maintenance_delete->initiator_action->Options()) ?>;
-fgen_maintenancedelete.Lists["x_approver_action"] = {"LinkField":"","Ajax":null,"AutoFill":false,"DisplayFields":["","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":""};
-fgen_maintenancedelete.Lists["x_approver_action"].Options = <?php echo json_encode($gen_maintenance_delete->approver_action->Options()) ?>;
-fgen_maintenancedelete.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fgen_maintenancedelete.Lists["x_approved_by"].Data = "<?php echo $gen_maintenance_delete->approved_by->LookupFilterQuery(FALSE, "delete") ?>";
-fgen_maintenancedelete.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $gen_maintenance_delete->approved_by->LookupFilterQuery(TRUE, "delete"))) ?>;
 
 // Form object for search
 </script>
@@ -1135,11 +1112,11 @@ $gen_maintenance_delete->ShowMessage();
 <table class="table ewTable">
 	<thead>
 	<tr class="ewTableHeader">
-<?php if ($gen_maintenance->id->Visible) { // id ?>
-		<th class="<?php echo $gen_maintenance->id->HeaderCellClass() ?>"><span id="elh_gen_maintenance_id" class="gen_maintenance_id"><?php echo $gen_maintenance->id->FldCaption() ?></span></th>
-<?php } ?>
 <?php if ($gen_maintenance->datetime->Visible) { // datetime ?>
 		<th class="<?php echo $gen_maintenance->datetime->HeaderCellClass() ?>"><span id="elh_gen_maintenance_datetime" class="gen_maintenance_datetime"><?php echo $gen_maintenance->datetime->FldCaption() ?></span></th>
+<?php } ?>
+<?php if ($gen_maintenance->reference_id->Visible) { // reference_id ?>
+		<th class="<?php echo $gen_maintenance->reference_id->HeaderCellClass() ?>"><span id="elh_gen_maintenance_reference_id" class="gen_maintenance_reference_id"><?php echo $gen_maintenance->reference_id->FldCaption() ?></span></th>
 <?php } ?>
 <?php if ($gen_maintenance->gen_name->Visible) { // gen_name ?>
 		<th class="<?php echo $gen_maintenance->gen_name->HeaderCellClass() ?>"><span id="elh_gen_maintenance_gen_name" class="gen_maintenance_gen_name"><?php echo $gen_maintenance->gen_name->FldCaption() ?></span></th>
@@ -1165,23 +1142,8 @@ $gen_maintenance_delete->ShowMessage();
 <?php if ($gen_maintenance->status->Visible) { // status ?>
 		<th class="<?php echo $gen_maintenance->status->HeaderCellClass() ?>"><span id="elh_gen_maintenance_status" class="gen_maintenance_status"><?php echo $gen_maintenance->status->FldCaption() ?></span></th>
 <?php } ?>
-<?php if ($gen_maintenance->initiator_action->Visible) { // initiator_action ?>
-		<th class="<?php echo $gen_maintenance->initiator_action->HeaderCellClass() ?>"><span id="elh_gen_maintenance_initiator_action" class="gen_maintenance_initiator_action"><?php echo $gen_maintenance->initiator_action->FldCaption() ?></span></th>
-<?php } ?>
-<?php if ($gen_maintenance->initiator_comment->Visible) { // initiator_comment ?>
-		<th class="<?php echo $gen_maintenance->initiator_comment->HeaderCellClass() ?>"><span id="elh_gen_maintenance_initiator_comment" class="gen_maintenance_initiator_comment"><?php echo $gen_maintenance->initiator_comment->FldCaption() ?></span></th>
-<?php } ?>
-<?php if ($gen_maintenance->approver_date->Visible) { // approver_date ?>
-		<th class="<?php echo $gen_maintenance->approver_date->HeaderCellClass() ?>"><span id="elh_gen_maintenance_approver_date" class="gen_maintenance_approver_date"><?php echo $gen_maintenance->approver_date->FldCaption() ?></span></th>
-<?php } ?>
-<?php if ($gen_maintenance->approver_action->Visible) { // approver_action ?>
-		<th class="<?php echo $gen_maintenance->approver_action->HeaderCellClass() ?>"><span id="elh_gen_maintenance_approver_action" class="gen_maintenance_approver_action"><?php echo $gen_maintenance->approver_action->FldCaption() ?></span></th>
-<?php } ?>
-<?php if ($gen_maintenance->approver_comment->Visible) { // approver_comment ?>
-		<th class="<?php echo $gen_maintenance->approver_comment->HeaderCellClass() ?>"><span id="elh_gen_maintenance_approver_comment" class="gen_maintenance_approver_comment"><?php echo $gen_maintenance->approver_comment->FldCaption() ?></span></th>
-<?php } ?>
-<?php if ($gen_maintenance->approved_by->Visible) { // approved_by ?>
-		<th class="<?php echo $gen_maintenance->approved_by->HeaderCellClass() ?>"><span id="elh_gen_maintenance_approved_by" class="gen_maintenance_approved_by"><?php echo $gen_maintenance->approved_by->FldCaption() ?></span></th>
+<?php if ($gen_maintenance->flag->Visible) { // flag ?>
+		<th class="<?php echo $gen_maintenance->flag->HeaderCellClass() ?>"><span id="elh_gen_maintenance_flag" class="gen_maintenance_flag"><?php echo $gen_maintenance->flag->FldCaption() ?></span></th>
 <?php } ?>
 	</tr>
 	</thead>
@@ -1204,19 +1166,19 @@ while (!$gen_maintenance_delete->Recordset->EOF) {
 	$gen_maintenance_delete->RenderRow();
 ?>
 	<tr<?php echo $gen_maintenance->RowAttributes() ?>>
-<?php if ($gen_maintenance->id->Visible) { // id ?>
-		<td<?php echo $gen_maintenance->id->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_delete->RowCnt ?>_gen_maintenance_id" class="gen_maintenance_id">
-<span<?php echo $gen_maintenance->id->ViewAttributes() ?>>
-<?php echo $gen_maintenance->id->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
 <?php if ($gen_maintenance->datetime->Visible) { // datetime ?>
 		<td<?php echo $gen_maintenance->datetime->CellAttributes() ?>>
 <span id="el<?php echo $gen_maintenance_delete->RowCnt ?>_gen_maintenance_datetime" class="gen_maintenance_datetime">
 <span<?php echo $gen_maintenance->datetime->ViewAttributes() ?>>
 <?php echo $gen_maintenance->datetime->ListViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($gen_maintenance->reference_id->Visible) { // reference_id ?>
+		<td<?php echo $gen_maintenance->reference_id->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenance_delete->RowCnt ?>_gen_maintenance_reference_id" class="gen_maintenance_reference_id">
+<span<?php echo $gen_maintenance->reference_id->ViewAttributes() ?>>
+<?php echo $gen_maintenance->reference_id->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>
@@ -1284,51 +1246,11 @@ while (!$gen_maintenance_delete->Recordset->EOF) {
 </span>
 </td>
 <?php } ?>
-<?php if ($gen_maintenance->initiator_action->Visible) { // initiator_action ?>
-		<td<?php echo $gen_maintenance->initiator_action->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_delete->RowCnt ?>_gen_maintenance_initiator_action" class="gen_maintenance_initiator_action">
-<span<?php echo $gen_maintenance->initiator_action->ViewAttributes() ?>>
-<?php echo $gen_maintenance->initiator_action->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($gen_maintenance->initiator_comment->Visible) { // initiator_comment ?>
-		<td<?php echo $gen_maintenance->initiator_comment->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_delete->RowCnt ?>_gen_maintenance_initiator_comment" class="gen_maintenance_initiator_comment">
-<span<?php echo $gen_maintenance->initiator_comment->ViewAttributes() ?>>
-<?php echo $gen_maintenance->initiator_comment->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($gen_maintenance->approver_date->Visible) { // approver_date ?>
-		<td<?php echo $gen_maintenance->approver_date->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_delete->RowCnt ?>_gen_maintenance_approver_date" class="gen_maintenance_approver_date">
-<span<?php echo $gen_maintenance->approver_date->ViewAttributes() ?>>
-<?php echo $gen_maintenance->approver_date->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($gen_maintenance->approver_action->Visible) { // approver_action ?>
-		<td<?php echo $gen_maintenance->approver_action->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_delete->RowCnt ?>_gen_maintenance_approver_action" class="gen_maintenance_approver_action">
-<span<?php echo $gen_maintenance->approver_action->ViewAttributes() ?>>
-<?php echo $gen_maintenance->approver_action->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($gen_maintenance->approver_comment->Visible) { // approver_comment ?>
-		<td<?php echo $gen_maintenance->approver_comment->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_delete->RowCnt ?>_gen_maintenance_approver_comment" class="gen_maintenance_approver_comment">
-<span<?php echo $gen_maintenance->approver_comment->ViewAttributes() ?>>
-<?php echo $gen_maintenance->approver_comment->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($gen_maintenance->approved_by->Visible) { // approved_by ?>
-		<td<?php echo $gen_maintenance->approved_by->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_delete->RowCnt ?>_gen_maintenance_approved_by" class="gen_maintenance_approved_by">
-<span<?php echo $gen_maintenance->approved_by->ViewAttributes() ?>>
-<?php echo $gen_maintenance->approved_by->ListViewValue() ?></span>
+<?php if ($gen_maintenance->flag->Visible) { // flag ?>
+		<td<?php echo $gen_maintenance->flag->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenance_delete->RowCnt ?>_gen_maintenance_flag" class="gen_maintenance_flag">
+<span<?php echo $gen_maintenance->flag->ViewAttributes() ?>>
+<?php echo $gen_maintenance->flag->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

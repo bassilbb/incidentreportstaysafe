@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2025/11/21" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2025/11/27" version="14.0.0" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -914,9 +914,6 @@
     </menu>
     <menu id="531">
       <phrase id="menutext" value="Sparepart View" />
-    </menu>
-    <menu id="534">
-      <phrase id="menutext" value="Sparepart Report" />
     </menu>
     <table id="branch">
       <phrase id="tblcaption" value="Organization" />
@@ -4700,6 +4697,9 @@
       <field id="datetime">
         <phrase id="fldcaption" value="Datetime" />
       </field>
+      <field id="reference_id">
+        <phrase id="fldcaption" value="reference id" />
+      </field>
       <field id="gen_name">
         <phrase id="fldcaption" value="Generator Name" />
       </field>
@@ -4727,9 +4727,9 @@
       <field id="initiator_action">
         <phrase id="fldcaption" value="Initiator Action" />
         <phrase id="fldtagvalue1" value="0" />
-        <phrase id="fldtagcaption1" value="Save Only" />
+        <phrase id="fldtagcaption1" value="Maintenance Initiated" />
         <phrase id="fldtagvalue2" value="1" />
-        <phrase id="fldtagcaption2" value="Save and Forward" />
+        <phrase id="fldtagcaption2" value="Maintenance Completed" />
       </field>
       <field id="initiator_comment">
         <phrase id="fldcaption" value="Initiator Comment" />
@@ -4749,6 +4749,9 @@
       </field>
       <field id="approved_by">
         <phrase id="fldcaption" value="approved by" />
+      </field>
+      <field id="flag">
+        <phrase id="fldcaption" value="flag" />
       </field>
     </table>
     <table id="generator_registration">
@@ -4801,10 +4804,13 @@
       <field id="date">
         <phrase id="fldcaption" value="Date" />
       </field>
+      <field id="reference_id">
+        <phrase id="fldcaption" value="reference id" />
+      </field>
       <field id="part_name">
         <phrase id="fldcaption" value="Sparepart Nmae" />
       </field>
-      <field id="maintenance_id">
+      <field id="gen_name">
         <phrase id="fldcaption" value="Maintenance Category" />
       </field>
       <field id="quantity_in">
@@ -4824,6 +4830,9 @@
       </field>
       <field id="maintenance_total_cost">
         <phrase id="fldcaption" value="Maintenance Total Cost" />
+      </field>
+      <field id="maintenance_id">
+        <phrase id="fldcaption" value="mainteance id" />
       </field>
     </table>
     <table id="sparepart_view">
@@ -4908,40 +4917,6 @@
       </field>
       <field id="approved_by">
         <phrase id="fldcaption" value="approved by" />
-      </field>
-    </table>
-    <table id="sparepart_report">
-      <phrase id="tblcaption" value="Sparepart Report" />
-      <phrase id="tblpagecaption1" value="Spare Part usaged Info" />
-      <field id="id">
-        <phrase id="fldcaption" value="ID" />
-      </field>
-      <field id="date">
-        <phrase id="fldcaption" value="Date" />
-      </field>
-      <field id="part_name">
-        <phrase id="fldcaption" value="Sparepart Name" />
-      </field>
-      <field id="maintenance_id">
-        <phrase id="fldcaption" value="Maintenance Category" />
-      </field>
-      <field id="quantity_in">
-        <phrase id="fldcaption" value="Quantity In" />
-      </field>
-      <field id="quantity_used">
-        <phrase id="fldcaption" value="Quantity Used" />
-      </field>
-      <field id="cost">
-        <phrase id="fldcaption" value="Cost" />
-      </field>
-      <field id="total_quantity">
-        <phrase id="fldcaption" value="Total Quantity" />
-      </field>
-      <field id="total_cost">
-        <phrase id="fldcaption" value="Total Cost" />
-      </field>
-      <field id="maintenance_total_cost">
-        <phrase id="fldcaption" value="Maintenance Total Cost" />
       </field>
     </table>
   </project>

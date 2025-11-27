@@ -861,6 +861,15 @@ class csparepart_module_edit extends csparepart_module {
 		// Check if validation required
 		if (!EW_SERVER_VALIDATE)
 			return ($gsFormError == "");
+		if (!$this->part_name->FldIsDetailKey && !is_null($this->part_name->FormValue) && $this->part_name->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->part_name->FldCaption(), $this->part_name->ReqErrMsg));
+		}
+		if (!$this->quantity->FldIsDetailKey && !is_null($this->quantity->FormValue) && $this->quantity->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->quantity->FldCaption(), $this->quantity->ReqErrMsg));
+		}
+		if (!$this->cost->FldIsDetailKey && !is_null($this->cost->FormValue) && $this->cost->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->cost->FldCaption(), $this->cost->ReqErrMsg));
+		}
 		if (!ew_CheckNumber($this->cost->FormValue)) {
 			ew_AddMessage($gsFormError, $this->cost->FldErrMsg());
 		}
@@ -1075,6 +1084,15 @@ fsparepart_moduleedit.Validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
+			elm = this.GetElements("x" + infix + "_part_name");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $sparepart_module->part_name->FldCaption(), $sparepart_module->part_name->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_quantity");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $sparepart_module->quantity->FldCaption(), $sparepart_module->quantity->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_cost");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $sparepart_module->cost->FldCaption(), $sparepart_module->cost->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_cost");
 			if (elm && !ew_CheckNumber(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($sparepart_module->cost->FldErrMsg()) ?>");
@@ -1185,7 +1203,7 @@ $sparepart_module_edit->ShowMessage();
 <?php } ?>
 <?php if ($sparepart_module->part_name->Visible) { // part_name ?>
 	<div id="r_part_name" class="form-group">
-		<label id="elh_sparepart_module_part_name" for="x_part_name" class="<?php echo $sparepart_module_edit->LeftColumnClass ?>"><?php echo $sparepart_module->part_name->FldCaption() ?></label>
+		<label id="elh_sparepart_module_part_name" for="x_part_name" class="<?php echo $sparepart_module_edit->LeftColumnClass ?>"><?php echo $sparepart_module->part_name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $sparepart_module_edit->RightColumnClass ?>"><div<?php echo $sparepart_module->part_name->CellAttributes() ?>>
 <span id="el_sparepart_module_part_name">
 <input type="text" data-table="sparepart_module" data-field="x_part_name" name="x_part_name" id="x_part_name" size="30" maxlength="100" placeholder="<?php echo ew_HtmlEncode($sparepart_module->part_name->getPlaceHolder()) ?>" value="<?php echo $sparepart_module->part_name->EditValue ?>"<?php echo $sparepart_module->part_name->EditAttributes() ?>>
@@ -1195,7 +1213,7 @@ $sparepart_module_edit->ShowMessage();
 <?php } ?>
 <?php if ($sparepart_module->quantity->Visible) { // quantity ?>
 	<div id="r_quantity" class="form-group">
-		<label id="elh_sparepart_module_quantity" for="x_quantity" class="<?php echo $sparepart_module_edit->LeftColumnClass ?>"><?php echo $sparepart_module->quantity->FldCaption() ?></label>
+		<label id="elh_sparepart_module_quantity" for="x_quantity" class="<?php echo $sparepart_module_edit->LeftColumnClass ?>"><?php echo $sparepart_module->quantity->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $sparepart_module_edit->RightColumnClass ?>"><div<?php echo $sparepart_module->quantity->CellAttributes() ?>>
 <span id="el_sparepart_module_quantity">
 <input type="text" data-table="sparepart_module" data-field="x_quantity" name="x_quantity" id="x_quantity" size="30" maxlength="100" placeholder="<?php echo ew_HtmlEncode($sparepart_module->quantity->getPlaceHolder()) ?>" value="<?php echo $sparepart_module->quantity->EditValue ?>"<?php echo $sparepart_module->quantity->EditAttributes() ?>>
@@ -1205,7 +1223,7 @@ $sparepart_module_edit->ShowMessage();
 <?php } ?>
 <?php if ($sparepart_module->cost->Visible) { // cost ?>
 	<div id="r_cost" class="form-group">
-		<label id="elh_sparepart_module_cost" for="x_cost" class="<?php echo $sparepart_module_edit->LeftColumnClass ?>"><?php echo $sparepart_module->cost->FldCaption() ?></label>
+		<label id="elh_sparepart_module_cost" for="x_cost" class="<?php echo $sparepart_module_edit->LeftColumnClass ?>"><?php echo $sparepart_module->cost->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $sparepart_module_edit->RightColumnClass ?>"><div<?php echo $sparepart_module->cost->CellAttributes() ?>>
 <span id="el_sparepart_module_cost">
 <input type="text" data-table="sparepart_module" data-field="x_cost" name="x_cost" id="x_cost" size="30" placeholder="<?php echo ew_HtmlEncode($sparepart_module->cost->getPlaceHolder()) ?>" value="<?php echo $sparepart_module->cost->EditValue ?>"<?php echo $sparepart_module->cost->EditAttributes() ?>>

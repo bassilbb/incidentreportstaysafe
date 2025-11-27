@@ -426,14 +426,16 @@ class cspare_part_usage_view extends cspare_part_usage {
 		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
 			$this->id->Visible = FALSE;
 		$this->date->SetVisibility();
+		$this->reference_id->SetVisibility();
 		$this->part_name->SetVisibility();
-		$this->maintenance_id->SetVisibility();
+		$this->gen_name->SetVisibility();
 		$this->quantity_in->SetVisibility();
 		$this->quantity_used->SetVisibility();
 		$this->cost->SetVisibility();
 		$this->total_quantity->SetVisibility();
 		$this->total_cost->SetVisibility();
 		$this->maintenance_total_cost->SetVisibility();
+		$this->maintenance_id->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -764,14 +766,16 @@ class cspare_part_usage_view extends cspare_part_usage {
 			return;
 		$this->id->setDbValue($row['id']);
 		$this->date->setDbValue($row['date']);
+		$this->reference_id->setDbValue($row['reference_id']);
 		$this->part_name->setDbValue($row['part_name']);
-		$this->maintenance_id->setDbValue($row['maintenance_id']);
+		$this->gen_name->setDbValue($row['gen_name']);
 		$this->quantity_in->setDbValue($row['quantity_in']);
 		$this->quantity_used->setDbValue($row['quantity_used']);
 		$this->cost->setDbValue($row['cost']);
 		$this->total_quantity->setDbValue($row['total_quantity']);
 		$this->total_cost->setDbValue($row['total_cost']);
 		$this->maintenance_total_cost->setDbValue($row['maintenance_total_cost']);
+		$this->maintenance_id->setDbValue($row['maintenance_id']);
 	}
 
 	// Return a row with default values
@@ -779,14 +783,16 @@ class cspare_part_usage_view extends cspare_part_usage {
 		$row = array();
 		$row['id'] = NULL;
 		$row['date'] = NULL;
+		$row['reference_id'] = NULL;
 		$row['part_name'] = NULL;
-		$row['maintenance_id'] = NULL;
+		$row['gen_name'] = NULL;
 		$row['quantity_in'] = NULL;
 		$row['quantity_used'] = NULL;
 		$row['cost'] = NULL;
 		$row['total_quantity'] = NULL;
 		$row['total_cost'] = NULL;
 		$row['maintenance_total_cost'] = NULL;
+		$row['maintenance_id'] = NULL;
 		return $row;
 	}
 
@@ -797,14 +803,16 @@ class cspare_part_usage_view extends cspare_part_usage {
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
 		$this->date->DbValue = $row['date'];
+		$this->reference_id->DbValue = $row['reference_id'];
 		$this->part_name->DbValue = $row['part_name'];
-		$this->maintenance_id->DbValue = $row['maintenance_id'];
+		$this->gen_name->DbValue = $row['gen_name'];
 		$this->quantity_in->DbValue = $row['quantity_in'];
 		$this->quantity_used->DbValue = $row['quantity_used'];
 		$this->cost->DbValue = $row['cost'];
 		$this->total_quantity->DbValue = $row['total_quantity'];
 		$this->total_cost->DbValue = $row['total_cost'];
 		$this->maintenance_total_cost->DbValue = $row['maintenance_total_cost'];
+		$this->maintenance_id->DbValue = $row['maintenance_id'];
 	}
 
 	// Render row values based on field settings
@@ -837,14 +845,16 @@ class cspare_part_usage_view extends cspare_part_usage {
 		// Common render codes for all row types
 		// id
 		// date
+		// reference_id
 		// part_name
-		// maintenance_id
+		// gen_name
 		// quantity_in
 		// quantity_used
 		// cost
 		// total_quantity
 		// total_cost
 		// maintenance_total_cost
+		// maintenance_id
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -857,12 +867,37 @@ class cspare_part_usage_view extends cspare_part_usage {
 		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 0);
 		$this->date->ViewCustomAttributes = "";
 
+		// reference_id
+		if (strval($this->reference_id->CurrentValue) <> "") {
+			$sFilterWrk = "`reference_id`" . ew_SearchString("=", $this->reference_id->CurrentValue, EW_DATATYPE_STRING, "");
+		$sSqlWrk = "SELECT `reference_id`, `reference_id` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `gen_maintenance`";
+		$sWhereWrk = "";
+		$this->reference_id->LookupFilters = array();
+		$lookuptblfilter = "`flag`='0'";
+		ew_AddFilter($sWhereWrk, $lookuptblfilter);
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->reference_id, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->reference_id->ViewValue = $this->reference_id->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
+			}
+		} else {
+			$this->reference_id->ViewValue = NULL;
+		}
+		$this->reference_id->ViewCustomAttributes = "";
+
 		// part_name
 		if (strval($this->part_name->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->part_name->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `part_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `sparepart_module`";
 		$sWhereWrk = "";
-		$this->part_name->LookupFilters = array();
+		$this->part_name->LookupFilters = array("dx1" => '`part_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->part_name, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -880,28 +915,9 @@ class cspare_part_usage_view extends cspare_part_usage {
 		}
 		$this->part_name->ViewCustomAttributes = "";
 
-		// maintenance_id
-		if (strval($this->maintenance_id->CurrentValue) <> "") {
-			$sFilterWrk = "`maintenance_id`" . ew_SearchString("=", $this->maintenance_id->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `maintenance_id`, `generator_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `sparepart_view`";
-		$sWhereWrk = "";
-		$this->maintenance_id->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->maintenance_id, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->maintenance_id->ViewValue = $this->maintenance_id->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->maintenance_id->ViewValue = $this->maintenance_id->CurrentValue;
-			}
-		} else {
-			$this->maintenance_id->ViewValue = NULL;
-		}
-		$this->maintenance_id->ViewCustomAttributes = "";
+		// gen_name
+		$this->gen_name->ViewValue = $this->gen_name->CurrentValue;
+		$this->gen_name->ViewCustomAttributes = "";
 
 		// quantity_in
 		$this->quantity_in->ViewValue = $this->quantity_in->CurrentValue;
@@ -928,6 +944,10 @@ class cspare_part_usage_view extends cspare_part_usage {
 		$this->maintenance_total_cost->ViewValue = $this->maintenance_total_cost->CurrentValue;
 		$this->maintenance_total_cost->ViewCustomAttributes = "";
 
+		// maintenance_id
+		$this->maintenance_id->ViewValue = $this->maintenance_id->CurrentValue;
+		$this->maintenance_id->ViewCustomAttributes = "";
+
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
@@ -938,15 +958,20 @@ class cspare_part_usage_view extends cspare_part_usage {
 			$this->date->HrefValue = "";
 			$this->date->TooltipValue = "";
 
+			// reference_id
+			$this->reference_id->LinkCustomAttributes = "";
+			$this->reference_id->HrefValue = "";
+			$this->reference_id->TooltipValue = "";
+
 			// part_name
 			$this->part_name->LinkCustomAttributes = "";
 			$this->part_name->HrefValue = "";
 			$this->part_name->TooltipValue = "";
 
-			// maintenance_id
-			$this->maintenance_id->LinkCustomAttributes = "";
-			$this->maintenance_id->HrefValue = "";
-			$this->maintenance_id->TooltipValue = "";
+			// gen_name
+			$this->gen_name->LinkCustomAttributes = "";
+			$this->gen_name->HrefValue = "";
+			$this->gen_name->TooltipValue = "";
 
 			// quantity_in
 			$this->quantity_in->LinkCustomAttributes = "";
@@ -977,6 +1002,11 @@ class cspare_part_usage_view extends cspare_part_usage {
 			$this->maintenance_total_cost->LinkCustomAttributes = "";
 			$this->maintenance_total_cost->HrefValue = "";
 			$this->maintenance_total_cost->TooltipValue = "";
+
+			// maintenance_id
+			$this->maintenance_id->LinkCustomAttributes = "";
+			$this->maintenance_id->HrefValue = "";
+			$this->maintenance_id->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1272,10 +1302,10 @@ fspare_part_usageview.Form_CustomValidate =
 fspare_part_usageview.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+fspare_part_usageview.Lists["x_reference_id"] = {"LinkField":"x_reference_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_reference_id","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"gen_maintenance"};
+fspare_part_usageview.Lists["x_reference_id"].Data = "<?php echo $spare_part_usage_view->reference_id->LookupFilterQuery(FALSE, "view") ?>";
 fspare_part_usageview.Lists["x_part_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_part_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"sparepart_module"};
 fspare_part_usageview.Lists["x_part_name"].Data = "<?php echo $spare_part_usage_view->part_name->LookupFilterQuery(FALSE, "view") ?>";
-fspare_part_usageview.Lists["x_maintenance_id"] = {"LinkField":"x_maintenance_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_generator_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"sparepart_view"};
-fspare_part_usageview.Lists["x_maintenance_id"].Data = "<?php echo $spare_part_usage_view->maintenance_id->LookupFilterQuery(FALSE, "view") ?>";
 
 // Form object for search
 </script>
@@ -1374,6 +1404,17 @@ $spare_part_usage_view->ShowMessage();
 </td>
 	</tr>
 <?php } ?>
+<?php if ($spare_part_usage->reference_id->Visible) { // reference_id ?>
+	<tr id="r_reference_id">
+		<td class="col-sm-2"><span id="elh_spare_part_usage_reference_id"><?php echo $spare_part_usage->reference_id->FldCaption() ?></span></td>
+		<td data-name="reference_id"<?php echo $spare_part_usage->reference_id->CellAttributes() ?>>
+<span id="el_spare_part_usage_reference_id">
+<span<?php echo $spare_part_usage->reference_id->ViewAttributes() ?>>
+<?php echo $spare_part_usage->reference_id->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
 <?php if ($spare_part_usage->part_name->Visible) { // part_name ?>
 	<tr id="r_part_name">
 		<td class="col-sm-2"><span id="elh_spare_part_usage_part_name"><?php echo $spare_part_usage->part_name->FldCaption() ?></span></td>
@@ -1385,13 +1426,13 @@ $spare_part_usage_view->ShowMessage();
 </td>
 	</tr>
 <?php } ?>
-<?php if ($spare_part_usage->maintenance_id->Visible) { // maintenance_id ?>
-	<tr id="r_maintenance_id">
-		<td class="col-sm-2"><span id="elh_spare_part_usage_maintenance_id"><?php echo $spare_part_usage->maintenance_id->FldCaption() ?></span></td>
-		<td data-name="maintenance_id"<?php echo $spare_part_usage->maintenance_id->CellAttributes() ?>>
-<span id="el_spare_part_usage_maintenance_id">
-<span<?php echo $spare_part_usage->maintenance_id->ViewAttributes() ?>>
-<?php echo $spare_part_usage->maintenance_id->ViewValue ?></span>
+<?php if ($spare_part_usage->gen_name->Visible) { // gen_name ?>
+	<tr id="r_gen_name">
+		<td class="col-sm-2"><span id="elh_spare_part_usage_gen_name"><?php echo $spare_part_usage->gen_name->FldCaption() ?></span></td>
+		<td data-name="gen_name"<?php echo $spare_part_usage->gen_name->CellAttributes() ?>>
+<span id="el_spare_part_usage_gen_name">
+<span<?php echo $spare_part_usage->gen_name->ViewAttributes() ?>>
+<?php echo $spare_part_usage->gen_name->ViewValue ?></span>
 </span>
 </td>
 	</tr>
@@ -1462,6 +1503,17 @@ $spare_part_usage_view->ShowMessage();
 </td>
 	</tr>
 <?php } ?>
+<?php if ($spare_part_usage->maintenance_id->Visible) { // maintenance_id ?>
+	<tr id="r_maintenance_id">
+		<td class="col-sm-2"><span id="elh_spare_part_usage_maintenance_id"><?php echo $spare_part_usage->maintenance_id->FldCaption() ?></span></td>
+		<td data-name="maintenance_id"<?php echo $spare_part_usage->maintenance_id->CellAttributes() ?>>
+<span id="el_spare_part_usage_maintenance_id">
+<span<?php echo $spare_part_usage->maintenance_id->ViewAttributes() ?>>
+<?php echo $spare_part_usage->maintenance_id->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
 </table>
 </form>
 <?php if ($spare_part_usage->Export == "") { ?>
@@ -1480,6 +1532,7 @@ if (EW_DEBUG_ENABLED)
 // Write your table-specific startup script here
 // document.write("page loaded");
 
+$("#r_maintenance_id").hide();
 </script>
 <?php } ?>
 <?php include_once "footer.php" ?>

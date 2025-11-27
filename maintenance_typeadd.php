@@ -682,6 +682,9 @@ class cmaintenance_type_add extends cmaintenance_type {
 		// Check if validation required
 		if (!EW_SERVER_VALIDATE)
 			return ($gsFormError == "");
+		if (!$this->description->FldIsDetailKey && !is_null($this->description->FormValue) && $this->description->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->description->FldCaption(), $this->description->ReqErrMsg));
+		}
 
 		// Return validate result
 		$ValidateForm = ($gsFormError == "");
@@ -873,6 +876,9 @@ fmaintenance_typeadd.Validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
+			elm = this.GetElements("x" + infix + "_description");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $maintenance_type->description->FldCaption(), $maintenance_type->description->ReqErrMsg)) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -923,7 +929,7 @@ $maintenance_type_add->ShowMessage();
 <div class="ewAddDiv"><!-- page* -->
 <?php if ($maintenance_type->description->Visible) { // description ?>
 	<div id="r_description" class="form-group">
-		<label id="elh_maintenance_type_description" for="x_description" class="<?php echo $maintenance_type_add->LeftColumnClass ?>"><?php echo $maintenance_type->description->FldCaption() ?></label>
+		<label id="elh_maintenance_type_description" for="x_description" class="<?php echo $maintenance_type_add->LeftColumnClass ?>"><?php echo $maintenance_type->description->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $maintenance_type_add->RightColumnClass ?>"><div<?php echo $maintenance_type->description->CellAttributes() ?>>
 <span id="el_maintenance_type_description">
 <input type="text" data-table="maintenance_type" data-field="x_description" name="x_description" id="x_description" size="30" maxlength="100" placeholder="<?php echo ew_HtmlEncode($maintenance_type->description->getPlaceHolder()) ?>" value="<?php echo $maintenance_type->description->EditValue ?>"<?php echo $maintenance_type->description->EditAttributes() ?>>

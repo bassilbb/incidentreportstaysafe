@@ -99,7 +99,6 @@ $RootMenu->AddMenuItem(438, "mi_sparepart_module", $Language->MenuPhrase("438", 
 $RootMenu->AddMenuItem(530, "mi_spare_part_usage", $Language->MenuPhrase("530", "MenuText"), "spare_part_usagelist.php", 529, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}spare_part_usage'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(533, "mi_genmaintenance_report", $Language->MenuPhrase("533", "MenuText"), "genmaintenance_reportlist.php", 529, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}genmaintenance_report'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(531, "mi_sparepart_view", $Language->MenuPhrase("531", "MenuText"), "sparepart_viewlist.php", 529, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}sparepart_view'), FALSE, FALSE, "");
-$RootMenu->AddMenuItem(534, "mi_sparepart_report", $Language->MenuPhrase("534", "MenuText"), "sparepart_reportlist.php", 529, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}sparepart_report'), FALSE, FALSE, "fas fa-indent");
 echo $RootMenu->ToScript();
 ?>
 <div class="ewVertical" id="ewMenu"></div>

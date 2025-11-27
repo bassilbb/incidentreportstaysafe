@@ -432,6 +432,7 @@ class cgen_maintenance_view extends cgen_maintenance {
 		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
 			$this->id->Visible = FALSE;
 		$this->datetime->SetVisibility();
+		$this->reference_id->SetVisibility();
 		$this->gen_name->SetVisibility();
 		$this->maintenance_type->SetVisibility();
 		$this->running_hours->SetVisibility();
@@ -446,6 +447,7 @@ class cgen_maintenance_view extends cgen_maintenance {
 		$this->approver_action->SetVisibility();
 		$this->approver_comment->SetVisibility();
 		$this->approved_by->SetVisibility();
+		$this->flag->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -768,6 +770,7 @@ class cgen_maintenance_view extends cgen_maintenance {
 		if ($this->AuditTrailOnView) $this->WriteAuditTrailOnView($row);
 		$this->id->setDbValue($row['id']);
 		$this->datetime->setDbValue($row['datetime']);
+		$this->reference_id->setDbValue($row['reference_id']);
 		$this->gen_name->setDbValue($row['gen_name']);
 		$this->maintenance_type->setDbValue($row['maintenance_type']);
 		$this->running_hours->setDbValue($row['running_hours']);
@@ -782,6 +785,7 @@ class cgen_maintenance_view extends cgen_maintenance {
 		$this->approver_action->setDbValue($row['approver_action']);
 		$this->approver_comment->setDbValue($row['approver_comment']);
 		$this->approved_by->setDbValue($row['approved_by']);
+		$this->flag->setDbValue($row['flag']);
 	}
 
 	// Return a row with default values
@@ -789,6 +793,7 @@ class cgen_maintenance_view extends cgen_maintenance {
 		$row = array();
 		$row['id'] = NULL;
 		$row['datetime'] = NULL;
+		$row['reference_id'] = NULL;
 		$row['gen_name'] = NULL;
 		$row['maintenance_type'] = NULL;
 		$row['running_hours'] = NULL;
@@ -803,6 +808,7 @@ class cgen_maintenance_view extends cgen_maintenance {
 		$row['approver_action'] = NULL;
 		$row['approver_comment'] = NULL;
 		$row['approved_by'] = NULL;
+		$row['flag'] = NULL;
 		return $row;
 	}
 
@@ -813,6 +819,7 @@ class cgen_maintenance_view extends cgen_maintenance {
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
 		$this->datetime->DbValue = $row['datetime'];
+		$this->reference_id->DbValue = $row['reference_id'];
 		$this->gen_name->DbValue = $row['gen_name'];
 		$this->maintenance_type->DbValue = $row['maintenance_type'];
 		$this->running_hours->DbValue = $row['running_hours'];
@@ -827,6 +834,7 @@ class cgen_maintenance_view extends cgen_maintenance {
 		$this->approver_action->DbValue = $row['approver_action'];
 		$this->approver_comment->DbValue = $row['approver_comment'];
 		$this->approved_by->DbValue = $row['approved_by'];
+		$this->flag->DbValue = $row['flag'];
 	}
 
 	// Render row values based on field settings
@@ -859,6 +867,7 @@ class cgen_maintenance_view extends cgen_maintenance {
 		// Common render codes for all row types
 		// id
 		// datetime
+		// reference_id
 		// gen_name
 		// maintenance_type
 		// running_hours
@@ -873,6 +882,7 @@ class cgen_maintenance_view extends cgen_maintenance {
 		// approver_action
 		// approver_comment
 		// approved_by
+		// flag
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -884,6 +894,10 @@ class cgen_maintenance_view extends cgen_maintenance {
 		$this->datetime->ViewValue = $this->datetime->CurrentValue;
 		$this->datetime->ViewValue = ew_FormatDateTime($this->datetime->ViewValue, 0);
 		$this->datetime->ViewCustomAttributes = "";
+
+		// reference_id
+		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
+		$this->reference_id->ViewCustomAttributes = "";
 
 		// gen_name
 		if (strval($this->gen_name->CurrentValue) <> "") {
@@ -1050,6 +1064,10 @@ class cgen_maintenance_view extends cgen_maintenance {
 		}
 		$this->approved_by->ViewCustomAttributes = "";
 
+		// flag
+		$this->flag->ViewValue = $this->flag->CurrentValue;
+		$this->flag->ViewCustomAttributes = "";
+
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
@@ -1059,6 +1077,11 @@ class cgen_maintenance_view extends cgen_maintenance {
 			$this->datetime->LinkCustomAttributes = "";
 			$this->datetime->HrefValue = "";
 			$this->datetime->TooltipValue = "";
+
+			// reference_id
+			$this->reference_id->LinkCustomAttributes = "";
+			$this->reference_id->HrefValue = "";
+			$this->reference_id->TooltipValue = "";
 
 			// gen_name
 			$this->gen_name->LinkCustomAttributes = "";
@@ -1129,6 +1152,11 @@ class cgen_maintenance_view extends cgen_maintenance {
 			$this->approved_by->LinkCustomAttributes = "";
 			$this->approved_by->HrefValue = "";
 			$this->approved_by->TooltipValue = "";
+
+			// flag
+			$this->flag->LinkCustomAttributes = "";
+			$this->flag->HrefValue = "";
+			$this->flag->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1537,6 +1565,17 @@ $gen_maintenance_view->ShowMessage();
 </td>
 	</tr>
 <?php } ?>
+<?php if ($gen_maintenance->reference_id->Visible) { // reference_id ?>
+	<tr id="r_reference_id">
+		<td class="col-sm-2"><span id="elh_gen_maintenance_reference_id"><?php echo $gen_maintenance->reference_id->FldCaption() ?></span></td>
+		<td data-name="reference_id"<?php echo $gen_maintenance->reference_id->CellAttributes() ?>>
+<span id="el_gen_maintenance_reference_id" data-page="1">
+<span<?php echo $gen_maintenance->reference_id->ViewAttributes() ?>>
+<?php echo $gen_maintenance->reference_id->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
 <?php if ($gen_maintenance->gen_name->Visible) { // gen_name ?>
 	<tr id="r_gen_name">
 		<td class="col-sm-2"><span id="elh_gen_maintenance_gen_name"><?php echo $gen_maintenance->gen_name->FldCaption() ?></span></td>
@@ -1691,6 +1730,17 @@ $gen_maintenance_view->ShowMessage();
 </td>
 	</tr>
 <?php } ?>
+<?php if ($gen_maintenance->flag->Visible) { // flag ?>
+	<tr id="r_flag">
+		<td class="col-sm-2"><span id="elh_gen_maintenance_flag"><?php echo $gen_maintenance->flag->FldCaption() ?></span></td>
+		<td data-name="flag"<?php echo $gen_maintenance->flag->CellAttributes() ?>>
+<span id="el_gen_maintenance_flag" data-page="1">
+<span<?php echo $gen_maintenance->flag->ViewAttributes() ?>>
+<?php echo $gen_maintenance->flag->ViewValue ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
 </table>
 </form>
 <?php if ($gen_maintenance->Export == "") { ?>
@@ -1709,6 +1759,7 @@ if (EW_DEBUG_ENABLED)
 // Write your table-specific startup script here
 // document.write("page loaded");
 
+$("#r_flag").hide();
 </script>
 <?php } ?>
 <?php include_once "footer.php" ?>

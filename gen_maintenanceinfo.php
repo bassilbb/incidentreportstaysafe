@@ -15,6 +15,7 @@ class cgen_maintenance extends cTable {
 	var $AuditTrailOnSearch = FALSE;
 	var $id;
 	var $datetime;
+	var $reference_id;
 	var $gen_name;
 	var $maintenance_type;
 	var $running_hours;
@@ -29,6 +30,7 @@ class cgen_maintenance extends cTable {
 	var $approver_action;
 	var $approver_comment;
 	var $approved_by;
+	var $flag;
 
 	//
 	// Table class constructor
@@ -73,6 +75,11 @@ class cgen_maintenance extends cTable {
 		$this->datetime->Sortable = TRUE; // Allow sort
 		$this->datetime->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['datetime'] = &$this->datetime;
+
+		// reference_id
+		$this->reference_id = new cField('gen_maintenance', 'gen_maintenance', 'x_reference_id', 'reference_id', '`reference_id`', '`reference_id`', 200, -1, FALSE, '`reference_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->reference_id->Sortable = TRUE; // Allow sort
+		$this->fields['reference_id'] = &$this->reference_id;
 
 		// gen_name
 		$this->gen_name = new cField('gen_maintenance', 'gen_maintenance', 'x_gen_name', 'gen_name', '`gen_name`', '`gen_name`', 3, -1, FALSE, '`gen_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
@@ -161,6 +168,12 @@ class cgen_maintenance extends cTable {
 		$this->approved_by->Sortable = TRUE; // Allow sort
 		$this->approved_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['approved_by'] = &$this->approved_by;
+
+		// flag
+		$this->flag = new cField('gen_maintenance', 'gen_maintenance', 'x_flag', 'flag', '`flag`', '`flag`', 3, -1, FALSE, '`flag`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->flag->Sortable = TRUE; // Allow sort
+		$this->flag->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->fields['flag'] = &$this->flag;
 	}
 
 	// Field Visibility
@@ -700,6 +713,7 @@ class cgen_maintenance extends cTable {
 	function LoadListRowValues(&$rs) {
 		$this->id->setDbValue($rs->fields('id'));
 		$this->datetime->setDbValue($rs->fields('datetime'));
+		$this->reference_id->setDbValue($rs->fields('reference_id'));
 		$this->gen_name->setDbValue($rs->fields('gen_name'));
 		$this->maintenance_type->setDbValue($rs->fields('maintenance_type'));
 		$this->running_hours->setDbValue($rs->fields('running_hours'));
@@ -714,6 +728,7 @@ class cgen_maintenance extends cTable {
 		$this->approver_action->setDbValue($rs->fields('approver_action'));
 		$this->approver_comment->setDbValue($rs->fields('approver_comment'));
 		$this->approved_by->setDbValue($rs->fields('approved_by'));
+		$this->flag->setDbValue($rs->fields('flag'));
 	}
 
 	// Render list row values
@@ -726,6 +741,7 @@ class cgen_maintenance extends cTable {
 	// Common render codes
 		// id
 		// datetime
+		// reference_id
 		// gen_name
 		// maintenance_type
 		// running_hours
@@ -740,6 +756,7 @@ class cgen_maintenance extends cTable {
 		// approver_action
 		// approver_comment
 		// approved_by
+		// flag
 		// id
 
 		$this->id->ViewValue = $this->id->CurrentValue;
@@ -749,6 +766,10 @@ class cgen_maintenance extends cTable {
 		$this->datetime->ViewValue = $this->datetime->CurrentValue;
 		$this->datetime->ViewValue = ew_FormatDateTime($this->datetime->ViewValue, 0);
 		$this->datetime->ViewCustomAttributes = "";
+
+		// reference_id
+		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
+		$this->reference_id->ViewCustomAttributes = "";
 
 		// gen_name
 		if (strval($this->gen_name->CurrentValue) <> "") {
@@ -915,6 +936,10 @@ class cgen_maintenance extends cTable {
 		}
 		$this->approved_by->ViewCustomAttributes = "";
 
+		// flag
+		$this->flag->ViewValue = $this->flag->CurrentValue;
+		$this->flag->ViewCustomAttributes = "";
+
 		// id
 		$this->id->LinkCustomAttributes = "";
 		$this->id->HrefValue = "";
@@ -924,6 +949,11 @@ class cgen_maintenance extends cTable {
 		$this->datetime->LinkCustomAttributes = "";
 		$this->datetime->HrefValue = "";
 		$this->datetime->TooltipValue = "";
+
+		// reference_id
+		$this->reference_id->LinkCustomAttributes = "";
+		$this->reference_id->HrefValue = "";
+		$this->reference_id->TooltipValue = "";
 
 		// gen_name
 		$this->gen_name->LinkCustomAttributes = "";
@@ -995,6 +1025,11 @@ class cgen_maintenance extends cTable {
 		$this->approved_by->HrefValue = "";
 		$this->approved_by->TooltipValue = "";
 
+		// flag
+		$this->flag->LinkCustomAttributes = "";
+		$this->flag->HrefValue = "";
+		$this->flag->TooltipValue = "";
+
 		// Call Row Rendered event
 		$this->Row_Rendered();
 
@@ -1020,6 +1055,12 @@ class cgen_maintenance extends cTable {
 		$this->datetime->EditCustomAttributes = "";
 		$this->datetime->EditValue = ew_FormatDateTime($this->datetime->CurrentValue, 8);
 		$this->datetime->PlaceHolder = ew_RemoveHtml($this->datetime->FldCaption());
+
+		// reference_id
+		$this->reference_id->EditAttrs["class"] = "form-control";
+		$this->reference_id->EditCustomAttributes = "";
+		$this->reference_id->EditValue = $this->reference_id->CurrentValue;
+		$this->reference_id->PlaceHolder = ew_RemoveHtml($this->reference_id->FldCaption());
 
 		// gen_name
 		$this->gen_name->EditAttrs["class"] = "form-control";
@@ -1096,6 +1137,12 @@ class cgen_maintenance extends cTable {
 		$this->approved_by->EditValue = $this->approved_by->CurrentValue;
 		$this->approved_by->PlaceHolder = ew_RemoveHtml($this->approved_by->FldCaption());
 
+		// flag
+		$this->flag->EditAttrs["class"] = "form-control";
+		$this->flag->EditCustomAttributes = "";
+		$this->flag->EditValue = $this->flag->CurrentValue;
+		$this->flag->PlaceHolder = ew_RemoveHtml($this->flag->FldCaption());
+
 		// Call Row Rendered event
 		$this->Row_Rendered();
 	}
@@ -1125,6 +1172,7 @@ class cgen_maintenance extends cTable {
 				if ($ExportPageType == "view") {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->datetime->Exportable) $Doc->ExportCaption($this->datetime);
+					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
 					if ($this->gen_name->Exportable) $Doc->ExportCaption($this->gen_name);
 					if ($this->maintenance_type->Exportable) $Doc->ExportCaption($this->maintenance_type);
 					if ($this->running_hours->Exportable) $Doc->ExportCaption($this->running_hours);
@@ -1139,9 +1187,11 @@ class cgen_maintenance extends cTable {
 					if ($this->approver_action->Exportable) $Doc->ExportCaption($this->approver_action);
 					if ($this->approver_comment->Exportable) $Doc->ExportCaption($this->approver_comment);
 					if ($this->approved_by->Exportable) $Doc->ExportCaption($this->approved_by);
+					if ($this->flag->Exportable) $Doc->ExportCaption($this->flag);
 				} else {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->datetime->Exportable) $Doc->ExportCaption($this->datetime);
+					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
 					if ($this->gen_name->Exportable) $Doc->ExportCaption($this->gen_name);
 					if ($this->maintenance_type->Exportable) $Doc->ExportCaption($this->maintenance_type);
 					if ($this->running_hours->Exportable) $Doc->ExportCaption($this->running_hours);
@@ -1156,6 +1206,7 @@ class cgen_maintenance extends cTable {
 					if ($this->approver_action->Exportable) $Doc->ExportCaption($this->approver_action);
 					if ($this->approver_comment->Exportable) $Doc->ExportCaption($this->approver_comment);
 					if ($this->approved_by->Exportable) $Doc->ExportCaption($this->approved_by);
+					if ($this->flag->Exportable) $Doc->ExportCaption($this->flag);
 				}
 				$Doc->EndExportRow();
 			}
@@ -1189,6 +1240,7 @@ class cgen_maintenance extends cTable {
 					if ($ExportPageType == "view") {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->datetime->Exportable) $Doc->ExportField($this->datetime);
+						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
 						if ($this->gen_name->Exportable) $Doc->ExportField($this->gen_name);
 						if ($this->maintenance_type->Exportable) $Doc->ExportField($this->maintenance_type);
 						if ($this->running_hours->Exportable) $Doc->ExportField($this->running_hours);
@@ -1203,9 +1255,11 @@ class cgen_maintenance extends cTable {
 						if ($this->approver_action->Exportable) $Doc->ExportField($this->approver_action);
 						if ($this->approver_comment->Exportable) $Doc->ExportField($this->approver_comment);
 						if ($this->approved_by->Exportable) $Doc->ExportField($this->approved_by);
+						if ($this->flag->Exportable) $Doc->ExportField($this->flag);
 					} else {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->datetime->Exportable) $Doc->ExportField($this->datetime);
+						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
 						if ($this->gen_name->Exportable) $Doc->ExportField($this->gen_name);
 						if ($this->maintenance_type->Exportable) $Doc->ExportField($this->maintenance_type);
 						if ($this->running_hours->Exportable) $Doc->ExportField($this->running_hours);
@@ -1220,6 +1274,7 @@ class cgen_maintenance extends cTable {
 						if ($this->approver_action->Exportable) $Doc->ExportField($this->approver_action);
 						if ($this->approver_comment->Exportable) $Doc->ExportField($this->approver_comment);
 						if ($this->approved_by->Exportable) $Doc->ExportField($this->approved_by);
+						if ($this->flag->Exportable) $Doc->ExportField($this->flag);
 					}
 					$Doc->EndExportRow($RowCnt);
 				}
@@ -1390,9 +1445,9 @@ class cgen_maintenance extends cTable {
 
 		// Enter your code here
 		if (CurrentUserLevel() == 2) {
+			ew_AddFilter($filter, "`status` in (0) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
 
-			//ew_AddFilter($filter, "`status` in (0) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
-			ew_AddFilter($filter, "`status` in (0)");
+			//ew_AddFilter($filter, "`status` in (0)");
 		}
 		if (CurrentUserLevel() == 3) {
 			ew_AddFilter($filter, "`status` in (1)");
@@ -1471,15 +1526,16 @@ class cgen_maintenance extends cTable {
 		// Enter your code here
 		// To cancel, set return value to FALSE
 
-		date_default_timezone_set('Africa/Lagos');
-		$now = new DateTime();
 		if (CurrentPageID() == "edit" && CurrentUserLevel() == 2) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
 			$this->datetime->CurrentValue = $now->Format('Y-m-d H:i:s');
 			$this->datetime->EditValue = $this->datetime->CurrentValue;
 
 			// Save and forward
-			if ($this->initiator_action->CurrentValue == 1 && ($this->status->CurrentValue == 0 || $this->status->CurrentValue == 3)) {
+			if ($this->initiator_action->CurrentValue == 1 && ($this->status->CurrentValue == 0 || $this->flag->CurrentValue == 0)) {
 				$rsnew["status"] = 1;
+				$rsnew["flag"] = 1;
 				$rsnew["initiator_action"] = 1;
 				$rsnew["approver_action"] = NULL;
 				$rsnew["approved_comment"] = NULL;
@@ -1487,7 +1543,7 @@ class cgen_maintenance extends cTable {
 			}
 
 			// Saved only
-			if ($this->initiator_action->CurrentValue == 0 && $this->status->CurrentValue == 0) {
+			if ($this->initiator_action->CurrentValue == 0) {
 				$rsnew["status"] = 0;			
 				$rsnew["initiator_action"] = 0; 
 				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
@@ -1506,6 +1562,7 @@ class cgen_maintenance extends cTable {
 		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
 			$rsnew["id"] = $rsold["id"];
 			$rsnew["datetime"] = $rsold["datetime"];
+			$rsnew["reference_id"] = $rsold["reference_id"];
 			$rsnew["staff_id"] = $rsold["staff_id"];
 			$rsnew["gen_name"] = $rsold["gen_name"];
 			$rsnew["cost"] = $rsold["cost"];
@@ -1645,6 +1702,10 @@ class cgen_maintenance extends cTable {
 			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
 			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
 		}
+		if (CurrentPageID() == "add")  {
+			$this->reference_id->CurrentValue = $_SESSION['GMT_ID'];
+			$this->reference_id->EditValue = $this->reference_id->CurrentValue;
+		}
 	}
 
 	// Row Rendered event
@@ -1656,6 +1717,7 @@ class cgen_maintenance extends cTable {
 			if (CurrentPageID() == "add") {
 				if (CurrentUserLevel() == 2) {
 					$this->datetime->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
 					$this->gen_name->Visible = TRUE;
 					$this->maintenance_type->Visible = TRUE;
 					$this->running_hours->Visible = TRUE;
@@ -1673,6 +1735,7 @@ class cgen_maintenance extends cTable {
 			if (CurrentPageID() == "edit") {
 				if ((CurrentUserLevel() == 2||CurrentUserLevel() == 12)) {
 					$this->datetime->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
 					$this->gen_name->ReadOnly = TRUE;
 					$this->maintenance_type->ReadOnly = TRUE;
 					$this->running_hours->ReadOnly = TRUE;
@@ -1687,6 +1750,7 @@ class cgen_maintenance extends cTable {
 				if (CurrentUserLevel() == 3) {
 					$this->datetime->ReadOnly = TRUE;
 					$this->gen_name->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
 					$this->maintenance_type->ReadOnly = TRUE;
 					$this->running_hours->ReadOnly = TRUE;
 					$this->cost->ReadOnly = TRUE;

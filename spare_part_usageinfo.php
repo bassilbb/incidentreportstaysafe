@@ -9,14 +9,16 @@ $spare_part_usage = NULL;
 class cspare_part_usage extends cTable {
 	var $id;
 	var $date;
+	var $reference_id;
 	var $part_name;
-	var $maintenance_id;
+	var $gen_name;
 	var $quantity_in;
 	var $quantity_used;
 	var $cost;
 	var $total_quantity;
 	var $total_cost;
 	var $maintenance_total_cost;
+	var $maintenance_id;
 
 	//
 	// Table class constructor
@@ -62,6 +64,13 @@ class cspare_part_usage extends cTable {
 		$this->date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['date'] = &$this->date;
 
+		// reference_id
+		$this->reference_id = new cField('spare_part_usage', 'spare_part_usage', 'x_reference_id', 'reference_id', '`reference_id`', '`reference_id`', 200, -1, FALSE, '`reference_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->reference_id->Sortable = TRUE; // Allow sort
+		$this->reference_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->reference_id->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
+		$this->fields['reference_id'] = &$this->reference_id;
+
 		// part_name
 		$this->part_name = new cField('spare_part_usage', 'spare_part_usage', 'x_part_name', 'part_name', '`part_name`', '`part_name`', 200, -1, FALSE, '`part_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->part_name->Sortable = TRUE; // Allow sort
@@ -70,13 +79,10 @@ class cspare_part_usage extends cTable {
 		$this->part_name->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['part_name'] = &$this->part_name;
 
-		// maintenance_id
-		$this->maintenance_id = new cField('spare_part_usage', 'spare_part_usage', 'x_maintenance_id', 'maintenance_id', '`maintenance_id`', '`maintenance_id`', 3, -1, FALSE, '`maintenance_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
-		$this->maintenance_id->Sortable = TRUE; // Allow sort
-		$this->maintenance_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
-		$this->maintenance_id->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
-		$this->maintenance_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
-		$this->fields['maintenance_id'] = &$this->maintenance_id;
+		// gen_name
+		$this->gen_name = new cField('spare_part_usage', 'spare_part_usage', 'x_gen_name', 'gen_name', '`gen_name`', '`gen_name`', 200, -1, FALSE, '`gen_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->gen_name->Sortable = TRUE; // Allow sort
+		$this->fields['gen_name'] = &$this->gen_name;
 
 		// quantity_in
 		$this->quantity_in = new cField('spare_part_usage', 'spare_part_usage', 'x_quantity_in', 'quantity_in', '`quantity_in`', '`quantity_in`', 200, -1, FALSE, '`quantity_in`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
@@ -110,6 +116,12 @@ class cspare_part_usage extends cTable {
 		$this->maintenance_total_cost->Sortable = TRUE; // Allow sort
 		$this->maintenance_total_cost->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
 		$this->fields['maintenance_total_cost'] = &$this->maintenance_total_cost;
+
+		// maintenance_id
+		$this->maintenance_id = new cField('spare_part_usage', 'spare_part_usage', 'x_maintenance_id', 'maintenance_id', '`maintenance_id`', '`maintenance_id`', 3, -1, FALSE, '`maintenance_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->maintenance_id->Sortable = TRUE; // Allow sort
+		$this->maintenance_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->fields['maintenance_id'] = &$this->maintenance_id;
 	}
 
 	// Field Visibility
@@ -639,14 +651,16 @@ class cspare_part_usage extends cTable {
 	function LoadListRowValues(&$rs) {
 		$this->id->setDbValue($rs->fields('id'));
 		$this->date->setDbValue($rs->fields('date'));
+		$this->reference_id->setDbValue($rs->fields('reference_id'));
 		$this->part_name->setDbValue($rs->fields('part_name'));
-		$this->maintenance_id->setDbValue($rs->fields('maintenance_id'));
+		$this->gen_name->setDbValue($rs->fields('gen_name'));
 		$this->quantity_in->setDbValue($rs->fields('quantity_in'));
 		$this->quantity_used->setDbValue($rs->fields('quantity_used'));
 		$this->cost->setDbValue($rs->fields('cost'));
 		$this->total_quantity->setDbValue($rs->fields('total_quantity'));
 		$this->total_cost->setDbValue($rs->fields('total_cost'));
 		$this->maintenance_total_cost->setDbValue($rs->fields('maintenance_total_cost'));
+		$this->maintenance_id->setDbValue($rs->fields('maintenance_id'));
 	}
 
 	// Render list row values
@@ -659,14 +673,16 @@ class cspare_part_usage extends cTable {
 	// Common render codes
 		// id
 		// date
+		// reference_id
 		// part_name
-		// maintenance_id
+		// gen_name
 		// quantity_in
 		// quantity_used
 		// cost
 		// total_quantity
 		// total_cost
 		// maintenance_total_cost
+		// maintenance_id
 		// id
 
 		$this->id->ViewValue = $this->id->CurrentValue;
@@ -677,12 +693,37 @@ class cspare_part_usage extends cTable {
 		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 0);
 		$this->date->ViewCustomAttributes = "";
 
+		// reference_id
+		if (strval($this->reference_id->CurrentValue) <> "") {
+			$sFilterWrk = "`reference_id`" . ew_SearchString("=", $this->reference_id->CurrentValue, EW_DATATYPE_STRING, "");
+		$sSqlWrk = "SELECT `reference_id`, `reference_id` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `gen_maintenance`";
+		$sWhereWrk = "";
+		$this->reference_id->LookupFilters = array();
+		$lookuptblfilter = "`flag`='0'";
+		ew_AddFilter($sWhereWrk, $lookuptblfilter);
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->reference_id, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->reference_id->ViewValue = $this->reference_id->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
+			}
+		} else {
+			$this->reference_id->ViewValue = NULL;
+		}
+		$this->reference_id->ViewCustomAttributes = "";
+
 		// part_name
 		if (strval($this->part_name->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->part_name->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `part_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `sparepart_module`";
 		$sWhereWrk = "";
-		$this->part_name->LookupFilters = array();
+		$this->part_name->LookupFilters = array("dx1" => '`part_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->part_name, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -700,28 +741,9 @@ class cspare_part_usage extends cTable {
 		}
 		$this->part_name->ViewCustomAttributes = "";
 
-		// maintenance_id
-		if (strval($this->maintenance_id->CurrentValue) <> "") {
-			$sFilterWrk = "`maintenance_id`" . ew_SearchString("=", $this->maintenance_id->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `maintenance_id`, `generator_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `sparepart_view`";
-		$sWhereWrk = "";
-		$this->maintenance_id->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->maintenance_id, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->maintenance_id->ViewValue = $this->maintenance_id->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->maintenance_id->ViewValue = $this->maintenance_id->CurrentValue;
-			}
-		} else {
-			$this->maintenance_id->ViewValue = NULL;
-		}
-		$this->maintenance_id->ViewCustomAttributes = "";
+		// gen_name
+		$this->gen_name->ViewValue = $this->gen_name->CurrentValue;
+		$this->gen_name->ViewCustomAttributes = "";
 
 		// quantity_in
 		$this->quantity_in->ViewValue = $this->quantity_in->CurrentValue;
@@ -748,6 +770,10 @@ class cspare_part_usage extends cTable {
 		$this->maintenance_total_cost->ViewValue = $this->maintenance_total_cost->CurrentValue;
 		$this->maintenance_total_cost->ViewCustomAttributes = "";
 
+		// maintenance_id
+		$this->maintenance_id->ViewValue = $this->maintenance_id->CurrentValue;
+		$this->maintenance_id->ViewCustomAttributes = "";
+
 		// id
 		$this->id->LinkCustomAttributes = "";
 		$this->id->HrefValue = "";
@@ -758,15 +784,20 @@ class cspare_part_usage extends cTable {
 		$this->date->HrefValue = "";
 		$this->date->TooltipValue = "";
 
+		// reference_id
+		$this->reference_id->LinkCustomAttributes = "";
+		$this->reference_id->HrefValue = "";
+		$this->reference_id->TooltipValue = "";
+
 		// part_name
 		$this->part_name->LinkCustomAttributes = "";
 		$this->part_name->HrefValue = "";
 		$this->part_name->TooltipValue = "";
 
-		// maintenance_id
-		$this->maintenance_id->LinkCustomAttributes = "";
-		$this->maintenance_id->HrefValue = "";
-		$this->maintenance_id->TooltipValue = "";
+		// gen_name
+		$this->gen_name->LinkCustomAttributes = "";
+		$this->gen_name->HrefValue = "";
+		$this->gen_name->TooltipValue = "";
 
 		// quantity_in
 		$this->quantity_in->LinkCustomAttributes = "";
@@ -798,6 +829,11 @@ class cspare_part_usage extends cTable {
 		$this->maintenance_total_cost->HrefValue = "";
 		$this->maintenance_total_cost->TooltipValue = "";
 
+		// maintenance_id
+		$this->maintenance_id->LinkCustomAttributes = "";
+		$this->maintenance_id->HrefValue = "";
+		$this->maintenance_id->TooltipValue = "";
+
 		// Call Row Rendered event
 		$this->Row_Rendered();
 
@@ -824,13 +860,19 @@ class cspare_part_usage extends cTable {
 		$this->date->EditValue = ew_FormatDateTime($this->date->CurrentValue, 8);
 		$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
 
+		// reference_id
+		$this->reference_id->EditAttrs["class"] = "form-control";
+		$this->reference_id->EditCustomAttributes = "";
+
 		// part_name
 		$this->part_name->EditAttrs["class"] = "form-control";
 		$this->part_name->EditCustomAttributes = "";
 
-		// maintenance_id
-		$this->maintenance_id->EditAttrs["class"] = "form-control";
-		$this->maintenance_id->EditCustomAttributes = "";
+		// gen_name
+		$this->gen_name->EditAttrs["class"] = "form-control";
+		$this->gen_name->EditCustomAttributes = "";
+		$this->gen_name->EditValue = $this->gen_name->CurrentValue;
+		$this->gen_name->PlaceHolder = ew_RemoveHtml($this->gen_name->FldCaption());
 
 		// quantity_in
 		$this->quantity_in->EditAttrs["class"] = "form-control";
@@ -871,6 +913,12 @@ class cspare_part_usage extends cTable {
 		$this->maintenance_total_cost->PlaceHolder = ew_RemoveHtml($this->maintenance_total_cost->FldCaption());
 		if (strval($this->maintenance_total_cost->EditValue) <> "" && is_numeric($this->maintenance_total_cost->EditValue)) $this->maintenance_total_cost->EditValue = ew_FormatNumber($this->maintenance_total_cost->EditValue, -2, -1, -2, 0);
 
+		// maintenance_id
+		$this->maintenance_id->EditAttrs["class"] = "form-control";
+		$this->maintenance_id->EditCustomAttributes = "";
+		$this->maintenance_id->EditValue = $this->maintenance_id->CurrentValue;
+		$this->maintenance_id->PlaceHolder = ew_RemoveHtml($this->maintenance_id->FldCaption());
+
 		// Call Row Rendered event
 		$this->Row_Rendered();
 	}
@@ -907,25 +955,29 @@ class cspare_part_usage extends cTable {
 				if ($ExportPageType == "view") {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->date->Exportable) $Doc->ExportCaption($this->date);
+					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
 					if ($this->part_name->Exportable) $Doc->ExportCaption($this->part_name);
-					if ($this->maintenance_id->Exportable) $Doc->ExportCaption($this->maintenance_id);
+					if ($this->gen_name->Exportable) $Doc->ExportCaption($this->gen_name);
 					if ($this->quantity_in->Exportable) $Doc->ExportCaption($this->quantity_in);
 					if ($this->quantity_used->Exportable) $Doc->ExportCaption($this->quantity_used);
 					if ($this->cost->Exportable) $Doc->ExportCaption($this->cost);
 					if ($this->total_quantity->Exportable) $Doc->ExportCaption($this->total_quantity);
 					if ($this->total_cost->Exportable) $Doc->ExportCaption($this->total_cost);
 					if ($this->maintenance_total_cost->Exportable) $Doc->ExportCaption($this->maintenance_total_cost);
+					if ($this->maintenance_id->Exportable) $Doc->ExportCaption($this->maintenance_id);
 				} else {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
 					if ($this->date->Exportable) $Doc->ExportCaption($this->date);
+					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
 					if ($this->part_name->Exportable) $Doc->ExportCaption($this->part_name);
-					if ($this->maintenance_id->Exportable) $Doc->ExportCaption($this->maintenance_id);
+					if ($this->gen_name->Exportable) $Doc->ExportCaption($this->gen_name);
 					if ($this->quantity_in->Exportable) $Doc->ExportCaption($this->quantity_in);
 					if ($this->quantity_used->Exportable) $Doc->ExportCaption($this->quantity_used);
 					if ($this->cost->Exportable) $Doc->ExportCaption($this->cost);
 					if ($this->total_quantity->Exportable) $Doc->ExportCaption($this->total_quantity);
 					if ($this->total_cost->Exportable) $Doc->ExportCaption($this->total_cost);
 					if ($this->maintenance_total_cost->Exportable) $Doc->ExportCaption($this->maintenance_total_cost);
+					if ($this->maintenance_id->Exportable) $Doc->ExportCaption($this->maintenance_id);
 				}
 				$Doc->EndExportRow();
 			}
@@ -960,25 +1012,29 @@ class cspare_part_usage extends cTable {
 					if ($ExportPageType == "view") {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->date->Exportable) $Doc->ExportField($this->date);
+						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
 						if ($this->part_name->Exportable) $Doc->ExportField($this->part_name);
-						if ($this->maintenance_id->Exportable) $Doc->ExportField($this->maintenance_id);
+						if ($this->gen_name->Exportable) $Doc->ExportField($this->gen_name);
 						if ($this->quantity_in->Exportable) $Doc->ExportField($this->quantity_in);
 						if ($this->quantity_used->Exportable) $Doc->ExportField($this->quantity_used);
 						if ($this->cost->Exportable) $Doc->ExportField($this->cost);
 						if ($this->total_quantity->Exportable) $Doc->ExportField($this->total_quantity);
 						if ($this->total_cost->Exportable) $Doc->ExportField($this->total_cost);
 						if ($this->maintenance_total_cost->Exportable) $Doc->ExportField($this->maintenance_total_cost);
+						if ($this->maintenance_id->Exportable) $Doc->ExportField($this->maintenance_id);
 					} else {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
 						if ($this->date->Exportable) $Doc->ExportField($this->date);
+						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
 						if ($this->part_name->Exportable) $Doc->ExportField($this->part_name);
-						if ($this->maintenance_id->Exportable) $Doc->ExportField($this->maintenance_id);
+						if ($this->gen_name->Exportable) $Doc->ExportField($this->gen_name);
 						if ($this->quantity_in->Exportable) $Doc->ExportField($this->quantity_in);
 						if ($this->quantity_used->Exportable) $Doc->ExportField($this->quantity_used);
 						if ($this->cost->Exportable) $Doc->ExportField($this->cost);
 						if ($this->total_quantity->Exportable) $Doc->ExportField($this->total_quantity);
 						if ($this->total_cost->Exportable) $Doc->ExportField($this->total_cost);
 						if ($this->maintenance_total_cost->Exportable) $Doc->ExportField($this->maintenance_total_cost);
+						if ($this->maintenance_id->Exportable) $Doc->ExportField($this->maintenance_id);
 					}
 					$Doc->EndExportRow($RowCnt);
 				}
@@ -999,14 +1055,16 @@ class cspare_part_usage extends cTable {
 				$Doc->BeginExportRow(-1);
 				if ($this->id->Exportable) $Doc->ExportAggregate($this->id, '');
 				if ($this->date->Exportable) $Doc->ExportAggregate($this->date, '');
+				if ($this->reference_id->Exportable) $Doc->ExportAggregate($this->reference_id, '');
 				if ($this->part_name->Exportable) $Doc->ExportAggregate($this->part_name, '');
-				if ($this->maintenance_id->Exportable) $Doc->ExportAggregate($this->maintenance_id, '');
+				if ($this->gen_name->Exportable) $Doc->ExportAggregate($this->gen_name, '');
 				if ($this->quantity_in->Exportable) $Doc->ExportAggregate($this->quantity_in, '');
 				if ($this->quantity_used->Exportable) $Doc->ExportAggregate($this->quantity_used, '');
 				if ($this->cost->Exportable) $Doc->ExportAggregate($this->cost, '');
 				if ($this->total_quantity->Exportable) $Doc->ExportAggregate($this->total_quantity, '');
 				if ($this->total_cost->Exportable) $Doc->ExportAggregate($this->total_cost, 'TOTAL');
 				if ($this->maintenance_total_cost->Exportable) $Doc->ExportAggregate($this->maintenance_total_cost, '');
+				if ($this->maintenance_id->Exportable) $Doc->ExportAggregate($this->maintenance_id, '');
 				$Doc->EndExportRow();
 			}
 		}
@@ -1151,6 +1209,7 @@ class cspare_part_usage extends cTable {
 		// Enter your code here
 		// To cancel, set return value to FALSE
 
+		$rsold["gen_name"] = $rsold["gen_name"];
 		return TRUE;
 	}
 
@@ -1259,9 +1318,20 @@ class cspare_part_usage extends cTable {
 	// Lookup Selecting event
 	function Lookup_Selecting($fld, &$filter) {
 
-		//var_dump($fld->FldName, $fld->LookupFilters, $filter); // Uncomment to view the filter
-		// Enter your code here
+		// Uncomment for debugging
+		// var_dump($fld->FldName, $fld->LookupFilters, $filter);
 
+		if ($fld->FldName == "maintenance_id") {
+
+			// Only include records where flag = 0
+			ew_AddFilter($filter, "`gm`.`flag` = 0");
+
+			// Modify the SQL to join generator_registration table
+			//$fld->LookupFilters = "`gm`.`id` AS maintenance_id, CONCAT(`gr`.`gen_name`, ' - ', `gr`.`location`, ' (', `gr`.`kva`, 'kVA)') AS display_value";
+			//$fld->LookupTable = "gen_maintenance AS gm LEFT JOIN generator_registration AS gr ON gm.gen_name = gr.id";
+			//$fld->LookupOrderBy = "gr.gen_name"; // optional: order by generator name
+
+		}
 	}
 
 	// Row Rendering event

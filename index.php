@@ -471,8 +471,6 @@ class cdefault {
 			$this->Page_Terminate("gen_statuslist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'genmaintenance_report'))
 			$this->Page_Terminate("genmaintenance_reportlist.php");
-		if ($Security->AllowList(CurrentProjectID() . 'sparepart_report'))
-			$this->Page_Terminate("sparepart_reportlist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

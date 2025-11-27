@@ -275,6 +275,11 @@ $randStrs =	mt_rand(000000012,999999999);
 return "SYSTO".$randStrs;
 }
 
+function generateGMTKey(){
+$randStrs =	mt_rand(000000012,999999999);
+return "GMT".$randStrs;
+}
+
 //
 //$conn = mysqli_connect("localhost", "root","","incident_report");
 

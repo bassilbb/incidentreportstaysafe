@@ -446,12 +446,10 @@ class cspare_part_usage_list extends cspare_part_usage {
 
 		// Setup export options
 		$this->SetupExportOptions();
-		$this->id->SetVisibility();
-		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
-			$this->id->Visible = FALSE;
 		$this->date->SetVisibility();
+		$this->reference_id->SetVisibility();
 		$this->part_name->SetVisibility();
-		$this->maintenance_id->SetVisibility();
+		$this->gen_name->SetVisibility();
 		$this->quantity_in->SetVisibility();
 		$this->quantity_used->SetVisibility();
 		$this->cost->SetVisibility();
@@ -648,12 +646,18 @@ class cspare_part_usage_list extends cspare_part_usage {
 
 			// Get default search criteria
 			ew_AddFilter($this->DefaultSearchWhere, $this->BasicSearchWhere(TRUE));
+			ew_AddFilter($this->DefaultSearchWhere, $this->AdvancedSearchWhere(TRUE));
 
 			// Get basic search values
 			$this->LoadBasicSearchValues();
 
+			// Get and validate search values for advanced search
+			$this->LoadSearchValues(); // Get search values
+
 			// Process filter list
 			$this->ProcessFilterList();
+			if (!$this->ValidateSearch())
+				$this->setFailureMessage($gsSearchError);
 
 			// Restore search parms from Session if not searching / reset / export
 			if (($this->Export <> "" || $this->Command <> "search" && $this->Command <> "reset" && $this->Command <> "resetall") && $this->Command <> "json" && $this->CheckSearchParms())
@@ -668,6 +672,10 @@ class cspare_part_usage_list extends cspare_part_usage {
 			// Get basic search criteria
 			if ($gsSearchError == "")
 				$sSrchBasic = $this->BasicSearchWhere();
+
+			// Get search criteria for advanced search
+			if ($gsSearchError == "")
+				$sSrchAdvanced = $this->AdvancedSearchWhere();
 		}
 
 		// Restore display records
@@ -688,6 +696,11 @@ class cspare_part_usage_list extends cspare_part_usage {
 			$this->BasicSearch->LoadDefault();
 			if ($this->BasicSearch->Keyword != "")
 				$sSrchBasic = $this->BasicSearchWhere();
+
+			// Load advanced search from default
+			if ($this->LoadAdvancedSearchDefault()) {
+				$sSrchAdvanced = $this->AdvancedSearchWhere();
+			}
 		}
 
 		// Build search criteria
@@ -816,14 +829,16 @@ class cspare_part_usage_list extends cspare_part_usage {
 			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "fspare_part_usagelistsrch");
 		$sFilterList = ew_Concat($sFilterList, $this->id->AdvancedSearch->ToJson(), ","); // Field id
 		$sFilterList = ew_Concat($sFilterList, $this->date->AdvancedSearch->ToJson(), ","); // Field date
+		$sFilterList = ew_Concat($sFilterList, $this->reference_id->AdvancedSearch->ToJson(), ","); // Field reference_id
 		$sFilterList = ew_Concat($sFilterList, $this->part_name->AdvancedSearch->ToJson(), ","); // Field part_name
-		$sFilterList = ew_Concat($sFilterList, $this->maintenance_id->AdvancedSearch->ToJson(), ","); // Field maintenance_id
+		$sFilterList = ew_Concat($sFilterList, $this->gen_name->AdvancedSearch->ToJson(), ","); // Field gen_name
 		$sFilterList = ew_Concat($sFilterList, $this->quantity_in->AdvancedSearch->ToJson(), ","); // Field quantity_in
 		$sFilterList = ew_Concat($sFilterList, $this->quantity_used->AdvancedSearch->ToJson(), ","); // Field quantity_used
 		$sFilterList = ew_Concat($sFilterList, $this->cost->AdvancedSearch->ToJson(), ","); // Field cost
 		$sFilterList = ew_Concat($sFilterList, $this->total_quantity->AdvancedSearch->ToJson(), ","); // Field total_quantity
 		$sFilterList = ew_Concat($sFilterList, $this->total_cost->AdvancedSearch->ToJson(), ","); // Field total_cost
 		$sFilterList = ew_Concat($sFilterList, $this->maintenance_total_cost->AdvancedSearch->ToJson(), ","); // Field maintenance_total_cost
+		$sFilterList = ew_Concat($sFilterList, $this->maintenance_id->AdvancedSearch->ToJson(), ","); // Field maintenance_id
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -884,6 +899,14 @@ class cspare_part_usage_list extends cspare_part_usage {
 		$this->date->AdvancedSearch->SearchOperator2 = @$filter["w_date"];
 		$this->date->AdvancedSearch->Save();
 
+		// Field reference_id
+		$this->reference_id->AdvancedSearch->SearchValue = @$filter["x_reference_id"];
+		$this->reference_id->AdvancedSearch->SearchOperator = @$filter["z_reference_id"];
+		$this->reference_id->AdvancedSearch->SearchCondition = @$filter["v_reference_id"];
+		$this->reference_id->AdvancedSearch->SearchValue2 = @$filter["y_reference_id"];
+		$this->reference_id->AdvancedSearch->SearchOperator2 = @$filter["w_reference_id"];
+		$this->reference_id->AdvancedSearch->Save();
+
 		// Field part_name
 		$this->part_name->AdvancedSearch->SearchValue = @$filter["x_part_name"];
 		$this->part_name->AdvancedSearch->SearchOperator = @$filter["z_part_name"];
@@ -892,13 +915,13 @@ class cspare_part_usage_list extends cspare_part_usage {
 		$this->part_name->AdvancedSearch->SearchOperator2 = @$filter["w_part_name"];
 		$this->part_name->AdvancedSearch->Save();
 
-		// Field maintenance_id
-		$this->maintenance_id->AdvancedSearch->SearchValue = @$filter["x_maintenance_id"];
-		$this->maintenance_id->AdvancedSearch->SearchOperator = @$filter["z_maintenance_id"];
-		$this->maintenance_id->AdvancedSearch->SearchCondition = @$filter["v_maintenance_id"];
-		$this->maintenance_id->AdvancedSearch->SearchValue2 = @$filter["y_maintenance_id"];
-		$this->maintenance_id->AdvancedSearch->SearchOperator2 = @$filter["w_maintenance_id"];
-		$this->maintenance_id->AdvancedSearch->Save();
+		// Field gen_name
+		$this->gen_name->AdvancedSearch->SearchValue = @$filter["x_gen_name"];
+		$this->gen_name->AdvancedSearch->SearchOperator = @$filter["z_gen_name"];
+		$this->gen_name->AdvancedSearch->SearchCondition = @$filter["v_gen_name"];
+		$this->gen_name->AdvancedSearch->SearchValue2 = @$filter["y_gen_name"];
+		$this->gen_name->AdvancedSearch->SearchOperator2 = @$filter["w_gen_name"];
+		$this->gen_name->AdvancedSearch->Save();
 
 		// Field quantity_in
 		$this->quantity_in->AdvancedSearch->SearchValue = @$filter["x_quantity_in"];
@@ -947,13 +970,105 @@ class cspare_part_usage_list extends cspare_part_usage {
 		$this->maintenance_total_cost->AdvancedSearch->SearchValue2 = @$filter["y_maintenance_total_cost"];
 		$this->maintenance_total_cost->AdvancedSearch->SearchOperator2 = @$filter["w_maintenance_total_cost"];
 		$this->maintenance_total_cost->AdvancedSearch->Save();
+
+		// Field maintenance_id
+		$this->maintenance_id->AdvancedSearch->SearchValue = @$filter["x_maintenance_id"];
+		$this->maintenance_id->AdvancedSearch->SearchOperator = @$filter["z_maintenance_id"];
+		$this->maintenance_id->AdvancedSearch->SearchCondition = @$filter["v_maintenance_id"];
+		$this->maintenance_id->AdvancedSearch->SearchValue2 = @$filter["y_maintenance_id"];
+		$this->maintenance_id->AdvancedSearch->SearchOperator2 = @$filter["w_maintenance_id"];
+		$this->maintenance_id->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
+	}
+
+	// Advanced search WHERE clause based on QueryString
+	function AdvancedSearchWhere($Default = FALSE) {
+		global $Security;
+		$sWhere = "";
+		if (!$Security->CanSearch()) return "";
+		$this->BuildSearchSql($sWhere, $this->id, $Default, FALSE); // id
+		$this->BuildSearchSql($sWhere, $this->date, $Default, FALSE); // date
+		$this->BuildSearchSql($sWhere, $this->reference_id, $Default, FALSE); // reference_id
+		$this->BuildSearchSql($sWhere, $this->part_name, $Default, FALSE); // part_name
+		$this->BuildSearchSql($sWhere, $this->gen_name, $Default, FALSE); // gen_name
+		$this->BuildSearchSql($sWhere, $this->quantity_in, $Default, FALSE); // quantity_in
+		$this->BuildSearchSql($sWhere, $this->quantity_used, $Default, FALSE); // quantity_used
+		$this->BuildSearchSql($sWhere, $this->cost, $Default, FALSE); // cost
+		$this->BuildSearchSql($sWhere, $this->total_quantity, $Default, FALSE); // total_quantity
+		$this->BuildSearchSql($sWhere, $this->total_cost, $Default, FALSE); // total_cost
+		$this->BuildSearchSql($sWhere, $this->maintenance_total_cost, $Default, FALSE); // maintenance_total_cost
+		$this->BuildSearchSql($sWhere, $this->maintenance_id, $Default, FALSE); // maintenance_id
+
+		// Set up search parm
+		if (!$Default && $sWhere <> "" && in_array($this->Command, array("", "reset", "resetall"))) {
+			$this->Command = "search";
+		}
+		if (!$Default && $this->Command == "search") {
+			$this->id->AdvancedSearch->Save(); // id
+			$this->date->AdvancedSearch->Save(); // date
+			$this->reference_id->AdvancedSearch->Save(); // reference_id
+			$this->part_name->AdvancedSearch->Save(); // part_name
+			$this->gen_name->AdvancedSearch->Save(); // gen_name
+			$this->quantity_in->AdvancedSearch->Save(); // quantity_in
+			$this->quantity_used->AdvancedSearch->Save(); // quantity_used
+			$this->cost->AdvancedSearch->Save(); // cost
+			$this->total_quantity->AdvancedSearch->Save(); // total_quantity
+			$this->total_cost->AdvancedSearch->Save(); // total_cost
+			$this->maintenance_total_cost->AdvancedSearch->Save(); // maintenance_total_cost
+			$this->maintenance_id->AdvancedSearch->Save(); // maintenance_id
+		}
+		return $sWhere;
+	}
+
+	// Build search SQL
+	function BuildSearchSql(&$Where, &$Fld, $Default, $MultiValue) {
+		$FldParm = $Fld->FldParm();
+		$FldVal = ($Default) ? $Fld->AdvancedSearch->SearchValueDefault : $Fld->AdvancedSearch->SearchValue; // @$_GET["x_$FldParm"]
+		$FldOpr = ($Default) ? $Fld->AdvancedSearch->SearchOperatorDefault : $Fld->AdvancedSearch->SearchOperator; // @$_GET["z_$FldParm"]
+		$FldCond = ($Default) ? $Fld->AdvancedSearch->SearchConditionDefault : $Fld->AdvancedSearch->SearchCondition; // @$_GET["v_$FldParm"]
+		$FldVal2 = ($Default) ? $Fld->AdvancedSearch->SearchValue2Default : $Fld->AdvancedSearch->SearchValue2; // @$_GET["y_$FldParm"]
+		$FldOpr2 = ($Default) ? $Fld->AdvancedSearch->SearchOperator2Default : $Fld->AdvancedSearch->SearchOperator2; // @$_GET["w_$FldParm"]
+		$sWrk = "";
+		if (is_array($FldVal)) $FldVal = implode(",", $FldVal);
+		if (is_array($FldVal2)) $FldVal2 = implode(",", $FldVal2);
+		$FldOpr = strtoupper(trim($FldOpr));
+		if ($FldOpr == "") $FldOpr = "=";
+		$FldOpr2 = strtoupper(trim($FldOpr2));
+		if ($FldOpr2 == "") $FldOpr2 = "=";
+		if (EW_SEARCH_MULTI_VALUE_OPTION == 1)
+			$MultiValue = FALSE;
+		if ($MultiValue) {
+			$sWrk1 = ($FldVal <> "") ? ew_GetMultiSearchSql($Fld, $FldOpr, $FldVal, $this->DBID) : ""; // Field value 1
+			$sWrk2 = ($FldVal2 <> "") ? ew_GetMultiSearchSql($Fld, $FldOpr2, $FldVal2, $this->DBID) : ""; // Field value 2
+			$sWrk = $sWrk1; // Build final SQL
+			if ($sWrk2 <> "")
+				$sWrk = ($sWrk <> "") ? "($sWrk) $FldCond ($sWrk2)" : $sWrk2;
+		} else {
+			$FldVal = $this->ConvertSearchValue($Fld, $FldVal);
+			$FldVal2 = $this->ConvertSearchValue($Fld, $FldVal2);
+			$sWrk = ew_GetSearchSql($Fld, $FldVal, $FldOpr, $FldCond, $FldVal2, $FldOpr2, $this->DBID);
+		}
+		ew_AddFilter($Where, $sWrk);
+	}
+
+	// Convert search value
+	function ConvertSearchValue(&$Fld, $FldVal) {
+		if ($FldVal == EW_NULL_VALUE || $FldVal == EW_NOT_NULL_VALUE)
+			return $FldVal;
+		$Value = $FldVal;
+		if ($Fld->FldDataType == EW_DATATYPE_BOOLEAN) {
+			if ($FldVal <> "") $Value = ($FldVal == "1" || strtolower(strval($FldVal)) == "y" || strtolower(strval($FldVal)) == "t") ? $Fld->TrueValue : $Fld->FalseValue;
+		} elseif ($Fld->FldDataType == EW_DATATYPE_DATE || $Fld->FldDataType == EW_DATATYPE_TIME) {
+			if ($FldVal <> "") $Value = ew_UnFormatDateTime($FldVal, $Fld->FldDateTimeFormat);
+		}
+		return $Value;
 	}
 
 	// Return basic search SQL
 	function BasicSearchSQL($arKeywords, $type) {
 		$sWhere = "";
+		$this->BuildBasicSearchSQL($sWhere, $this->reference_id, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->quantity_in, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->quantity_used, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->total_quantity, $arKeywords, $type);
@@ -1064,6 +1179,30 @@ class cspare_part_usage_list extends cspare_part_usage {
 		// Check basic search
 		if ($this->BasicSearch->IssetSession())
 			return TRUE;
+		if ($this->id->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->date->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->reference_id->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->part_name->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->gen_name->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->quantity_in->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->quantity_used->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->cost->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->total_quantity->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->total_cost->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->maintenance_total_cost->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->maintenance_id->AdvancedSearch->IssetSession())
+			return TRUE;
 		return FALSE;
 	}
 
@@ -1076,6 +1215,9 @@ class cspare_part_usage_list extends cspare_part_usage {
 
 		// Clear basic search parameters
 		$this->ResetBasicSearchParms();
+
+		// Clear advanced search parameters
+		$this->ResetAdvancedSearchParms();
 	}
 
 	// Load advanced search default values
@@ -1088,12 +1230,42 @@ class cspare_part_usage_list extends cspare_part_usage {
 		$this->BasicSearch->UnsetSession();
 	}
 
+	// Clear all advanced search parameters
+	function ResetAdvancedSearchParms() {
+		$this->id->AdvancedSearch->UnsetSession();
+		$this->date->AdvancedSearch->UnsetSession();
+		$this->reference_id->AdvancedSearch->UnsetSession();
+		$this->part_name->AdvancedSearch->UnsetSession();
+		$this->gen_name->AdvancedSearch->UnsetSession();
+		$this->quantity_in->AdvancedSearch->UnsetSession();
+		$this->quantity_used->AdvancedSearch->UnsetSession();
+		$this->cost->AdvancedSearch->UnsetSession();
+		$this->total_quantity->AdvancedSearch->UnsetSession();
+		$this->total_cost->AdvancedSearch->UnsetSession();
+		$this->maintenance_total_cost->AdvancedSearch->UnsetSession();
+		$this->maintenance_id->AdvancedSearch->UnsetSession();
+	}
+
 	// Restore all search parameters
 	function RestoreSearchParms() {
 		$this->RestoreSearch = TRUE;
 
 		// Restore basic search values
 		$this->BasicSearch->Load();
+
+		// Restore advanced search values
+		$this->id->AdvancedSearch->Load();
+		$this->date->AdvancedSearch->Load();
+		$this->reference_id->AdvancedSearch->Load();
+		$this->part_name->AdvancedSearch->Load();
+		$this->gen_name->AdvancedSearch->Load();
+		$this->quantity_in->AdvancedSearch->Load();
+		$this->quantity_used->AdvancedSearch->Load();
+		$this->cost->AdvancedSearch->Load();
+		$this->total_quantity->AdvancedSearch->Load();
+		$this->total_cost->AdvancedSearch->Load();
+		$this->maintenance_total_cost->AdvancedSearch->Load();
+		$this->maintenance_id->AdvancedSearch->Load();
 	}
 
 	// Set up sort parameters
@@ -1103,10 +1275,10 @@ class cspare_part_usage_list extends cspare_part_usage {
 		if (@$_GET["order"] <> "") {
 			$this->CurrentOrder = @$_GET["order"];
 			$this->CurrentOrderType = @$_GET["ordertype"];
-			$this->UpdateSort($this->id); // id
 			$this->UpdateSort($this->date); // date
+			$this->UpdateSort($this->reference_id); // reference_id
 			$this->UpdateSort($this->part_name); // part_name
-			$this->UpdateSort($this->maintenance_id); // maintenance_id
+			$this->UpdateSort($this->gen_name); // gen_name
 			$this->UpdateSort($this->quantity_in); // quantity_in
 			$this->UpdateSort($this->quantity_used); // quantity_used
 			$this->UpdateSort($this->cost); // cost
@@ -1145,10 +1317,10 @@ class cspare_part_usage_list extends cspare_part_usage {
 			if ($this->Command == "resetsort") {
 				$sOrderBy = "";
 				$this->setSessionOrderBy($sOrderBy);
-				$this->id->setSort("");
 				$this->date->setSort("");
+				$this->reference_id->setSort("");
 				$this->part_name->setSort("");
-				$this->maintenance_id->setSort("");
+				$this->gen_name->setSort("");
 				$this->quantity_in->setSort("");
 				$this->quantity_used->setSort("");
 				$this->cost->setSort("");
@@ -1550,6 +1722,73 @@ class cspare_part_usage_list extends cspare_part_usage {
 		$this->BasicSearch->Type = @$_GET[EW_TABLE_BASIC_SEARCH_TYPE];
 	}
 
+	// Load search values for validation
+	function LoadSearchValues() {
+		global $objForm;
+
+		// Load search values
+		// id
+
+		$this->id->AdvancedSearch->SearchValue = @$_GET["x_id"];
+		if ($this->id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->id->AdvancedSearch->SearchOperator = @$_GET["z_id"];
+
+		// date
+		$this->date->AdvancedSearch->SearchValue = @$_GET["x_date"];
+		if ($this->date->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->date->AdvancedSearch->SearchOperator = @$_GET["z_date"];
+
+		// reference_id
+		$this->reference_id->AdvancedSearch->SearchValue = @$_GET["x_reference_id"];
+		if ($this->reference_id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->reference_id->AdvancedSearch->SearchOperator = @$_GET["z_reference_id"];
+
+		// part_name
+		$this->part_name->AdvancedSearch->SearchValue = @$_GET["x_part_name"];
+		if ($this->part_name->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->part_name->AdvancedSearch->SearchOperator = @$_GET["z_part_name"];
+
+		// gen_name
+		$this->gen_name->AdvancedSearch->SearchValue = @$_GET["x_gen_name"];
+		if ($this->gen_name->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->gen_name->AdvancedSearch->SearchOperator = @$_GET["z_gen_name"];
+
+		// quantity_in
+		$this->quantity_in->AdvancedSearch->SearchValue = @$_GET["x_quantity_in"];
+		if ($this->quantity_in->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->quantity_in->AdvancedSearch->SearchOperator = @$_GET["z_quantity_in"];
+
+		// quantity_used
+		$this->quantity_used->AdvancedSearch->SearchValue = @$_GET["x_quantity_used"];
+		if ($this->quantity_used->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->quantity_used->AdvancedSearch->SearchOperator = @$_GET["z_quantity_used"];
+
+		// cost
+		$this->cost->AdvancedSearch->SearchValue = @$_GET["x_cost"];
+		if ($this->cost->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->cost->AdvancedSearch->SearchOperator = @$_GET["z_cost"];
+
+		// total_quantity
+		$this->total_quantity->AdvancedSearch->SearchValue = @$_GET["x_total_quantity"];
+		if ($this->total_quantity->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->total_quantity->AdvancedSearch->SearchOperator = @$_GET["z_total_quantity"];
+
+		// total_cost
+		$this->total_cost->AdvancedSearch->SearchValue = @$_GET["x_total_cost"];
+		if ($this->total_cost->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->total_cost->AdvancedSearch->SearchOperator = @$_GET["z_total_cost"];
+
+		// maintenance_total_cost
+		$this->maintenance_total_cost->AdvancedSearch->SearchValue = @$_GET["x_maintenance_total_cost"];
+		if ($this->maintenance_total_cost->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->maintenance_total_cost->AdvancedSearch->SearchOperator = @$_GET["z_maintenance_total_cost"];
+
+		// maintenance_id
+		$this->maintenance_id->AdvancedSearch->SearchValue = @$_GET["x_maintenance_id"];
+		if ($this->maintenance_id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->maintenance_id->AdvancedSearch->SearchOperator = @$_GET["z_maintenance_id"];
+	}
+
 	// Load recordset
 	function LoadRecordset($offset = -1, $rowcnt = -1) {
 
@@ -1611,14 +1850,16 @@ class cspare_part_usage_list extends cspare_part_usage {
 			return;
 		$this->id->setDbValue($row['id']);
 		$this->date->setDbValue($row['date']);
+		$this->reference_id->setDbValue($row['reference_id']);
 		$this->part_name->setDbValue($row['part_name']);
-		$this->maintenance_id->setDbValue($row['maintenance_id']);
+		$this->gen_name->setDbValue($row['gen_name']);
 		$this->quantity_in->setDbValue($row['quantity_in']);
 		$this->quantity_used->setDbValue($row['quantity_used']);
 		$this->cost->setDbValue($row['cost']);
 		$this->total_quantity->setDbValue($row['total_quantity']);
 		$this->total_cost->setDbValue($row['total_cost']);
 		$this->maintenance_total_cost->setDbValue($row['maintenance_total_cost']);
+		$this->maintenance_id->setDbValue($row['maintenance_id']);
 	}
 
 	// Return a row with default values
@@ -1626,14 +1867,16 @@ class cspare_part_usage_list extends cspare_part_usage {
 		$row = array();
 		$row['id'] = NULL;
 		$row['date'] = NULL;
+		$row['reference_id'] = NULL;
 		$row['part_name'] = NULL;
-		$row['maintenance_id'] = NULL;
+		$row['gen_name'] = NULL;
 		$row['quantity_in'] = NULL;
 		$row['quantity_used'] = NULL;
 		$row['cost'] = NULL;
 		$row['total_quantity'] = NULL;
 		$row['total_cost'] = NULL;
 		$row['maintenance_total_cost'] = NULL;
+		$row['maintenance_id'] = NULL;
 		return $row;
 	}
 
@@ -1644,14 +1887,16 @@ class cspare_part_usage_list extends cspare_part_usage {
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
 		$this->date->DbValue = $row['date'];
+		$this->reference_id->DbValue = $row['reference_id'];
 		$this->part_name->DbValue = $row['part_name'];
-		$this->maintenance_id->DbValue = $row['maintenance_id'];
+		$this->gen_name->DbValue = $row['gen_name'];
 		$this->quantity_in->DbValue = $row['quantity_in'];
 		$this->quantity_used->DbValue = $row['quantity_used'];
 		$this->cost->DbValue = $row['cost'];
 		$this->total_quantity->DbValue = $row['total_quantity'];
 		$this->total_cost->DbValue = $row['total_cost'];
 		$this->maintenance_total_cost->DbValue = $row['maintenance_total_cost'];
+		$this->maintenance_id->DbValue = $row['maintenance_id'];
 	}
 
 	// Load old record
@@ -1706,14 +1951,16 @@ class cspare_part_usage_list extends cspare_part_usage {
 		// Common render codes for all row types
 		// id
 		// date
+		// reference_id
 		// part_name
-		// maintenance_id
+		// gen_name
 		// quantity_in
 		// quantity_used
 		// cost
 		// total_quantity
 		// total_cost
 		// maintenance_total_cost
+		// maintenance_id
 		// Accumulate aggregate value
 
 		if ($this->RowType <> EW_ROWTYPE_AGGREGATEINIT && $this->RowType <> EW_ROWTYPE_AGGREGATE) {
@@ -1731,12 +1978,37 @@ class cspare_part_usage_list extends cspare_part_usage {
 		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 0);
 		$this->date->ViewCustomAttributes = "";
 
+		// reference_id
+		if (strval($this->reference_id->CurrentValue) <> "") {
+			$sFilterWrk = "`reference_id`" . ew_SearchString("=", $this->reference_id->CurrentValue, EW_DATATYPE_STRING, "");
+		$sSqlWrk = "SELECT `reference_id`, `reference_id` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `gen_maintenance`";
+		$sWhereWrk = "";
+		$this->reference_id->LookupFilters = array();
+		$lookuptblfilter = "`flag`='0'";
+		ew_AddFilter($sWhereWrk, $lookuptblfilter);
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->reference_id, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->reference_id->ViewValue = $this->reference_id->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
+			}
+		} else {
+			$this->reference_id->ViewValue = NULL;
+		}
+		$this->reference_id->ViewCustomAttributes = "";
+
 		// part_name
 		if (strval($this->part_name->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->part_name->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `part_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `sparepart_module`";
 		$sWhereWrk = "";
-		$this->part_name->LookupFilters = array();
+		$this->part_name->LookupFilters = array("dx1" => '`part_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
 		$this->Lookup_Selecting($this->part_name, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
@@ -1754,28 +2026,9 @@ class cspare_part_usage_list extends cspare_part_usage {
 		}
 		$this->part_name->ViewCustomAttributes = "";
 
-		// maintenance_id
-		if (strval($this->maintenance_id->CurrentValue) <> "") {
-			$sFilterWrk = "`maintenance_id`" . ew_SearchString("=", $this->maintenance_id->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `maintenance_id`, `generator_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `sparepart_view`";
-		$sWhereWrk = "";
-		$this->maintenance_id->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->maintenance_id, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->maintenance_id->ViewValue = $this->maintenance_id->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->maintenance_id->ViewValue = $this->maintenance_id->CurrentValue;
-			}
-		} else {
-			$this->maintenance_id->ViewValue = NULL;
-		}
-		$this->maintenance_id->ViewCustomAttributes = "";
+		// gen_name
+		$this->gen_name->ViewValue = $this->gen_name->CurrentValue;
+		$this->gen_name->ViewCustomAttributes = "";
 
 		// quantity_in
 		$this->quantity_in->ViewValue = $this->quantity_in->CurrentValue;
@@ -1802,25 +2055,29 @@ class cspare_part_usage_list extends cspare_part_usage {
 		$this->maintenance_total_cost->ViewValue = $this->maintenance_total_cost->CurrentValue;
 		$this->maintenance_total_cost->ViewCustomAttributes = "";
 
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
+		// maintenance_id
+		$this->maintenance_id->ViewValue = $this->maintenance_id->CurrentValue;
+		$this->maintenance_id->ViewCustomAttributes = "";
 
 			// date
 			$this->date->LinkCustomAttributes = "";
 			$this->date->HrefValue = "";
 			$this->date->TooltipValue = "";
 
+			// reference_id
+			$this->reference_id->LinkCustomAttributes = "";
+			$this->reference_id->HrefValue = "";
+			$this->reference_id->TooltipValue = "";
+
 			// part_name
 			$this->part_name->LinkCustomAttributes = "";
 			$this->part_name->HrefValue = "";
 			$this->part_name->TooltipValue = "";
 
-			// maintenance_id
-			$this->maintenance_id->LinkCustomAttributes = "";
-			$this->maintenance_id->HrefValue = "";
-			$this->maintenance_id->TooltipValue = "";
+			// gen_name
+			$this->gen_name->LinkCustomAttributes = "";
+			$this->gen_name->HrefValue = "";
+			$this->gen_name->TooltipValue = "";
 
 			// quantity_in
 			$this->quantity_in->LinkCustomAttributes = "";
@@ -1851,6 +2108,84 @@ class cspare_part_usage_list extends cspare_part_usage {
 			$this->maintenance_total_cost->LinkCustomAttributes = "";
 			$this->maintenance_total_cost->HrefValue = "";
 			$this->maintenance_total_cost->TooltipValue = "";
+		} elseif ($this->RowType == EW_ROWTYPE_SEARCH) { // Search row
+
+			// date
+			$this->date->EditAttrs["class"] = "form-control";
+			$this->date->EditCustomAttributes = "";
+			$this->date->EditValue = ew_HtmlEncode(ew_FormatDateTime(ew_UnFormatDateTime($this->date->AdvancedSearch->SearchValue, 0), 8));
+			$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
+
+			// reference_id
+			$this->reference_id->EditAttrs["class"] = "form-control";
+			$this->reference_id->EditCustomAttributes = "";
+
+			// part_name
+			$this->part_name->EditCustomAttributes = "";
+			if (trim(strval($this->part_name->AdvancedSearch->SearchValue)) == "") {
+				$sFilterWrk = "0=1";
+			} else {
+				$sFilterWrk = "`id`" . ew_SearchString("=", $this->part_name->AdvancedSearch->SearchValue, EW_DATATYPE_NUMBER, "");
+			}
+			$sSqlWrk = "SELECT `id`, `part_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld`, '' AS `SelectFilterFld`, '' AS `SelectFilterFld2`, '' AS `SelectFilterFld3`, '' AS `SelectFilterFld4` FROM `sparepart_module`";
+			$sWhereWrk = "";
+			$this->part_name->LookupFilters = array("dx1" => '`part_name`');
+			ew_AddFilter($sWhereWrk, $sFilterWrk);
+			$this->Lookup_Selecting($this->part_name, $sWhereWrk); // Call Lookup Selecting
+			if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = ew_HtmlEncode($rswrk->fields('DispFld'));
+				$this->part_name->AdvancedSearch->ViewValue = $this->part_name->DisplayValue($arwrk);
+			} else {
+				$this->part_name->AdvancedSearch->ViewValue = $Language->Phrase("PleaseSelect");
+			}
+			$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+			if ($rswrk) $rswrk->Close();
+			$this->part_name->EditValue = $arwrk;
+
+			// gen_name
+			$this->gen_name->EditAttrs["class"] = "form-control";
+			$this->gen_name->EditCustomAttributes = "";
+			$this->gen_name->EditValue = ew_HtmlEncode($this->gen_name->AdvancedSearch->SearchValue);
+			$this->gen_name->PlaceHolder = ew_RemoveHtml($this->gen_name->FldCaption());
+
+			// quantity_in
+			$this->quantity_in->EditAttrs["class"] = "form-control";
+			$this->quantity_in->EditCustomAttributes = "";
+			$this->quantity_in->EditValue = ew_HtmlEncode($this->quantity_in->AdvancedSearch->SearchValue);
+			$this->quantity_in->PlaceHolder = ew_RemoveHtml($this->quantity_in->FldCaption());
+
+			// quantity_used
+			$this->quantity_used->EditAttrs["class"] = "form-control";
+			$this->quantity_used->EditCustomAttributes = "";
+			$this->quantity_used->EditValue = ew_HtmlEncode($this->quantity_used->AdvancedSearch->SearchValue);
+			$this->quantity_used->PlaceHolder = ew_RemoveHtml($this->quantity_used->FldCaption());
+
+			// cost
+			$this->cost->EditAttrs["class"] = "form-control";
+			$this->cost->EditCustomAttributes = "";
+			$this->cost->EditValue = ew_HtmlEncode($this->cost->AdvancedSearch->SearchValue);
+			$this->cost->PlaceHolder = ew_RemoveHtml($this->cost->FldCaption());
+
+			// total_quantity
+			$this->total_quantity->EditAttrs["class"] = "form-control";
+			$this->total_quantity->EditCustomAttributes = "";
+			$this->total_quantity->EditValue = ew_HtmlEncode($this->total_quantity->AdvancedSearch->SearchValue);
+			$this->total_quantity->PlaceHolder = ew_RemoveHtml($this->total_quantity->FldCaption());
+
+			// total_cost
+			$this->total_cost->EditAttrs["class"] = "form-control";
+			$this->total_cost->EditCustomAttributes = "";
+			$this->total_cost->EditValue = ew_HtmlEncode($this->total_cost->AdvancedSearch->SearchValue);
+			$this->total_cost->PlaceHolder = ew_RemoveHtml($this->total_cost->FldCaption());
+
+			// maintenance_total_cost
+			$this->maintenance_total_cost->EditAttrs["class"] = "form-control";
+			$this->maintenance_total_cost->EditCustomAttributes = "";
+			$this->maintenance_total_cost->EditValue = ew_HtmlEncode($this->maintenance_total_cost->AdvancedSearch->SearchValue);
+			$this->maintenance_total_cost->PlaceHolder = ew_RemoveHtml($this->maintenance_total_cost->FldCaption());
 		} elseif ($this->RowType == EW_ROWTYPE_AGGREGATEINIT) { // Initialize aggregate row
 			$this->total_cost->Total = 0; // Initialize total
 		} elseif ($this->RowType == EW_ROWTYPE_AGGREGATE) { // Aggregate row
@@ -1860,10 +2195,51 @@ class cspare_part_usage_list extends cspare_part_usage {
 			$this->total_cost->ViewCustomAttributes = "";
 			$this->total_cost->HrefValue = ""; // Clear href value
 		}
+		if ($this->RowType == EW_ROWTYPE_ADD || $this->RowType == EW_ROWTYPE_EDIT || $this->RowType == EW_ROWTYPE_SEARCH) // Add/Edit/Search row
+			$this->SetupFieldTitles();
 
 		// Call Row Rendered event
 		if ($this->RowType <> EW_ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
+	}
+
+	// Validate search
+	function ValidateSearch() {
+		global $gsSearchError;
+
+		// Initialize
+		$gsSearchError = "";
+
+		// Check if validation required
+		if (!EW_SERVER_VALIDATE)
+			return TRUE;
+
+		// Return validate result
+		$ValidateSearch = ($gsSearchError == "");
+
+		// Call Form_CustomValidate event
+		$sFormCustomError = "";
+		$ValidateSearch = $ValidateSearch && $this->Form_CustomValidate($sFormCustomError);
+		if ($sFormCustomError <> "") {
+			ew_AddMessage($gsSearchError, $sFormCustomError);
+		}
+		return $ValidateSearch;
+	}
+
+	// Load advanced search
+	function LoadAdvancedSearch() {
+		$this->id->AdvancedSearch->Load();
+		$this->date->AdvancedSearch->Load();
+		$this->reference_id->AdvancedSearch->Load();
+		$this->part_name->AdvancedSearch->Load();
+		$this->gen_name->AdvancedSearch->Load();
+		$this->quantity_in->AdvancedSearch->Load();
+		$this->quantity_used->AdvancedSearch->Load();
+		$this->cost->AdvancedSearch->Load();
+		$this->total_quantity->AdvancedSearch->Load();
+		$this->total_cost->AdvancedSearch->Load();
+		$this->maintenance_total_cost->AdvancedSearch->Load();
+		$this->maintenance_id->AdvancedSearch->Load();
 	}
 
 	// Set up export options
@@ -2022,7 +2398,24 @@ class cspare_part_usage_list extends cspare_part_usage {
 	function SetupLookupFilters($fld, $pageId = null) {
 		global $gsLanguage;
 		$pageId = $pageId ?: $this->PageID;
-		switch ($fld->FldVar) {
+		if ($pageId == "list") {
+			switch ($fld->FldVar) {
+			}
+		} elseif ($pageId == "extbs") {
+			switch ($fld->FldVar) {
+		case "x_part_name":
+			$sSqlWrk = "";
+				$sSqlWrk = "SELECT `id` AS `LinkFld`, `part_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `sparepart_module`";
+				$sWhereWrk = "{filter}";
+				$fld->LookupFilters = array("dx1" => '`part_name`');
+			$fld->LookupFilters += array("s" => $sSqlWrk, "d" => "", "f0" => '`id` IN ({filter_value})', "t0" => "3", "fn0" => "");
+			$sSqlWrk = "";
+				$this->Lookup_Selecting($this->part_name, $sWhereWrk); // Call Lookup Selecting
+				if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			if ($sSqlWrk <> "")
+				$fld->LookupFilters["s"] .= $sSqlWrk;
+			break;
+			}
 		}
 	}
 
@@ -2030,7 +2423,12 @@ class cspare_part_usage_list extends cspare_part_usage {
 	function SetupAutoSuggestFilters($fld, $pageId = null) {
 		global $gsLanguage;
 		$pageId = $pageId ?: $this->PageID;
-		switch ($fld->FldVar) {
+		if ($pageId == "list") {
+			switch ($fld->FldVar) {
+			}
+		} elseif ($pageId == "extbs") {
+			switch ($fld->FldVar) {
+			}
 		}
 	}
 
@@ -2202,13 +2600,41 @@ fspare_part_usagelist.Form_CustomValidate =
 fspare_part_usagelist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+fspare_part_usagelist.Lists["x_reference_id"] = {"LinkField":"x_reference_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_reference_id","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"gen_maintenance"};
+fspare_part_usagelist.Lists["x_reference_id"].Data = "<?php echo $spare_part_usage_list->reference_id->LookupFilterQuery(FALSE, "list") ?>";
 fspare_part_usagelist.Lists["x_part_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_part_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"sparepart_module"};
 fspare_part_usagelist.Lists["x_part_name"].Data = "<?php echo $spare_part_usage_list->part_name->LookupFilterQuery(FALSE, "list") ?>";
-fspare_part_usagelist.Lists["x_maintenance_id"] = {"LinkField":"x_maintenance_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_generator_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"sparepart_view"};
-fspare_part_usagelist.Lists["x_maintenance_id"].Data = "<?php echo $spare_part_usage_list->maintenance_id->LookupFilterQuery(FALSE, "list") ?>";
 
 // Form object for search
 var CurrentSearchForm = fspare_part_usagelistsrch = new ew_Form("fspare_part_usagelistsrch");
+
+// Validate function for search
+fspare_part_usagelistsrch.Validate = function(fobj) {
+	if (!this.ValidateRequired)
+		return true; // Ignore validation
+	fobj = fobj || this.Form;
+	var infix = "";
+
+	// Fire Form_CustomValidate event
+	if (!this.Form_CustomValidate(fobj))
+		return false;
+	return true;
+}
+
+// Form_CustomValidate event
+fspare_part_usagelistsrch.Form_CustomValidate = 
+ function(fobj) { // DO NOT CHANGE THIS LINE!
+
+ 	// Your custom validation code here, return false if invalid.
+ 	return true;
+ }
+
+// Use JavaScript validation or not
+fspare_part_usagelistsrch.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+
+// Dynamic selection lists
+fspare_part_usagelistsrch.Lists["x_part_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_part_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"sparepart_module"};
+fspare_part_usagelistsrch.Lists["x_part_name"].Data = "<?php echo $spare_part_usage_list->part_name->LookupFilterQuery(FALSE, "extbs") ?>";
 </script>
 <script type="text/javascript">
 
@@ -2265,7 +2691,33 @@ $spare_part_usage_list->RenderOtherOptions();
 <input type="hidden" name="cmd" value="search">
 <input type="hidden" name="t" value="spare_part_usage">
 	<div class="ewBasicSearch">
+<?php
+if ($gsSearchError == "")
+	$spare_part_usage_list->LoadAdvancedSearch(); // Load advanced search
+
+// Render for search
+$spare_part_usage->RowType = EW_ROWTYPE_SEARCH;
+
+// Render row
+$spare_part_usage->ResetAttrs();
+$spare_part_usage_list->RenderRow();
+?>
 <div id="xsr_1" class="ewRow">
+<?php if ($spare_part_usage->part_name->Visible) { // part_name ?>
+	<div id="xsc_part_name" class="ewCell form-group">
+		<label for="x_part_name" class="ewSearchCaption ewLabel"><?php echo $spare_part_usage->part_name->FldCaption() ?></label>
+		<span class="ewSearchOperator"><?php echo $Language->Phrase("=") ?><input type="hidden" name="z_part_name" id="z_part_name" value="="></span>
+		<span class="ewSearchField">
+<span class="ewLookupList">
+	<span onclick="jQuery(this).parent().next(":not([disabled])").click();" tabindex="-1" class="form-control ewLookupText" id="lu_x_part_name"><?php echo (strval($spare_part_usage->part_name->AdvancedSearch->ViewValue) == "" ? $Language->Phrase("PleaseSelect") : $spare_part_usage->part_name->AdvancedSearch->ViewValue); ?></span>
+</span>
+<button type="button" title="<?php echo ew_HtmlEncode(str_replace("%s", ew_RemoveHtml($spare_part_usage->part_name->FldCaption()), $Language->Phrase("LookupLink", TRUE))) ?>" onclick="ew_ModalLookupShow({lnk:this,el:'x_part_name',m:0,n:10});" class="ewLookupBtn btn btn-default btn-sm"<?php echo (($spare_part_usage->part_name->ReadOnly || $spare_part_usage->part_name->Disabled) ? " disabled" : "")?>><span class="glyphicon glyphicon-search ewIcon"></span></button>
+<input type="hidden" data-table="spare_part_usage" data-field="x_part_name" data-multiple="0" data-lookup="1" data-value-separator="<?php echo $spare_part_usage->part_name->DisplayValueSeparatorAttribute() ?>" name="x_part_name" id="x_part_name" value="<?php echo $spare_part_usage->part_name->AdvancedSearch->SearchValue ?>"<?php echo $spare_part_usage->part_name->EditAttributes() ?>>
+</span>
+	</div>
+<?php } ?>
+</div>
+<div id="xsr_2" class="ewRow">
 	<div class="ewQuickSearch input-group">
 	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($spare_part_usage_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
 	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($spare_part_usage_list->BasicSearch->getType()) ?>">
@@ -2386,21 +2838,21 @@ $spare_part_usage_list->RenderListOptions();
 // Render list options (header, left)
 $spare_part_usage_list->ListOptions->Render("header", "left");
 ?>
-<?php if ($spare_part_usage->id->Visible) { // id ?>
-	<?php if ($spare_part_usage->SortUrl($spare_part_usage->id) == "") { ?>
-		<th data-name="id" class="<?php echo $spare_part_usage->id->HeaderCellClass() ?>"><div id="elh_spare_part_usage_id" class="spare_part_usage_id"><div class="ewTableHeaderCaption"><?php echo $spare_part_usage->id->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="id" class="<?php echo $spare_part_usage->id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $spare_part_usage->SortUrl($spare_part_usage->id) ?>',1);"><div id="elh_spare_part_usage_id" class="spare_part_usage_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $spare_part_usage->id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($spare_part_usage->id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($spare_part_usage->id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php if ($spare_part_usage->date->Visible) { // date ?>
 	<?php if ($spare_part_usage->SortUrl($spare_part_usage->date) == "") { ?>
 		<th data-name="date" class="<?php echo $spare_part_usage->date->HeaderCellClass() ?>"><div id="elh_spare_part_usage_date" class="spare_part_usage_date"><div class="ewTableHeaderCaption"><?php echo $spare_part_usage->date->FldCaption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="date" class="<?php echo $spare_part_usage->date->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $spare_part_usage->SortUrl($spare_part_usage->date) ?>',1);"><div id="elh_spare_part_usage_date" class="spare_part_usage_date">
 			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $spare_part_usage->date->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($spare_part_usage->date->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($spare_part_usage->date->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($spare_part_usage->reference_id->Visible) { // reference_id ?>
+	<?php if ($spare_part_usage->SortUrl($spare_part_usage->reference_id) == "") { ?>
+		<th data-name="reference_id" class="<?php echo $spare_part_usage->reference_id->HeaderCellClass() ?>"><div id="elh_spare_part_usage_reference_id" class="spare_part_usage_reference_id"><div class="ewTableHeaderCaption"><?php echo $spare_part_usage->reference_id->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="reference_id" class="<?php echo $spare_part_usage->reference_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $spare_part_usage->SortUrl($spare_part_usage->reference_id) ?>',1);"><div id="elh_spare_part_usage_reference_id" class="spare_part_usage_reference_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $spare_part_usage->reference_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($spare_part_usage->reference_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($spare_part_usage->reference_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -2413,12 +2865,12 @@ $spare_part_usage_list->ListOptions->Render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($spare_part_usage->maintenance_id->Visible) { // maintenance_id ?>
-	<?php if ($spare_part_usage->SortUrl($spare_part_usage->maintenance_id) == "") { ?>
-		<th data-name="maintenance_id" class="<?php echo $spare_part_usage->maintenance_id->HeaderCellClass() ?>"><div id="elh_spare_part_usage_maintenance_id" class="spare_part_usage_maintenance_id"><div class="ewTableHeaderCaption"><?php echo $spare_part_usage->maintenance_id->FldCaption() ?></div></div></th>
+<?php if ($spare_part_usage->gen_name->Visible) { // gen_name ?>
+	<?php if ($spare_part_usage->SortUrl($spare_part_usage->gen_name) == "") { ?>
+		<th data-name="gen_name" class="<?php echo $spare_part_usage->gen_name->HeaderCellClass() ?>"><div id="elh_spare_part_usage_gen_name" class="spare_part_usage_gen_name"><div class="ewTableHeaderCaption"><?php echo $spare_part_usage->gen_name->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="maintenance_id" class="<?php echo $spare_part_usage->maintenance_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $spare_part_usage->SortUrl($spare_part_usage->maintenance_id) ?>',1);"><div id="elh_spare_part_usage_maintenance_id" class="spare_part_usage_maintenance_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $spare_part_usage->maintenance_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($spare_part_usage->maintenance_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($spare_part_usage->maintenance_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="gen_name" class="<?php echo $spare_part_usage->gen_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $spare_part_usage->SortUrl($spare_part_usage->gen_name) ?>',1);"><div id="elh_spare_part_usage_gen_name" class="spare_part_usage_gen_name">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $spare_part_usage->gen_name->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($spare_part_usage->gen_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($spare_part_usage->gen_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -2541,19 +2993,19 @@ while ($spare_part_usage_list->RecCnt < $spare_part_usage_list->StopRec) {
 // Render list options (body, left)
 $spare_part_usage_list->ListOptions->Render("body", "left", $spare_part_usage_list->RowCnt);
 ?>
-	<?php if ($spare_part_usage->id->Visible) { // id ?>
-		<td data-name="id"<?php echo $spare_part_usage->id->CellAttributes() ?>>
-<span id="el<?php echo $spare_part_usage_list->RowCnt ?>_spare_part_usage_id" class="spare_part_usage_id">
-<span<?php echo $spare_part_usage->id->ViewAttributes() ?>>
-<?php echo $spare_part_usage->id->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
 	<?php if ($spare_part_usage->date->Visible) { // date ?>
 		<td data-name="date"<?php echo $spare_part_usage->date->CellAttributes() ?>>
 <span id="el<?php echo $spare_part_usage_list->RowCnt ?>_spare_part_usage_date" class="spare_part_usage_date">
 <span<?php echo $spare_part_usage->date->ViewAttributes() ?>>
 <?php echo $spare_part_usage->date->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($spare_part_usage->reference_id->Visible) { // reference_id ?>
+		<td data-name="reference_id"<?php echo $spare_part_usage->reference_id->CellAttributes() ?>>
+<span id="el<?php echo $spare_part_usage_list->RowCnt ?>_spare_part_usage_reference_id" class="spare_part_usage_reference_id">
+<span<?php echo $spare_part_usage->reference_id->ViewAttributes() ?>>
+<?php echo $spare_part_usage->reference_id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
@@ -2565,11 +3017,11 @@ $spare_part_usage_list->ListOptions->Render("body", "left", $spare_part_usage_li
 </span>
 </td>
 	<?php } ?>
-	<?php if ($spare_part_usage->maintenance_id->Visible) { // maintenance_id ?>
-		<td data-name="maintenance_id"<?php echo $spare_part_usage->maintenance_id->CellAttributes() ?>>
-<span id="el<?php echo $spare_part_usage_list->RowCnt ?>_spare_part_usage_maintenance_id" class="spare_part_usage_maintenance_id">
-<span<?php echo $spare_part_usage->maintenance_id->ViewAttributes() ?>>
-<?php echo $spare_part_usage->maintenance_id->ListViewValue() ?></span>
+	<?php if ($spare_part_usage->gen_name->Visible) { // gen_name ?>
+		<td data-name="gen_name"<?php echo $spare_part_usage->gen_name->CellAttributes() ?>>
+<span id="el<?php echo $spare_part_usage_list->RowCnt ?>_spare_part_usage_gen_name" class="spare_part_usage_gen_name">
+<span<?php echo $spare_part_usage->gen_name->ViewAttributes() ?>>
+<?php echo $spare_part_usage->gen_name->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
@@ -2652,13 +3104,13 @@ $spare_part_usage_list->RenderListOptions();
 // Render list options (footer, left)
 $spare_part_usage_list->ListOptions->Render("footer", "left");
 ?>
-	<?php if ($spare_part_usage->id->Visible) { // id ?>
-		<td data-name="id" class="<?php echo $spare_part_usage->id->FooterCellClass() ?>"><span id="elf_spare_part_usage_id" class="spare_part_usage_id">
+	<?php if ($spare_part_usage->date->Visible) { // date ?>
+		<td data-name="date" class="<?php echo $spare_part_usage->date->FooterCellClass() ?>"><span id="elf_spare_part_usage_date" class="spare_part_usage_date">
 		&nbsp;
 		</span></td>
 	<?php } ?>
-	<?php if ($spare_part_usage->date->Visible) { // date ?>
-		<td data-name="date" class="<?php echo $spare_part_usage->date->FooterCellClass() ?>"><span id="elf_spare_part_usage_date" class="spare_part_usage_date">
+	<?php if ($spare_part_usage->reference_id->Visible) { // reference_id ?>
+		<td data-name="reference_id" class="<?php echo $spare_part_usage->reference_id->FooterCellClass() ?>"><span id="elf_spare_part_usage_reference_id" class="spare_part_usage_reference_id">
 		&nbsp;
 		</span></td>
 	<?php } ?>
@@ -2667,8 +3119,8 @@ $spare_part_usage_list->ListOptions->Render("footer", "left");
 		&nbsp;
 		</span></td>
 	<?php } ?>
-	<?php if ($spare_part_usage->maintenance_id->Visible) { // maintenance_id ?>
-		<td data-name="maintenance_id" class="<?php echo $spare_part_usage->maintenance_id->FooterCellClass() ?>"><span id="elf_spare_part_usage_maintenance_id" class="spare_part_usage_maintenance_id">
+	<?php if ($spare_part_usage->gen_name->Visible) { // gen_name ?>
+		<td data-name="gen_name" class="<?php echo $spare_part_usage->gen_name->FooterCellClass() ?>"><span id="elf_spare_part_usage_gen_name" class="spare_part_usage_gen_name">
 		&nbsp;
 		</span></td>
 	<?php } ?>

@@ -887,8 +887,20 @@ class cgenerator_registration_edit extends cgenerator_registration {
 		// Check if validation required
 		if (!EW_SERVER_VALIDATE)
 			return ($gsFormError == "");
+		if (!$this->registered_date->FldIsDetailKey && !is_null($this->registered_date->FormValue) && $this->registered_date->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->registered_date->FldCaption(), $this->registered_date->ReqErrMsg));
+		}
 		if (!ew_CheckDateDef($this->registered_date->FormValue)) {
 			ew_AddMessage($gsFormError, $this->registered_date->FldErrMsg());
+		}
+		if (!$this->gen_name->FldIsDetailKey && !is_null($this->gen_name->FormValue) && $this->gen_name->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->gen_name->FldCaption(), $this->gen_name->ReqErrMsg));
+		}
+		if (!$this->location->FldIsDetailKey && !is_null($this->location->FormValue) && $this->location->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->location->FldCaption(), $this->location->ReqErrMsg));
+		}
+		if (!$this->kva->FldIsDetailKey && !is_null($this->kva->FormValue) && $this->kva->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->kva->FldCaption(), $this->kva->ReqErrMsg));
 		}
 
 		// Return validate result
@@ -1105,8 +1117,20 @@ fgenerator_registrationedit.Validate = function() {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
 			elm = this.GetElements("x" + infix + "_registered_date");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $generator_registration->registered_date->FldCaption(), $generator_registration->registered_date->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_registered_date");
 			if (elm && !ew_CheckDateDef(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($generator_registration->registered_date->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_gen_name");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $generator_registration->gen_name->FldCaption(), $generator_registration->gen_name->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_location");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $generator_registration->location->FldCaption(), $generator_registration->location->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_kva");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $generator_registration->kva->FldCaption(), $generator_registration->kva->ReqErrMsg)) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -1142,6 +1166,7 @@ fgenerator_registrationedit.ValidateRequired = <?php echo json_encode(EW_CLIENT_
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
+$('#x_registered_date').attr('readonly',true);
 </script>
 <?php $generator_registration_edit->ShowPageHeader(); ?>
 <?php
@@ -1214,7 +1239,7 @@ $generator_registration_edit->ShowMessage();
 <?php } ?>
 <?php if ($generator_registration->registered_date->Visible) { // registered_date ?>
 	<div id="r_registered_date" class="form-group">
-		<label id="elh_generator_registration_registered_date" for="x_registered_date" class="<?php echo $generator_registration_edit->LeftColumnClass ?>"><?php echo $generator_registration->registered_date->FldCaption() ?></label>
+		<label id="elh_generator_registration_registered_date" for="x_registered_date" class="<?php echo $generator_registration_edit->LeftColumnClass ?>"><?php echo $generator_registration->registered_date->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $generator_registration_edit->RightColumnClass ?>"><div<?php echo $generator_registration->registered_date->CellAttributes() ?>>
 <span id="el_generator_registration_registered_date">
 <input type="text" data-table="generator_registration" data-field="x_registered_date" name="x_registered_date" id="x_registered_date" placeholder="<?php echo ew_HtmlEncode($generator_registration->registered_date->getPlaceHolder()) ?>" value="<?php echo $generator_registration->registered_date->EditValue ?>"<?php echo $generator_registration->registered_date->EditAttributes() ?>>
@@ -1224,7 +1249,7 @@ $generator_registration_edit->ShowMessage();
 <?php } ?>
 <?php if ($generator_registration->gen_name->Visible) { // gen_name ?>
 	<div id="r_gen_name" class="form-group">
-		<label id="elh_generator_registration_gen_name" for="x_gen_name" class="<?php echo $generator_registration_edit->LeftColumnClass ?>"><?php echo $generator_registration->gen_name->FldCaption() ?></label>
+		<label id="elh_generator_registration_gen_name" for="x_gen_name" class="<?php echo $generator_registration_edit->LeftColumnClass ?>"><?php echo $generator_registration->gen_name->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $generator_registration_edit->RightColumnClass ?>"><div<?php echo $generator_registration->gen_name->CellAttributes() ?>>
 <span id="el_generator_registration_gen_name">
 <input type="text" data-table="generator_registration" data-field="x_gen_name" name="x_gen_name" id="x_gen_name" size="30" maxlength="100" placeholder="<?php echo ew_HtmlEncode($generator_registration->gen_name->getPlaceHolder()) ?>" value="<?php echo $generator_registration->gen_name->EditValue ?>"<?php echo $generator_registration->gen_name->EditAttributes() ?>>
@@ -1234,7 +1259,7 @@ $generator_registration_edit->ShowMessage();
 <?php } ?>
 <?php if ($generator_registration->location->Visible) { // location ?>
 	<div id="r_location" class="form-group">
-		<label id="elh_generator_registration_location" for="x_location" class="<?php echo $generator_registration_edit->LeftColumnClass ?>"><?php echo $generator_registration->location->FldCaption() ?></label>
+		<label id="elh_generator_registration_location" for="x_location" class="<?php echo $generator_registration_edit->LeftColumnClass ?>"><?php echo $generator_registration->location->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $generator_registration_edit->RightColumnClass ?>"><div<?php echo $generator_registration->location->CellAttributes() ?>>
 <span id="el_generator_registration_location">
 <input type="text" data-table="generator_registration" data-field="x_location" name="x_location" id="x_location" size="30" maxlength="100" placeholder="<?php echo ew_HtmlEncode($generator_registration->location->getPlaceHolder()) ?>" value="<?php echo $generator_registration->location->EditValue ?>"<?php echo $generator_registration->location->EditAttributes() ?>>
@@ -1244,7 +1269,7 @@ $generator_registration_edit->ShowMessage();
 <?php } ?>
 <?php if ($generator_registration->kva->Visible) { // kva ?>
 	<div id="r_kva" class="form-group">
-		<label id="elh_generator_registration_kva" for="x_kva" class="<?php echo $generator_registration_edit->LeftColumnClass ?>"><?php echo $generator_registration->kva->FldCaption() ?></label>
+		<label id="elh_generator_registration_kva" for="x_kva" class="<?php echo $generator_registration_edit->LeftColumnClass ?>"><?php echo $generator_registration->kva->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $generator_registration_edit->RightColumnClass ?>"><div<?php echo $generator_registration->kva->CellAttributes() ?>>
 <span id="el_generator_registration_kva">
 <input type="text" data-table="generator_registration" data-field="x_kva" name="x_kva" id="x_kva" size="30" maxlength="50" placeholder="<?php echo ew_HtmlEncode($generator_registration->kva->getPlaceHolder()) ?>" value="<?php echo $generator_registration->kva->EditValue ?>"<?php echo $generator_registration->kva->EditAttributes() ?>>
