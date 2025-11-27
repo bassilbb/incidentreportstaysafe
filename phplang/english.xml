@@ -4698,7 +4698,7 @@
         <phrase id="fldcaption" value="Datetime" />
       </field>
       <field id="reference_id">
-        <phrase id="fldcaption" value="reference id" />
+        <phrase id="fldcaption" value="Reference ID" />
       </field>
       <field id="gen_name">
         <phrase id="fldcaption" value="Generator Name" />
@@ -4805,13 +4805,13 @@
         <phrase id="fldcaption" value="Date" />
       </field>
       <field id="reference_id">
-        <phrase id="fldcaption" value="reference id" />
+        <phrase id="fldcaption" value="Reference ID" />
       </field>
       <field id="part_name">
         <phrase id="fldcaption" value="Sparepart Nmae" />
       </field>
       <field id="gen_name">
-        <phrase id="fldcaption" value="Maintenance Category" />
+        <phrase id="fldcaption" value="Generator Name" />
       </field>
       <field id="quantity_in">
         <phrase id="fldcaption" value="Quantity In" />
