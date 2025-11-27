@@ -1093,8 +1093,17 @@ class cspare_part_usage_add extends cspare_part_usage {
 		if (!$this->quantity_used->FldIsDetailKey && !is_null($this->quantity_used->FormValue) && $this->quantity_used->FormValue == "") {
 			ew_AddMessage($gsFormError, str_replace("%s", $this->quantity_used->FldCaption(), $this->quantity_used->ReqErrMsg));
 		}
+		if (!$this->cost->FldIsDetailKey && !is_null($this->cost->FormValue) && $this->cost->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->cost->FldCaption(), $this->cost->ReqErrMsg));
+		}
 		if (!ew_CheckNumber($this->cost->FormValue)) {
 			ew_AddMessage($gsFormError, $this->cost->FldErrMsg());
+		}
+		if (!$this->total_quantity->FldIsDetailKey && !is_null($this->total_quantity->FormValue) && $this->total_quantity->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->total_quantity->FldCaption(), $this->total_quantity->ReqErrMsg));
+		}
+		if (!$this->total_cost->FldIsDetailKey && !is_null($this->total_cost->FormValue) && $this->total_cost->FormValue == "") {
+			ew_AddMessage($gsFormError, str_replace("%s", $this->total_cost->FldCaption(), $this->total_cost->ReqErrMsg));
 		}
 		if (!ew_CheckNumber($this->total_cost->FormValue)) {
 			ew_AddMessage($gsFormError, $this->total_cost->FldErrMsg());
@@ -1384,8 +1393,17 @@ fspare_part_usageadd.Validate = function() {
 			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
 				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $spare_part_usage->quantity_used->FldCaption(), $spare_part_usage->quantity_used->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_cost");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $spare_part_usage->cost->FldCaption(), $spare_part_usage->cost->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_cost");
 			if (elm && !ew_CheckNumber(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($spare_part_usage->cost->FldErrMsg()) ?>");
+			elm = this.GetElements("x" + infix + "_total_quantity");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $spare_part_usage->total_quantity->FldCaption(), $spare_part_usage->total_quantity->ReqErrMsg)) ?>");
+			elm = this.GetElements("x" + infix + "_total_cost");
+			if (elm && !ew_IsHidden(elm) && !ew_HasValue(elm))
+				return this.OnError(elm, "<?php echo ew_JsEncode2(str_replace("%s", $spare_part_usage->total_cost->FldCaption(), $spare_part_usage->total_cost->ReqErrMsg)) ?>");
 			elm = this.GetElements("x" + infix + "_total_cost");
 			if (elm && !ew_CheckNumber(elm.value))
 				return this.OnError(elm, "<?php echo ew_JsEncode2($spare_part_usage->total_cost->FldErrMsg()) ?>");
@@ -1585,7 +1603,7 @@ $spare_part_usage_add->ShowMessage();
 <?php } ?>
 <?php if ($spare_part_usage->cost->Visible) { // cost ?>
 	<div id="r_cost" class="form-group">
-		<label id="elh_spare_part_usage_cost" for="x_cost" class="<?php echo $spare_part_usage_add->LeftColumnClass ?>"><?php echo $spare_part_usage->cost->FldCaption() ?></label>
+		<label id="elh_spare_part_usage_cost" for="x_cost" class="<?php echo $spare_part_usage_add->LeftColumnClass ?>"><?php echo $spare_part_usage->cost->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $spare_part_usage_add->RightColumnClass ?>"><div<?php echo $spare_part_usage->cost->CellAttributes() ?>>
 <span id="el_spare_part_usage_cost">
 <input type="text" data-table="spare_part_usage" data-field="x_cost" name="x_cost" id="x_cost" size="30" placeholder="<?php echo ew_HtmlEncode($spare_part_usage->cost->getPlaceHolder()) ?>" value="<?php echo $spare_part_usage->cost->EditValue ?>"<?php echo $spare_part_usage->cost->EditAttributes() ?>>
@@ -1595,7 +1613,7 @@ $spare_part_usage_add->ShowMessage();
 <?php } ?>
 <?php if ($spare_part_usage->total_quantity->Visible) { // total_quantity ?>
 	<div id="r_total_quantity" class="form-group">
-		<label id="elh_spare_part_usage_total_quantity" for="x_total_quantity" class="<?php echo $spare_part_usage_add->LeftColumnClass ?>"><?php echo $spare_part_usage->total_quantity->FldCaption() ?></label>
+		<label id="elh_spare_part_usage_total_quantity" for="x_total_quantity" class="<?php echo $spare_part_usage_add->LeftColumnClass ?>"><?php echo $spare_part_usage->total_quantity->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $spare_part_usage_add->RightColumnClass ?>"><div<?php echo $spare_part_usage->total_quantity->CellAttributes() ?>>
 <span id="el_spare_part_usage_total_quantity">
 <input type="text" data-table="spare_part_usage" data-field="x_total_quantity" name="x_total_quantity" id="x_total_quantity" size="30" maxlength="100" placeholder="<?php echo ew_HtmlEncode($spare_part_usage->total_quantity->getPlaceHolder()) ?>" value="<?php echo $spare_part_usage->total_quantity->EditValue ?>"<?php echo $spare_part_usage->total_quantity->EditAttributes() ?>>
@@ -1605,7 +1623,7 @@ $spare_part_usage_add->ShowMessage();
 <?php } ?>
 <?php if ($spare_part_usage->total_cost->Visible) { // total_cost ?>
 	<div id="r_total_cost" class="form-group">
-		<label id="elh_spare_part_usage_total_cost" for="x_total_cost" class="<?php echo $spare_part_usage_add->LeftColumnClass ?>"><?php echo $spare_part_usage->total_cost->FldCaption() ?></label>
+		<label id="elh_spare_part_usage_total_cost" for="x_total_cost" class="<?php echo $spare_part_usage_add->LeftColumnClass ?>"><?php echo $spare_part_usage->total_cost->FldCaption() ?><?php echo $Language->Phrase("FieldRequiredIndicator") ?></label>
 		<div class="<?php echo $spare_part_usage_add->RightColumnClass ?>"><div<?php echo $spare_part_usage->total_cost->CellAttributes() ?>>
 <span id="el_spare_part_usage_total_cost">
 <input type="text" data-table="spare_part_usage" data-field="x_total_cost" name="x_total_cost" id="x_total_cost" size="30" placeholder="<?php echo ew_HtmlEncode($spare_part_usage->total_cost->getPlaceHolder()) ?>" value="<?php echo $spare_part_usage->total_cost->EditValue ?>"<?php echo $spare_part_usage->total_cost->EditAttributes() ?>>
