@@ -1923,8 +1923,8 @@ class cissuance_store extends cTable {
 		  	//this was working i only had to put it on row inserted
 		   ///ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
 		   //exit;
-
 		//}
+
 	}
 
 	// Row Update Conflict event
