@@ -1924,7 +1924,7 @@ class cissuance_store extends cTable {
 		   ///ew_Execute("UPDATE `inventory` SET `quantity`= (`quantity` - " . $this->quantity_out->CurrentValue . ") WHERE `id`= ".$this->material_name->CurrentValue."");
 		   //exit;
 
-		}
+		//}
 	}
 
 	// Row Update Conflict event
