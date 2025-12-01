@@ -471,6 +471,20 @@ class cdefault {
 			$this->Page_Terminate("gen_statuslist.php");
 		if ($Security->AllowList(CurrentProjectID() . 'genmaintenance_report'))
 			$this->Page_Terminate("genmaintenance_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'sparepart_report'))
+			$this->Page_Terminate("sparepart_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'gen_category'))
+			$this->Page_Terminate("gen_categorylist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'genreading_supply'))
+			$this->Page_Terminate("genreading_supplylist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'supply_status'))
+			$this->Page_Terminate("supply_statuslist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'diesel_supply'))
+			$this->Page_Terminate("diesel_supplylist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'genreading_report'))
+			$this->Page_Terminate("genreading_reportlist.php");
+		if ($Security->AllowList(CurrentProjectID() . 'gen_maintenanace_v'))
+			$this->Page_Terminate("gen_maintenanace_vlist.php");
 		if ($Security->IsLoggedIn()) {
 			$this->setFailureMessage(ew_DeniedMsg() . "<br><br><a href=\"logout.php\">" . $Language->Phrase("BackToLogin") . "</a>");
 		} else {

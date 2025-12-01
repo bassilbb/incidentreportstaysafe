@@ -2,6 +2,7 @@
 
 // Menu
 $RootMenu = new cMenu("RootMenu", TRUE);
+$RootMenu->AddMenuItem(640, "mi_gen_maintenanace_v", $Language->MenuPhrase("640", "MenuText"), "gen_maintenanace_vlist.php", -1, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}gen_maintenanace_v'), FALSE, FALSE, "");
 $RootMenu->AddMenuItem(17, "mi_home_php", $Language->MenuPhrase("17", "MenuText"), "home.php", -1, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}home.php'), FALSE, TRUE, "far fa-home");
 $RootMenu->AddMenuItem(43, "mi_news", $Language->MenuPhrase("43", "MenuText"), "newslist.php", 17, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}news'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(47, "mi_testing_php", $Language->MenuPhrase("47", "MenuText"), "testing.php", 17, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}testing.php'), FALSE, TRUE, "fas fa-indent");
@@ -39,6 +40,7 @@ $RootMenu->AddMenuItem(276, "mi_banks_list", $Language->MenuPhrase("276", "MenuT
 $RootMenu->AddMenuItem(277, "mi_document_checklist", $Language->MenuPhrase("277", "MenuText"), "document_checklistlist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}document_checklist'), FALSE, FALSE, "");
 $RootMenu->AddMenuItem(430, "mi_status_ssf", $Language->MenuPhrase("430", "MenuText"), "status_ssflist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}status_ssf'), FALSE, FALSE, "fas fa-hourglass-start");
 $RootMenu->AddMenuItem(532, "mi_gen_status", $Language->MenuPhrase("532", "MenuText"), "gen_statuslist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}gen_status'), FALSE, FALSE, "fas fa-hourglass-start");
+$RootMenu->AddMenuItem(637, "mi_supply_status", $Language->MenuPhrase("637", "MenuText"), "supply_statuslist.php", 33, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}supply_status'), FALSE, FALSE, "");
 $RootMenu->AddMenuItem(34, "mci_Incidents", $Language->MenuPhrase("34", "MenuText"), "", -1, "", IsLoggedIn(), FALSE, TRUE, "fas fa-indent");
 $RootMenu->AddMenuItem(8, "mi_report_form", $Language->MenuPhrase("8", "MenuText"), "report_formlist.php", 34, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}report_form'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(54, "mi_report", $Language->MenuPhrase("54", "MenuText"), "reportlist.php", 34, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}report'), FALSE, FALSE, "fas fa-indent");
@@ -97,8 +99,13 @@ $RootMenu->AddMenuItem(436, "mi_generator_registration", $Language->MenuPhrase("
 $RootMenu->AddMenuItem(437, "mi_maintenance_type", $Language->MenuPhrase("437", "MenuText"), "maintenance_typelist.php", 529, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}maintenance_type'), FALSE, FALSE, "fa-light fa-bars");
 $RootMenu->AddMenuItem(438, "mi_sparepart_module", $Language->MenuPhrase("438", "MenuText"), "sparepart_modulelist.php", 529, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}sparepart_module'), FALSE, FALSE, "fa fa-cubes");
 $RootMenu->AddMenuItem(530, "mi_spare_part_usage", $Language->MenuPhrase("530", "MenuText"), "spare_part_usagelist.php", 529, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}spare_part_usage'), FALSE, FALSE, "fas fa-indent");
-$RootMenu->AddMenuItem(533, "mi_genmaintenance_report", $Language->MenuPhrase("533", "MenuText"), "genmaintenance_reportlist.php", 529, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}genmaintenance_report'), FALSE, FALSE, "fas fa-indent");
-$RootMenu->AddMenuItem(531, "mi_sparepart_view", $Language->MenuPhrase("531", "MenuText"), "sparepart_viewlist.php", 529, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}sparepart_view'), FALSE, FALSE, "");
+$RootMenu->AddMenuItem(535, "mi_gen_category", $Language->MenuPhrase("535", "MenuText"), "gen_categorylist.php", 529, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}gen_category'), FALSE, FALSE, "fas fa-braille");
+$RootMenu->AddMenuItem(536, "mi_genreading_supply", $Language->MenuPhrase("536", "MenuText"), "genreading_supplylist.php", 529, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}genreading_supply'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(636, "mci_Generator_Details_Report", $Language->MenuPhrase("636", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fas fa-indent");
+$RootMenu->AddMenuItem(533, "mi_genmaintenance_report", $Language->MenuPhrase("533", "MenuText"), "genmaintenance_reportlist.php", 636, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}genmaintenance_report'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(534, "mi_sparepart_report", $Language->MenuPhrase("534", "MenuText"), "sparepart_reportlist.php", 636, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}sparepart_report'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(639, "mi_genreading_report", $Language->MenuPhrase("639", "MenuText"), "genreading_reportlist.php", 636, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}genreading_report'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(638, "mi_diesel_supply", $Language->MenuPhrase("638", "MenuText"), "diesel_supplylist.php", 636, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}diesel_supply'), FALSE, FALSE, "fas fa-indent");
 echo $RootMenu->ToScript();
 ?>
 <div class="ewVertical" id="ewMenu"></div>

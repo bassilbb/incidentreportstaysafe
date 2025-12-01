@@ -1601,7 +1601,7 @@ class cissuance_store extends cTable {
 			ew_AddFilter($filter, "`statuss` in (0,2)");
 		}
 		if (CurrentUserLevel() == 2) {
-			ew_AddFilter($filter, "`statuss` in (0,2,4)");
+			ew_AddFilter($filter, "`statuss` in (0,2)");
 		}*/
 		if (CurrentUserLevel() == 1) {
 			ew_AddFilter($filter, "`statuss` in (0,2) AND `staff_id` = '".$_SESSION['Staff_ID']."'");

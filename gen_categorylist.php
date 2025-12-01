@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg14.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
 <?php include_once "phpfn14.php" ?>
-<?php include_once "sparepart_reportinfo.php" ?>
+<?php include_once "gen_categoryinfo.php" ?>
 <?php include_once "usersinfo.php" ?>
 <?php include_once "userfn14.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$sparepart_report_list = NULL; // Initialize page object first
+$gen_category_list = NULL; // Initialize page object first
 
-class csparepart_report_list extends csparepart_report {
+class cgen_category_list extends cgen_category {
 
 	// Page ID
 	var $PageID = 'list';
@@ -25,13 +25,13 @@ class csparepart_report_list extends csparepart_report {
 	var $ProjectID = '{DD9080C0-D1CA-431F-831F-CAC8FA61260C}';
 
 	// Table name
-	var $TableName = 'sparepart_report';
+	var $TableName = 'gen_category';
 
 	// Page object name
-	var $PageObjName = 'sparepart_report_list';
+	var $PageObjName = 'gen_category_list';
 
 	// Grid form hidden field names
-	var $FormName = 'fsparepart_reportlist';
+	var $FormName = 'fgen_categorylist';
 	var $FormActionName = 'k_action';
 	var $FormKeyName = 'k_key';
 	var $FormOldKeyName = 'k_oldkey';
@@ -290,10 +290,10 @@ class csparepart_report_list extends csparepart_report {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (sparepart_report)
-		if (!isset($GLOBALS["sparepart_report"]) || get_class($GLOBALS["sparepart_report"]) == "csparepart_report") {
-			$GLOBALS["sparepart_report"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["sparepart_report"];
+		// Table object (gen_category)
+		if (!isset($GLOBALS["gen_category"]) || get_class($GLOBALS["gen_category"]) == "cgen_category") {
+			$GLOBALS["gen_category"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["gen_category"];
 		}
 
 		// Initialize URLs
@@ -304,12 +304,12 @@ class csparepart_report_list extends csparepart_report {
 		$this->ExportXmlUrl = $this->PageUrl() . "export=xml";
 		$this->ExportCsvUrl = $this->PageUrl() . "export=csv";
 		$this->ExportPdfUrl = $this->PageUrl() . "export=pdf";
-		$this->AddUrl = "sparepart_reportadd.php";
+		$this->AddUrl = "gen_categoryadd.php";
 		$this->InlineAddUrl = $this->PageUrl() . "a=add";
 		$this->GridAddUrl = $this->PageUrl() . "a=gridadd";
 		$this->GridEditUrl = $this->PageUrl() . "a=gridedit";
-		$this->MultiDeleteUrl = "sparepart_reportdelete.php";
-		$this->MultiUpdateUrl = "sparepart_reportupdate.php";
+		$this->MultiDeleteUrl = "gen_categorydelete.php";
+		$this->MultiUpdateUrl = "gen_categoryupdate.php";
 
 		// Table object (users)
 		if (!isset($GLOBALS['users'])) $GLOBALS['users'] = new cusers();
@@ -320,7 +320,7 @@ class csparepart_report_list extends csparepart_report {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'sparepart_report');
+			define("EW_TABLE_NAME", 'gen_category');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -362,7 +362,7 @@ class csparepart_report_list extends csparepart_report {
 		// Filter options
 		$this->FilterOptions = new cListOptions();
 		$this->FilterOptions->Tag = "div";
-		$this->FilterOptions->TagClassName = "ewFilterOption fsparepart_reportlistsrch";
+		$this->FilterOptions->TagClassName = "ewFilterOption fgen_categorylistsrch";
 
 		// List actions
 		$this->ListActions = new cListActions();
@@ -449,15 +449,7 @@ class csparepart_report_list extends csparepart_report {
 		$this->id->SetVisibility();
 		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
 			$this->id->Visible = FALSE;
-		$this->date->SetVisibility();
-		$this->part_name->SetVisibility();
-		$this->maintenance_id->SetVisibility();
-		$this->quantity_in->SetVisibility();
-		$this->quantity_used->SetVisibility();
-		$this->cost->SetVisibility();
-		$this->total_quantity->SetVisibility();
-		$this->total_cost->SetVisibility();
-		$this->maintenance_total_cost->SetVisibility();
+		$this->description->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -518,13 +510,13 @@ class csparepart_report_list extends csparepart_report {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $sparepart_report;
+		global $EW_EXPORT, $gen_category;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($sparepart_report);
+				$doc = new $class($gen_category);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -813,17 +805,9 @@ class csparepart_report_list extends csparepart_report {
 
 		// Load server side filters
 		if (EW_SEARCH_FILTER_OPTION == "Server" && isset($UserProfile))
-			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "fsparepart_reportlistsrch");
+			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "fgen_categorylistsrch");
 		$sFilterList = ew_Concat($sFilterList, $this->id->AdvancedSearch->ToJson(), ","); // Field id
-		$sFilterList = ew_Concat($sFilterList, $this->date->AdvancedSearch->ToJson(), ","); // Field date
-		$sFilterList = ew_Concat($sFilterList, $this->part_name->AdvancedSearch->ToJson(), ","); // Field part_name
-		$sFilterList = ew_Concat($sFilterList, $this->maintenance_id->AdvancedSearch->ToJson(), ","); // Field maintenance_id
-		$sFilterList = ew_Concat($sFilterList, $this->quantity_in->AdvancedSearch->ToJson(), ","); // Field quantity_in
-		$sFilterList = ew_Concat($sFilterList, $this->quantity_used->AdvancedSearch->ToJson(), ","); // Field quantity_used
-		$sFilterList = ew_Concat($sFilterList, $this->cost->AdvancedSearch->ToJson(), ","); // Field cost
-		$sFilterList = ew_Concat($sFilterList, $this->total_quantity->AdvancedSearch->ToJson(), ","); // Field total_quantity
-		$sFilterList = ew_Concat($sFilterList, $this->total_cost->AdvancedSearch->ToJson(), ","); // Field total_cost
-		$sFilterList = ew_Concat($sFilterList, $this->maintenance_total_cost->AdvancedSearch->ToJson(), ","); // Field maintenance_total_cost
+		$sFilterList = ew_Concat($sFilterList, $this->description->AdvancedSearch->ToJson(), ","); // Field description
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -846,7 +830,7 @@ class csparepart_report_list extends csparepart_report {
 		global $UserProfile;
 		if (@$_POST["ajax"] == "savefilters") { // Save filter request (Ajax)
 			$filters = @$_POST["filters"];
-			$UserProfile->SetSearchFilters(CurrentUserName(), "fsparepart_reportlistsrch", $filters);
+			$UserProfile->SetSearchFilters(CurrentUserName(), "fgen_categorylistsrch", $filters);
 
 			// Clean output buffer
 			if (!EW_DEBUG_ENABLED && ob_get_length())
@@ -876,77 +860,13 @@ class csparepart_report_list extends csparepart_report {
 		$this->id->AdvancedSearch->SearchOperator2 = @$filter["w_id"];
 		$this->id->AdvancedSearch->Save();
 
-		// Field date
-		$this->date->AdvancedSearch->SearchValue = @$filter["x_date"];
-		$this->date->AdvancedSearch->SearchOperator = @$filter["z_date"];
-		$this->date->AdvancedSearch->SearchCondition = @$filter["v_date"];
-		$this->date->AdvancedSearch->SearchValue2 = @$filter["y_date"];
-		$this->date->AdvancedSearch->SearchOperator2 = @$filter["w_date"];
-		$this->date->AdvancedSearch->Save();
-
-		// Field part_name
-		$this->part_name->AdvancedSearch->SearchValue = @$filter["x_part_name"];
-		$this->part_name->AdvancedSearch->SearchOperator = @$filter["z_part_name"];
-		$this->part_name->AdvancedSearch->SearchCondition = @$filter["v_part_name"];
-		$this->part_name->AdvancedSearch->SearchValue2 = @$filter["y_part_name"];
-		$this->part_name->AdvancedSearch->SearchOperator2 = @$filter["w_part_name"];
-		$this->part_name->AdvancedSearch->Save();
-
-		// Field maintenance_id
-		$this->maintenance_id->AdvancedSearch->SearchValue = @$filter["x_maintenance_id"];
-		$this->maintenance_id->AdvancedSearch->SearchOperator = @$filter["z_maintenance_id"];
-		$this->maintenance_id->AdvancedSearch->SearchCondition = @$filter["v_maintenance_id"];
-		$this->maintenance_id->AdvancedSearch->SearchValue2 = @$filter["y_maintenance_id"];
-		$this->maintenance_id->AdvancedSearch->SearchOperator2 = @$filter["w_maintenance_id"];
-		$this->maintenance_id->AdvancedSearch->Save();
-
-		// Field quantity_in
-		$this->quantity_in->AdvancedSearch->SearchValue = @$filter["x_quantity_in"];
-		$this->quantity_in->AdvancedSearch->SearchOperator = @$filter["z_quantity_in"];
-		$this->quantity_in->AdvancedSearch->SearchCondition = @$filter["v_quantity_in"];
-		$this->quantity_in->AdvancedSearch->SearchValue2 = @$filter["y_quantity_in"];
-		$this->quantity_in->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_in"];
-		$this->quantity_in->AdvancedSearch->Save();
-
-		// Field quantity_used
-		$this->quantity_used->AdvancedSearch->SearchValue = @$filter["x_quantity_used"];
-		$this->quantity_used->AdvancedSearch->SearchOperator = @$filter["z_quantity_used"];
-		$this->quantity_used->AdvancedSearch->SearchCondition = @$filter["v_quantity_used"];
-		$this->quantity_used->AdvancedSearch->SearchValue2 = @$filter["y_quantity_used"];
-		$this->quantity_used->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_used"];
-		$this->quantity_used->AdvancedSearch->Save();
-
-		// Field cost
-		$this->cost->AdvancedSearch->SearchValue = @$filter["x_cost"];
-		$this->cost->AdvancedSearch->SearchOperator = @$filter["z_cost"];
-		$this->cost->AdvancedSearch->SearchCondition = @$filter["v_cost"];
-		$this->cost->AdvancedSearch->SearchValue2 = @$filter["y_cost"];
-		$this->cost->AdvancedSearch->SearchOperator2 = @$filter["w_cost"];
-		$this->cost->AdvancedSearch->Save();
-
-		// Field total_quantity
-		$this->total_quantity->AdvancedSearch->SearchValue = @$filter["x_total_quantity"];
-		$this->total_quantity->AdvancedSearch->SearchOperator = @$filter["z_total_quantity"];
-		$this->total_quantity->AdvancedSearch->SearchCondition = @$filter["v_total_quantity"];
-		$this->total_quantity->AdvancedSearch->SearchValue2 = @$filter["y_total_quantity"];
-		$this->total_quantity->AdvancedSearch->SearchOperator2 = @$filter["w_total_quantity"];
-		$this->total_quantity->AdvancedSearch->Save();
-
-		// Field total_cost
-		$this->total_cost->AdvancedSearch->SearchValue = @$filter["x_total_cost"];
-		$this->total_cost->AdvancedSearch->SearchOperator = @$filter["z_total_cost"];
-		$this->total_cost->AdvancedSearch->SearchCondition = @$filter["v_total_cost"];
-		$this->total_cost->AdvancedSearch->SearchValue2 = @$filter["y_total_cost"];
-		$this->total_cost->AdvancedSearch->SearchOperator2 = @$filter["w_total_cost"];
-		$this->total_cost->AdvancedSearch->Save();
-
-		// Field maintenance_total_cost
-		$this->maintenance_total_cost->AdvancedSearch->SearchValue = @$filter["x_maintenance_total_cost"];
-		$this->maintenance_total_cost->AdvancedSearch->SearchOperator = @$filter["z_maintenance_total_cost"];
-		$this->maintenance_total_cost->AdvancedSearch->SearchCondition = @$filter["v_maintenance_total_cost"];
-		$this->maintenance_total_cost->AdvancedSearch->SearchValue2 = @$filter["y_maintenance_total_cost"];
-		$this->maintenance_total_cost->AdvancedSearch->SearchOperator2 = @$filter["w_maintenance_total_cost"];
-		$this->maintenance_total_cost->AdvancedSearch->Save();
+		// Field description
+		$this->description->AdvancedSearch->SearchValue = @$filter["x_description"];
+		$this->description->AdvancedSearch->SearchOperator = @$filter["z_description"];
+		$this->description->AdvancedSearch->SearchCondition = @$filter["v_description"];
+		$this->description->AdvancedSearch->SearchValue2 = @$filter["y_description"];
+		$this->description->AdvancedSearch->SearchOperator2 = @$filter["w_description"];
+		$this->description->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
@@ -954,10 +874,7 @@ class csparepart_report_list extends csparepart_report {
 	// Return basic search SQL
 	function BasicSearchSQL($arKeywords, $type) {
 		$sWhere = "";
-		$this->BuildBasicSearchSQL($sWhere, $this->part_name, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->quantity_in, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->quantity_used, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->total_quantity, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->description, $arKeywords, $type);
 		return $sWhere;
 	}
 
@@ -1105,15 +1022,7 @@ class csparepart_report_list extends csparepart_report {
 			$this->CurrentOrder = @$_GET["order"];
 			$this->CurrentOrderType = @$_GET["ordertype"];
 			$this->UpdateSort($this->id); // id
-			$this->UpdateSort($this->date); // date
-			$this->UpdateSort($this->part_name); // part_name
-			$this->UpdateSort($this->maintenance_id); // maintenance_id
-			$this->UpdateSort($this->quantity_in); // quantity_in
-			$this->UpdateSort($this->quantity_used); // quantity_used
-			$this->UpdateSort($this->cost); // cost
-			$this->UpdateSort($this->total_quantity); // total_quantity
-			$this->UpdateSort($this->total_cost); // total_cost
-			$this->UpdateSort($this->maintenance_total_cost); // maintenance_total_cost
+			$this->UpdateSort($this->description); // description
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1147,15 +1056,7 @@ class csparepart_report_list extends csparepart_report {
 				$sOrderBy = "";
 				$this->setSessionOrderBy($sOrderBy);
 				$this->id->setSort("");
-				$this->date->setSort("");
-				$this->part_name->setSort("");
-				$this->maintenance_id->setSort("");
-				$this->quantity_in->setSort("");
-				$this->quantity_used->setSort("");
-				$this->cost->setSort("");
-				$this->total_quantity->setSort("");
-				$this->total_cost->setSort("");
-				$this->maintenance_total_cost->setSort("");
+				$this->description->setSort("");
 			}
 
 			// Reset start position
@@ -1173,6 +1074,30 @@ class csparepart_report_list extends csparepart_report {
 		$item->Body = "";
 		$item->OnLeft = TRUE;
 		$item->Visible = FALSE;
+
+		// "view"
+		$item = &$this->ListOptions->Add("view");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = $Security->CanView();
+		$item->OnLeft = TRUE;
+
+		// "edit"
+		$item = &$this->ListOptions->Add("edit");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = $Security->CanEdit();
+		$item->OnLeft = TRUE;
+
+		// "copy"
+		$item = &$this->ListOptions->Add("copy");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = $Security->CanAdd();
+		$item->OnLeft = TRUE;
+
+		// "delete"
+		$item = &$this->ListOptions->Add("delete");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = $Security->CanDelete();
+		$item->OnLeft = TRUE;
 
 		// List actions
 		$item = &$this->ListOptions->Add("listactions");
@@ -1214,6 +1139,40 @@ class csparepart_report_list extends csparepart_report {
 
 		// Call ListOptions_Rendering event
 		$this->ListOptions_Rendering();
+
+		// "view"
+		$oListOpt = &$this->ListOptions->Items["view"];
+		$viewcaption = ew_HtmlTitle($Language->Phrase("ViewLink"));
+		if ($Security->CanView()) {
+			$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-caption=\"" . $viewcaption . "\" href=\"" . ew_HtmlEncode($this->ViewUrl) . "\">" . $Language->Phrase("ViewLink") . "</a>";
+		} else {
+			$oListOpt->Body = "";
+		}
+
+		// "edit"
+		$oListOpt = &$this->ListOptions->Items["edit"];
+		$editcaption = ew_HtmlTitle($Language->Phrase("EditLink"));
+		if ($Security->CanEdit()) {
+			$oListOpt->Body = "<a class=\"ewRowLink ewEdit\" title=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" href=\"" . ew_HtmlEncode($this->EditUrl) . "\">" . $Language->Phrase("EditLink") . "</a>";
+		} else {
+			$oListOpt->Body = "";
+		}
+
+		// "copy"
+		$oListOpt = &$this->ListOptions->Items["copy"];
+		$copycaption = ew_HtmlTitle($Language->Phrase("CopyLink"));
+		if ($Security->CanAdd()) {
+			$oListOpt->Body = "<a class=\"ewRowLink ewCopy\" title=\"" . $copycaption . "\" data-caption=\"" . $copycaption . "\" href=\"" . ew_HtmlEncode($this->CopyUrl) . "\">" . $Language->Phrase("CopyLink") . "</a>";
+		} else {
+			$oListOpt->Body = "";
+		}
+
+		// "delete"
+		$oListOpt = &$this->ListOptions->Items["delete"];
+		if ($Security->CanDelete())
+			$oListOpt->Body = "<a class=\"ewRowLink ewDelete\"" . "" . " title=\"" . ew_HtmlTitle($Language->Phrase("DeleteLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("DeleteLink")) . "\" href=\"" . ew_HtmlEncode($this->DeleteUrl) . "\">" . $Language->Phrase("DeleteLink") . "</a>";
+		else
+			$oListOpt->Body = "";
 
 		// Set up list action buttons
 		$oListOpt = &$this->ListOptions->GetItem("listactions");
@@ -1257,6 +1216,13 @@ class csparepart_report_list extends csparepart_report {
 	function SetupOtherOptions() {
 		global $Language, $Security;
 		$options = &$this->OtherOptions;
+		$option = $options["addedit"];
+
+		// Add
+		$item = &$option->Add("add");
+		$addcaption = ew_HtmlTitle($Language->Phrase("AddLink"));
+		$item->Body = "<a class=\"ewAddEdit ewAdd\" title=\"" . $addcaption . "\" data-caption=\"" . $addcaption . "\" href=\"" . ew_HtmlEncode($this->AddUrl) . "\">" . $Language->Phrase("AddLink") . "</a>";
+		$item->Visible = ($this->AddUrl <> "" && $Security->CanAdd());
 		$option = $options["action"];
 
 		// Set up options default
@@ -1275,10 +1241,10 @@ class csparepart_report_list extends csparepart_report {
 
 		// Filter button
 		$item = &$this->FilterOptions->Add("savecurrentfilter");
-		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"fsparepart_reportlistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
+		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"fgen_categorylistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
 		$item->Visible = TRUE;
 		$item = &$this->FilterOptions->Add("deletefilter");
-		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"fsparepart_reportlistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
+		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"fgen_categorylistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
 		$item->Visible = TRUE;
 		$this->FilterOptions->UseDropDownButton = TRUE;
 		$this->FilterOptions->UseButtonGroup = !$this->FilterOptions->UseDropDownButton;
@@ -1302,7 +1268,7 @@ class csparepart_report_list extends csparepart_report {
 					$item = &$option->Add("custom_" . $listaction->Action);
 					$caption = $listaction->Caption;
 					$icon = ($listaction->Icon <> "") ? "<span class=\"" . ew_HtmlEncode($listaction->Icon) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\"></span> " : $caption;
-					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.fsparepart_reportlist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
+					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.fgen_categorylist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
 					$item->Visible = $listaction->Allow;
 				}
 			}
@@ -1406,7 +1372,7 @@ class csparepart_report_list extends csparepart_report {
 		// Search button
 		$item = &$this->SearchOptions->Add("searchtoggle");
 		$SearchToggleClass = ($this->SearchWhere <> "") ? " active" : " active";
-		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"fsparepart_reportlistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"fgen_categorylistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
 		$item->Visible = TRUE;
 
 		// Show all button
@@ -1546,30 +1512,14 @@ class csparepart_report_list extends csparepart_report {
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
-		$this->date->setDbValue($row['date']);
-		$this->part_name->setDbValue($row['part_name']);
-		$this->maintenance_id->setDbValue($row['maintenance_id']);
-		$this->quantity_in->setDbValue($row['quantity_in']);
-		$this->quantity_used->setDbValue($row['quantity_used']);
-		$this->cost->setDbValue($row['cost']);
-		$this->total_quantity->setDbValue($row['total_quantity']);
-		$this->total_cost->setDbValue($row['total_cost']);
-		$this->maintenance_total_cost->setDbValue($row['maintenance_total_cost']);
+		$this->description->setDbValue($row['description']);
 	}
 
 	// Return a row with default values
 	function NewRow() {
 		$row = array();
 		$row['id'] = NULL;
-		$row['date'] = NULL;
-		$row['part_name'] = NULL;
-		$row['maintenance_id'] = NULL;
-		$row['quantity_in'] = NULL;
-		$row['quantity_used'] = NULL;
-		$row['cost'] = NULL;
-		$row['total_quantity'] = NULL;
-		$row['total_cost'] = NULL;
-		$row['maintenance_total_cost'] = NULL;
+		$row['description'] = NULL;
 		return $row;
 	}
 
@@ -1579,15 +1529,7 @@ class csparepart_report_list extends csparepart_report {
 			return;
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
-		$this->date->DbValue = $row['date'];
-		$this->part_name->DbValue = $row['part_name'];
-		$this->maintenance_id->DbValue = $row['maintenance_id'];
-		$this->quantity_in->DbValue = $row['quantity_in'];
-		$this->quantity_used->DbValue = $row['quantity_used'];
-		$this->cost->DbValue = $row['cost'];
-		$this->total_quantity->DbValue = $row['total_quantity'];
-		$this->total_cost->DbValue = $row['total_cost'];
-		$this->maintenance_total_cost->DbValue = $row['maintenance_total_cost'];
+		$this->description->DbValue = $row['description'];
 	}
 
 	// Load old record
@@ -1624,32 +1566,12 @@ class csparepart_report_list extends csparepart_report {
 		$this->InlineCopyUrl = $this->GetInlineCopyUrl();
 		$this->DeleteUrl = $this->GetDeleteUrl();
 
-		// Convert decimal values if posted back
-		if ($this->cost->FormValue == $this->cost->CurrentValue && is_numeric(ew_StrToFloat($this->cost->CurrentValue)))
-			$this->cost->CurrentValue = ew_StrToFloat($this->cost->CurrentValue);
-
-		// Convert decimal values if posted back
-		if ($this->total_cost->FormValue == $this->total_cost->CurrentValue && is_numeric(ew_StrToFloat($this->total_cost->CurrentValue)))
-			$this->total_cost->CurrentValue = ew_StrToFloat($this->total_cost->CurrentValue);
-
-		// Convert decimal values if posted back
-		if ($this->maintenance_total_cost->FormValue == $this->maintenance_total_cost->CurrentValue && is_numeric(ew_StrToFloat($this->maintenance_total_cost->CurrentValue)))
-			$this->maintenance_total_cost->CurrentValue = ew_StrToFloat($this->maintenance_total_cost->CurrentValue);
-
 		// Call Row_Rendering event
 		$this->Row_Rendering();
 
 		// Common render codes for all row types
 		// id
-		// date
-		// part_name
-		// maintenance_id
-		// quantity_in
-		// quantity_used
-		// cost
-		// total_quantity
-		// total_cost
-		// maintenance_total_cost
+		// description
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -1657,92 +1579,19 @@ class csparepart_report_list extends csparepart_report {
 		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// date
-		$this->date->ViewValue = $this->date->CurrentValue;
-		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 0);
-		$this->date->ViewCustomAttributes = "";
-
-		// part_name
-		$this->part_name->ViewValue = $this->part_name->CurrentValue;
-		$this->part_name->ViewCustomAttributes = "";
-
-		// maintenance_id
-		$this->maintenance_id->ViewValue = $this->maintenance_id->CurrentValue;
-		$this->maintenance_id->ViewCustomAttributes = "";
-
-		// quantity_in
-		$this->quantity_in->ViewValue = $this->quantity_in->CurrentValue;
-		$this->quantity_in->ViewCustomAttributes = "";
-
-		// quantity_used
-		$this->quantity_used->ViewValue = $this->quantity_used->CurrentValue;
-		$this->quantity_used->ViewCustomAttributes = "";
-
-		// cost
-		$this->cost->ViewValue = $this->cost->CurrentValue;
-		$this->cost->ViewCustomAttributes = "";
-
-		// total_quantity
-		$this->total_quantity->ViewValue = $this->total_quantity->CurrentValue;
-		$this->total_quantity->ViewCustomAttributes = "";
-
-		// total_cost
-		$this->total_cost->ViewValue = $this->total_cost->CurrentValue;
-		$this->total_cost->ViewCustomAttributes = "";
-
-		// maintenance_total_cost
-		$this->maintenance_total_cost->ViewValue = $this->maintenance_total_cost->CurrentValue;
-		$this->maintenance_total_cost->ViewCustomAttributes = "";
+		// description
+		$this->description->ViewValue = $this->description->CurrentValue;
+		$this->description->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
 			$this->id->TooltipValue = "";
 
-			// date
-			$this->date->LinkCustomAttributes = "";
-			$this->date->HrefValue = "";
-			$this->date->TooltipValue = "";
-
-			// part_name
-			$this->part_name->LinkCustomAttributes = "";
-			$this->part_name->HrefValue = "";
-			$this->part_name->TooltipValue = "";
-
-			// maintenance_id
-			$this->maintenance_id->LinkCustomAttributes = "";
-			$this->maintenance_id->HrefValue = "";
-			$this->maintenance_id->TooltipValue = "";
-
-			// quantity_in
-			$this->quantity_in->LinkCustomAttributes = "";
-			$this->quantity_in->HrefValue = "";
-			$this->quantity_in->TooltipValue = "";
-
-			// quantity_used
-			$this->quantity_used->LinkCustomAttributes = "";
-			$this->quantity_used->HrefValue = "";
-			$this->quantity_used->TooltipValue = "";
-
-			// cost
-			$this->cost->LinkCustomAttributes = "";
-			$this->cost->HrefValue = "";
-			$this->cost->TooltipValue = "";
-
-			// total_quantity
-			$this->total_quantity->LinkCustomAttributes = "";
-			$this->total_quantity->HrefValue = "";
-			$this->total_quantity->TooltipValue = "";
-
-			// total_cost
-			$this->total_cost->LinkCustomAttributes = "";
-			$this->total_cost->HrefValue = "";
-			$this->total_cost->TooltipValue = "";
-
-			// maintenance_total_cost
-			$this->maintenance_total_cost->LinkCustomAttributes = "";
-			$this->maintenance_total_cost->HrefValue = "";
-			$this->maintenance_total_cost->TooltipValue = "";
+			// description
+			$this->description->LinkCustomAttributes = "";
+			$this->description->HrefValue = "";
+			$this->description->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1787,12 +1636,12 @@ class csparepart_report_list extends csparepart_report {
 		// Export to Pdf
 		$item = &$this->ExportOptions->Add("pdf");
 		$item->Body = "<a href=\"" . $this->ExportPdfUrl . "\" class=\"ewExportLink ewPdf\" title=\"" . ew_HtmlEncode($Language->Phrase("ExportToPDFText")) . "\" data-caption=\"" . ew_HtmlEncode($Language->Phrase("ExportToPDFText")) . "\">" . $Language->Phrase("ExportToPDF") . "</a>";
-		$item->Visible = TRUE;
+		$item->Visible = FALSE;
 
 		// Export to Email
 		$item = &$this->ExportOptions->Add("email");
 		$url = "";
-		$item->Body = "<button id=\"emf_sparepart_report\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_sparepart_report',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fsparepart_reportlist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
+		$item->Body = "<button id=\"emf_gen_category\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_gen_category',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fgen_categorylist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
 		$item->Visible = FALSE;
 
 		// Drop down button for export
@@ -2051,31 +1900,31 @@ class csparepart_report_list extends csparepart_report {
 <?php
 
 // Create page object
-if (!isset($sparepart_report_list)) $sparepart_report_list = new csparepart_report_list();
+if (!isset($gen_category_list)) $gen_category_list = new cgen_category_list();
 
 // Page init
-$sparepart_report_list->Page_Init();
+$gen_category_list->Page_Init();
 
 // Page main
-$sparepart_report_list->Page_Main();
+$gen_category_list->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$sparepart_report_list->Page_Render();
+$gen_category_list->Page_Render();
 ?>
 <?php include_once "header.php" ?>
-<?php if ($sparepart_report->Export == "") { ?>
+<?php if ($gen_category->Export == "") { ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "list";
-var CurrentForm = fsparepart_reportlist = new ew_Form("fsparepart_reportlist", "list");
-fsparepart_reportlist.FormKeyCountName = '<?php echo $sparepart_report_list->FormKeyCountName ?>';
+var CurrentForm = fgen_categorylist = new ew_Form("fgen_categorylist", "list");
+fgen_categorylist.FormKeyCountName = '<?php echo $gen_category_list->FormKeyCountName ?>';
 
 // Form_CustomValidate event
-fsparepart_reportlist.Form_CustomValidate = 
+fgen_categorylist.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid.
@@ -2083,79 +1932,79 @@ fsparepart_reportlist.Form_CustomValidate =
  }
 
 // Use JavaScript validation or not
-fsparepart_reportlist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+fgen_categorylist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
 // Form object for search
 
-var CurrentSearchForm = fsparepart_reportlistsrch = new ew_Form("fsparepart_reportlistsrch");
+var CurrentSearchForm = fgen_categorylistsrch = new ew_Form("fgen_categorylistsrch");
 </script>
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
 </script>
 <?php } ?>
-<?php if ($sparepart_report->Export == "") { ?>
+<?php if ($gen_category->Export == "") { ?>
 <div class="ewToolbar">
-<?php if ($sparepart_report_list->TotalRecs > 0 && $sparepart_report_list->ExportOptions->Visible()) { ?>
-<?php $sparepart_report_list->ExportOptions->Render("body") ?>
+<?php if ($gen_category_list->TotalRecs > 0 && $gen_category_list->ExportOptions->Visible()) { ?>
+<?php $gen_category_list->ExportOptions->Render("body") ?>
 <?php } ?>
-<?php if ($sparepart_report_list->SearchOptions->Visible()) { ?>
-<?php $sparepart_report_list->SearchOptions->Render("body") ?>
+<?php if ($gen_category_list->SearchOptions->Visible()) { ?>
+<?php $gen_category_list->SearchOptions->Render("body") ?>
 <?php } ?>
-<?php if ($sparepart_report_list->FilterOptions->Visible()) { ?>
-<?php $sparepart_report_list->FilterOptions->Render("body") ?>
+<?php if ($gen_category_list->FilterOptions->Visible()) { ?>
+<?php $gen_category_list->FilterOptions->Render("body") ?>
 <?php } ?>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
 <?php
-	$bSelectLimit = $sparepart_report_list->UseSelectLimit;
+	$bSelectLimit = $gen_category_list->UseSelectLimit;
 	if ($bSelectLimit) {
-		if ($sparepart_report_list->TotalRecs <= 0)
-			$sparepart_report_list->TotalRecs = $sparepart_report->ListRecordCount();
+		if ($gen_category_list->TotalRecs <= 0)
+			$gen_category_list->TotalRecs = $gen_category->ListRecordCount();
 	} else {
-		if (!$sparepart_report_list->Recordset && ($sparepart_report_list->Recordset = $sparepart_report_list->LoadRecordset()))
-			$sparepart_report_list->TotalRecs = $sparepart_report_list->Recordset->RecordCount();
+		if (!$gen_category_list->Recordset && ($gen_category_list->Recordset = $gen_category_list->LoadRecordset()))
+			$gen_category_list->TotalRecs = $gen_category_list->Recordset->RecordCount();
 	}
-	$sparepart_report_list->StartRec = 1;
-	if ($sparepart_report_list->DisplayRecs <= 0 || ($sparepart_report->Export <> "" && $sparepart_report->ExportAll)) // Display all records
-		$sparepart_report_list->DisplayRecs = $sparepart_report_list->TotalRecs;
-	if (!($sparepart_report->Export <> "" && $sparepart_report->ExportAll))
-		$sparepart_report_list->SetupStartRec(); // Set up start record position
+	$gen_category_list->StartRec = 1;
+	if ($gen_category_list->DisplayRecs <= 0 || ($gen_category->Export <> "" && $gen_category->ExportAll)) // Display all records
+		$gen_category_list->DisplayRecs = $gen_category_list->TotalRecs;
+	if (!($gen_category->Export <> "" && $gen_category->ExportAll))
+		$gen_category_list->SetupStartRec(); // Set up start record position
 	if ($bSelectLimit)
-		$sparepart_report_list->Recordset = $sparepart_report_list->LoadRecordset($sparepart_report_list->StartRec-1, $sparepart_report_list->DisplayRecs);
+		$gen_category_list->Recordset = $gen_category_list->LoadRecordset($gen_category_list->StartRec-1, $gen_category_list->DisplayRecs);
 
 	// Set no record found message
-	if ($sparepart_report->CurrentAction == "" && $sparepart_report_list->TotalRecs == 0) {
+	if ($gen_category->CurrentAction == "" && $gen_category_list->TotalRecs == 0) {
 		if (!$Security->CanList())
-			$sparepart_report_list->setWarningMessage(ew_DeniedMsg());
-		if ($sparepart_report_list->SearchWhere == "0=101")
-			$sparepart_report_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
+			$gen_category_list->setWarningMessage(ew_DeniedMsg());
+		if ($gen_category_list->SearchWhere == "0=101")
+			$gen_category_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
 		else
-			$sparepart_report_list->setWarningMessage($Language->Phrase("NoRecord"));
+			$gen_category_list->setWarningMessage($Language->Phrase("NoRecord"));
 	}
-$sparepart_report_list->RenderOtherOptions();
+$gen_category_list->RenderOtherOptions();
 ?>
 <?php if ($Security->CanSearch()) { ?>
-<?php if ($sparepart_report->Export == "" && $sparepart_report->CurrentAction == "") { ?>
-<form name="fsparepart_reportlistsrch" id="fsparepart_reportlistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
-<?php $SearchPanelClass = ($sparepart_report_list->SearchWhere <> "") ? " in" : " in"; ?>
-<div id="fsparepart_reportlistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
+<?php if ($gen_category->Export == "" && $gen_category->CurrentAction == "") { ?>
+<form name="fgen_categorylistsrch" id="fgen_categorylistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
+<?php $SearchPanelClass = ($gen_category_list->SearchWhere <> "") ? " in" : " in"; ?>
+<div id="fgen_categorylistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
 <input type="hidden" name="cmd" value="search">
-<input type="hidden" name="t" value="sparepart_report">
+<input type="hidden" name="t" value="gen_category">
 	<div class="ewBasicSearch">
 <div id="xsr_1" class="ewRow">
 	<div class="ewQuickSearch input-group">
-	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($sparepart_report_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
-	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($sparepart_report_list->BasicSearch->getType()) ?>">
+	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($gen_category_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
+	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($gen_category_list->BasicSearch->getType()) ?>">
 	<div class="input-group-btn">
-		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $sparepart_report_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
+		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $gen_category_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
 		<ul class="dropdown-menu pull-right" role="menu">
-			<li<?php if ($sparepart_report_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
-			<li<?php if ($sparepart_report_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
-			<li<?php if ($sparepart_report_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
-			<li<?php if ($sparepart_report_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
+			<li<?php if ($gen_category_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
+			<li<?php if ($gen_category_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
+			<li<?php if ($gen_category_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
+			<li<?php if ($gen_category_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
 		</ul>
 	<button class="btn btn-primary ewButton" name="btnsubmit" id="btnsubmit" type="submit"><?php echo $Language->Phrase("SearchBtn") ?></button>
 	</div>
@@ -2166,71 +2015,71 @@ $sparepart_report_list->RenderOtherOptions();
 </form>
 <?php } ?>
 <?php } ?>
-<?php $sparepart_report_list->ShowPageHeader(); ?>
+<?php $gen_category_list->ShowPageHeader(); ?>
 <?php
-$sparepart_report_list->ShowMessage();
+$gen_category_list->ShowMessage();
 ?>
-<?php if ($sparepart_report_list->TotalRecs > 0 || $sparepart_report->CurrentAction <> "") { ?>
-<div class="box ewBox ewGrid<?php if ($sparepart_report_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> sparepart_report">
-<?php if ($sparepart_report->Export == "") { ?>
+<?php if ($gen_category_list->TotalRecs > 0 || $gen_category->CurrentAction <> "") { ?>
+<div class="box ewBox ewGrid<?php if ($gen_category_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> gen_category">
+<?php if ($gen_category->Export == "") { ?>
 <div class="box-header ewGridUpperPanel">
-<?php if ($sparepart_report->CurrentAction <> "gridadd" && $sparepart_report->CurrentAction <> "gridedit") { ?>
+<?php if ($gen_category->CurrentAction <> "gridadd" && $gen_category->CurrentAction <> "gridedit") { ?>
 <form name="ewPagerForm" class="form-inline ewForm ewPagerForm" action="<?php echo ew_CurrentPage() ?>">
-<?php if (!isset($sparepart_report_list->Pager)) $sparepart_report_list->Pager = new cPrevNextPager($sparepart_report_list->StartRec, $sparepart_report_list->DisplayRecs, $sparepart_report_list->TotalRecs, $sparepart_report_list->AutoHidePager) ?>
-<?php if ($sparepart_report_list->Pager->RecordCount > 0 && $sparepart_report_list->Pager->Visible) { ?>
+<?php if (!isset($gen_category_list->Pager)) $gen_category_list->Pager = new cPrevNextPager($gen_category_list->StartRec, $gen_category_list->DisplayRecs, $gen_category_list->TotalRecs, $gen_category_list->AutoHidePager) ?>
+<?php if ($gen_category_list->Pager->RecordCount > 0 && $gen_category_list->Pager->Visible) { ?>
 <div class="ewPager">
 <span><?php echo $Language->Phrase("Page") ?>&nbsp;</span>
 <div class="ewPrevNext"><div class="input-group">
 <div class="input-group-btn">
 <!--first page button-->
-	<?php if ($sparepart_report_list->Pager->FirstButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $sparepart_report_list->PageUrl() ?>start=<?php echo $sparepart_report_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
+	<?php if ($gen_category_list->Pager->FirstButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $gen_category_list->PageUrl() ?>start=<?php echo $gen_category_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerFirst") ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } ?>
 <!--previous page button-->
-	<?php if ($sparepart_report_list->Pager->PrevButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $sparepart_report_list->PageUrl() ?>start=<?php echo $sparepart_report_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php if ($gen_category_list->Pager->PrevButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $gen_category_list->PageUrl() ?>start=<?php echo $gen_category_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerPrevious") ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } ?>
 </div>
 <!--current page number-->
-	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $sparepart_report_list->Pager->CurrentPage ?>">
+	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $gen_category_list->Pager->CurrentPage ?>">
 <div class="input-group-btn">
 <!--next page button-->
-	<?php if ($sparepart_report_list->Pager->NextButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $sparepart_report_list->PageUrl() ?>start=<?php echo $sparepart_report_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
+	<?php if ($gen_category_list->Pager->NextButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $gen_category_list->PageUrl() ?>start=<?php echo $gen_category_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerNext") ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } ?>
 <!--last page button-->
-	<?php if ($sparepart_report_list->Pager->LastButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $sparepart_report_list->PageUrl() ?>start=<?php echo $sparepart_report_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
+	<?php if ($gen_category_list->Pager->LastButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $gen_category_list->PageUrl() ?>start=<?php echo $gen_category_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerLast") ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } ?>
 </div>
 </div>
 </div>
-<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $sparepart_report_list->Pager->PageCount ?></span>
+<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $gen_category_list->Pager->PageCount ?></span>
 </div>
 <?php } ?>
-<?php if ($sparepart_report_list->Pager->RecordCount > 0) { ?>
+<?php if ($gen_category_list->Pager->RecordCount > 0) { ?>
 <div class="ewPager ewRec">
-	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $sparepart_report_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $sparepart_report_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $sparepart_report_list->Pager->RecordCount ?></span>
+	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $gen_category_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $gen_category_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $gen_category_list->Pager->RecordCount ?></span>
 </div>
 <?php } ?>
-<?php if ($sparepart_report_list->TotalRecs > 0 && (!$sparepart_report_list->AutoHidePageSizeSelector || $sparepart_report_list->Pager->Visible)) { ?>
+<?php if ($gen_category_list->TotalRecs > 0 && (!$gen_category_list->AutoHidePageSizeSelector || $gen_category_list->Pager->Visible)) { ?>
 <div class="ewPager">
-<input type="hidden" name="t" value="sparepart_report">
+<input type="hidden" name="t" value="gen_category">
 <select name="<?php echo EW_TABLE_REC_PER_PAGE ?>" class="form-control input-sm ewTooltip" title="<?php echo $Language->Phrase("RecordsPerPage") ?>" onchange="this.form.submit();">
-<option value="5"<?php if ($sparepart_report_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
-<option value="10"<?php if ($sparepart_report_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
-<option value="15"<?php if ($sparepart_report_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
-<option value="20"<?php if ($sparepart_report_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
-<option value="50"<?php if ($sparepart_report_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
-<option value="ALL"<?php if ($sparepart_report->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
+<option value="5"<?php if ($gen_category_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
+<option value="10"<?php if ($gen_category_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
+<option value="15"<?php if ($gen_category_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
+<option value="20"<?php if ($gen_category_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
+<option value="50"<?php if ($gen_category_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
+<option value="ALL"<?php if ($gen_category->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
 </select>
 </div>
 <?php } ?>
@@ -2238,285 +2087,149 @@ $sparepart_report_list->ShowMessage();
 <?php } ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($sparepart_report_list->OtherOptions as &$option)
+	foreach ($gen_category_list->OtherOptions as &$option)
 		$option->Render("body");
 ?>
 </div>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
-<form name="fsparepart_reportlist" id="fsparepart_reportlist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($sparepart_report_list->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $sparepart_report_list->Token ?>">
+<form name="fgen_categorylist" id="fgen_categorylist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($gen_category_list->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $gen_category_list->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="sparepart_report">
-<div id="gmp_sparepart_report" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
-<?php if ($sparepart_report_list->TotalRecs > 0 || $sparepart_report->CurrentAction == "gridedit") { ?>
-<table id="tbl_sparepart_reportlist" class="table ewTable">
+<input type="hidden" name="t" value="gen_category">
+<div id="gmp_gen_category" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
+<?php if ($gen_category_list->TotalRecs > 0 || $gen_category->CurrentAction == "gridedit") { ?>
+<table id="tbl_gen_categorylist" class="table ewTable">
 <thead>
 	<tr class="ewTableHeader">
 <?php
 
 // Header row
-$sparepart_report_list->RowType = EW_ROWTYPE_HEADER;
+$gen_category_list->RowType = EW_ROWTYPE_HEADER;
 
 // Render list options
-$sparepart_report_list->RenderListOptions();
+$gen_category_list->RenderListOptions();
 
 // Render list options (header, left)
-$sparepart_report_list->ListOptions->Render("header", "left");
+$gen_category_list->ListOptions->Render("header", "left");
 ?>
-<?php if ($sparepart_report->id->Visible) { // id ?>
-	<?php if ($sparepart_report->SortUrl($sparepart_report->id) == "") { ?>
-		<th data-name="id" class="<?php echo $sparepart_report->id->HeaderCellClass() ?>"><div id="elh_sparepart_report_id" class="sparepart_report_id"><div class="ewTableHeaderCaption"><?php echo $sparepart_report->id->FldCaption() ?></div></div></th>
+<?php if ($gen_category->id->Visible) { // id ?>
+	<?php if ($gen_category->SortUrl($gen_category->id) == "") { ?>
+		<th data-name="id" class="<?php echo $gen_category->id->HeaderCellClass() ?>"><div id="elh_gen_category_id" class="gen_category_id"><div class="ewTableHeaderCaption"><?php echo $gen_category->id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="id" class="<?php echo $sparepart_report->id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $sparepart_report->SortUrl($sparepart_report->id) ?>',1);"><div id="elh_sparepart_report_id" class="sparepart_report_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $sparepart_report->id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($sparepart_report->id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($sparepart_report->id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="id" class="<?php echo $gen_category->id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_category->SortUrl($gen_category->id) ?>',1);"><div id="elh_gen_category_id" class="gen_category_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_category->id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_category->id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_category->id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($sparepart_report->date->Visible) { // date ?>
-	<?php if ($sparepart_report->SortUrl($sparepart_report->date) == "") { ?>
-		<th data-name="date" class="<?php echo $sparepart_report->date->HeaderCellClass() ?>"><div id="elh_sparepart_report_date" class="sparepart_report_date"><div class="ewTableHeaderCaption"><?php echo $sparepart_report->date->FldCaption() ?></div></div></th>
+<?php if ($gen_category->description->Visible) { // description ?>
+	<?php if ($gen_category->SortUrl($gen_category->description) == "") { ?>
+		<th data-name="description" class="<?php echo $gen_category->description->HeaderCellClass() ?>"><div id="elh_gen_category_description" class="gen_category_description"><div class="ewTableHeaderCaption"><?php echo $gen_category->description->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="date" class="<?php echo $sparepart_report->date->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $sparepart_report->SortUrl($sparepart_report->date) ?>',1);"><div id="elh_sparepart_report_date" class="sparepart_report_date">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $sparepart_report->date->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($sparepart_report->date->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($sparepart_report->date->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($sparepart_report->part_name->Visible) { // part_name ?>
-	<?php if ($sparepart_report->SortUrl($sparepart_report->part_name) == "") { ?>
-		<th data-name="part_name" class="<?php echo $sparepart_report->part_name->HeaderCellClass() ?>"><div id="elh_sparepart_report_part_name" class="sparepart_report_part_name"><div class="ewTableHeaderCaption"><?php echo $sparepart_report->part_name->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="part_name" class="<?php echo $sparepart_report->part_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $sparepart_report->SortUrl($sparepart_report->part_name) ?>',1);"><div id="elh_sparepart_report_part_name" class="sparepart_report_part_name">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $sparepart_report->part_name->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($sparepart_report->part_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($sparepart_report->part_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($sparepart_report->maintenance_id->Visible) { // maintenance_id ?>
-	<?php if ($sparepart_report->SortUrl($sparepart_report->maintenance_id) == "") { ?>
-		<th data-name="maintenance_id" class="<?php echo $sparepart_report->maintenance_id->HeaderCellClass() ?>"><div id="elh_sparepart_report_maintenance_id" class="sparepart_report_maintenance_id"><div class="ewTableHeaderCaption"><?php echo $sparepart_report->maintenance_id->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="maintenance_id" class="<?php echo $sparepart_report->maintenance_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $sparepart_report->SortUrl($sparepart_report->maintenance_id) ?>',1);"><div id="elh_sparepart_report_maintenance_id" class="sparepart_report_maintenance_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $sparepart_report->maintenance_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($sparepart_report->maintenance_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($sparepart_report->maintenance_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($sparepart_report->quantity_in->Visible) { // quantity_in ?>
-	<?php if ($sparepart_report->SortUrl($sparepart_report->quantity_in) == "") { ?>
-		<th data-name="quantity_in" class="<?php echo $sparepart_report->quantity_in->HeaderCellClass() ?>"><div id="elh_sparepart_report_quantity_in" class="sparepart_report_quantity_in"><div class="ewTableHeaderCaption"><?php echo $sparepart_report->quantity_in->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="quantity_in" class="<?php echo $sparepart_report->quantity_in->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $sparepart_report->SortUrl($sparepart_report->quantity_in) ?>',1);"><div id="elh_sparepart_report_quantity_in" class="sparepart_report_quantity_in">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $sparepart_report->quantity_in->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($sparepart_report->quantity_in->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($sparepart_report->quantity_in->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($sparepart_report->quantity_used->Visible) { // quantity_used ?>
-	<?php if ($sparepart_report->SortUrl($sparepart_report->quantity_used) == "") { ?>
-		<th data-name="quantity_used" class="<?php echo $sparepart_report->quantity_used->HeaderCellClass() ?>"><div id="elh_sparepart_report_quantity_used" class="sparepart_report_quantity_used"><div class="ewTableHeaderCaption"><?php echo $sparepart_report->quantity_used->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="quantity_used" class="<?php echo $sparepart_report->quantity_used->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $sparepart_report->SortUrl($sparepart_report->quantity_used) ?>',1);"><div id="elh_sparepart_report_quantity_used" class="sparepart_report_quantity_used">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $sparepart_report->quantity_used->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($sparepart_report->quantity_used->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($sparepart_report->quantity_used->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($sparepart_report->cost->Visible) { // cost ?>
-	<?php if ($sparepart_report->SortUrl($sparepart_report->cost) == "") { ?>
-		<th data-name="cost" class="<?php echo $sparepart_report->cost->HeaderCellClass() ?>"><div id="elh_sparepart_report_cost" class="sparepart_report_cost"><div class="ewTableHeaderCaption"><?php echo $sparepart_report->cost->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="cost" class="<?php echo $sparepart_report->cost->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $sparepart_report->SortUrl($sparepart_report->cost) ?>',1);"><div id="elh_sparepart_report_cost" class="sparepart_report_cost">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $sparepart_report->cost->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($sparepart_report->cost->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($sparepart_report->cost->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($sparepart_report->total_quantity->Visible) { // total_quantity ?>
-	<?php if ($sparepart_report->SortUrl($sparepart_report->total_quantity) == "") { ?>
-		<th data-name="total_quantity" class="<?php echo $sparepart_report->total_quantity->HeaderCellClass() ?>"><div id="elh_sparepart_report_total_quantity" class="sparepart_report_total_quantity"><div class="ewTableHeaderCaption"><?php echo $sparepart_report->total_quantity->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="total_quantity" class="<?php echo $sparepart_report->total_quantity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $sparepart_report->SortUrl($sparepart_report->total_quantity) ?>',1);"><div id="elh_sparepart_report_total_quantity" class="sparepart_report_total_quantity">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $sparepart_report->total_quantity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($sparepart_report->total_quantity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($sparepart_report->total_quantity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($sparepart_report->total_cost->Visible) { // total_cost ?>
-	<?php if ($sparepart_report->SortUrl($sparepart_report->total_cost) == "") { ?>
-		<th data-name="total_cost" class="<?php echo $sparepart_report->total_cost->HeaderCellClass() ?>"><div id="elh_sparepart_report_total_cost" class="sparepart_report_total_cost"><div class="ewTableHeaderCaption"><?php echo $sparepart_report->total_cost->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="total_cost" class="<?php echo $sparepart_report->total_cost->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $sparepart_report->SortUrl($sparepart_report->total_cost) ?>',1);"><div id="elh_sparepart_report_total_cost" class="sparepart_report_total_cost">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $sparepart_report->total_cost->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($sparepart_report->total_cost->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($sparepart_report->total_cost->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($sparepart_report->maintenance_total_cost->Visible) { // maintenance_total_cost ?>
-	<?php if ($sparepart_report->SortUrl($sparepart_report->maintenance_total_cost) == "") { ?>
-		<th data-name="maintenance_total_cost" class="<?php echo $sparepart_report->maintenance_total_cost->HeaderCellClass() ?>"><div id="elh_sparepart_report_maintenance_total_cost" class="sparepart_report_maintenance_total_cost"><div class="ewTableHeaderCaption"><?php echo $sparepart_report->maintenance_total_cost->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="maintenance_total_cost" class="<?php echo $sparepart_report->maintenance_total_cost->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $sparepart_report->SortUrl($sparepart_report->maintenance_total_cost) ?>',1);"><div id="elh_sparepart_report_maintenance_total_cost" class="sparepart_report_maintenance_total_cost">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $sparepart_report->maintenance_total_cost->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($sparepart_report->maintenance_total_cost->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($sparepart_report->maintenance_total_cost->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="description" class="<?php echo $gen_category->description->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_category->SortUrl($gen_category->description) ?>',1);"><div id="elh_gen_category_description" class="gen_category_description">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_category->description->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($gen_category->description->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_category->description->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
 <?php
 
 // Render list options (header, right)
-$sparepart_report_list->ListOptions->Render("header", "right");
+$gen_category_list->ListOptions->Render("header", "right");
 ?>
 	</tr>
 </thead>
 <tbody>
 <?php
-if ($sparepart_report->ExportAll && $sparepart_report->Export <> "") {
-	$sparepart_report_list->StopRec = $sparepart_report_list->TotalRecs;
+if ($gen_category->ExportAll && $gen_category->Export <> "") {
+	$gen_category_list->StopRec = $gen_category_list->TotalRecs;
 } else {
 
 	// Set the last record to display
-	if ($sparepart_report_list->TotalRecs > $sparepart_report_list->StartRec + $sparepart_report_list->DisplayRecs - 1)
-		$sparepart_report_list->StopRec = $sparepart_report_list->StartRec + $sparepart_report_list->DisplayRecs - 1;
+	if ($gen_category_list->TotalRecs > $gen_category_list->StartRec + $gen_category_list->DisplayRecs - 1)
+		$gen_category_list->StopRec = $gen_category_list->StartRec + $gen_category_list->DisplayRecs - 1;
 	else
-		$sparepart_report_list->StopRec = $sparepart_report_list->TotalRecs;
+		$gen_category_list->StopRec = $gen_category_list->TotalRecs;
 }
-$sparepart_report_list->RecCnt = $sparepart_report_list->StartRec - 1;
-if ($sparepart_report_list->Recordset && !$sparepart_report_list->Recordset->EOF) {
-	$sparepart_report_list->Recordset->MoveFirst();
-	$bSelectLimit = $sparepart_report_list->UseSelectLimit;
-	if (!$bSelectLimit && $sparepart_report_list->StartRec > 1)
-		$sparepart_report_list->Recordset->Move($sparepart_report_list->StartRec - 1);
-} elseif (!$sparepart_report->AllowAddDeleteRow && $sparepart_report_list->StopRec == 0) {
-	$sparepart_report_list->StopRec = $sparepart_report->GridAddRowCount;
+$gen_category_list->RecCnt = $gen_category_list->StartRec - 1;
+if ($gen_category_list->Recordset && !$gen_category_list->Recordset->EOF) {
+	$gen_category_list->Recordset->MoveFirst();
+	$bSelectLimit = $gen_category_list->UseSelectLimit;
+	if (!$bSelectLimit && $gen_category_list->StartRec > 1)
+		$gen_category_list->Recordset->Move($gen_category_list->StartRec - 1);
+} elseif (!$gen_category->AllowAddDeleteRow && $gen_category_list->StopRec == 0) {
+	$gen_category_list->StopRec = $gen_category->GridAddRowCount;
 }
 
 // Initialize aggregate
-$sparepart_report->RowType = EW_ROWTYPE_AGGREGATEINIT;
-$sparepart_report->ResetAttrs();
-$sparepart_report_list->RenderRow();
-while ($sparepart_report_list->RecCnt < $sparepart_report_list->StopRec) {
-	$sparepart_report_list->RecCnt++;
-	if (intval($sparepart_report_list->RecCnt) >= intval($sparepart_report_list->StartRec)) {
-		$sparepart_report_list->RowCnt++;
+$gen_category->RowType = EW_ROWTYPE_AGGREGATEINIT;
+$gen_category->ResetAttrs();
+$gen_category_list->RenderRow();
+while ($gen_category_list->RecCnt < $gen_category_list->StopRec) {
+	$gen_category_list->RecCnt++;
+	if (intval($gen_category_list->RecCnt) >= intval($gen_category_list->StartRec)) {
+		$gen_category_list->RowCnt++;
 
 		// Set up key count
-		$sparepart_report_list->KeyCount = $sparepart_report_list->RowIndex;
+		$gen_category_list->KeyCount = $gen_category_list->RowIndex;
 
 		// Init row class and style
-		$sparepart_report->ResetAttrs();
-		$sparepart_report->CssClass = "";
-		if ($sparepart_report->CurrentAction == "gridadd") {
+		$gen_category->ResetAttrs();
+		$gen_category->CssClass = "";
+		if ($gen_category->CurrentAction == "gridadd") {
 		} else {
-			$sparepart_report_list->LoadRowValues($sparepart_report_list->Recordset); // Load row values
+			$gen_category_list->LoadRowValues($gen_category_list->Recordset); // Load row values
 		}
-		$sparepart_report->RowType = EW_ROWTYPE_VIEW; // Render view
+		$gen_category->RowType = EW_ROWTYPE_VIEW; // Render view
 
 		// Set up row id / data-rowindex
-		$sparepart_report->RowAttrs = array_merge($sparepart_report->RowAttrs, array('data-rowindex'=>$sparepart_report_list->RowCnt, 'id'=>'r' . $sparepart_report_list->RowCnt . '_sparepart_report', 'data-rowtype'=>$sparepart_report->RowType));
+		$gen_category->RowAttrs = array_merge($gen_category->RowAttrs, array('data-rowindex'=>$gen_category_list->RowCnt, 'id'=>'r' . $gen_category_list->RowCnt . '_gen_category', 'data-rowtype'=>$gen_category->RowType));
 
 		// Render row
-		$sparepart_report_list->RenderRow();
+		$gen_category_list->RenderRow();
 
 		// Render list options
-		$sparepart_report_list->RenderListOptions();
+		$gen_category_list->RenderListOptions();
 ?>
-	<tr<?php echo $sparepart_report->RowAttributes() ?>>
+	<tr<?php echo $gen_category->RowAttributes() ?>>
 <?php
 
 // Render list options (body, left)
-$sparepart_report_list->ListOptions->Render("body", "left", $sparepart_report_list->RowCnt);
+$gen_category_list->ListOptions->Render("body", "left", $gen_category_list->RowCnt);
 ?>
-	<?php if ($sparepart_report->id->Visible) { // id ?>
-		<td data-name="id"<?php echo $sparepart_report->id->CellAttributes() ?>>
-<span id="el<?php echo $sparepart_report_list->RowCnt ?>_sparepart_report_id" class="sparepart_report_id">
-<span<?php echo $sparepart_report->id->ViewAttributes() ?>>
-<?php echo $sparepart_report->id->ListViewValue() ?></span>
+	<?php if ($gen_category->id->Visible) { // id ?>
+		<td data-name="id"<?php echo $gen_category->id->CellAttributes() ?>>
+<span id="el<?php echo $gen_category_list->RowCnt ?>_gen_category_id" class="gen_category_id">
+<span<?php echo $gen_category->id->ViewAttributes() ?>>
+<?php echo $gen_category->id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($sparepart_report->date->Visible) { // date ?>
-		<td data-name="date"<?php echo $sparepart_report->date->CellAttributes() ?>>
-<span id="el<?php echo $sparepart_report_list->RowCnt ?>_sparepart_report_date" class="sparepart_report_date">
-<span<?php echo $sparepart_report->date->ViewAttributes() ?>>
-<?php echo $sparepart_report->date->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($sparepart_report->part_name->Visible) { // part_name ?>
-		<td data-name="part_name"<?php echo $sparepart_report->part_name->CellAttributes() ?>>
-<span id="el<?php echo $sparepart_report_list->RowCnt ?>_sparepart_report_part_name" class="sparepart_report_part_name">
-<span<?php echo $sparepart_report->part_name->ViewAttributes() ?>>
-<?php echo $sparepart_report->part_name->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($sparepart_report->maintenance_id->Visible) { // maintenance_id ?>
-		<td data-name="maintenance_id"<?php echo $sparepart_report->maintenance_id->CellAttributes() ?>>
-<span id="el<?php echo $sparepart_report_list->RowCnt ?>_sparepart_report_maintenance_id" class="sparepart_report_maintenance_id">
-<span<?php echo $sparepart_report->maintenance_id->ViewAttributes() ?>>
-<?php echo $sparepart_report->maintenance_id->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($sparepart_report->quantity_in->Visible) { // quantity_in ?>
-		<td data-name="quantity_in"<?php echo $sparepart_report->quantity_in->CellAttributes() ?>>
-<span id="el<?php echo $sparepart_report_list->RowCnt ?>_sparepart_report_quantity_in" class="sparepart_report_quantity_in">
-<span<?php echo $sparepart_report->quantity_in->ViewAttributes() ?>>
-<?php echo $sparepart_report->quantity_in->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($sparepart_report->quantity_used->Visible) { // quantity_used ?>
-		<td data-name="quantity_used"<?php echo $sparepart_report->quantity_used->CellAttributes() ?>>
-<span id="el<?php echo $sparepart_report_list->RowCnt ?>_sparepart_report_quantity_used" class="sparepart_report_quantity_used">
-<span<?php echo $sparepart_report->quantity_used->ViewAttributes() ?>>
-<?php echo $sparepart_report->quantity_used->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($sparepart_report->cost->Visible) { // cost ?>
-		<td data-name="cost"<?php echo $sparepart_report->cost->CellAttributes() ?>>
-<span id="el<?php echo $sparepart_report_list->RowCnt ?>_sparepart_report_cost" class="sparepart_report_cost">
-<span<?php echo $sparepart_report->cost->ViewAttributes() ?>>
-<?php echo $sparepart_report->cost->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($sparepart_report->total_quantity->Visible) { // total_quantity ?>
-		<td data-name="total_quantity"<?php echo $sparepart_report->total_quantity->CellAttributes() ?>>
-<span id="el<?php echo $sparepart_report_list->RowCnt ?>_sparepart_report_total_quantity" class="sparepart_report_total_quantity">
-<span<?php echo $sparepart_report->total_quantity->ViewAttributes() ?>>
-<?php echo $sparepart_report->total_quantity->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($sparepart_report->total_cost->Visible) { // total_cost ?>
-		<td data-name="total_cost"<?php echo $sparepart_report->total_cost->CellAttributes() ?>>
-<span id="el<?php echo $sparepart_report_list->RowCnt ?>_sparepart_report_total_cost" class="sparepart_report_total_cost">
-<span<?php echo $sparepart_report->total_cost->ViewAttributes() ?>>
-<?php echo $sparepart_report->total_cost->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($sparepart_report->maintenance_total_cost->Visible) { // maintenance_total_cost ?>
-		<td data-name="maintenance_total_cost"<?php echo $sparepart_report->maintenance_total_cost->CellAttributes() ?>>
-<span id="el<?php echo $sparepart_report_list->RowCnt ?>_sparepart_report_maintenance_total_cost" class="sparepart_report_maintenance_total_cost">
-<span<?php echo $sparepart_report->maintenance_total_cost->ViewAttributes() ?>>
-<?php echo $sparepart_report->maintenance_total_cost->ListViewValue() ?></span>
+	<?php if ($gen_category->description->Visible) { // description ?>
+		<td data-name="description"<?php echo $gen_category->description->CellAttributes() ?>>
+<span id="el<?php echo $gen_category_list->RowCnt ?>_gen_category_description" class="gen_category_description">
+<span<?php echo $gen_category->description->ViewAttributes() ?>>
+<?php echo $gen_category->description->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
 <?php
 
 // Render list options (body, right)
-$sparepart_report_list->ListOptions->Render("body", "right", $sparepart_report_list->RowCnt);
+$gen_category_list->ListOptions->Render("body", "right", $gen_category_list->RowCnt);
 ?>
 	</tr>
 <?php
 	}
-	if ($sparepart_report->CurrentAction <> "gridadd")
-		$sparepart_report_list->Recordset->MoveNext();
+	if ($gen_category->CurrentAction <> "gridadd")
+		$gen_category_list->Recordset->MoveNext();
 }
 ?>
 </tbody>
 </table>
 <?php } ?>
-<?php if ($sparepart_report->CurrentAction == "") { ?>
+<?php if ($gen_category->CurrentAction == "") { ?>
 <input type="hidden" name="a_list" id="a_list" value="">
 <?php } ?>
 </div>
@@ -2524,15 +2237,15 @@ $sparepart_report_list->ListOptions->Render("body", "right", $sparepart_report_l
 <?php
 
 // Close recordset
-if ($sparepart_report_list->Recordset)
-	$sparepart_report_list->Recordset->Close();
+if ($gen_category_list->Recordset)
+	$gen_category_list->Recordset->Close();
 ?>
 </div>
 <?php } ?>
-<?php if ($sparepart_report_list->TotalRecs == 0 && $sparepart_report->CurrentAction == "") { // Show other options ?>
+<?php if ($gen_category_list->TotalRecs == 0 && $gen_category->CurrentAction == "") { // Show other options ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($sparepart_report_list->OtherOptions as &$option) {
+	foreach ($gen_category_list->OtherOptions as &$option) {
 		$option->ButtonClass = "";
 		$option->Render("body", "");
 	}
@@ -2540,19 +2253,19 @@ if ($sparepart_report_list->Recordset)
 </div>
 <div class="clearfix"></div>
 <?php } ?>
-<?php if ($sparepart_report->Export == "") { ?>
+<?php if ($gen_category->Export == "") { ?>
 <script type="text/javascript">
-fsparepart_reportlistsrch.FilterList = <?php echo $sparepart_report_list->GetFilterList() ?>;
-fsparepart_reportlistsrch.Init();
-fsparepart_reportlist.Init();
+fgen_categorylistsrch.FilterList = <?php echo $gen_category_list->GetFilterList() ?>;
+fgen_categorylistsrch.Init();
+fgen_categorylist.Init();
 </script>
 <?php } ?>
 <?php
-$sparepart_report_list->ShowPageFooter();
+$gen_category_list->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
-<?php if ($sparepart_report->Export == "") { ?>
+<?php if ($gen_category->Export == "") { ?>
 <script type="text/javascript">
 
 // Write your table-specific startup script here
@@ -2562,5 +2275,5 @@ if (EW_DEBUG_ENABLED)
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php
-$sparepart_report_list->Page_Terminate();
+$gen_category_list->Page_Terminate();
 ?>

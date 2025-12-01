@@ -1,12 +1,12 @@
 <?php
 
 // Global variable for table object
-$gen_maintenance = NULL;
+$diesel_supply = NULL;
 
 //
-// Table class for gen_maintenance
+// Table class for diesel_supply
 //
-class cgen_maintenance extends cTable {
+class cdiesel_supply extends cTable {
 	var $AuditTrailOnAdd = TRUE;
 	var $AuditTrailOnEdit = TRUE;
 	var $AuditTrailOnDelete = TRUE;
@@ -14,23 +14,16 @@ class cgen_maintenance extends cTable {
 	var $AuditTrailOnViewData = FALSE;
 	var $AuditTrailOnSearch = FALSE;
 	var $id;
-	var $datetime;
-	var $reference_id;
-	var $gen_name;
-	var $maintenance_type;
-	var $running_hours;
-	var $cost;
-	var $labour_fee;
+	var $date_initiated;
+	var $gen_type;
+	var $category;
+	var $diesel_initia_qty;
+	var $diesel_new_qty;
 	var $total;
-	var $staff_id;
 	var $status;
 	var $initiator_action;
 	var $initiator_comment;
-	var $approver_date;
-	var $approver_action;
-	var $approver_comment;
-	var $approved_by;
-	var $flag;
+	var $initiated_by;
 
 	//
 	// Table class constructor
@@ -40,12 +33,12 @@ class cgen_maintenance extends cTable {
 
 		// Language object
 		if (!isset($Language)) $Language = new cLanguage();
-		$this->TableVar = 'gen_maintenance';
-		$this->TableName = 'gen_maintenance';
-		$this->TableType = 'TABLE';
+		$this->TableVar = 'diesel_supply';
+		$this->TableName = 'diesel_supply';
+		$this->TableType = 'VIEW';
 
 		// Update Table
-		$this->UpdateTable = "`gen_maintenance`";
+		$this->UpdateTable = "`diesel_supply`";
 		$this->DBID = 'DB';
 		$this->ExportAll = TRUE;
 		$this->ExportPageBreakCount = 0; // Page break per every n record (PDF only)
@@ -65,115 +58,77 @@ class cgen_maintenance extends cTable {
 		$this->BasicSearch = new cBasicSearch($this->TableVar);
 
 		// id
-		$this->id = new cField('gen_maintenance', 'gen_maintenance', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
+		$this->id = new cField('diesel_supply', 'diesel_supply', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
 		$this->id->Sortable = TRUE; // Allow sort
 		$this->id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['id'] = &$this->id;
 
-		// datetime
-		$this->datetime = new cField('gen_maintenance', 'gen_maintenance', 'x_datetime', 'datetime', '`datetime`', ew_CastDateFieldForLike('`datetime`', 0, "DB"), 135, 0, FALSE, '`datetime`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->datetime->Sortable = TRUE; // Allow sort
-		$this->datetime->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
-		$this->fields['datetime'] = &$this->datetime;
+		// date_initiated
+		$this->date_initiated = new cField('diesel_supply', 'diesel_supply', 'x_date_initiated', 'date_initiated', '`date_initiated`', ew_CastDateFieldForLike('`date_initiated`', 14, "DB"), 133, 14, FALSE, '`date_initiated`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->date_initiated->Sortable = TRUE; // Allow sort
+		$this->date_initiated->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_SEPARATOR"], $Language->Phrase("IncorrectShortDateDMY"));
+		$this->fields['date_initiated'] = &$this->date_initiated;
 
-		// reference_id
-		$this->reference_id = new cField('gen_maintenance', 'gen_maintenance', 'x_reference_id', 'reference_id', '`reference_id`', '`reference_id`', 200, -1, FALSE, '`reference_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->reference_id->Sortable = TRUE; // Allow sort
-		$this->fields['reference_id'] = &$this->reference_id;
+		// gen_type
+		$this->gen_type = new cField('diesel_supply', 'diesel_supply', 'x_gen_type', 'gen_type', '`gen_type`', '`gen_type`', 200, -1, FALSE, '`gen_type`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->gen_type->Sortable = TRUE; // Allow sort
+		$this->gen_type->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->gen_type->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
+		$this->fields['gen_type'] = &$this->gen_type;
 
-		// gen_name
-		$this->gen_name = new cField('gen_maintenance', 'gen_maintenance', 'x_gen_name', 'gen_name', '`gen_name`', '`gen_name`', 3, -1, FALSE, '`gen_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
-		$this->gen_name->Sortable = TRUE; // Allow sort
-		$this->gen_name->UsePleaseSelect = TRUE; // Use PleaseSelect by default
-		$this->gen_name->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
-		$this->fields['gen_name'] = &$this->gen_name;
+		// category
+		$this->category = new cField('diesel_supply', 'diesel_supply', 'x_category', 'category', '`category`', '`category`', 3, -1, FALSE, '`category`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->category->Sortable = TRUE; // Allow sort
+		$this->category->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->category->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
+		$this->fields['category'] = &$this->category;
 
-		// maintenance_type
-		$this->maintenance_type = new cField('gen_maintenance', 'gen_maintenance', 'x_maintenance_type', 'maintenance_type', '`maintenance_type`', '`maintenance_type`', 16, -1, FALSE, '`maintenance_type`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
-		$this->maintenance_type->Sortable = TRUE; // Allow sort
-		$this->maintenance_type->UsePleaseSelect = TRUE; // Use PleaseSelect by default
-		$this->maintenance_type->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
-		$this->maintenance_type->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
-		$this->fields['maintenance_type'] = &$this->maintenance_type;
+		// diesel_initia_qty
+		$this->diesel_initia_qty = new cField('diesel_supply', 'diesel_supply', 'x_diesel_initia_qty', 'diesel_initia_qty', '`diesel_initia_qty`', '`diesel_initia_qty`', 131, -1, FALSE, '`diesel_initia_qty`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->diesel_initia_qty->Sortable = TRUE; // Allow sort
+		$this->diesel_initia_qty->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
+		$this->fields['diesel_initia_qty'] = &$this->diesel_initia_qty;
 
-		// running_hours
-		$this->running_hours = new cField('gen_maintenance', 'gen_maintenance', 'x_running_hours', 'running_hours', '`running_hours`', '`running_hours`', 200, -1, FALSE, '`running_hours`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->running_hours->Sortable = TRUE; // Allow sort
-		$this->fields['running_hours'] = &$this->running_hours;
-
-		// cost
-		$this->cost = new cField('gen_maintenance', 'gen_maintenance', 'x_cost', 'cost', '`cost`', '`cost`', 131, -1, FALSE, '`cost`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->cost->Sortable = TRUE; // Allow sort
-		$this->cost->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
-		$this->fields['cost'] = &$this->cost;
-
-		// labour_fee
-		$this->labour_fee = new cField('gen_maintenance', 'gen_maintenance', 'x_labour_fee', 'labour_fee', '`labour_fee`', '`labour_fee`', 131, -1, FALSE, '`labour_fee`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->labour_fee->Sortable = TRUE; // Allow sort
-		$this->labour_fee->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
-		$this->fields['labour_fee'] = &$this->labour_fee;
+		// diesel_new_qty
+		$this->diesel_new_qty = new cField('diesel_supply', 'diesel_supply', 'x_diesel_new_qty', 'diesel_new_qty', '`diesel_new_qty`', '`diesel_new_qty`', 131, -1, FALSE, '`diesel_new_qty`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->diesel_new_qty->Sortable = TRUE; // Allow sort
+		$this->diesel_new_qty->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
+		$this->fields['diesel_new_qty'] = &$this->diesel_new_qty;
 
 		// total
-		$this->total = new cField('gen_maintenance', 'gen_maintenance', 'x_total', 'total', '`total`', '`total`', 131, -1, FALSE, '`total`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->total = new cField('diesel_supply', 'diesel_supply', 'x_total', 'total', '`total`', '`total`', 131, -1, FALSE, '`total`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->total->Sortable = TRUE; // Allow sort
 		$this->total->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
 		$this->fields['total'] = &$this->total;
 
-		// staff_id
-		$this->staff_id = new cField('gen_maintenance', 'gen_maintenance', 'x_staff_id', 'staff_id', '`staff_id`', '`staff_id`', 3, -1, FALSE, '`staff_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
-		$this->staff_id->Sortable = TRUE; // Allow sort
-		$this->staff_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
-		$this->staff_id->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
-		$this->fields['staff_id'] = &$this->staff_id;
-
 		// status
-		$this->status = new cField('gen_maintenance', 'gen_maintenance', 'x_status', 'status', '`status`', '`status`', 3, -1, FALSE, '`status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->status = new cField('diesel_supply', 'diesel_supply', 'x_status', 'status', '`status`', '`status`', 3, -1, FALSE, '`status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->status->Sortable = TRUE; // Allow sort
 		$this->status->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->status->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
+		$this->status->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
+		$this->status->AdvancedSearch->SearchValueDefault = 0;
+		$this->status->AdvancedSearch->SearchOperatorDefault = "=";
+		$this->status->AdvancedSearch->SearchOperatorDefault2 = "";
+		$this->status->AdvancedSearch->SearchConditionDefault = "AND";
 		$this->fields['status'] = &$this->status;
 
 		// initiator_action
-		$this->initiator_action = new cField('gen_maintenance', 'gen_maintenance', 'x_initiator_action', 'initiator_action', '`initiator_action`', '`initiator_action`', 3, -1, FALSE, '`initiator_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->initiator_action = new cField('diesel_supply', 'diesel_supply', 'x_initiator_action', 'initiator_action', '`initiator_action`', '`initiator_action`', 3, -1, FALSE, '`initiator_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->initiator_action->Sortable = TRUE; // Allow sort
 		$this->initiator_action->OptionCount = 2;
 		$this->initiator_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['initiator_action'] = &$this->initiator_action;
 
 		// initiator_comment
-		$this->initiator_comment = new cField('gen_maintenance', 'gen_maintenance', 'x_initiator_comment', 'initiator_comment', '`initiator_comment`', '`initiator_comment`', 200, -1, FALSE, '`initiator_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->initiator_comment = new cField('diesel_supply', 'diesel_supply', 'x_initiator_comment', 'initiator_comment', '`initiator_comment`', '`initiator_comment`', 200, -1, FALSE, '`initiator_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->initiator_comment->Sortable = TRUE; // Allow sort
 		$this->fields['initiator_comment'] = &$this->initiator_comment;
 
-		// approver_date
-		$this->approver_date = new cField('gen_maintenance', 'gen_maintenance', 'x_approver_date', 'approver_date', '`approver_date`', ew_CastDateFieldForLike('`approver_date`', 0, "DB"), 135, 0, FALSE, '`approver_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->approver_date->Sortable = TRUE; // Allow sort
-		$this->approver_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
-		$this->fields['approver_date'] = &$this->approver_date;
-
-		// approver_action
-		$this->approver_action = new cField('gen_maintenance', 'gen_maintenance', 'x_approver_action', 'approver_action', '`approver_action`', '`approver_action`', 3, -1, FALSE, '`approver_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
-		$this->approver_action->Sortable = TRUE; // Allow sort
-		$this->approver_action->OptionCount = 2;
-		$this->approver_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
-		$this->fields['approver_action'] = &$this->approver_action;
-
-		// approver_comment
-		$this->approver_comment = new cField('gen_maintenance', 'gen_maintenance', 'x_approver_comment', 'approver_comment', '`approver_comment`', '`approver_comment`', 200, -1, FALSE, '`approver_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
-		$this->approver_comment->Sortable = TRUE; // Allow sort
-		$this->fields['approver_comment'] = &$this->approver_comment;
-
-		// approved_by
-		$this->approved_by = new cField('gen_maintenance', 'gen_maintenance', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->approved_by->Sortable = TRUE; // Allow sort
-		$this->approved_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
-		$this->fields['approved_by'] = &$this->approved_by;
-
-		// flag
-		$this->flag = new cField('gen_maintenance', 'gen_maintenance', 'x_flag', 'flag', '`flag`', '`flag`', 3, -1, FALSE, '`flag`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->flag->Sortable = TRUE; // Allow sort
-		$this->flag->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
-		$this->fields['flag'] = &$this->flag;
+		// initiated_by
+		$this->initiated_by = new cField('diesel_supply', 'diesel_supply', 'x_initiated_by', 'initiated_by', '`initiated_by`', '`initiated_by`', 3, -1, FALSE, '`initiated_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->initiated_by->Sortable = TRUE; // Allow sort
+		$this->fields['initiated_by'] = &$this->initiated_by;
 	}
 
 	// Field Visibility
@@ -217,7 +172,7 @@ class cgen_maintenance extends cTable {
 	var $_SqlFrom = "";
 
 	function getSqlFrom() { // From
-		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`gen_maintenance`";
+		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`diesel_supply`";
 	}
 
 	function SqlFrom() { // For backward compatibility
@@ -540,7 +495,7 @@ class cgen_maintenance extends cTable {
 		if (@$_SESSION[$name] <> "") {
 			return $_SESSION[$name];
 		} else {
-			return "gen_maintenancelist.php";
+			return "diesel_supplylist.php";
 		}
 	}
 
@@ -551,11 +506,11 @@ class cgen_maintenance extends cTable {
 	// Get modal caption
 	function GetModalCaption($pageName) {
 		global $Language;
-		if ($pageName == "gen_maintenanceview.php")
+		if ($pageName == "diesel_supplyview.php")
 			return $Language->Phrase("View");
-		elseif ($pageName == "gen_maintenanceedit.php")
+		elseif ($pageName == "diesel_supplyedit.php")
 			return $Language->Phrase("Edit");
-		elseif ($pageName == "gen_maintenanceadd.php")
+		elseif ($pageName == "diesel_supplyadd.php")
 			return $Language->Phrase("Add");
 		else
 			return "";
@@ -563,30 +518,30 @@ class cgen_maintenance extends cTable {
 
 	// List URL
 	function GetListUrl() {
-		return "gen_maintenancelist.php";
+		return "diesel_supplylist.php";
 	}
 
 	// View URL
 	function GetViewUrl($parm = "") {
 		if ($parm <> "")
-			$url = $this->KeyUrl("gen_maintenanceview.php", $this->UrlParm($parm));
+			$url = $this->KeyUrl("diesel_supplyview.php", $this->UrlParm($parm));
 		else
-			$url = $this->KeyUrl("gen_maintenanceview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
+			$url = $this->KeyUrl("diesel_supplyview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
 		return $this->AddMasterUrl($url);
 	}
 
 	// Add URL
 	function GetAddUrl($parm = "") {
 		if ($parm <> "")
-			$url = "gen_maintenanceadd.php?" . $this->UrlParm($parm);
+			$url = "diesel_supplyadd.php?" . $this->UrlParm($parm);
 		else
-			$url = "gen_maintenanceadd.php";
+			$url = "diesel_supplyadd.php";
 		return $this->AddMasterUrl($url);
 	}
 
 	// Edit URL
 	function GetEditUrl($parm = "") {
-		$url = $this->KeyUrl("gen_maintenanceedit.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("diesel_supplyedit.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -598,7 +553,7 @@ class cgen_maintenance extends cTable {
 
 	// Copy URL
 	function GetCopyUrl($parm = "") {
-		$url = $this->KeyUrl("gen_maintenanceadd.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("diesel_supplyadd.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -610,7 +565,7 @@ class cgen_maintenance extends cTable {
 
 	// Delete URL
 	function GetDeleteUrl() {
-		return $this->KeyUrl("gen_maintenancedelete.php", $this->UrlParm());
+		return $this->KeyUrl("diesel_supplydelete.php", $this->UrlParm());
 	}
 
 	// Add master url
@@ -712,23 +667,16 @@ class cgen_maintenance extends cTable {
 	// Load row values from recordset
 	function LoadListRowValues(&$rs) {
 		$this->id->setDbValue($rs->fields('id'));
-		$this->datetime->setDbValue($rs->fields('datetime'));
-		$this->reference_id->setDbValue($rs->fields('reference_id'));
-		$this->gen_name->setDbValue($rs->fields('gen_name'));
-		$this->maintenance_type->setDbValue($rs->fields('maintenance_type'));
-		$this->running_hours->setDbValue($rs->fields('running_hours'));
-		$this->cost->setDbValue($rs->fields('cost'));
-		$this->labour_fee->setDbValue($rs->fields('labour_fee'));
+		$this->date_initiated->setDbValue($rs->fields('date_initiated'));
+		$this->gen_type->setDbValue($rs->fields('gen_type'));
+		$this->category->setDbValue($rs->fields('category'));
+		$this->diesel_initia_qty->setDbValue($rs->fields('diesel_initia_qty'));
+		$this->diesel_new_qty->setDbValue($rs->fields('diesel_new_qty'));
 		$this->total->setDbValue($rs->fields('total'));
-		$this->staff_id->setDbValue($rs->fields('staff_id'));
 		$this->status->setDbValue($rs->fields('status'));
 		$this->initiator_action->setDbValue($rs->fields('initiator_action'));
 		$this->initiator_comment->setDbValue($rs->fields('initiator_comment'));
-		$this->approver_date->setDbValue($rs->fields('approver_date'));
-		$this->approver_action->setDbValue($rs->fields('approver_action'));
-		$this->approver_comment->setDbValue($rs->fields('approver_comment'));
-		$this->approved_by->setDbValue($rs->fields('approved_by'));
-		$this->flag->setDbValue($rs->fields('flag'));
+		$this->initiated_by->setDbValue($rs->fields('initiated_by'));
 	}
 
 	// Render list row values
@@ -740,129 +688,89 @@ class cgen_maintenance extends cTable {
 
 	// Common render codes
 		// id
-		// datetime
-		// reference_id
-		// gen_name
-		// maintenance_type
-		// running_hours
-		// cost
-		// labour_fee
+		// date_initiated
+		// gen_type
+		// category
+		// diesel_initia_qty
+		// diesel_new_qty
 		// total
-		// staff_id
 		// status
 		// initiator_action
 		// initiator_comment
-		// approver_date
-		// approver_action
-		// approver_comment
-		// approved_by
-		// flag
+		// initiated_by
 		// id
 
 		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// datetime
-		$this->datetime->ViewValue = $this->datetime->CurrentValue;
-		$this->datetime->ViewValue = ew_FormatDateTime($this->datetime->ViewValue, 0);
-		$this->datetime->ViewCustomAttributes = "";
+		// date_initiated
+		$this->date_initiated->ViewValue = $this->date_initiated->CurrentValue;
+		$this->date_initiated->ViewValue = ew_FormatDateTime($this->date_initiated->ViewValue, 14);
+		$this->date_initiated->ViewCustomAttributes = "";
 
-		// reference_id
-		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
-		$this->reference_id->ViewCustomAttributes = "";
-
-		// gen_name
-		if (strval($this->gen_name->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->gen_name->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `gen_name` AS `DispFld`, `location` AS `Disp2Fld`, `kva` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `generator_registration`";
+		// gen_type
+		if (strval($this->gen_type->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->gen_type->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `gen_name` AS `DispFld`, `location` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `generator_registration`";
 		$sWhereWrk = "";
-		$this->gen_name->LookupFilters = array();
+		$this->gen_type->LookupFilters = array("dx1" => '`gen_name`', "dx2" => '`location`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->gen_name, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->gen_type, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->gen_name->ViewValue = $this->gen_name->DisplayValue($arwrk);
+				$this->gen_type->ViewValue = $this->gen_type->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->gen_name->ViewValue = $this->gen_name->CurrentValue;
+				$this->gen_type->ViewValue = $this->gen_type->CurrentValue;
 			}
 		} else {
-			$this->gen_name->ViewValue = NULL;
+			$this->gen_type->ViewValue = NULL;
 		}
-		$this->gen_name->ViewCustomAttributes = "";
+		$this->gen_type->ViewCustomAttributes = "";
 
-		// maintenance_type
-		if (strval($this->maintenance_type->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->maintenance_type->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `maintenance_type`";
+		// category
+		if (strval($this->category->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->category->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `gen_category`";
 		$sWhereWrk = "";
-		$this->maintenance_type->LookupFilters = array();
+		$this->category->LookupFilters = array("dx1" => '`description`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->maintenance_type, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->category, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->maintenance_type->ViewValue = $this->maintenance_type->DisplayValue($arwrk);
+				$this->category->ViewValue = $this->category->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->maintenance_type->ViewValue = $this->maintenance_type->CurrentValue;
+				$this->category->ViewValue = $this->category->CurrentValue;
 			}
 		} else {
-			$this->maintenance_type->ViewValue = NULL;
+			$this->category->ViewValue = NULL;
 		}
-		$this->maintenance_type->ViewCustomAttributes = "";
+		$this->category->ViewCustomAttributes = "";
 
-		// running_hours
-		$this->running_hours->ViewValue = $this->running_hours->CurrentValue;
-		$this->running_hours->ViewCustomAttributes = "";
+		// diesel_initia_qty
+		$this->diesel_initia_qty->ViewValue = $this->diesel_initia_qty->CurrentValue;
+		$this->diesel_initia_qty->ViewCustomAttributes = "";
 
-		// cost
-		$this->cost->ViewValue = $this->cost->CurrentValue;
-		$this->cost->ViewCustomAttributes = "";
-
-		// labour_fee
-		$this->labour_fee->ViewValue = $this->labour_fee->CurrentValue;
-		$this->labour_fee->ViewCustomAttributes = "";
+		// diesel_new_qty
+		$this->diesel_new_qty->ViewValue = $this->diesel_new_qty->CurrentValue;
+		$this->diesel_new_qty->ViewCustomAttributes = "";
 
 		// total
 		$this->total->ViewValue = $this->total->CurrentValue;
 		$this->total->ViewCustomAttributes = "";
 
-		// staff_id
-		if (strval($this->staff_id->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
-		$sWhereWrk = "";
-		$this->staff_id->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$this->staff_id->ViewValue = $this->staff_id->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
-			}
-		} else {
-			$this->staff_id->ViewValue = NULL;
-		}
-		$this->staff_id->ViewCustomAttributes = "";
-
 		// status
 		if (strval($this->status->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `gen_status`";
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `supply_status`";
 		$sWhereWrk = "";
 		$this->status->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
@@ -894,101 +802,64 @@ class cgen_maintenance extends cTable {
 		$this->initiator_comment->ViewValue = $this->initiator_comment->CurrentValue;
 		$this->initiator_comment->ViewCustomAttributes = "";
 
-		// approver_date
-		$this->approver_date->ViewValue = $this->approver_date->CurrentValue;
-		$this->approver_date->ViewValue = ew_FormatDateTime($this->approver_date->ViewValue, 0);
-		$this->approver_date->ViewCustomAttributes = "";
-
-		// approver_action
-		if (strval($this->approver_action->CurrentValue) <> "") {
-			$this->approver_action->ViewValue = $this->approver_action->OptionCaption($this->approver_action->CurrentValue);
-		} else {
-			$this->approver_action->ViewValue = NULL;
-		}
-		$this->approver_action->ViewCustomAttributes = "";
-
-		// approver_comment
-		$this->approver_comment->ViewValue = $this->approver_comment->CurrentValue;
-		$this->approver_comment->ViewCustomAttributes = "";
-
-		// approved_by
-		$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
-		if (strval($this->approved_by->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->approved_by->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		// initiated_by
+		$this->initiated_by->ViewValue = $this->initiated_by->CurrentValue;
+		if (strval($this->initiated_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->initiated_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
 		$sWhereWrk = "";
-		$this->approved_by->LookupFilters = array();
+		$this->initiated_by->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->approved_by, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->initiated_by, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
-				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$this->approved_by->ViewValue = $this->approved_by->DisplayValue($arwrk);
+				$this->initiated_by->ViewValue = $this->initiated_by->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->approved_by->ViewValue = $this->approved_by->CurrentValue;
+				$this->initiated_by->ViewValue = $this->initiated_by->CurrentValue;
 			}
 		} else {
-			$this->approved_by->ViewValue = NULL;
+			$this->initiated_by->ViewValue = NULL;
 		}
-		$this->approved_by->ViewCustomAttributes = "";
-
-		// flag
-		$this->flag->ViewValue = $this->flag->CurrentValue;
-		$this->flag->ViewCustomAttributes = "";
+		$this->initiated_by->ViewCustomAttributes = "";
 
 		// id
 		$this->id->LinkCustomAttributes = "";
 		$this->id->HrefValue = "";
 		$this->id->TooltipValue = "";
 
-		// datetime
-		$this->datetime->LinkCustomAttributes = "";
-		$this->datetime->HrefValue = "";
-		$this->datetime->TooltipValue = "";
+		// date_initiated
+		$this->date_initiated->LinkCustomAttributes = "";
+		$this->date_initiated->HrefValue = "";
+		$this->date_initiated->TooltipValue = "";
 
-		// reference_id
-		$this->reference_id->LinkCustomAttributes = "";
-		$this->reference_id->HrefValue = "";
-		$this->reference_id->TooltipValue = "";
+		// gen_type
+		$this->gen_type->LinkCustomAttributes = "";
+		$this->gen_type->HrefValue = "";
+		$this->gen_type->TooltipValue = "";
 
-		// gen_name
-		$this->gen_name->LinkCustomAttributes = "";
-		$this->gen_name->HrefValue = "";
-		$this->gen_name->TooltipValue = "";
+		// category
+		$this->category->LinkCustomAttributes = "";
+		$this->category->HrefValue = "";
+		$this->category->TooltipValue = "";
 
-		// maintenance_type
-		$this->maintenance_type->LinkCustomAttributes = "";
-		$this->maintenance_type->HrefValue = "";
-		$this->maintenance_type->TooltipValue = "";
+		// diesel_initia_qty
+		$this->diesel_initia_qty->LinkCustomAttributes = "";
+		$this->diesel_initia_qty->HrefValue = "";
+		$this->diesel_initia_qty->TooltipValue = "";
 
-		// running_hours
-		$this->running_hours->LinkCustomAttributes = "";
-		$this->running_hours->HrefValue = "";
-		$this->running_hours->TooltipValue = "";
-
-		// cost
-		$this->cost->LinkCustomAttributes = "";
-		$this->cost->HrefValue = "";
-		$this->cost->TooltipValue = "";
-
-		// labour_fee
-		$this->labour_fee->LinkCustomAttributes = "";
-		$this->labour_fee->HrefValue = "";
-		$this->labour_fee->TooltipValue = "";
+		// diesel_new_qty
+		$this->diesel_new_qty->LinkCustomAttributes = "";
+		$this->diesel_new_qty->HrefValue = "";
+		$this->diesel_new_qty->TooltipValue = "";
 
 		// total
 		$this->total->LinkCustomAttributes = "";
 		$this->total->HrefValue = "";
 		$this->total->TooltipValue = "";
-
-		// staff_id
-		$this->staff_id->LinkCustomAttributes = "";
-		$this->staff_id->HrefValue = "";
-		$this->staff_id->TooltipValue = "";
 
 		// status
 		$this->status->LinkCustomAttributes = "";
@@ -1005,30 +876,10 @@ class cgen_maintenance extends cTable {
 		$this->initiator_comment->HrefValue = "";
 		$this->initiator_comment->TooltipValue = "";
 
-		// approver_date
-		$this->approver_date->LinkCustomAttributes = "";
-		$this->approver_date->HrefValue = "";
-		$this->approver_date->TooltipValue = "";
-
-		// approver_action
-		$this->approver_action->LinkCustomAttributes = "";
-		$this->approver_action->HrefValue = "";
-		$this->approver_action->TooltipValue = "";
-
-		// approver_comment
-		$this->approver_comment->LinkCustomAttributes = "";
-		$this->approver_comment->HrefValue = "";
-		$this->approver_comment->TooltipValue = "";
-
-		// approved_by
-		$this->approved_by->LinkCustomAttributes = "";
-		$this->approved_by->HrefValue = "";
-		$this->approved_by->TooltipValue = "";
-
-		// flag
-		$this->flag->LinkCustomAttributes = "";
-		$this->flag->HrefValue = "";
-		$this->flag->TooltipValue = "";
+		// initiated_by
+		$this->initiated_by->LinkCustomAttributes = "";
+		$this->initiated_by->HrefValue = "";
+		$this->initiated_by->TooltipValue = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -1050,45 +901,33 @@ class cgen_maintenance extends cTable {
 		$this->id->EditValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// datetime
-		$this->datetime->EditAttrs["class"] = "form-control";
-		$this->datetime->EditCustomAttributes = "";
-		$this->datetime->EditValue = ew_FormatDateTime($this->datetime->CurrentValue, 8);
-		$this->datetime->PlaceHolder = ew_RemoveHtml($this->datetime->FldCaption());
+		// date_initiated
+		$this->date_initiated->EditAttrs["class"] = "form-control";
+		$this->date_initiated->EditCustomAttributes = "";
+		$this->date_initiated->EditValue = ew_FormatDateTime($this->date_initiated->CurrentValue, 14);
+		$this->date_initiated->PlaceHolder = ew_RemoveHtml($this->date_initiated->FldCaption());
 
-		// reference_id
-		$this->reference_id->EditAttrs["class"] = "form-control";
-		$this->reference_id->EditCustomAttributes = "";
-		$this->reference_id->EditValue = $this->reference_id->CurrentValue;
-		$this->reference_id->PlaceHolder = ew_RemoveHtml($this->reference_id->FldCaption());
+		// gen_type
+		$this->gen_type->EditAttrs["class"] = "form-control";
+		$this->gen_type->EditCustomAttributes = "";
 
-		// gen_name
-		$this->gen_name->EditAttrs["class"] = "form-control";
-		$this->gen_name->EditCustomAttributes = "";
+		// category
+		$this->category->EditAttrs["class"] = "form-control";
+		$this->category->EditCustomAttributes = "";
 
-		// maintenance_type
-		$this->maintenance_type->EditAttrs["class"] = "form-control";
-		$this->maintenance_type->EditCustomAttributes = "";
+		// diesel_initia_qty
+		$this->diesel_initia_qty->EditAttrs["class"] = "form-control";
+		$this->diesel_initia_qty->EditCustomAttributes = "";
+		$this->diesel_initia_qty->EditValue = $this->diesel_initia_qty->CurrentValue;
+		$this->diesel_initia_qty->PlaceHolder = ew_RemoveHtml($this->diesel_initia_qty->FldCaption());
+		if (strval($this->diesel_initia_qty->EditValue) <> "" && is_numeric($this->diesel_initia_qty->EditValue)) $this->diesel_initia_qty->EditValue = ew_FormatNumber($this->diesel_initia_qty->EditValue, -2, -1, -2, 0);
 
-		// running_hours
-		$this->running_hours->EditAttrs["class"] = "form-control";
-		$this->running_hours->EditCustomAttributes = "";
-		$this->running_hours->EditValue = $this->running_hours->CurrentValue;
-		$this->running_hours->PlaceHolder = ew_RemoveHtml($this->running_hours->FldCaption());
-
-		// cost
-		$this->cost->EditAttrs["class"] = "form-control";
-		$this->cost->EditCustomAttributes = "";
-		$this->cost->EditValue = $this->cost->CurrentValue;
-		$this->cost->PlaceHolder = ew_RemoveHtml($this->cost->FldCaption());
-		if (strval($this->cost->EditValue) <> "" && is_numeric($this->cost->EditValue)) $this->cost->EditValue = ew_FormatNumber($this->cost->EditValue, -2, -1, -2, 0);
-
-		// labour_fee
-		$this->labour_fee->EditAttrs["class"] = "form-control";
-		$this->labour_fee->EditCustomAttributes = "";
-		$this->labour_fee->EditValue = $this->labour_fee->CurrentValue;
-		$this->labour_fee->PlaceHolder = ew_RemoveHtml($this->labour_fee->FldCaption());
-		if (strval($this->labour_fee->EditValue) <> "" && is_numeric($this->labour_fee->EditValue)) $this->labour_fee->EditValue = ew_FormatNumber($this->labour_fee->EditValue, -2, -1, -2, 0);
+		// diesel_new_qty
+		$this->diesel_new_qty->EditAttrs["class"] = "form-control";
+		$this->diesel_new_qty->EditCustomAttributes = "";
+		$this->diesel_new_qty->EditValue = $this->diesel_new_qty->CurrentValue;
+		$this->diesel_new_qty->PlaceHolder = ew_RemoveHtml($this->diesel_new_qty->FldCaption());
+		if (strval($this->diesel_new_qty->EditValue) <> "" && is_numeric($this->diesel_new_qty->EditValue)) $this->diesel_new_qty->EditValue = ew_FormatNumber($this->diesel_new_qty->EditValue, -2, -1, -2, 0);
 
 		// total
 		$this->total->EditAttrs["class"] = "form-control";
@@ -1096,10 +935,6 @@ class cgen_maintenance extends cTable {
 		$this->total->EditValue = $this->total->CurrentValue;
 		$this->total->PlaceHolder = ew_RemoveHtml($this->total->FldCaption());
 		if (strval($this->total->EditValue) <> "" && is_numeric($this->total->EditValue)) $this->total->EditValue = ew_FormatNumber($this->total->EditValue, -2, -1, -2, 0);
-
-		// staff_id
-		$this->staff_id->EditAttrs["class"] = "form-control";
-		$this->staff_id->EditCustomAttributes = "";
 
 		// status
 		$this->status->EditAttrs["class"] = "form-control";
@@ -1115,33 +950,11 @@ class cgen_maintenance extends cTable {
 		$this->initiator_comment->EditValue = $this->initiator_comment->CurrentValue;
 		$this->initiator_comment->PlaceHolder = ew_RemoveHtml($this->initiator_comment->FldCaption());
 
-		// approver_date
-		$this->approver_date->EditAttrs["class"] = "form-control";
-		$this->approver_date->EditCustomAttributes = "";
-		$this->approver_date->EditValue = ew_FormatDateTime($this->approver_date->CurrentValue, 8);
-		$this->approver_date->PlaceHolder = ew_RemoveHtml($this->approver_date->FldCaption());
-
-		// approver_action
-		$this->approver_action->EditCustomAttributes = "";
-		$this->approver_action->EditValue = $this->approver_action->Options(FALSE);
-
-		// approver_comment
-		$this->approver_comment->EditAttrs["class"] = "form-control";
-		$this->approver_comment->EditCustomAttributes = "";
-		$this->approver_comment->EditValue = $this->approver_comment->CurrentValue;
-		$this->approver_comment->PlaceHolder = ew_RemoveHtml($this->approver_comment->FldCaption());
-
-		// approved_by
-		$this->approved_by->EditAttrs["class"] = "form-control";
-		$this->approved_by->EditCustomAttributes = "";
-		$this->approved_by->EditValue = $this->approved_by->CurrentValue;
-		$this->approved_by->PlaceHolder = ew_RemoveHtml($this->approved_by->FldCaption());
-
-		// flag
-		$this->flag->EditAttrs["class"] = "form-control";
-		$this->flag->EditCustomAttributes = "";
-		$this->flag->EditValue = $this->flag->CurrentValue;
-		$this->flag->PlaceHolder = ew_RemoveHtml($this->flag->FldCaption());
+		// initiated_by
+		$this->initiated_by->EditAttrs["class"] = "form-control";
+		$this->initiated_by->EditCustomAttributes = "";
+		$this->initiated_by->EditValue = $this->initiated_by->CurrentValue;
+		$this->initiated_by->PlaceHolder = ew_RemoveHtml($this->initiated_by->FldCaption());
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -1171,42 +984,28 @@ class cgen_maintenance extends cTable {
 				$Doc->BeginExportRow();
 				if ($ExportPageType == "view") {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
-					if ($this->datetime->Exportable) $Doc->ExportCaption($this->datetime);
-					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
-					if ($this->gen_name->Exportable) $Doc->ExportCaption($this->gen_name);
-					if ($this->maintenance_type->Exportable) $Doc->ExportCaption($this->maintenance_type);
-					if ($this->running_hours->Exportable) $Doc->ExportCaption($this->running_hours);
-					if ($this->cost->Exportable) $Doc->ExportCaption($this->cost);
-					if ($this->labour_fee->Exportable) $Doc->ExportCaption($this->labour_fee);
+					if ($this->date_initiated->Exportable) $Doc->ExportCaption($this->date_initiated);
+					if ($this->gen_type->Exportable) $Doc->ExportCaption($this->gen_type);
+					if ($this->category->Exportable) $Doc->ExportCaption($this->category);
+					if ($this->diesel_initia_qty->Exportable) $Doc->ExportCaption($this->diesel_initia_qty);
+					if ($this->diesel_new_qty->Exportable) $Doc->ExportCaption($this->diesel_new_qty);
 					if ($this->total->Exportable) $Doc->ExportCaption($this->total);
-					if ($this->staff_id->Exportable) $Doc->ExportCaption($this->staff_id);
 					if ($this->status->Exportable) $Doc->ExportCaption($this->status);
 					if ($this->initiator_action->Exportable) $Doc->ExportCaption($this->initiator_action);
 					if ($this->initiator_comment->Exportable) $Doc->ExportCaption($this->initiator_comment);
-					if ($this->approver_date->Exportable) $Doc->ExportCaption($this->approver_date);
-					if ($this->approver_action->Exportable) $Doc->ExportCaption($this->approver_action);
-					if ($this->approver_comment->Exportable) $Doc->ExportCaption($this->approver_comment);
-					if ($this->approved_by->Exportable) $Doc->ExportCaption($this->approved_by);
-					if ($this->flag->Exportable) $Doc->ExportCaption($this->flag);
+					if ($this->initiated_by->Exportable) $Doc->ExportCaption($this->initiated_by);
 				} else {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
-					if ($this->datetime->Exportable) $Doc->ExportCaption($this->datetime);
-					if ($this->reference_id->Exportable) $Doc->ExportCaption($this->reference_id);
-					if ($this->gen_name->Exportable) $Doc->ExportCaption($this->gen_name);
-					if ($this->maintenance_type->Exportable) $Doc->ExportCaption($this->maintenance_type);
-					if ($this->running_hours->Exportable) $Doc->ExportCaption($this->running_hours);
-					if ($this->cost->Exportable) $Doc->ExportCaption($this->cost);
-					if ($this->labour_fee->Exportable) $Doc->ExportCaption($this->labour_fee);
+					if ($this->date_initiated->Exportable) $Doc->ExportCaption($this->date_initiated);
+					if ($this->gen_type->Exportable) $Doc->ExportCaption($this->gen_type);
+					if ($this->category->Exportable) $Doc->ExportCaption($this->category);
+					if ($this->diesel_initia_qty->Exportable) $Doc->ExportCaption($this->diesel_initia_qty);
+					if ($this->diesel_new_qty->Exportable) $Doc->ExportCaption($this->diesel_new_qty);
 					if ($this->total->Exportable) $Doc->ExportCaption($this->total);
-					if ($this->staff_id->Exportable) $Doc->ExportCaption($this->staff_id);
 					if ($this->status->Exportable) $Doc->ExportCaption($this->status);
 					if ($this->initiator_action->Exportable) $Doc->ExportCaption($this->initiator_action);
 					if ($this->initiator_comment->Exportable) $Doc->ExportCaption($this->initiator_comment);
-					if ($this->approver_date->Exportable) $Doc->ExportCaption($this->approver_date);
-					if ($this->approver_action->Exportable) $Doc->ExportCaption($this->approver_action);
-					if ($this->approver_comment->Exportable) $Doc->ExportCaption($this->approver_comment);
-					if ($this->approved_by->Exportable) $Doc->ExportCaption($this->approved_by);
-					if ($this->flag->Exportable) $Doc->ExportCaption($this->flag);
+					if ($this->initiated_by->Exportable) $Doc->ExportCaption($this->initiated_by);
 				}
 				$Doc->EndExportRow();
 			}
@@ -1239,42 +1038,28 @@ class cgen_maintenance extends cTable {
 					$Doc->BeginExportRow($RowCnt); // Allow CSS styles if enabled
 					if ($ExportPageType == "view") {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
-						if ($this->datetime->Exportable) $Doc->ExportField($this->datetime);
-						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
-						if ($this->gen_name->Exportable) $Doc->ExportField($this->gen_name);
-						if ($this->maintenance_type->Exportable) $Doc->ExportField($this->maintenance_type);
-						if ($this->running_hours->Exportable) $Doc->ExportField($this->running_hours);
-						if ($this->cost->Exportable) $Doc->ExportField($this->cost);
-						if ($this->labour_fee->Exportable) $Doc->ExportField($this->labour_fee);
+						if ($this->date_initiated->Exportable) $Doc->ExportField($this->date_initiated);
+						if ($this->gen_type->Exportable) $Doc->ExportField($this->gen_type);
+						if ($this->category->Exportable) $Doc->ExportField($this->category);
+						if ($this->diesel_initia_qty->Exportable) $Doc->ExportField($this->diesel_initia_qty);
+						if ($this->diesel_new_qty->Exportable) $Doc->ExportField($this->diesel_new_qty);
 						if ($this->total->Exportable) $Doc->ExportField($this->total);
-						if ($this->staff_id->Exportable) $Doc->ExportField($this->staff_id);
 						if ($this->status->Exportable) $Doc->ExportField($this->status);
 						if ($this->initiator_action->Exportable) $Doc->ExportField($this->initiator_action);
 						if ($this->initiator_comment->Exportable) $Doc->ExportField($this->initiator_comment);
-						if ($this->approver_date->Exportable) $Doc->ExportField($this->approver_date);
-						if ($this->approver_action->Exportable) $Doc->ExportField($this->approver_action);
-						if ($this->approver_comment->Exportable) $Doc->ExportField($this->approver_comment);
-						if ($this->approved_by->Exportable) $Doc->ExportField($this->approved_by);
-						if ($this->flag->Exportable) $Doc->ExportField($this->flag);
+						if ($this->initiated_by->Exportable) $Doc->ExportField($this->initiated_by);
 					} else {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
-						if ($this->datetime->Exportable) $Doc->ExportField($this->datetime);
-						if ($this->reference_id->Exportable) $Doc->ExportField($this->reference_id);
-						if ($this->gen_name->Exportable) $Doc->ExportField($this->gen_name);
-						if ($this->maintenance_type->Exportable) $Doc->ExportField($this->maintenance_type);
-						if ($this->running_hours->Exportable) $Doc->ExportField($this->running_hours);
-						if ($this->cost->Exportable) $Doc->ExportField($this->cost);
-						if ($this->labour_fee->Exportable) $Doc->ExportField($this->labour_fee);
+						if ($this->date_initiated->Exportable) $Doc->ExportField($this->date_initiated);
+						if ($this->gen_type->Exportable) $Doc->ExportField($this->gen_type);
+						if ($this->category->Exportable) $Doc->ExportField($this->category);
+						if ($this->diesel_initia_qty->Exportable) $Doc->ExportField($this->diesel_initia_qty);
+						if ($this->diesel_new_qty->Exportable) $Doc->ExportField($this->diesel_new_qty);
 						if ($this->total->Exportable) $Doc->ExportField($this->total);
-						if ($this->staff_id->Exportable) $Doc->ExportField($this->staff_id);
 						if ($this->status->Exportable) $Doc->ExportField($this->status);
 						if ($this->initiator_action->Exportable) $Doc->ExportField($this->initiator_action);
 						if ($this->initiator_comment->Exportable) $Doc->ExportField($this->initiator_comment);
-						if ($this->approver_date->Exportable) $Doc->ExportField($this->approver_date);
-						if ($this->approver_action->Exportable) $Doc->ExportField($this->approver_action);
-						if ($this->approver_comment->Exportable) $Doc->ExportField($this->approver_comment);
-						if ($this->approved_by->Exportable) $Doc->ExportField($this->approved_by);
-						if ($this->flag->Exportable) $Doc->ExportField($this->flag);
+						if ($this->initiated_by->Exportable) $Doc->ExportField($this->initiated_by);
 					}
 					$Doc->EndExportRow($RowCnt);
 				}
@@ -1318,7 +1103,7 @@ class cgen_maintenance extends cTable {
 
 	// Write Audit Trail start/end for grid update
 	function WriteAuditTrailDummy($typ) {
-		$table = 'gen_maintenance';
+		$table = 'diesel_supply';
 		$usr = CurrentUserName();
 		ew_WriteAuditTrail("log", ew_StdCurrentDateTime(), ew_ScriptName(), $usr, $typ, $table, "", "", "", "");
 	}
@@ -1327,7 +1112,7 @@ class cgen_maintenance extends cTable {
 	function WriteAuditTrailOnAdd(&$rs) {
 		global $Language;
 		if (!$this->AuditTrailOnAdd) return;
-		$table = 'gen_maintenance';
+		$table = 'diesel_supply';
 
 		// Get key value
 		$key = "";
@@ -1361,7 +1146,7 @@ class cgen_maintenance extends cTable {
 	function WriteAuditTrailOnEdit(&$rsold, &$rsnew) {
 		global $Language;
 		if (!$this->AuditTrailOnEdit) return;
-		$table = 'gen_maintenance';
+		$table = 'diesel_supply';
 
 		// Get key value
 		$key = "";
@@ -1408,7 +1193,7 @@ class cgen_maintenance extends cTable {
 	function WriteAuditTrailOnDelete(&$rs) {
 		global $Language;
 		if (!$this->AuditTrailOnDelete) return;
-		$table = 'gen_maintenance';
+		$table = 'diesel_supply';
 
 		// Get key value
 		$key = "";
@@ -1444,14 +1229,6 @@ class cgen_maintenance extends cTable {
 	function Recordset_Selecting(&$filter) {
 
 		// Enter your code here
-		if (CurrentUserLevel() == 2) {
-			ew_AddFilter($filter, "`status` in (0) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
-
-			//ew_AddFilter($filter, "`status` in (0)");
-		}
-		if (CurrentUserLevel() == 3) {
-			ew_AddFilter($filter, "`status` in (1)");
-		}
 	}
 
 	// Recordset Selected event
@@ -1491,26 +1268,7 @@ class cgen_maintenance extends cTable {
 
 		// Enter your code here
 		// To cancel, set return value to FALSE
-			// Officer Only
 
-		if (CurrentPageID() == "add" && CurrentUserLevel() == 2) {
-
-			// Save and forward
-			if ($this->initiator_action->CurrentValue == 1) {
-				$rsnew["status"] = 1;
-				$rsnew["initiator_action"] = 1;
-
-				//$rsnew["issued_by"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; Maintenance Complated sent for Approved &#x2714;"); 					
-			}
-
-			// Saved only
-			if ($this->initiator_action->CurrentValue == 0) {
-				$rsnew["status"] = 0;			
-				$rsnew["initiator_action"] = 0; 
-				$this->setSuccessMessage("&#x25C9; Maintenance Initiated and Saved &#x2714;");
-			}			
-		}
 		return TRUE;
 	}
 
@@ -1526,84 +1284,6 @@ class cgen_maintenance extends cTable {
 		// Enter your code here
 		// To cancel, set return value to FALSE
 
-		if (CurrentPageID() == "edit" && CurrentUserLevel() == 2) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->datetime->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->datetime->EditValue = $this->datetime->CurrentValue;
-
-			// Save and forward
-			if ($this->initiator_action->CurrentValue == 1 && ($this->status->CurrentValue == 0 || $this->flag->CurrentValue == 0)) {
-				$rsnew["status"] = 1;
-				$rsnew["flag"] = 1;
-				$rsnew["initiator_action"] = 1;
-				$rsnew["approver_action"] = NULL;
-				$rsnew["approved_comment"] = NULL;
-				$this->setSuccessMessage("&#x25C9; Maintenance Items sent for Review and Approval &#x2714;"); 					
-			}
-
-			// Saved only
-			if ($this->initiator_action->CurrentValue == 0) {
-				$rsnew["status"] = 0;			
-				$rsnew["initiator_action"] = 0; 
-				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
-			}
-		}
-
-		 // Supervisor
-		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$rsnew["datetime"] = $now->format('Y-m-d H:i:s');
-			$rsnew["approved_by"] = $_SESSION['Staff_ID'];
-		}
-
-			// Administartor - Don't change field values captured by tenant
-		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
-			$rsnew["id"] = $rsold["id"];
-			$rsnew["datetime"] = $rsold["datetime"];
-			$rsnew["reference_id"] = $rsold["reference_id"];
-			$rsnew["staff_id"] = $rsold["staff_id"];
-			$rsnew["gen_name"] = $rsold["gen_name"];
-			$rsnew["cost"] = $rsold["cost"];
-			$rsnew["maintenance_type"] = $rsold["maintenance_type"];
-			$rsnew["labour_fee"] = $rsold["labour_fee"];
-			$rsnew["total"] = $rsold["total"];
-			$rsnew["staff_id"] = $rsold["staff_id"];
-
-			//$rsnew["status"] = $rsold["status"];
-			$rsnew["initiator_action"] = $rsold["initiator_action"];
-			$rsnew["initiator_comment"] = $rsold["initiator_comment"];
-		}
-
-			// Approved by Administrators
-			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4)) {
-				$rsnew["date"] = $now->format('Y-m-d H:i:s');
-				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
-			  }
-
-			   	// Approved by Administrators
-				if ($this->approver_action->CurrentValue == 0 && $this->status->CurrentValue == 1 ) {
-
-					// New
-					if ($this->status->CurrentValue == 1) {
-						$rsnew["status"] = 0;					
-						$rsnew["approver_action"] = 0;
-					}
-					$this->setSuccessMessage("&#x25C9; Record Decliend &#x2714;");
-				}
-
-				// Approved by Administrators
-				if ($this->approver_action->CurrentValue == 1 ) {
-
-					// New
-					if ($this->status->CurrentValue == 1) {
-						$rsnew["status"] = 2;					
-						$rsnew["approver_action"] = 1;
-						$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
-					}
-					$this->setSuccessMessage("&#x25C9; Approved successfully Reviewed and Closed &#x2714;");
-				}
 		return TRUE;
 	}
 
@@ -1686,34 +1366,6 @@ class cgen_maintenance extends cTable {
 	function Row_Rendering() {
 
 		// Enter your code here
-		if ((CurrentPageID() == "add" || CurrentPageID() == "edit"))  {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->datetime->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->datetime->EditValue = $this->datetime->CurrentValue;
-			$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
-			$this->staff_id->EditValue = $this->staff_id->CurrentValue;
-		}
-		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 3 )) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->approver_date->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->approver_date->EditValue = $this->approver_date->CurrentValue;
-			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
-			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
-		}
-		if (CurrentPageID() == "add")  {
-			$this->reference_id->CurrentValue = $_SESSION['GMT_ID'];
-			$this->reference_id->EditValue = $this->reference_id->CurrentValue;
-		}
-		if (CurrentPageID() == "update" && (CurrentUserLevel() == 3 )) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->approver_date->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->approver_date->EditValue = $this->approver_date->CurrentValue;
-			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
-			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
-		}
 	}
 
 	// Row Rendered event
@@ -1722,78 +1374,6 @@ class cgen_maintenance extends cTable {
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
 
-			if (CurrentPageID() == "add") {
-				if (CurrentUserLevel() == 2) {
-					$this->datetime->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->gen_name->Visible = TRUE;
-					$this->maintenance_type->Visible = TRUE;
-					$this->running_hours->Visible = TRUE;
-					$this->cost->ReadOnly = TRUE;
-					$this->labour_fee->Visible = TRUE;
-					$this->total->ReadOnly = TRUE;
-					$this->approver_date->Visible = FALSE;
-					$this->approver_action->Visible = FALSE;
-					$this->approver_comment->Visible = FALSE;
-					$this->approved_by->Visible = FALSE;
-				}
-			}
-
-				// Edit Page
-			if (CurrentPageID() == "edit") {
-				if ((CurrentUserLevel() == 2||CurrentUserLevel() == 12)) {
-					$this->datetime->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->gen_name->ReadOnly = TRUE;
-					$this->maintenance_type->ReadOnly = TRUE;
-					$this->running_hours->ReadOnly = TRUE;
-					$this->cost->ReadOnly = TRUE;
-					$this->labour_fee->Visible = TRUE;
-					$this->total->ReadOnly = TRUE;
-					$this->approver_date->Visible = FALSE;
-					$this->approver_action->Visible = FALSE;
-					$this->approver_comment->Visible = FALSE;
-					$this->approved_by->Visible = FALSE;
-				}
-				if (CurrentUserLevel() == 3) {
-					$this->datetime->ReadOnly = TRUE;
-					$this->gen_name->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->maintenance_type->ReadOnly = TRUE;
-					$this->running_hours->ReadOnly = TRUE;
-					$this->cost->ReadOnly = TRUE;
-					$this->labour_fee->ReadOnly = TRUE;
-					$this->total->ReadOnly = TRUE;
-					$this->initiator_action->ReadOnly = FALSE;
-					$this->initiator_comment->ReadOnly = TRUE;
-					$this->approver_date->ReadOnly = TRUE;
-					$this->approver_action->Visible = TRUE;
-					$this->approver_comment->Visible = TRUE;
-
-					//$this->approved_by->Visible = FALSE;
-				}
-			}
-
-				// Edit Page
-			if (CurrentPageID() == "update") {
-				if (CurrentUserLevel() == 3) {
-					$this->datetime->ReadOnly = TRUE;
-					$this->gen_name->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->maintenance_type->ReadOnly = TRUE;
-					$this->running_hours->ReadOnly = TRUE;
-					$this->cost->ReadOnly = TRUE;
-					$this->labour_fee->ReadOnly = TRUE;
-					$this->total->ReadOnly = TRUE;
-					$this->initiator_action->ReadOnly = FALSE;
-					$this->initiator_comment->ReadOnly = TRUE;
-					$this->approver_date->ReadOnly = TRUE;
-					$this->approver_action->Visible = TRUE;
-					$this->approver_comment->Visible = TRUE;
-
-					//$this->approved_by->Visible = FALSE;
-				}
-			}
 	}
 
 	// User ID Filtering event

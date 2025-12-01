@@ -1,22 +1,14 @@
 <?php
 
 // Global variable for table object
-$sparepart_report = NULL;
+$supply_status = NULL;
 
 //
-// Table class for sparepart_report
+// Table class for supply_status
 //
-class csparepart_report extends cTable {
+class csupply_status extends cTable {
 	var $id;
-	var $date;
-	var $part_name;
-	var $maintenance_id;
-	var $quantity_in;
-	var $quantity_used;
-	var $cost;
-	var $total_quantity;
-	var $total_cost;
-	var $maintenance_total_cost;
+	var $description;
 
 	//
 	// Table class constructor
@@ -26,12 +18,12 @@ class csparepart_report extends cTable {
 
 		// Language object
 		if (!isset($Language)) $Language = new cLanguage();
-		$this->TableVar = 'sparepart_report';
-		$this->TableName = 'sparepart_report';
-		$this->TableType = 'VIEW';
+		$this->TableVar = 'supply_status';
+		$this->TableName = 'supply_status';
+		$this->TableType = 'TABLE';
 
 		// Update Table
-		$this->UpdateTable = "`sparepart_report`";
+		$this->UpdateTable = "`supply_status`";
 		$this->DBID = 'DB';
 		$this->ExportAll = TRUE;
 		$this->ExportPageBreakCount = 0; // Page break per every n record (PDF only)
@@ -51,60 +43,15 @@ class csparepart_report extends cTable {
 		$this->BasicSearch = new cBasicSearch($this->TableVar);
 
 		// id
-		$this->id = new cField('sparepart_report', 'sparepart_report', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
+		$this->id = new cField('supply_status', 'supply_status', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->id->Sortable = TRUE; // Allow sort
 		$this->id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['id'] = &$this->id;
 
-		// date
-		$this->date = new cField('sparepart_report', 'sparepart_report', 'x_date', 'date', '`date`', ew_CastDateFieldForLike('`date`', 0, "DB"), 133, 0, FALSE, '`date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->date->Sortable = TRUE; // Allow sort
-		$this->date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
-		$this->fields['date'] = &$this->date;
-
-		// part_name
-		$this->part_name = new cField('sparepart_report', 'sparepart_report', 'x_part_name', 'part_name', '`part_name`', '`part_name`', 200, -1, FALSE, '`part_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->part_name->Sortable = TRUE; // Allow sort
-		$this->fields['part_name'] = &$this->part_name;
-
-		// maintenance_id
-		$this->maintenance_id = new cField('sparepart_report', 'sparepart_report', 'x_maintenance_id', 'maintenance_id', '`maintenance_id`', '`maintenance_id`', 3, -1, FALSE, '`maintenance_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->maintenance_id->Sortable = TRUE; // Allow sort
-		$this->maintenance_id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
-		$this->fields['maintenance_id'] = &$this->maintenance_id;
-
-		// quantity_in
-		$this->quantity_in = new cField('sparepart_report', 'sparepart_report', 'x_quantity_in', 'quantity_in', '`quantity_in`', '`quantity_in`', 200, -1, FALSE, '`quantity_in`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->quantity_in->Sortable = TRUE; // Allow sort
-		$this->fields['quantity_in'] = &$this->quantity_in;
-
-		// quantity_used
-		$this->quantity_used = new cField('sparepart_report', 'sparepart_report', 'x_quantity_used', 'quantity_used', '`quantity_used`', '`quantity_used`', 200, -1, FALSE, '`quantity_used`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->quantity_used->Sortable = TRUE; // Allow sort
-		$this->fields['quantity_used'] = &$this->quantity_used;
-
-		// cost
-		$this->cost = new cField('sparepart_report', 'sparepart_report', 'x_cost', 'cost', '`cost`', '`cost`', 131, -1, FALSE, '`cost`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->cost->Sortable = TRUE; // Allow sort
-		$this->cost->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
-		$this->fields['cost'] = &$this->cost;
-
-		// total_quantity
-		$this->total_quantity = new cField('sparepart_report', 'sparepart_report', 'x_total_quantity', 'total_quantity', '`total_quantity`', '`total_quantity`', 200, -1, FALSE, '`total_quantity`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->total_quantity->Sortable = TRUE; // Allow sort
-		$this->fields['total_quantity'] = &$this->total_quantity;
-
-		// total_cost
-		$this->total_cost = new cField('sparepart_report', 'sparepart_report', 'x_total_cost', 'total_cost', '`total_cost`', '`total_cost`', 131, -1, FALSE, '`total_cost`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->total_cost->Sortable = TRUE; // Allow sort
-		$this->total_cost->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
-		$this->fields['total_cost'] = &$this->total_cost;
-
-		// maintenance_total_cost
-		$this->maintenance_total_cost = new cField('sparepart_report', 'sparepart_report', 'x_maintenance_total_cost', 'maintenance_total_cost', '`maintenance_total_cost`', '`maintenance_total_cost`', 131, -1, FALSE, '`maintenance_total_cost`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->maintenance_total_cost->Sortable = TRUE; // Allow sort
-		$this->maintenance_total_cost->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
-		$this->fields['maintenance_total_cost'] = &$this->maintenance_total_cost;
+		// description
+		$this->description = new cField('supply_status', 'supply_status', 'x_description', 'description', '`description`', '`description`', 200, -1, FALSE, '`description`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->description->Sortable = TRUE; // Allow sort
+		$this->fields['description'] = &$this->description;
 	}
 
 	// Field Visibility
@@ -148,7 +95,7 @@ class csparepart_report extends cTable {
 	var $_SqlFrom = "";
 
 	function getSqlFrom() { // From
-		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`sparepart_report`";
+		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`supply_status`";
 	}
 
 	function SqlFrom() { // For backward compatibility
@@ -374,10 +321,6 @@ class csparepart_report extends cTable {
 		$conn = &$this->Connection();
 		$bInsert = $conn->Execute($this->InsertSQL($rs));
 		if ($bInsert) {
-
-			// Get insert id if necessary
-			$this->id->setDbValue($conn->Insert_ID());
-			$rs['id'] = $this->id->DbValue;
 		}
 		return $bInsert;
 	}
@@ -461,7 +404,7 @@ class csparepart_report extends cTable {
 		if (@$_SESSION[$name] <> "") {
 			return $_SESSION[$name];
 		} else {
-			return "sparepart_reportlist.php";
+			return "supply_statuslist.php";
 		}
 	}
 
@@ -472,11 +415,11 @@ class csparepart_report extends cTable {
 	// Get modal caption
 	function GetModalCaption($pageName) {
 		global $Language;
-		if ($pageName == "sparepart_reportview.php")
+		if ($pageName == "supply_statusview.php")
 			return $Language->Phrase("View");
-		elseif ($pageName == "sparepart_reportedit.php")
+		elseif ($pageName == "supply_statusedit.php")
 			return $Language->Phrase("Edit");
-		elseif ($pageName == "sparepart_reportadd.php")
+		elseif ($pageName == "supply_statusadd.php")
 			return $Language->Phrase("Add");
 		else
 			return "";
@@ -484,30 +427,30 @@ class csparepart_report extends cTable {
 
 	// List URL
 	function GetListUrl() {
-		return "sparepart_reportlist.php";
+		return "supply_statuslist.php";
 	}
 
 	// View URL
 	function GetViewUrl($parm = "") {
 		if ($parm <> "")
-			$url = $this->KeyUrl("sparepart_reportview.php", $this->UrlParm($parm));
+			$url = $this->KeyUrl("supply_statusview.php", $this->UrlParm($parm));
 		else
-			$url = $this->KeyUrl("sparepart_reportview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
+			$url = $this->KeyUrl("supply_statusview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
 		return $this->AddMasterUrl($url);
 	}
 
 	// Add URL
 	function GetAddUrl($parm = "") {
 		if ($parm <> "")
-			$url = "sparepart_reportadd.php?" . $this->UrlParm($parm);
+			$url = "supply_statusadd.php?" . $this->UrlParm($parm);
 		else
-			$url = "sparepart_reportadd.php";
+			$url = "supply_statusadd.php";
 		return $this->AddMasterUrl($url);
 	}
 
 	// Edit URL
 	function GetEditUrl($parm = "") {
-		$url = $this->KeyUrl("sparepart_reportedit.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("supply_statusedit.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -519,7 +462,7 @@ class csparepart_report extends cTable {
 
 	// Copy URL
 	function GetCopyUrl($parm = "") {
-		$url = $this->KeyUrl("sparepart_reportadd.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("supply_statusadd.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -531,7 +474,7 @@ class csparepart_report extends cTable {
 
 	// Delete URL
 	function GetDeleteUrl() {
-		return $this->KeyUrl("sparepart_reportdelete.php", $this->UrlParm());
+		return $this->KeyUrl("supply_statusdelete.php", $this->UrlParm());
 	}
 
 	// Add master url
@@ -633,15 +576,7 @@ class csparepart_report extends cTable {
 	// Load row values from recordset
 	function LoadListRowValues(&$rs) {
 		$this->id->setDbValue($rs->fields('id'));
-		$this->date->setDbValue($rs->fields('date'));
-		$this->part_name->setDbValue($rs->fields('part_name'));
-		$this->maintenance_id->setDbValue($rs->fields('maintenance_id'));
-		$this->quantity_in->setDbValue($rs->fields('quantity_in'));
-		$this->quantity_used->setDbValue($rs->fields('quantity_used'));
-		$this->cost->setDbValue($rs->fields('cost'));
-		$this->total_quantity->setDbValue($rs->fields('total_quantity'));
-		$this->total_cost->setDbValue($rs->fields('total_cost'));
-		$this->maintenance_total_cost->setDbValue($rs->fields('maintenance_total_cost'));
+		$this->description->setDbValue($rs->fields('description'));
 	}
 
 	// Render list row values
@@ -653,106 +588,25 @@ class csparepart_report extends cTable {
 
 	// Common render codes
 		// id
-		// date
-		// part_name
-		// maintenance_id
-		// quantity_in
-		// quantity_used
-		// cost
-		// total_quantity
-		// total_cost
-		// maintenance_total_cost
+		// description
 		// id
 
 		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// date
-		$this->date->ViewValue = $this->date->CurrentValue;
-		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 0);
-		$this->date->ViewCustomAttributes = "";
-
-		// part_name
-		$this->part_name->ViewValue = $this->part_name->CurrentValue;
-		$this->part_name->ViewCustomAttributes = "";
-
-		// maintenance_id
-		$this->maintenance_id->ViewValue = $this->maintenance_id->CurrentValue;
-		$this->maintenance_id->ViewCustomAttributes = "";
-
-		// quantity_in
-		$this->quantity_in->ViewValue = $this->quantity_in->CurrentValue;
-		$this->quantity_in->ViewCustomAttributes = "";
-
-		// quantity_used
-		$this->quantity_used->ViewValue = $this->quantity_used->CurrentValue;
-		$this->quantity_used->ViewCustomAttributes = "";
-
-		// cost
-		$this->cost->ViewValue = $this->cost->CurrentValue;
-		$this->cost->ViewCustomAttributes = "";
-
-		// total_quantity
-		$this->total_quantity->ViewValue = $this->total_quantity->CurrentValue;
-		$this->total_quantity->ViewCustomAttributes = "";
-
-		// total_cost
-		$this->total_cost->ViewValue = $this->total_cost->CurrentValue;
-		$this->total_cost->ViewCustomAttributes = "";
-
-		// maintenance_total_cost
-		$this->maintenance_total_cost->ViewValue = $this->maintenance_total_cost->CurrentValue;
-		$this->maintenance_total_cost->ViewCustomAttributes = "";
+		// description
+		$this->description->ViewValue = $this->description->CurrentValue;
+		$this->description->ViewCustomAttributes = "";
 
 		// id
 		$this->id->LinkCustomAttributes = "";
 		$this->id->HrefValue = "";
 		$this->id->TooltipValue = "";
 
-		// date
-		$this->date->LinkCustomAttributes = "";
-		$this->date->HrefValue = "";
-		$this->date->TooltipValue = "";
-
-		// part_name
-		$this->part_name->LinkCustomAttributes = "";
-		$this->part_name->HrefValue = "";
-		$this->part_name->TooltipValue = "";
-
-		// maintenance_id
-		$this->maintenance_id->LinkCustomAttributes = "";
-		$this->maintenance_id->HrefValue = "";
-		$this->maintenance_id->TooltipValue = "";
-
-		// quantity_in
-		$this->quantity_in->LinkCustomAttributes = "";
-		$this->quantity_in->HrefValue = "";
-		$this->quantity_in->TooltipValue = "";
-
-		// quantity_used
-		$this->quantity_used->LinkCustomAttributes = "";
-		$this->quantity_used->HrefValue = "";
-		$this->quantity_used->TooltipValue = "";
-
-		// cost
-		$this->cost->LinkCustomAttributes = "";
-		$this->cost->HrefValue = "";
-		$this->cost->TooltipValue = "";
-
-		// total_quantity
-		$this->total_quantity->LinkCustomAttributes = "";
-		$this->total_quantity->HrefValue = "";
-		$this->total_quantity->TooltipValue = "";
-
-		// total_cost
-		$this->total_cost->LinkCustomAttributes = "";
-		$this->total_cost->HrefValue = "";
-		$this->total_cost->TooltipValue = "";
-
-		// maintenance_total_cost
-		$this->maintenance_total_cost->LinkCustomAttributes = "";
-		$this->maintenance_total_cost->HrefValue = "";
-		$this->maintenance_total_cost->TooltipValue = "";
+		// description
+		$this->description->LinkCustomAttributes = "";
+		$this->description->HrefValue = "";
+		$this->description->TooltipValue = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -774,62 +628,11 @@ class csparepart_report extends cTable {
 		$this->id->EditValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// date
-		$this->date->EditAttrs["class"] = "form-control";
-		$this->date->EditCustomAttributes = "";
-		$this->date->EditValue = ew_FormatDateTime($this->date->CurrentValue, 8);
-		$this->date->PlaceHolder = ew_RemoveHtml($this->date->FldCaption());
-
-		// part_name
-		$this->part_name->EditAttrs["class"] = "form-control";
-		$this->part_name->EditCustomAttributes = "";
-		$this->part_name->EditValue = $this->part_name->CurrentValue;
-		$this->part_name->PlaceHolder = ew_RemoveHtml($this->part_name->FldCaption());
-
-		// maintenance_id
-		$this->maintenance_id->EditAttrs["class"] = "form-control";
-		$this->maintenance_id->EditCustomAttributes = "";
-		$this->maintenance_id->EditValue = $this->maintenance_id->CurrentValue;
-		$this->maintenance_id->PlaceHolder = ew_RemoveHtml($this->maintenance_id->FldCaption());
-
-		// quantity_in
-		$this->quantity_in->EditAttrs["class"] = "form-control";
-		$this->quantity_in->EditCustomAttributes = "";
-		$this->quantity_in->EditValue = $this->quantity_in->CurrentValue;
-		$this->quantity_in->PlaceHolder = ew_RemoveHtml($this->quantity_in->FldCaption());
-
-		// quantity_used
-		$this->quantity_used->EditAttrs["class"] = "form-control";
-		$this->quantity_used->EditCustomAttributes = "";
-		$this->quantity_used->EditValue = $this->quantity_used->CurrentValue;
-		$this->quantity_used->PlaceHolder = ew_RemoveHtml($this->quantity_used->FldCaption());
-
-		// cost
-		$this->cost->EditAttrs["class"] = "form-control";
-		$this->cost->EditCustomAttributes = "";
-		$this->cost->EditValue = $this->cost->CurrentValue;
-		$this->cost->PlaceHolder = ew_RemoveHtml($this->cost->FldCaption());
-		if (strval($this->cost->EditValue) <> "" && is_numeric($this->cost->EditValue)) $this->cost->EditValue = ew_FormatNumber($this->cost->EditValue, -2, -1, -2, 0);
-
-		// total_quantity
-		$this->total_quantity->EditAttrs["class"] = "form-control";
-		$this->total_quantity->EditCustomAttributes = "";
-		$this->total_quantity->EditValue = $this->total_quantity->CurrentValue;
-		$this->total_quantity->PlaceHolder = ew_RemoveHtml($this->total_quantity->FldCaption());
-
-		// total_cost
-		$this->total_cost->EditAttrs["class"] = "form-control";
-		$this->total_cost->EditCustomAttributes = "";
-		$this->total_cost->EditValue = $this->total_cost->CurrentValue;
-		$this->total_cost->PlaceHolder = ew_RemoveHtml($this->total_cost->FldCaption());
-		if (strval($this->total_cost->EditValue) <> "" && is_numeric($this->total_cost->EditValue)) $this->total_cost->EditValue = ew_FormatNumber($this->total_cost->EditValue, -2, -1, -2, 0);
-
-		// maintenance_total_cost
-		$this->maintenance_total_cost->EditAttrs["class"] = "form-control";
-		$this->maintenance_total_cost->EditCustomAttributes = "";
-		$this->maintenance_total_cost->EditValue = $this->maintenance_total_cost->CurrentValue;
-		$this->maintenance_total_cost->PlaceHolder = ew_RemoveHtml($this->maintenance_total_cost->FldCaption());
-		if (strval($this->maintenance_total_cost->EditValue) <> "" && is_numeric($this->maintenance_total_cost->EditValue)) $this->maintenance_total_cost->EditValue = ew_FormatNumber($this->maintenance_total_cost->EditValue, -2, -1, -2, 0);
+		// description
+		$this->description->EditAttrs["class"] = "form-control";
+		$this->description->EditCustomAttributes = "";
+		$this->description->EditValue = $this->description->CurrentValue;
+		$this->description->PlaceHolder = ew_RemoveHtml($this->description->FldCaption());
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -859,26 +662,10 @@ class csparepart_report extends cTable {
 				$Doc->BeginExportRow();
 				if ($ExportPageType == "view") {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
-					if ($this->date->Exportable) $Doc->ExportCaption($this->date);
-					if ($this->part_name->Exportable) $Doc->ExportCaption($this->part_name);
-					if ($this->maintenance_id->Exportable) $Doc->ExportCaption($this->maintenance_id);
-					if ($this->quantity_in->Exportable) $Doc->ExportCaption($this->quantity_in);
-					if ($this->quantity_used->Exportable) $Doc->ExportCaption($this->quantity_used);
-					if ($this->cost->Exportable) $Doc->ExportCaption($this->cost);
-					if ($this->total_quantity->Exportable) $Doc->ExportCaption($this->total_quantity);
-					if ($this->total_cost->Exportable) $Doc->ExportCaption($this->total_cost);
-					if ($this->maintenance_total_cost->Exportable) $Doc->ExportCaption($this->maintenance_total_cost);
+					if ($this->description->Exportable) $Doc->ExportCaption($this->description);
 				} else {
 					if ($this->id->Exportable) $Doc->ExportCaption($this->id);
-					if ($this->date->Exportable) $Doc->ExportCaption($this->date);
-					if ($this->part_name->Exportable) $Doc->ExportCaption($this->part_name);
-					if ($this->maintenance_id->Exportable) $Doc->ExportCaption($this->maintenance_id);
-					if ($this->quantity_in->Exportable) $Doc->ExportCaption($this->quantity_in);
-					if ($this->quantity_used->Exportable) $Doc->ExportCaption($this->quantity_used);
-					if ($this->cost->Exportable) $Doc->ExportCaption($this->cost);
-					if ($this->total_quantity->Exportable) $Doc->ExportCaption($this->total_quantity);
-					if ($this->total_cost->Exportable) $Doc->ExportCaption($this->total_cost);
-					if ($this->maintenance_total_cost->Exportable) $Doc->ExportCaption($this->maintenance_total_cost);
+					if ($this->description->Exportable) $Doc->ExportCaption($this->description);
 				}
 				$Doc->EndExportRow();
 			}
@@ -911,26 +698,10 @@ class csparepart_report extends cTable {
 					$Doc->BeginExportRow($RowCnt); // Allow CSS styles if enabled
 					if ($ExportPageType == "view") {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
-						if ($this->date->Exportable) $Doc->ExportField($this->date);
-						if ($this->part_name->Exportable) $Doc->ExportField($this->part_name);
-						if ($this->maintenance_id->Exportable) $Doc->ExportField($this->maintenance_id);
-						if ($this->quantity_in->Exportable) $Doc->ExportField($this->quantity_in);
-						if ($this->quantity_used->Exportable) $Doc->ExportField($this->quantity_used);
-						if ($this->cost->Exportable) $Doc->ExportField($this->cost);
-						if ($this->total_quantity->Exportable) $Doc->ExportField($this->total_quantity);
-						if ($this->total_cost->Exportable) $Doc->ExportField($this->total_cost);
-						if ($this->maintenance_total_cost->Exportable) $Doc->ExportField($this->maintenance_total_cost);
+						if ($this->description->Exportable) $Doc->ExportField($this->description);
 					} else {
 						if ($this->id->Exportable) $Doc->ExportField($this->id);
-						if ($this->date->Exportable) $Doc->ExportField($this->date);
-						if ($this->part_name->Exportable) $Doc->ExportField($this->part_name);
-						if ($this->maintenance_id->Exportable) $Doc->ExportField($this->maintenance_id);
-						if ($this->quantity_in->Exportable) $Doc->ExportField($this->quantity_in);
-						if ($this->quantity_used->Exportable) $Doc->ExportField($this->quantity_used);
-						if ($this->cost->Exportable) $Doc->ExportField($this->cost);
-						if ($this->total_quantity->Exportable) $Doc->ExportField($this->total_quantity);
-						if ($this->total_cost->Exportable) $Doc->ExportField($this->total_cost);
-						if ($this->maintenance_total_cost->Exportable) $Doc->ExportField($this->maintenance_total_cost);
+						if ($this->description->Exportable) $Doc->ExportField($this->description);
 					}
 					$Doc->EndExportRow($RowCnt);
 				}

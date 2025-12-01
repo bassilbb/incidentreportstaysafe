@@ -1,12 +1,12 @@
 <?php
 
 // Global variable for table object
-$gen_maintenance = NULL;
+$gen_maintenanace_v = NULL;
 
 //
-// Table class for gen_maintenance
+// Table class for gen_maintenanace_v
 //
-class cgen_maintenance extends cTable {
+class cgen_maintenanace_v extends cTable {
 	var $AuditTrailOnAdd = TRUE;
 	var $AuditTrailOnEdit = TRUE;
 	var $AuditTrailOnDelete = TRUE;
@@ -40,12 +40,12 @@ class cgen_maintenance extends cTable {
 
 		// Language object
 		if (!isset($Language)) $Language = new cLanguage();
-		$this->TableVar = 'gen_maintenance';
-		$this->TableName = 'gen_maintenance';
-		$this->TableType = 'TABLE';
+		$this->TableVar = 'gen_maintenanace_v';
+		$this->TableName = 'gen_maintenanace_v';
+		$this->TableType = 'VIEW';
 
 		// Update Table
-		$this->UpdateTable = "`gen_maintenance`";
+		$this->UpdateTable = "`gen_maintenanace_v`";
 		$this->DBID = 'DB';
 		$this->ExportAll = TRUE;
 		$this->ExportPageBreakCount = 0; // Page break per every n record (PDF only)
@@ -57,7 +57,7 @@ class cgen_maintenance extends cTable {
 		$this->ExportWordColumnWidth = NULL; // Cell width (PHPWord only)
 		$this->DetailAdd = FALSE; // Allow detail add
 		$this->DetailEdit = FALSE; // Allow detail edit
-		$this->DetailView = FALSE; // Allow detail view
+		$this->DetailView = TRUE; // Allow detail view
 		$this->ShowMultipleDetails = FALSE; // Show multiple details
 		$this->GridAddRowCount = 5;
 		$this->AllowAddDeleteRow = TRUE; // Allow add/delete row
@@ -65,31 +65,31 @@ class cgen_maintenance extends cTable {
 		$this->BasicSearch = new cBasicSearch($this->TableVar);
 
 		// id
-		$this->id = new cField('gen_maintenance', 'gen_maintenance', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
+		$this->id = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
 		$this->id->Sortable = TRUE; // Allow sort
 		$this->id->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['id'] = &$this->id;
 
 		// datetime
-		$this->datetime = new cField('gen_maintenance', 'gen_maintenance', 'x_datetime', 'datetime', '`datetime`', ew_CastDateFieldForLike('`datetime`', 0, "DB"), 135, 0, FALSE, '`datetime`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->datetime = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_datetime', 'datetime', '`datetime`', ew_CastDateFieldForLike('`datetime`', 0, "DB"), 135, 0, FALSE, '`datetime`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->datetime->Sortable = TRUE; // Allow sort
 		$this->datetime->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['datetime'] = &$this->datetime;
 
 		// reference_id
-		$this->reference_id = new cField('gen_maintenance', 'gen_maintenance', 'x_reference_id', 'reference_id', '`reference_id`', '`reference_id`', 200, -1, FALSE, '`reference_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->reference_id = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_reference_id', 'reference_id', '`reference_id`', '`reference_id`', 200, -1, FALSE, '`reference_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->reference_id->Sortable = TRUE; // Allow sort
 		$this->fields['reference_id'] = &$this->reference_id;
 
 		// gen_name
-		$this->gen_name = new cField('gen_maintenance', 'gen_maintenance', 'x_gen_name', 'gen_name', '`gen_name`', '`gen_name`', 3, -1, FALSE, '`gen_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->gen_name = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_gen_name', 'gen_name', '`gen_name`', '`gen_name`', 3, -1, FALSE, '`gen_name`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->gen_name->Sortable = TRUE; // Allow sort
 		$this->gen_name->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->gen_name->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['gen_name'] = &$this->gen_name;
 
 		// maintenance_type
-		$this->maintenance_type = new cField('gen_maintenance', 'gen_maintenance', 'x_maintenance_type', 'maintenance_type', '`maintenance_type`', '`maintenance_type`', 16, -1, FALSE, '`maintenance_type`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->maintenance_type = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_maintenance_type', 'maintenance_type', '`maintenance_type`', '`maintenance_type`', 16, -1, FALSE, '`maintenance_type`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->maintenance_type->Sortable = TRUE; // Allow sort
 		$this->maintenance_type->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->maintenance_type->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
@@ -97,80 +97,80 @@ class cgen_maintenance extends cTable {
 		$this->fields['maintenance_type'] = &$this->maintenance_type;
 
 		// running_hours
-		$this->running_hours = new cField('gen_maintenance', 'gen_maintenance', 'x_running_hours', 'running_hours', '`running_hours`', '`running_hours`', 200, -1, FALSE, '`running_hours`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->running_hours = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_running_hours', 'running_hours', '`running_hours`', '`running_hours`', 200, -1, FALSE, '`running_hours`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->running_hours->Sortable = TRUE; // Allow sort
 		$this->fields['running_hours'] = &$this->running_hours;
 
 		// cost
-		$this->cost = new cField('gen_maintenance', 'gen_maintenance', 'x_cost', 'cost', '`cost`', '`cost`', 131, -1, FALSE, '`cost`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->cost = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_cost', 'cost', '`cost`', '`cost`', 131, -1, FALSE, '`cost`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->cost->Sortable = TRUE; // Allow sort
 		$this->cost->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
 		$this->fields['cost'] = &$this->cost;
 
 		// labour_fee
-		$this->labour_fee = new cField('gen_maintenance', 'gen_maintenance', 'x_labour_fee', 'labour_fee', '`labour_fee`', '`labour_fee`', 131, -1, FALSE, '`labour_fee`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->labour_fee = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_labour_fee', 'labour_fee', '`labour_fee`', '`labour_fee`', 131, -1, FALSE, '`labour_fee`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->labour_fee->Sortable = TRUE; // Allow sort
 		$this->labour_fee->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
 		$this->fields['labour_fee'] = &$this->labour_fee;
 
 		// total
-		$this->total = new cField('gen_maintenance', 'gen_maintenance', 'x_total', 'total', '`total`', '`total`', 131, -1, FALSE, '`total`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->total = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_total', 'total', '`total`', '`total`', 131, -1, FALSE, '`total`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->total->Sortable = TRUE; // Allow sort
 		$this->total->FldDefaultErrMsg = $Language->Phrase("IncorrectFloat");
 		$this->fields['total'] = &$this->total;
 
 		// staff_id
-		$this->staff_id = new cField('gen_maintenance', 'gen_maintenance', 'x_staff_id', 'staff_id', '`staff_id`', '`staff_id`', 3, -1, FALSE, '`staff_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->staff_id = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_staff_id', 'staff_id', '`staff_id`', '`staff_id`', 3, -1, FALSE, '`staff_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->staff_id->Sortable = TRUE; // Allow sort
 		$this->staff_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->staff_id->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['staff_id'] = &$this->staff_id;
 
 		// status
-		$this->status = new cField('gen_maintenance', 'gen_maintenance', 'x_status', 'status', '`status`', '`status`', 3, -1, FALSE, '`status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->status = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_status', 'status', '`status`', '`status`', 3, -1, FALSE, '`status`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->status->Sortable = TRUE; // Allow sort
 		$this->status->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->status->PleaseSelectText = $Language->Phrase("PleaseSelect"); // PleaseSelect text
 		$this->fields['status'] = &$this->status;
 
 		// initiator_action
-		$this->initiator_action = new cField('gen_maintenance', 'gen_maintenance', 'x_initiator_action', 'initiator_action', '`initiator_action`', '`initiator_action`', 3, -1, FALSE, '`initiator_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->initiator_action = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_initiator_action', 'initiator_action', '`initiator_action`', '`initiator_action`', 3, -1, FALSE, '`initiator_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->initiator_action->Sortable = TRUE; // Allow sort
 		$this->initiator_action->OptionCount = 2;
 		$this->initiator_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['initiator_action'] = &$this->initiator_action;
 
 		// initiator_comment
-		$this->initiator_comment = new cField('gen_maintenance', 'gen_maintenance', 'x_initiator_comment', 'initiator_comment', '`initiator_comment`', '`initiator_comment`', 200, -1, FALSE, '`initiator_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->initiator_comment = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_initiator_comment', 'initiator_comment', '`initiator_comment`', '`initiator_comment`', 200, -1, FALSE, '`initiator_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->initiator_comment->Sortable = TRUE; // Allow sort
 		$this->fields['initiator_comment'] = &$this->initiator_comment;
 
 		// approver_date
-		$this->approver_date = new cField('gen_maintenance', 'gen_maintenance', 'x_approver_date', 'approver_date', '`approver_date`', ew_CastDateFieldForLike('`approver_date`', 0, "DB"), 135, 0, FALSE, '`approver_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->approver_date = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_approver_date', 'approver_date', '`approver_date`', ew_CastDateFieldForLike('`approver_date`', 0, "DB"), 135, 0, FALSE, '`approver_date`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->approver_date->Sortable = TRUE; // Allow sort
 		$this->approver_date->FldDefaultErrMsg = str_replace("%s", $GLOBALS["EW_DATE_FORMAT"], $Language->Phrase("IncorrectDate"));
 		$this->fields['approver_date'] = &$this->approver_date;
 
 		// approver_action
-		$this->approver_action = new cField('gen_maintenance', 'gen_maintenance', 'x_approver_action', 'approver_action', '`approver_action`', '`approver_action`', 3, -1, FALSE, '`approver_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->approver_action = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_approver_action', 'approver_action', '`approver_action`', '`approver_action`', 3, -1, FALSE, '`approver_action`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
 		$this->approver_action->Sortable = TRUE; // Allow sort
 		$this->approver_action->OptionCount = 2;
 		$this->approver_action->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['approver_action'] = &$this->approver_action;
 
 		// approver_comment
-		$this->approver_comment = new cField('gen_maintenance', 'gen_maintenance', 'x_approver_comment', 'approver_comment', '`approver_comment`', '`approver_comment`', 200, -1, FALSE, '`approver_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
+		$this->approver_comment = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_approver_comment', 'approver_comment', '`approver_comment`', '`approver_comment`', 200, -1, FALSE, '`approver_comment`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
 		$this->approver_comment->Sortable = TRUE; // Allow sort
 		$this->fields['approver_comment'] = &$this->approver_comment;
 
 		// approved_by
-		$this->approved_by = new cField('gen_maintenance', 'gen_maintenance', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->approved_by = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_approved_by', 'approved_by', '`approved_by`', '`approved_by`', 3, -1, FALSE, '`approved_by`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->approved_by->Sortable = TRUE; // Allow sort
 		$this->approved_by->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['approved_by'] = &$this->approved_by;
 
 		// flag
-		$this->flag = new cField('gen_maintenance', 'gen_maintenance', 'x_flag', 'flag', '`flag`', '`flag`', 3, -1, FALSE, '`flag`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->flag = new cField('gen_maintenanace_v', 'gen_maintenanace_v', 'x_flag', 'flag', '`flag`', '`flag`', 3, -1, FALSE, '`flag`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->flag->Sortable = TRUE; // Allow sort
 		$this->flag->FldDefaultErrMsg = $Language->Phrase("IncorrectInteger");
 		$this->fields['flag'] = &$this->flag;
@@ -217,7 +217,7 @@ class cgen_maintenance extends cTable {
 	var $_SqlFrom = "";
 
 	function getSqlFrom() { // From
-		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`gen_maintenance`";
+		return ($this->_SqlFrom <> "") ? $this->_SqlFrom : "`gen_maintenanace_v`";
 	}
 
 	function SqlFrom() { // For backward compatibility
@@ -540,7 +540,7 @@ class cgen_maintenance extends cTable {
 		if (@$_SESSION[$name] <> "") {
 			return $_SESSION[$name];
 		} else {
-			return "gen_maintenancelist.php";
+			return "gen_maintenanace_vlist.php";
 		}
 	}
 
@@ -551,11 +551,11 @@ class cgen_maintenance extends cTable {
 	// Get modal caption
 	function GetModalCaption($pageName) {
 		global $Language;
-		if ($pageName == "gen_maintenanceview.php")
+		if ($pageName == "gen_maintenanace_vview.php")
 			return $Language->Phrase("View");
-		elseif ($pageName == "gen_maintenanceedit.php")
+		elseif ($pageName == "gen_maintenanace_vedit.php")
 			return $Language->Phrase("Edit");
-		elseif ($pageName == "gen_maintenanceadd.php")
+		elseif ($pageName == "gen_maintenanace_vadd.php")
 			return $Language->Phrase("Add");
 		else
 			return "";
@@ -563,30 +563,30 @@ class cgen_maintenance extends cTable {
 
 	// List URL
 	function GetListUrl() {
-		return "gen_maintenancelist.php";
+		return "gen_maintenanace_vlist.php";
 	}
 
 	// View URL
 	function GetViewUrl($parm = "") {
 		if ($parm <> "")
-			$url = $this->KeyUrl("gen_maintenanceview.php", $this->UrlParm($parm));
+			$url = $this->KeyUrl("gen_maintenanace_vview.php", $this->UrlParm($parm));
 		else
-			$url = $this->KeyUrl("gen_maintenanceview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
+			$url = $this->KeyUrl("gen_maintenanace_vview.php", $this->UrlParm(EW_TABLE_SHOW_DETAIL . "="));
 		return $this->AddMasterUrl($url);
 	}
 
 	// Add URL
 	function GetAddUrl($parm = "") {
 		if ($parm <> "")
-			$url = "gen_maintenanceadd.php?" . $this->UrlParm($parm);
+			$url = "gen_maintenanace_vadd.php?" . $this->UrlParm($parm);
 		else
-			$url = "gen_maintenanceadd.php";
+			$url = "gen_maintenanace_vadd.php";
 		return $this->AddMasterUrl($url);
 	}
 
 	// Edit URL
 	function GetEditUrl($parm = "") {
-		$url = $this->KeyUrl("gen_maintenanceedit.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("gen_maintenanace_vedit.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -598,7 +598,7 @@ class cgen_maintenance extends cTable {
 
 	// Copy URL
 	function GetCopyUrl($parm = "") {
-		$url = $this->KeyUrl("gen_maintenanceadd.php", $this->UrlParm($parm));
+		$url = $this->KeyUrl("gen_maintenanace_vadd.php", $this->UrlParm($parm));
 		return $this->AddMasterUrl($url);
 	}
 
@@ -610,7 +610,7 @@ class cgen_maintenance extends cTable {
 
 	// Delete URL
 	function GetDeleteUrl() {
-		return $this->KeyUrl("gen_maintenancedelete.php", $this->UrlParm());
+		return $this->KeyUrl("gen_maintenanace_vdelete.php", $this->UrlParm());
 	}
 
 	// Add master url
@@ -1053,67 +1053,137 @@ class cgen_maintenance extends cTable {
 		// datetime
 		$this->datetime->EditAttrs["class"] = "form-control";
 		$this->datetime->EditCustomAttributes = "";
-		$this->datetime->EditValue = ew_FormatDateTime($this->datetime->CurrentValue, 8);
-		$this->datetime->PlaceHolder = ew_RemoveHtml($this->datetime->FldCaption());
+		$this->datetime->EditValue = $this->datetime->CurrentValue;
+		$this->datetime->EditValue = ew_FormatDateTime($this->datetime->EditValue, 0);
+		$this->datetime->ViewCustomAttributes = "";
 
 		// reference_id
 		$this->reference_id->EditAttrs["class"] = "form-control";
 		$this->reference_id->EditCustomAttributes = "";
 		$this->reference_id->EditValue = $this->reference_id->CurrentValue;
-		$this->reference_id->PlaceHolder = ew_RemoveHtml($this->reference_id->FldCaption());
+		$this->reference_id->ViewCustomAttributes = "";
 
 		// gen_name
 		$this->gen_name->EditAttrs["class"] = "form-control";
 		$this->gen_name->EditCustomAttributes = "";
+		if (strval($this->gen_name->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->gen_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `gen_name` AS `DispFld`, `location` AS `Disp2Fld`, `kva` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `generator_registration`";
+		$sWhereWrk = "";
+		$this->gen_name->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->gen_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->gen_name->EditValue = $this->gen_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->gen_name->EditValue = $this->gen_name->CurrentValue;
+			}
+		} else {
+			$this->gen_name->EditValue = NULL;
+		}
+		$this->gen_name->ViewCustomAttributes = "";
 
 		// maintenance_type
 		$this->maintenance_type->EditAttrs["class"] = "form-control";
 		$this->maintenance_type->EditCustomAttributes = "";
+		if (strval($this->maintenance_type->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->maintenance_type->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `maintenance_type`";
+		$sWhereWrk = "";
+		$this->maintenance_type->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->maintenance_type, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->maintenance_type->EditValue = $this->maintenance_type->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->maintenance_type->EditValue = $this->maintenance_type->CurrentValue;
+			}
+		} else {
+			$this->maintenance_type->EditValue = NULL;
+		}
+		$this->maintenance_type->ViewCustomAttributes = "";
 
 		// running_hours
 		$this->running_hours->EditAttrs["class"] = "form-control";
 		$this->running_hours->EditCustomAttributes = "";
 		$this->running_hours->EditValue = $this->running_hours->CurrentValue;
-		$this->running_hours->PlaceHolder = ew_RemoveHtml($this->running_hours->FldCaption());
+		$this->running_hours->ViewCustomAttributes = "";
 
 		// cost
 		$this->cost->EditAttrs["class"] = "form-control";
 		$this->cost->EditCustomAttributes = "";
 		$this->cost->EditValue = $this->cost->CurrentValue;
-		$this->cost->PlaceHolder = ew_RemoveHtml($this->cost->FldCaption());
-		if (strval($this->cost->EditValue) <> "" && is_numeric($this->cost->EditValue)) $this->cost->EditValue = ew_FormatNumber($this->cost->EditValue, -2, -1, -2, 0);
+		$this->cost->ViewCustomAttributes = "";
 
 		// labour_fee
 		$this->labour_fee->EditAttrs["class"] = "form-control";
 		$this->labour_fee->EditCustomAttributes = "";
 		$this->labour_fee->EditValue = $this->labour_fee->CurrentValue;
-		$this->labour_fee->PlaceHolder = ew_RemoveHtml($this->labour_fee->FldCaption());
-		if (strval($this->labour_fee->EditValue) <> "" && is_numeric($this->labour_fee->EditValue)) $this->labour_fee->EditValue = ew_FormatNumber($this->labour_fee->EditValue, -2, -1, -2, 0);
+		$this->labour_fee->ViewCustomAttributes = "";
 
 		// total
 		$this->total->EditAttrs["class"] = "form-control";
 		$this->total->EditCustomAttributes = "";
 		$this->total->EditValue = $this->total->CurrentValue;
-		$this->total->PlaceHolder = ew_RemoveHtml($this->total->FldCaption());
-		if (strval($this->total->EditValue) <> "" && is_numeric($this->total->EditValue)) $this->total->EditValue = ew_FormatNumber($this->total->EditValue, -2, -1, -2, 0);
+		$this->total->ViewCustomAttributes = "";
 
 		// staff_id
 		$this->staff_id->EditAttrs["class"] = "form-control";
 		$this->staff_id->EditCustomAttributes = "";
+		if (strval($this->staff_id->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->staff_id->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->staff_id, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->staff_id->EditValue = $this->staff_id->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->staff_id->EditValue = $this->staff_id->CurrentValue;
+			}
+		} else {
+			$this->staff_id->EditValue = NULL;
+		}
+		$this->staff_id->ViewCustomAttributes = "";
 
 		// status
 		$this->status->EditAttrs["class"] = "form-control";
 		$this->status->EditCustomAttributes = "";
 
 		// initiator_action
+		$this->initiator_action->EditAttrs["class"] = "form-control";
 		$this->initiator_action->EditCustomAttributes = "";
-		$this->initiator_action->EditValue = $this->initiator_action->Options(FALSE);
+		if (strval($this->initiator_action->CurrentValue) <> "") {
+			$this->initiator_action->EditValue = $this->initiator_action->OptionCaption($this->initiator_action->CurrentValue);
+		} else {
+			$this->initiator_action->EditValue = NULL;
+		}
+		$this->initiator_action->ViewCustomAttributes = "";
 
 		// initiator_comment
 		$this->initiator_comment->EditAttrs["class"] = "form-control";
 		$this->initiator_comment->EditCustomAttributes = "";
 		$this->initiator_comment->EditValue = $this->initiator_comment->CurrentValue;
-		$this->initiator_comment->PlaceHolder = ew_RemoveHtml($this->initiator_comment->FldCaption());
+		$this->initiator_comment->ViewCustomAttributes = "";
 
 		// approver_date
 		$this->approver_date->EditAttrs["class"] = "form-control";
@@ -1141,7 +1211,7 @@ class cgen_maintenance extends cTable {
 		$this->flag->EditAttrs["class"] = "form-control";
 		$this->flag->EditCustomAttributes = "";
 		$this->flag->EditValue = $this->flag->CurrentValue;
-		$this->flag->PlaceHolder = ew_RemoveHtml($this->flag->FldCaption());
+		$this->flag->ViewCustomAttributes = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -1318,7 +1388,7 @@ class cgen_maintenance extends cTable {
 
 	// Write Audit Trail start/end for grid update
 	function WriteAuditTrailDummy($typ) {
-		$table = 'gen_maintenance';
+		$table = 'gen_maintenanace_v';
 		$usr = CurrentUserName();
 		ew_WriteAuditTrail("log", ew_StdCurrentDateTime(), ew_ScriptName(), $usr, $typ, $table, "", "", "", "");
 	}
@@ -1327,7 +1397,7 @@ class cgen_maintenance extends cTable {
 	function WriteAuditTrailOnAdd(&$rs) {
 		global $Language;
 		if (!$this->AuditTrailOnAdd) return;
-		$table = 'gen_maintenance';
+		$table = 'gen_maintenanace_v';
 
 		// Get key value
 		$key = "";
@@ -1361,7 +1431,7 @@ class cgen_maintenance extends cTable {
 	function WriteAuditTrailOnEdit(&$rsold, &$rsnew) {
 		global $Language;
 		if (!$this->AuditTrailOnEdit) return;
-		$table = 'gen_maintenance';
+		$table = 'gen_maintenanace_v';
 
 		// Get key value
 		$key = "";
@@ -1408,7 +1478,7 @@ class cgen_maintenance extends cTable {
 	function WriteAuditTrailOnDelete(&$rs) {
 		global $Language;
 		if (!$this->AuditTrailOnDelete) return;
-		$table = 'gen_maintenance';
+		$table = 'gen_maintenanace_v';
 
 		// Get key value
 		$key = "";
@@ -1444,11 +1514,6 @@ class cgen_maintenance extends cTable {
 	function Recordset_Selecting(&$filter) {
 
 		// Enter your code here
-		if (CurrentUserLevel() == 2) {
-			ew_AddFilter($filter, "`status` in (0) AND `staff_id` = '".$_SESSION['Staff_ID']."'");
-
-			//ew_AddFilter($filter, "`status` in (0)");
-		}
 		if (CurrentUserLevel() == 3) {
 			ew_AddFilter($filter, "`status` in (1)");
 		}
@@ -1491,26 +1556,7 @@ class cgen_maintenance extends cTable {
 
 		// Enter your code here
 		// To cancel, set return value to FALSE
-			// Officer Only
 
-		if (CurrentPageID() == "add" && CurrentUserLevel() == 2) {
-
-			// Save and forward
-			if ($this->initiator_action->CurrentValue == 1) {
-				$rsnew["status"] = 1;
-				$rsnew["initiator_action"] = 1;
-
-				//$rsnew["issued_by"] = $_SESSION['Staff_ID'];
-				$this->setSuccessMessage("&#x25C9; Maintenance Complated sent for Approved &#x2714;"); 					
-			}
-
-			// Saved only
-			if ($this->initiator_action->CurrentValue == 0) {
-				$rsnew["status"] = 0;			
-				$rsnew["initiator_action"] = 0; 
-				$this->setSuccessMessage("&#x25C9; Maintenance Initiated and Saved &#x2714;");
-			}			
-		}
 		return TRUE;
 	}
 
@@ -1525,58 +1571,30 @@ class cgen_maintenance extends cTable {
 
 		// Enter your code here
 		// To cancel, set return value to FALSE
+			// update event Only
 
-		if (CurrentPageID() == "edit" && CurrentUserLevel() == 2) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->datetime->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->datetime->EditValue = $this->datetime->CurrentValue;
-
-			// Save and forward
-			if ($this->initiator_action->CurrentValue == 1 && ($this->status->CurrentValue == 0 || $this->flag->CurrentValue == 0)) {
-				$rsnew["status"] = 1;
-				$rsnew["flag"] = 1;
-				$rsnew["initiator_action"] = 1;
-				$rsnew["approver_action"] = NULL;
-				$rsnew["approved_comment"] = NULL;
-				$this->setSuccessMessage("&#x25C9; Maintenance Items sent for Review and Approval &#x2714;"); 					
+		if (CurrentPageID() == "update" && (CurrentUserLevel() == 3 || CurrentUserLevel() == 4)) {
+			if ($this->approver_action->CurrentValue == 1 && ($this->status->CurrentValue == 1 || $this->status->CurrentValue == 2)) {
+				$rsnew["status"] = 2;
+				$rsnew["approver_action"] = 1;
+				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
+				$rsnew["approver_date"] = ew_CurrentDateTime();
+				$this->setSuccessMessage("&#x25C9; The Selected Records Has Been Successfully Approved and Closed &#x2714;"); 					
 			}
 
-			// Saved only
-			if ($this->initiator_action->CurrentValue == 0) {
-				$rsnew["status"] = 0;			
-				$rsnew["initiator_action"] = 0; 
-				$this->setSuccessMessage("&#x25C9; Record has been saved &#x2714;");
-			}
+			// Declined by Administrators
+			if ($this->approver_action->CurrentValue == 0 && CurrentUserLevel() == 1) {
+
+				// New
+				if ($this->status->CurrentValue == 0) {
+					$rsnew["status"] = 0;					
+					$rsnew["approver_action"] = 0;
+					$this->setSuccessMessage("&#x25CE; Record Successfully Declined &#x2718;");
+				}
+			}		
 		}
 
-		 // Supervisor
-		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$rsnew["datetime"] = $now->format('Y-m-d H:i:s');
-			$rsnew["approved_by"] = $_SESSION['Staff_ID'];
-		}
-
-			// Administartor - Don't change field values captured by tenant
-		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
-			$rsnew["id"] = $rsold["id"];
-			$rsnew["datetime"] = $rsold["datetime"];
-			$rsnew["reference_id"] = $rsold["reference_id"];
-			$rsnew["staff_id"] = $rsold["staff_id"];
-			$rsnew["gen_name"] = $rsold["gen_name"];
-			$rsnew["cost"] = $rsold["cost"];
-			$rsnew["maintenance_type"] = $rsold["maintenance_type"];
-			$rsnew["labour_fee"] = $rsold["labour_fee"];
-			$rsnew["total"] = $rsold["total"];
-			$rsnew["staff_id"] = $rsold["staff_id"];
-
-			//$rsnew["status"] = $rsold["status"];
-			$rsnew["initiator_action"] = $rsold["initiator_action"];
-			$rsnew["initiator_comment"] = $rsold["initiator_comment"];
-		}
-
-			// Approved by Administrators
+		// Approved by Administrators
 			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4)) {
 				$rsnew["date"] = $now->format('Y-m-d H:i:s');
 				$rsnew["approved_by"] = $_SESSION['Staff_ID'];
@@ -1686,15 +1704,7 @@ class cgen_maintenance extends cTable {
 	function Row_Rendering() {
 
 		// Enter your code here
-		if ((CurrentPageID() == "add" || CurrentPageID() == "edit"))  {
-			date_default_timezone_set('Africa/Lagos');
-			$now = new DateTime();
-			$this->datetime->CurrentValue = $now->Format('Y-m-d H:i:s');
-			$this->datetime->EditValue = $this->datetime->CurrentValue;
-			$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
-			$this->staff_id->EditValue = $this->staff_id->CurrentValue;
-		}
-		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 3 )) {
+		if (CurrentPageID() == "update" && (CurrentUserLevel() == 3 )) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$this->approver_date->CurrentValue = $now->Format('Y-m-d H:i:s');
@@ -1702,11 +1712,7 @@ class cgen_maintenance extends cTable {
 			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
 			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
 		}
-		if (CurrentPageID() == "add")  {
-			$this->reference_id->CurrentValue = $_SESSION['GMT_ID'];
-			$this->reference_id->EditValue = $this->reference_id->CurrentValue;
-		}
-		if (CurrentPageID() == "update" && (CurrentUserLevel() == 3 )) {
+		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 3 )) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$this->approver_date->CurrentValue = $now->Format('Y-m-d H:i:s');
@@ -1722,78 +1728,6 @@ class cgen_maintenance extends cTable {
 		// To view properties of field class, use:
 		//var_dump($this-><FieldName>);
 
-			if (CurrentPageID() == "add") {
-				if (CurrentUserLevel() == 2) {
-					$this->datetime->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->gen_name->Visible = TRUE;
-					$this->maintenance_type->Visible = TRUE;
-					$this->running_hours->Visible = TRUE;
-					$this->cost->ReadOnly = TRUE;
-					$this->labour_fee->Visible = TRUE;
-					$this->total->ReadOnly = TRUE;
-					$this->approver_date->Visible = FALSE;
-					$this->approver_action->Visible = FALSE;
-					$this->approver_comment->Visible = FALSE;
-					$this->approved_by->Visible = FALSE;
-				}
-			}
-
-				// Edit Page
-			if (CurrentPageID() == "edit") {
-				if ((CurrentUserLevel() == 2||CurrentUserLevel() == 12)) {
-					$this->datetime->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->gen_name->ReadOnly = TRUE;
-					$this->maintenance_type->ReadOnly = TRUE;
-					$this->running_hours->ReadOnly = TRUE;
-					$this->cost->ReadOnly = TRUE;
-					$this->labour_fee->Visible = TRUE;
-					$this->total->ReadOnly = TRUE;
-					$this->approver_date->Visible = FALSE;
-					$this->approver_action->Visible = FALSE;
-					$this->approver_comment->Visible = FALSE;
-					$this->approved_by->Visible = FALSE;
-				}
-				if (CurrentUserLevel() == 3) {
-					$this->datetime->ReadOnly = TRUE;
-					$this->gen_name->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->maintenance_type->ReadOnly = TRUE;
-					$this->running_hours->ReadOnly = TRUE;
-					$this->cost->ReadOnly = TRUE;
-					$this->labour_fee->ReadOnly = TRUE;
-					$this->total->ReadOnly = TRUE;
-					$this->initiator_action->ReadOnly = FALSE;
-					$this->initiator_comment->ReadOnly = TRUE;
-					$this->approver_date->ReadOnly = TRUE;
-					$this->approver_action->Visible = TRUE;
-					$this->approver_comment->Visible = TRUE;
-
-					//$this->approved_by->Visible = FALSE;
-				}
-			}
-
-				// Edit Page
-			if (CurrentPageID() == "update") {
-				if (CurrentUserLevel() == 3) {
-					$this->datetime->ReadOnly = TRUE;
-					$this->gen_name->ReadOnly = TRUE;
-					$this->reference_id->ReadOnly = TRUE;
-					$this->maintenance_type->ReadOnly = TRUE;
-					$this->running_hours->ReadOnly = TRUE;
-					$this->cost->ReadOnly = TRUE;
-					$this->labour_fee->ReadOnly = TRUE;
-					$this->total->ReadOnly = TRUE;
-					$this->initiator_action->ReadOnly = FALSE;
-					$this->initiator_comment->ReadOnly = TRUE;
-					$this->approver_date->ReadOnly = TRUE;
-					$this->approver_action->Visible = TRUE;
-					$this->approver_comment->Visible = TRUE;
-
-					//$this->approved_by->Visible = FALSE;
-				}
-			}
 	}
 
 	// User ID Filtering event

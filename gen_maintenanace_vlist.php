@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg14.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
 <?php include_once "phpfn14.php" ?>
-<?php include_once "gen_maintenanceinfo.php" ?>
+<?php include_once "gen_maintenanace_vinfo.php" ?>
 <?php include_once "usersinfo.php" ?>
 <?php include_once "userfn14.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$gen_maintenance_list = NULL; // Initialize page object first
+$gen_maintenanace_v_list = NULL; // Initialize page object first
 
-class cgen_maintenance_list extends cgen_maintenance {
+class cgen_maintenanace_v_list extends cgen_maintenanace_v {
 
 	// Page ID
 	var $PageID = 'list';
@@ -25,13 +25,13 @@ class cgen_maintenance_list extends cgen_maintenance {
 	var $ProjectID = '{DD9080C0-D1CA-431F-831F-CAC8FA61260C}';
 
 	// Table name
-	var $TableName = 'gen_maintenance';
+	var $TableName = 'gen_maintenanace_v';
 
 	// Page object name
-	var $PageObjName = 'gen_maintenance_list';
+	var $PageObjName = 'gen_maintenanace_v_list';
 
 	// Grid form hidden field names
-	var $FormName = 'fgen_maintenancelist';
+	var $FormName = 'fgen_maintenanace_vlist';
 	var $FormActionName = 'k_action';
 	var $FormKeyName = 'k_key';
 	var $FormOldKeyName = 'k_oldkey';
@@ -296,10 +296,10 @@ class cgen_maintenance_list extends cgen_maintenance {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (gen_maintenance)
-		if (!isset($GLOBALS["gen_maintenance"]) || get_class($GLOBALS["gen_maintenance"]) == "cgen_maintenance") {
-			$GLOBALS["gen_maintenance"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["gen_maintenance"];
+		// Table object (gen_maintenanace_v)
+		if (!isset($GLOBALS["gen_maintenanace_v"]) || get_class($GLOBALS["gen_maintenanace_v"]) == "cgen_maintenanace_v") {
+			$GLOBALS["gen_maintenanace_v"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["gen_maintenanace_v"];
 		}
 
 		// Initialize URLs
@@ -310,12 +310,12 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$this->ExportXmlUrl = $this->PageUrl() . "export=xml";
 		$this->ExportCsvUrl = $this->PageUrl() . "export=csv";
 		$this->ExportPdfUrl = $this->PageUrl() . "export=pdf";
-		$this->AddUrl = "gen_maintenanceadd.php";
+		$this->AddUrl = "gen_maintenanace_vadd.php";
 		$this->InlineAddUrl = $this->PageUrl() . "a=add";
 		$this->GridAddUrl = $this->PageUrl() . "a=gridadd";
 		$this->GridEditUrl = $this->PageUrl() . "a=gridedit";
-		$this->MultiDeleteUrl = "gen_maintenancedelete.php";
-		$this->MultiUpdateUrl = "gen_maintenanceupdate.php";
+		$this->MultiDeleteUrl = "gen_maintenanace_vdelete.php";
+		$this->MultiUpdateUrl = "gen_maintenanace_vupdate.php";
 
 		// Table object (users)
 		if (!isset($GLOBALS['users'])) $GLOBALS['users'] = new cusers();
@@ -326,7 +326,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'gen_maintenance');
+			define("EW_TABLE_NAME", 'gen_maintenanace_v');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -368,7 +368,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 		// Filter options
 		$this->FilterOptions = new cListOptions();
 		$this->FilterOptions->Tag = "div";
-		$this->FilterOptions->TagClassName = "ewFilterOption fgen_maintenancelistsrch";
+		$this->FilterOptions->TagClassName = "ewFilterOption fgen_maintenanace_vlistsrch";
 
 		// List actions
 		$this->ListActions = new cListActions();
@@ -523,13 +523,13 @@ class cgen_maintenance_list extends cgen_maintenance {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $gen_maintenance;
+		global $EW_EXPORT, $gen_maintenanace_v;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($gen_maintenance);
+				$doc = new $class($gen_maintenanace_v);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -653,18 +653,12 @@ class cgen_maintenance_list extends cgen_maintenance {
 
 			// Get default search criteria
 			ew_AddFilter($this->DefaultSearchWhere, $this->BasicSearchWhere(TRUE));
-			ew_AddFilter($this->DefaultSearchWhere, $this->AdvancedSearchWhere(TRUE));
 
 			// Get basic search values
 			$this->LoadBasicSearchValues();
 
-			// Get and validate search values for advanced search
-			$this->LoadSearchValues(); // Get search values
-
 			// Process filter list
 			$this->ProcessFilterList();
-			if (!$this->ValidateSearch())
-				$this->setFailureMessage($gsSearchError);
 
 			// Restore search parms from Session if not searching / reset / export
 			if (($this->Export <> "" || $this->Command <> "search" && $this->Command <> "reset" && $this->Command <> "resetall") && $this->Command <> "json" && $this->CheckSearchParms())
@@ -679,10 +673,6 @@ class cgen_maintenance_list extends cgen_maintenance {
 			// Get basic search criteria
 			if ($gsSearchError == "")
 				$sSrchBasic = $this->BasicSearchWhere();
-
-			// Get search criteria for advanced search
-			if ($gsSearchError == "")
-				$sSrchAdvanced = $this->AdvancedSearchWhere();
 		}
 
 		// Restore display records
@@ -703,11 +693,6 @@ class cgen_maintenance_list extends cgen_maintenance {
 			$this->BasicSearch->LoadDefault();
 			if ($this->BasicSearch->Keyword != "")
 				$sSrchBasic = $this->BasicSearchWhere();
-
-			// Load advanced search from default
-			if ($this->LoadAdvancedSearchDefault()) {
-				$sSrchAdvanced = $this->AdvancedSearchWhere();
-			}
 		}
 
 		// Build search criteria
@@ -833,7 +818,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 
 		// Load server side filters
 		if (EW_SEARCH_FILTER_OPTION == "Server" && isset($UserProfile))
-			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "fgen_maintenancelistsrch");
+			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "fgen_maintenanace_vlistsrch");
 		$sFilterList = ew_Concat($sFilterList, $this->id->AdvancedSearch->ToJson(), ","); // Field id
 		$sFilterList = ew_Concat($sFilterList, $this->datetime->AdvancedSearch->ToJson(), ","); // Field datetime
 		$sFilterList = ew_Concat($sFilterList, $this->reference_id->AdvancedSearch->ToJson(), ","); // Field reference_id
@@ -874,7 +859,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 		global $UserProfile;
 		if (@$_POST["ajax"] == "savefilters") { // Save filter request (Ajax)
 			$filters = @$_POST["filters"];
-			$UserProfile->SetSearchFilters(CurrentUserName(), "fgen_maintenancelistsrch", $filters);
+			$UserProfile->SetSearchFilters(CurrentUserName(), "fgen_maintenanace_vlistsrch", $filters);
 
 			// Clean output buffer
 			if (!EW_DEBUG_ENABLED && ob_get_length())
@@ -1043,101 +1028,6 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
 
-	// Advanced search WHERE clause based on QueryString
-	function AdvancedSearchWhere($Default = FALSE) {
-		global $Security;
-		$sWhere = "";
-		if (!$Security->CanSearch()) return "";
-		$this->BuildSearchSql($sWhere, $this->id, $Default, FALSE); // id
-		$this->BuildSearchSql($sWhere, $this->datetime, $Default, FALSE); // datetime
-		$this->BuildSearchSql($sWhere, $this->reference_id, $Default, FALSE); // reference_id
-		$this->BuildSearchSql($sWhere, $this->gen_name, $Default, FALSE); // gen_name
-		$this->BuildSearchSql($sWhere, $this->maintenance_type, $Default, FALSE); // maintenance_type
-		$this->BuildSearchSql($sWhere, $this->running_hours, $Default, FALSE); // running_hours
-		$this->BuildSearchSql($sWhere, $this->cost, $Default, FALSE); // cost
-		$this->BuildSearchSql($sWhere, $this->labour_fee, $Default, FALSE); // labour_fee
-		$this->BuildSearchSql($sWhere, $this->total, $Default, FALSE); // total
-		$this->BuildSearchSql($sWhere, $this->staff_id, $Default, FALSE); // staff_id
-		$this->BuildSearchSql($sWhere, $this->status, $Default, FALSE); // status
-		$this->BuildSearchSql($sWhere, $this->initiator_action, $Default, FALSE); // initiator_action
-		$this->BuildSearchSql($sWhere, $this->initiator_comment, $Default, FALSE); // initiator_comment
-		$this->BuildSearchSql($sWhere, $this->approver_date, $Default, FALSE); // approver_date
-		$this->BuildSearchSql($sWhere, $this->approver_action, $Default, FALSE); // approver_action
-		$this->BuildSearchSql($sWhere, $this->approver_comment, $Default, FALSE); // approver_comment
-		$this->BuildSearchSql($sWhere, $this->approved_by, $Default, FALSE); // approved_by
-		$this->BuildSearchSql($sWhere, $this->flag, $Default, FALSE); // flag
-
-		// Set up search parm
-		if (!$Default && $sWhere <> "" && in_array($this->Command, array("", "reset", "resetall"))) {
-			$this->Command = "search";
-		}
-		if (!$Default && $this->Command == "search") {
-			$this->id->AdvancedSearch->Save(); // id
-			$this->datetime->AdvancedSearch->Save(); // datetime
-			$this->reference_id->AdvancedSearch->Save(); // reference_id
-			$this->gen_name->AdvancedSearch->Save(); // gen_name
-			$this->maintenance_type->AdvancedSearch->Save(); // maintenance_type
-			$this->running_hours->AdvancedSearch->Save(); // running_hours
-			$this->cost->AdvancedSearch->Save(); // cost
-			$this->labour_fee->AdvancedSearch->Save(); // labour_fee
-			$this->total->AdvancedSearch->Save(); // total
-			$this->staff_id->AdvancedSearch->Save(); // staff_id
-			$this->status->AdvancedSearch->Save(); // status
-			$this->initiator_action->AdvancedSearch->Save(); // initiator_action
-			$this->initiator_comment->AdvancedSearch->Save(); // initiator_comment
-			$this->approver_date->AdvancedSearch->Save(); // approver_date
-			$this->approver_action->AdvancedSearch->Save(); // approver_action
-			$this->approver_comment->AdvancedSearch->Save(); // approver_comment
-			$this->approved_by->AdvancedSearch->Save(); // approved_by
-			$this->flag->AdvancedSearch->Save(); // flag
-		}
-		return $sWhere;
-	}
-
-	// Build search SQL
-	function BuildSearchSql(&$Where, &$Fld, $Default, $MultiValue) {
-		$FldParm = $Fld->FldParm();
-		$FldVal = ($Default) ? $Fld->AdvancedSearch->SearchValueDefault : $Fld->AdvancedSearch->SearchValue; // @$_GET["x_$FldParm"]
-		$FldOpr = ($Default) ? $Fld->AdvancedSearch->SearchOperatorDefault : $Fld->AdvancedSearch->SearchOperator; // @$_GET["z_$FldParm"]
-		$FldCond = ($Default) ? $Fld->AdvancedSearch->SearchConditionDefault : $Fld->AdvancedSearch->SearchCondition; // @$_GET["v_$FldParm"]
-		$FldVal2 = ($Default) ? $Fld->AdvancedSearch->SearchValue2Default : $Fld->AdvancedSearch->SearchValue2; // @$_GET["y_$FldParm"]
-		$FldOpr2 = ($Default) ? $Fld->AdvancedSearch->SearchOperator2Default : $Fld->AdvancedSearch->SearchOperator2; // @$_GET["w_$FldParm"]
-		$sWrk = "";
-		if (is_array($FldVal)) $FldVal = implode(",", $FldVal);
-		if (is_array($FldVal2)) $FldVal2 = implode(",", $FldVal2);
-		$FldOpr = strtoupper(trim($FldOpr));
-		if ($FldOpr == "") $FldOpr = "=";
-		$FldOpr2 = strtoupper(trim($FldOpr2));
-		if ($FldOpr2 == "") $FldOpr2 = "=";
-		if (EW_SEARCH_MULTI_VALUE_OPTION == 1)
-			$MultiValue = FALSE;
-		if ($MultiValue) {
-			$sWrk1 = ($FldVal <> "") ? ew_GetMultiSearchSql($Fld, $FldOpr, $FldVal, $this->DBID) : ""; // Field value 1
-			$sWrk2 = ($FldVal2 <> "") ? ew_GetMultiSearchSql($Fld, $FldOpr2, $FldVal2, $this->DBID) : ""; // Field value 2
-			$sWrk = $sWrk1; // Build final SQL
-			if ($sWrk2 <> "")
-				$sWrk = ($sWrk <> "") ? "($sWrk) $FldCond ($sWrk2)" : $sWrk2;
-		} else {
-			$FldVal = $this->ConvertSearchValue($Fld, $FldVal);
-			$FldVal2 = $this->ConvertSearchValue($Fld, $FldVal2);
-			$sWrk = ew_GetSearchSql($Fld, $FldVal, $FldOpr, $FldCond, $FldVal2, $FldOpr2, $this->DBID);
-		}
-		ew_AddFilter($Where, $sWrk);
-	}
-
-	// Convert search value
-	function ConvertSearchValue(&$Fld, $FldVal) {
-		if ($FldVal == EW_NULL_VALUE || $FldVal == EW_NOT_NULL_VALUE)
-			return $FldVal;
-		$Value = $FldVal;
-		if ($Fld->FldDataType == EW_DATATYPE_BOOLEAN) {
-			if ($FldVal <> "") $Value = ($FldVal == "1" || strtolower(strval($FldVal)) == "y" || strtolower(strval($FldVal)) == "t") ? $Fld->TrueValue : $Fld->FalseValue;
-		} elseif ($Fld->FldDataType == EW_DATATYPE_DATE || $Fld->FldDataType == EW_DATATYPE_TIME) {
-			if ($FldVal <> "") $Value = ew_UnFormatDateTime($FldVal, $Fld->FldDateTimeFormat);
-		}
-		return $Value;
-	}
-
 	// Return basic search SQL
 	function BasicSearchSQL($arKeywords, $type) {
 		$sWhere = "";
@@ -1253,42 +1143,6 @@ class cgen_maintenance_list extends cgen_maintenance {
 		// Check basic search
 		if ($this->BasicSearch->IssetSession())
 			return TRUE;
-		if ($this->id->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->datetime->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->reference_id->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->gen_name->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->maintenance_type->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->running_hours->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->cost->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->labour_fee->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->total->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->staff_id->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->status->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->initiator_action->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->initiator_comment->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->approver_date->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->approver_action->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->approver_comment->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->approved_by->AdvancedSearch->IssetSession())
-			return TRUE;
-		if ($this->flag->AdvancedSearch->IssetSession())
-			return TRUE;
 		return FALSE;
 	}
 
@@ -1301,9 +1155,6 @@ class cgen_maintenance_list extends cgen_maintenance {
 
 		// Clear basic search parameters
 		$this->ResetBasicSearchParms();
-
-		// Clear advanced search parameters
-		$this->ResetAdvancedSearchParms();
 	}
 
 	// Load advanced search default values
@@ -1316,54 +1167,12 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$this->BasicSearch->UnsetSession();
 	}
 
-	// Clear all advanced search parameters
-	function ResetAdvancedSearchParms() {
-		$this->id->AdvancedSearch->UnsetSession();
-		$this->datetime->AdvancedSearch->UnsetSession();
-		$this->reference_id->AdvancedSearch->UnsetSession();
-		$this->gen_name->AdvancedSearch->UnsetSession();
-		$this->maintenance_type->AdvancedSearch->UnsetSession();
-		$this->running_hours->AdvancedSearch->UnsetSession();
-		$this->cost->AdvancedSearch->UnsetSession();
-		$this->labour_fee->AdvancedSearch->UnsetSession();
-		$this->total->AdvancedSearch->UnsetSession();
-		$this->staff_id->AdvancedSearch->UnsetSession();
-		$this->status->AdvancedSearch->UnsetSession();
-		$this->initiator_action->AdvancedSearch->UnsetSession();
-		$this->initiator_comment->AdvancedSearch->UnsetSession();
-		$this->approver_date->AdvancedSearch->UnsetSession();
-		$this->approver_action->AdvancedSearch->UnsetSession();
-		$this->approver_comment->AdvancedSearch->UnsetSession();
-		$this->approved_by->AdvancedSearch->UnsetSession();
-		$this->flag->AdvancedSearch->UnsetSession();
-	}
-
 	// Restore all search parameters
 	function RestoreSearchParms() {
 		$this->RestoreSearch = TRUE;
 
 		// Restore basic search values
 		$this->BasicSearch->Load();
-
-		// Restore advanced search values
-		$this->id->AdvancedSearch->Load();
-		$this->datetime->AdvancedSearch->Load();
-		$this->reference_id->AdvancedSearch->Load();
-		$this->gen_name->AdvancedSearch->Load();
-		$this->maintenance_type->AdvancedSearch->Load();
-		$this->running_hours->AdvancedSearch->Load();
-		$this->cost->AdvancedSearch->Load();
-		$this->labour_fee->AdvancedSearch->Load();
-		$this->total->AdvancedSearch->Load();
-		$this->staff_id->AdvancedSearch->Load();
-		$this->status->AdvancedSearch->Load();
-		$this->initiator_action->AdvancedSearch->Load();
-		$this->initiator_comment->AdvancedSearch->Load();
-		$this->approver_date->AdvancedSearch->Load();
-		$this->approver_action->AdvancedSearch->Load();
-		$this->approver_comment->AdvancedSearch->Load();
-		$this->approved_by->AdvancedSearch->Load();
-		$this->flag->AdvancedSearch->Load();
 	}
 
 	// Set up sort parameters
@@ -1457,12 +1266,6 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$item->Visible = $Security->CanEdit();
 		$item->OnLeft = TRUE;
 
-		// "delete"
-		$item = &$this->ListOptions->Add("delete");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanDelete();
-		$item->OnLeft = TRUE;
-
 		// List actions
 		$item = &$this->ListOptions->Add("listactions");
 		$item->CssClass = "text-nowrap";
@@ -1508,7 +1311,10 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$oListOpt = &$this->ListOptions->Items["view"];
 		$viewcaption = ew_HtmlTitle($Language->Phrase("ViewLink"));
 		if ($Security->CanView()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-caption=\"" . $viewcaption . "\" href=\"" . ew_HtmlEncode($this->ViewUrl) . "\">" . $Language->Phrase("ViewLink") . "</a>";
+			if (ew_IsMobile())
+				$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-caption=\"" . $viewcaption . "\" href=\"" . ew_HtmlEncode($this->ViewUrl) . "\">" . $Language->Phrase("ViewLink") . "</a>";
+			else
+				$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-table=\"gen_maintenanace_v\" data-caption=\"" . $viewcaption . "\" href=\"javascript:void(0);\" onclick=\"ew_ModalDialogShow({lnk:this,url:'" . ew_HtmlEncode($this->ViewUrl) . "',btn:null});\">" . $Language->Phrase("ViewLink") . "</a>";
 		} else {
 			$oListOpt->Body = "";
 		}
@@ -1521,13 +1327,6 @@ class cgen_maintenance_list extends cgen_maintenance {
 		} else {
 			$oListOpt->Body = "";
 		}
-
-		// "delete"
-		$oListOpt = &$this->ListOptions->Items["delete"];
-		if ($Security->CanDelete())
-			$oListOpt->Body = "<a class=\"ewRowLink ewDelete\"" . "" . " title=\"" . ew_HtmlTitle($Language->Phrase("DeleteLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("DeleteLink")) . "\" href=\"" . ew_HtmlEncode($this->DeleteUrl) . "\">" . $Language->Phrase("DeleteLink") . "</a>";
-		else
-			$oListOpt->Body = "";
 
 		// Set up list action buttons
 		$oListOpt = &$this->ListOptions->GetItem("listactions");
@@ -1571,18 +1370,11 @@ class cgen_maintenance_list extends cgen_maintenance {
 	function SetupOtherOptions() {
 		global $Language, $Security;
 		$options = &$this->OtherOptions;
-		$option = $options["addedit"];
-
-		// Add
-		$item = &$option->Add("add");
-		$addcaption = ew_HtmlTitle($Language->Phrase("AddLink"));
-		$item->Body = "<a class=\"ewAddEdit ewAdd\" title=\"" . $addcaption . "\" data-caption=\"" . $addcaption . "\" href=\"" . ew_HtmlEncode($this->AddUrl) . "\">" . $Language->Phrase("AddLink") . "</a>";
-		$item->Visible = ($this->AddUrl <> "" && $Security->CanAdd());
 		$option = $options["action"];
 
 		// Add multi update
 		$item = &$option->Add("multiupdate");
-		$item->Body = "<a class=\"ewAction ewMultiUpdate\" title=\"" . ew_HtmlTitle($Language->Phrase("UpdateSelectedLink")) . "\" data-table=\"gen_maintenance\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("UpdateSelectedLink")) . "\" href=\"\" onclick=\"ew_ModalDialogShow({lnk:this,btn:'UpdateBtn',f:document.fgen_maintenancelist,url:'" . $this->MultiUpdateUrl . "'});return false;\">" . $Language->Phrase("UpdateSelectedLink") . "</a>";
+		$item->Body = "<a class=\"ewAction ewMultiUpdate\" title=\"" . ew_HtmlTitle($Language->Phrase("UpdateSelectedLink")) . "\" data-table=\"gen_maintenanace_v\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("UpdateSelectedLink")) . "\" href=\"\" onclick=\"ew_ModalDialogShow({lnk:this,btn:'UpdateBtn',f:document.fgen_maintenanace_vlist,url:'" . $this->MultiUpdateUrl . "'});return false;\">" . $Language->Phrase("UpdateSelectedLink") . "</a>";
 		$item->Visible = ($Security->CanEdit());
 
 		// Set up options default
@@ -1601,10 +1393,10 @@ class cgen_maintenance_list extends cgen_maintenance {
 
 		// Filter button
 		$item = &$this->FilterOptions->Add("savecurrentfilter");
-		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"fgen_maintenancelistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
+		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"fgen_maintenanace_vlistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
 		$item->Visible = TRUE;
 		$item = &$this->FilterOptions->Add("deletefilter");
-		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"fgen_maintenancelistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
+		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"fgen_maintenanace_vlistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
 		$item->Visible = TRUE;
 		$this->FilterOptions->UseDropDownButton = TRUE;
 		$this->FilterOptions->UseButtonGroup = !$this->FilterOptions->UseDropDownButton;
@@ -1628,7 +1420,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 					$item = &$option->Add("custom_" . $listaction->Action);
 					$caption = $listaction->Caption;
 					$icon = ($listaction->Icon <> "") ? "<span class=\"" . ew_HtmlEncode($listaction->Icon) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\"></span> " : $caption;
-					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.fgen_maintenancelist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
+					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.fgen_maintenanace_vlist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
 					$item->Visible = $listaction->Allow;
 				}
 			}
@@ -1732,7 +1524,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 		// Search button
 		$item = &$this->SearchOptions->Add("searchtoggle");
 		$SearchToggleClass = ($this->SearchWhere <> "") ? " active" : " active";
-		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"fgen_maintenancelistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"fgen_maintenanace_vlistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
 		$item->Visible = TRUE;
 
 		// Show all button
@@ -1740,14 +1532,9 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$item->Body = "<a class=\"btn btn-default ewShowAll\" title=\"" . $Language->Phrase("ShowAll") . "\" data-caption=\"" . $Language->Phrase("ShowAll") . "\" href=\"" . $this->PageUrl() . "cmd=reset\">" . $Language->Phrase("ShowAllBtn") . "</a>";
 		$item->Visible = ($this->SearchWhere <> $this->DefaultSearchWhere && $this->SearchWhere <> "0=101");
 
-		// Advanced search button
-		$item = &$this->SearchOptions->Add("advancedsearch");
-		$item->Body = "<a class=\"btn btn-default ewAdvancedSearch\" title=\"" . $Language->Phrase("AdvancedSearch") . "\" data-caption=\"" . $Language->Phrase("AdvancedSearch") . "\" href=\"gen_maintenancesrch.php\">" . $Language->Phrase("AdvancedSearchBtn") . "</a>";
-		$item->Visible = TRUE;
-
 		// Search highlight button
 		$item = &$this->SearchOptions->Add("searchhighlight");
-		$item->Body = "<button type=\"button\" class=\"btn btn-default ewHighlight active\" title=\"" . $Language->Phrase("Highlight") . "\" data-caption=\"" . $Language->Phrase("Highlight") . "\" data-toggle=\"button\" data-form=\"fgen_maintenancelistsrch\" data-name=\"" . $this->HighlightName() . "\">" . $Language->Phrase("HighlightBtn") . "</button>";
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ewHighlight active\" title=\"" . $Language->Phrase("Highlight") . "\" data-caption=\"" . $Language->Phrase("Highlight") . "\" data-toggle=\"button\" data-form=\"fgen_maintenanace_vlistsrch\" data-name=\"" . $this->HighlightName() . "\">" . $Language->Phrase("HighlightBtn") . "</button>";
 		$item->Visible = ($this->SearchWhere <> "" && $this->TotalRecs > 0);
 
 		// Button group for search
@@ -1820,103 +1607,6 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$this->BasicSearch->Keyword = @$_GET[EW_TABLE_BASIC_SEARCH];
 		if ($this->BasicSearch->Keyword <> "" && $this->Command == "") $this->Command = "search";
 		$this->BasicSearch->Type = @$_GET[EW_TABLE_BASIC_SEARCH_TYPE];
-	}
-
-	// Load search values for validation
-	function LoadSearchValues() {
-		global $objForm;
-
-		// Load search values
-		// id
-
-		$this->id->AdvancedSearch->SearchValue = @$_GET["x_id"];
-		if ($this->id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->id->AdvancedSearch->SearchOperator = @$_GET["z_id"];
-
-		// datetime
-		$this->datetime->AdvancedSearch->SearchValue = @$_GET["x_datetime"];
-		if ($this->datetime->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->datetime->AdvancedSearch->SearchOperator = @$_GET["z_datetime"];
-
-		// reference_id
-		$this->reference_id->AdvancedSearch->SearchValue = @$_GET["x_reference_id"];
-		if ($this->reference_id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->reference_id->AdvancedSearch->SearchOperator = @$_GET["z_reference_id"];
-
-		// gen_name
-		$this->gen_name->AdvancedSearch->SearchValue = @$_GET["x_gen_name"];
-		if ($this->gen_name->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->gen_name->AdvancedSearch->SearchOperator = @$_GET["z_gen_name"];
-
-		// maintenance_type
-		$this->maintenance_type->AdvancedSearch->SearchValue = @$_GET["x_maintenance_type"];
-		if ($this->maintenance_type->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->maintenance_type->AdvancedSearch->SearchOperator = @$_GET["z_maintenance_type"];
-
-		// running_hours
-		$this->running_hours->AdvancedSearch->SearchValue = @$_GET["x_running_hours"];
-		if ($this->running_hours->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->running_hours->AdvancedSearch->SearchOperator = @$_GET["z_running_hours"];
-
-		// cost
-		$this->cost->AdvancedSearch->SearchValue = @$_GET["x_cost"];
-		if ($this->cost->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->cost->AdvancedSearch->SearchOperator = @$_GET["z_cost"];
-
-		// labour_fee
-		$this->labour_fee->AdvancedSearch->SearchValue = @$_GET["x_labour_fee"];
-		if ($this->labour_fee->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->labour_fee->AdvancedSearch->SearchOperator = @$_GET["z_labour_fee"];
-
-		// total
-		$this->total->AdvancedSearch->SearchValue = @$_GET["x_total"];
-		if ($this->total->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->total->AdvancedSearch->SearchOperator = @$_GET["z_total"];
-
-		// staff_id
-		$this->staff_id->AdvancedSearch->SearchValue = @$_GET["x_staff_id"];
-		if ($this->staff_id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->staff_id->AdvancedSearch->SearchOperator = @$_GET["z_staff_id"];
-
-		// status
-		$this->status->AdvancedSearch->SearchValue = @$_GET["x_status"];
-		if ($this->status->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->status->AdvancedSearch->SearchOperator = @$_GET["z_status"];
-
-		// initiator_action
-		$this->initiator_action->AdvancedSearch->SearchValue = @$_GET["x_initiator_action"];
-		if ($this->initiator_action->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->initiator_action->AdvancedSearch->SearchOperator = @$_GET["z_initiator_action"];
-
-		// initiator_comment
-		$this->initiator_comment->AdvancedSearch->SearchValue = @$_GET["x_initiator_comment"];
-		if ($this->initiator_comment->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->initiator_comment->AdvancedSearch->SearchOperator = @$_GET["z_initiator_comment"];
-
-		// approver_date
-		$this->approver_date->AdvancedSearch->SearchValue = @$_GET["x_approver_date"];
-		if ($this->approver_date->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->approver_date->AdvancedSearch->SearchOperator = @$_GET["z_approver_date"];
-
-		// approver_action
-		$this->approver_action->AdvancedSearch->SearchValue = @$_GET["x_approver_action"];
-		if ($this->approver_action->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->approver_action->AdvancedSearch->SearchOperator = @$_GET["z_approver_action"];
-
-		// approver_comment
-		$this->approver_comment->AdvancedSearch->SearchValue = @$_GET["x_approver_comment"];
-		if ($this->approver_comment->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->approver_comment->AdvancedSearch->SearchOperator = @$_GET["z_approver_comment"];
-
-		// approved_by
-		$this->approved_by->AdvancedSearch->SearchValue = @$_GET["x_approved_by"];
-		if ($this->approved_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->approved_by->AdvancedSearch->SearchOperator = @$_GET["z_approved_by"];
-
-		// flag
-		$this->flag->AdvancedSearch->SearchValue = @$_GET["x_flag"];
-		if ($this->flag->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->flag->AdvancedSearch->SearchOperator = @$_GET["z_flag"];
 	}
 
 	// Load recordset
@@ -2333,22 +2023,16 @@ class cgen_maintenance_list extends cgen_maintenance {
 			$this->cost->LinkCustomAttributes = "";
 			$this->cost->HrefValue = "";
 			$this->cost->TooltipValue = "";
-			if ($this->Export == "")
-				$this->cost->ViewValue = $this->HighlightValue($this->cost);
 
 			// labour_fee
 			$this->labour_fee->LinkCustomAttributes = "";
 			$this->labour_fee->HrefValue = "";
 			$this->labour_fee->TooltipValue = "";
-			if ($this->Export == "")
-				$this->labour_fee->ViewValue = $this->HighlightValue($this->labour_fee);
 
 			// total
 			$this->total->LinkCustomAttributes = "";
 			$this->total->HrefValue = "";
 			$this->total->TooltipValue = "";
-			if ($this->Export == "")
-				$this->total->ViewValue = $this->HighlightValue($this->total);
 
 			// staff_id
 			$this->staff_id->LinkCustomAttributes = "";
@@ -2364,58 +2048,11 @@ class cgen_maintenance_list extends cgen_maintenance {
 			$this->flag->LinkCustomAttributes = "";
 			$this->flag->HrefValue = "";
 			$this->flag->TooltipValue = "";
-			if ($this->Export == "")
-				$this->flag->ViewValue = $this->HighlightValue($this->flag);
 		}
 
 		// Call Row Rendered event
 		if ($this->RowType <> EW_ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
-	}
-
-	// Validate search
-	function ValidateSearch() {
-		global $gsSearchError;
-
-		// Initialize
-		$gsSearchError = "";
-
-		// Check if validation required
-		if (!EW_SERVER_VALIDATE)
-			return TRUE;
-
-		// Return validate result
-		$ValidateSearch = ($gsSearchError == "");
-
-		// Call Form_CustomValidate event
-		$sFormCustomError = "";
-		$ValidateSearch = $ValidateSearch && $this->Form_CustomValidate($sFormCustomError);
-		if ($sFormCustomError <> "") {
-			ew_AddMessage($gsSearchError, $sFormCustomError);
-		}
-		return $ValidateSearch;
-	}
-
-	// Load advanced search
-	function LoadAdvancedSearch() {
-		$this->id->AdvancedSearch->Load();
-		$this->datetime->AdvancedSearch->Load();
-		$this->reference_id->AdvancedSearch->Load();
-		$this->gen_name->AdvancedSearch->Load();
-		$this->maintenance_type->AdvancedSearch->Load();
-		$this->running_hours->AdvancedSearch->Load();
-		$this->cost->AdvancedSearch->Load();
-		$this->labour_fee->AdvancedSearch->Load();
-		$this->total->AdvancedSearch->Load();
-		$this->staff_id->AdvancedSearch->Load();
-		$this->status->AdvancedSearch->Load();
-		$this->initiator_action->AdvancedSearch->Load();
-		$this->initiator_comment->AdvancedSearch->Load();
-		$this->approver_date->AdvancedSearch->Load();
-		$this->approver_action->AdvancedSearch->Load();
-		$this->approver_comment->AdvancedSearch->Load();
-		$this->approved_by->AdvancedSearch->Load();
-		$this->flag->AdvancedSearch->Load();
 	}
 
 	// Set up export options
@@ -2460,7 +2097,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 		// Export to Email
 		$item = &$this->ExportOptions->Add("email");
 		$url = "";
-		$item->Body = "<button id=\"emf_gen_maintenance\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_gen_maintenance',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fgen_maintenancelist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
+		$item->Body = "<button id=\"emf_gen_maintenanace_v\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_gen_maintenanace_v',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fgen_maintenanace_vlist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
 		$item->Visible = FALSE;
 
 		// Drop down button for export
@@ -2590,9 +2227,6 @@ class cgen_maintenance_list extends cgen_maintenance {
 	function Page_Load() {
 
 		//echo "Page Load";
-		if (CurrentPageID() == "list"){
-			 $_SESSION['GMT_ID'] = generateGMTKey();
-		 }
 	}
 
 	// Page Unload event
@@ -2722,31 +2356,31 @@ class cgen_maintenance_list extends cgen_maintenance {
 <?php
 
 // Create page object
-if (!isset($gen_maintenance_list)) $gen_maintenance_list = new cgen_maintenance_list();
+if (!isset($gen_maintenanace_v_list)) $gen_maintenanace_v_list = new cgen_maintenanace_v_list();
 
 // Page init
-$gen_maintenance_list->Page_Init();
+$gen_maintenanace_v_list->Page_Init();
 
 // Page main
-$gen_maintenance_list->Page_Main();
+$gen_maintenanace_v_list->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$gen_maintenance_list->Page_Render();
+$gen_maintenanace_v_list->Page_Render();
 ?>
 <?php include_once "header.php" ?>
-<?php if ($gen_maintenance->Export == "") { ?>
+<?php if ($gen_maintenanace_v->Export == "") { ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "list";
-var CurrentForm = fgen_maintenancelist = new ew_Form("fgen_maintenancelist", "list");
-fgen_maintenancelist.FormKeyCountName = '<?php echo $gen_maintenance_list->FormKeyCountName ?>';
+var CurrentForm = fgen_maintenanace_vlist = new ew_Form("fgen_maintenanace_vlist", "list");
+fgen_maintenanace_vlist.FormKeyCountName = '<?php echo $gen_maintenanace_v_list->FormKeyCountName ?>';
 
 // Form_CustomValidate event
-fgen_maintenancelist.Form_CustomValidate = 
+fgen_maintenanace_vlist.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid.
@@ -2754,94 +2388,94 @@ fgen_maintenancelist.Form_CustomValidate =
  }
 
 // Use JavaScript validation or not
-fgen_maintenancelist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+fgen_maintenanace_vlist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-fgen_maintenancelist.Lists["x_gen_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_gen_name","x_location","x_kva",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"generator_registration"};
-fgen_maintenancelist.Lists["x_gen_name"].Data = "<?php echo $gen_maintenance_list->gen_name->LookupFilterQuery(FALSE, "list") ?>";
-fgen_maintenancelist.Lists["x_maintenance_type"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"maintenance_type"};
-fgen_maintenancelist.Lists["x_maintenance_type"].Data = "<?php echo $gen_maintenance_list->maintenance_type->LookupFilterQuery(FALSE, "list") ?>";
-fgen_maintenancelist.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fgen_maintenancelist.Lists["x_staff_id"].Data = "<?php echo $gen_maintenance_list->staff_id->LookupFilterQuery(FALSE, "list") ?>";
-fgen_maintenancelist.Lists["x_status"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"gen_status"};
-fgen_maintenancelist.Lists["x_status"].Data = "<?php echo $gen_maintenance_list->status->LookupFilterQuery(FALSE, "list") ?>";
+fgen_maintenanace_vlist.Lists["x_gen_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_gen_name","x_location","x_kva",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"generator_registration"};
+fgen_maintenanace_vlist.Lists["x_gen_name"].Data = "<?php echo $gen_maintenanace_v_list->gen_name->LookupFilterQuery(FALSE, "list") ?>";
+fgen_maintenanace_vlist.Lists["x_maintenance_type"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"maintenance_type"};
+fgen_maintenanace_vlist.Lists["x_maintenance_type"].Data = "<?php echo $gen_maintenanace_v_list->maintenance_type->LookupFilterQuery(FALSE, "list") ?>";
+fgen_maintenanace_vlist.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fgen_maintenanace_vlist.Lists["x_staff_id"].Data = "<?php echo $gen_maintenanace_v_list->staff_id->LookupFilterQuery(FALSE, "list") ?>";
+fgen_maintenanace_vlist.Lists["x_status"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"gen_status"};
+fgen_maintenanace_vlist.Lists["x_status"].Data = "<?php echo $gen_maintenanace_v_list->status->LookupFilterQuery(FALSE, "list") ?>";
 
 // Form object for search
-var CurrentSearchForm = fgen_maintenancelistsrch = new ew_Form("fgen_maintenancelistsrch");
+var CurrentSearchForm = fgen_maintenanace_vlistsrch = new ew_Form("fgen_maintenanace_vlistsrch");
 </script>
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
 </script>
 <?php } ?>
-<?php if ($gen_maintenance->Export == "") { ?>
+<?php if ($gen_maintenanace_v->Export == "") { ?>
 <div class="ewToolbar">
-<?php if ($gen_maintenance_list->TotalRecs > 0 && $gen_maintenance_list->ExportOptions->Visible()) { ?>
-<?php $gen_maintenance_list->ExportOptions->Render("body") ?>
+<?php if ($gen_maintenanace_v_list->TotalRecs > 0 && $gen_maintenanace_v_list->ExportOptions->Visible()) { ?>
+<?php $gen_maintenanace_v_list->ExportOptions->Render("body") ?>
 <?php } ?>
-<?php if ($gen_maintenance_list->SearchOptions->Visible()) { ?>
-<?php $gen_maintenance_list->SearchOptions->Render("body") ?>
+<?php if ($gen_maintenanace_v_list->SearchOptions->Visible()) { ?>
+<?php $gen_maintenanace_v_list->SearchOptions->Render("body") ?>
 <?php } ?>
-<?php if ($gen_maintenance_list->FilterOptions->Visible()) { ?>
-<?php $gen_maintenance_list->FilterOptions->Render("body") ?>
+<?php if ($gen_maintenanace_v_list->FilterOptions->Visible()) { ?>
+<?php $gen_maintenanace_v_list->FilterOptions->Render("body") ?>
 <?php } ?>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
 <?php
-	$bSelectLimit = $gen_maintenance_list->UseSelectLimit;
+	$bSelectLimit = $gen_maintenanace_v_list->UseSelectLimit;
 	if ($bSelectLimit) {
-		if ($gen_maintenance_list->TotalRecs <= 0)
-			$gen_maintenance_list->TotalRecs = $gen_maintenance->ListRecordCount();
+		if ($gen_maintenanace_v_list->TotalRecs <= 0)
+			$gen_maintenanace_v_list->TotalRecs = $gen_maintenanace_v->ListRecordCount();
 	} else {
-		if (!$gen_maintenance_list->Recordset && ($gen_maintenance_list->Recordset = $gen_maintenance_list->LoadRecordset()))
-			$gen_maintenance_list->TotalRecs = $gen_maintenance_list->Recordset->RecordCount();
+		if (!$gen_maintenanace_v_list->Recordset && ($gen_maintenanace_v_list->Recordset = $gen_maintenanace_v_list->LoadRecordset()))
+			$gen_maintenanace_v_list->TotalRecs = $gen_maintenanace_v_list->Recordset->RecordCount();
 	}
-	$gen_maintenance_list->StartRec = 1;
-	if ($gen_maintenance_list->DisplayRecs <= 0 || ($gen_maintenance->Export <> "" && $gen_maintenance->ExportAll)) // Display all records
-		$gen_maintenance_list->DisplayRecs = $gen_maintenance_list->TotalRecs;
-	if (!($gen_maintenance->Export <> "" && $gen_maintenance->ExportAll))
-		$gen_maintenance_list->SetupStartRec(); // Set up start record position
+	$gen_maintenanace_v_list->StartRec = 1;
+	if ($gen_maintenanace_v_list->DisplayRecs <= 0 || ($gen_maintenanace_v->Export <> "" && $gen_maintenanace_v->ExportAll)) // Display all records
+		$gen_maintenanace_v_list->DisplayRecs = $gen_maintenanace_v_list->TotalRecs;
+	if (!($gen_maintenanace_v->Export <> "" && $gen_maintenanace_v->ExportAll))
+		$gen_maintenanace_v_list->SetupStartRec(); // Set up start record position
 	if ($bSelectLimit)
-		$gen_maintenance_list->Recordset = $gen_maintenance_list->LoadRecordset($gen_maintenance_list->StartRec-1, $gen_maintenance_list->DisplayRecs);
+		$gen_maintenanace_v_list->Recordset = $gen_maintenanace_v_list->LoadRecordset($gen_maintenanace_v_list->StartRec-1, $gen_maintenanace_v_list->DisplayRecs);
 
 	// Set no record found message
-	if ($gen_maintenance->CurrentAction == "" && $gen_maintenance_list->TotalRecs == 0) {
+	if ($gen_maintenanace_v->CurrentAction == "" && $gen_maintenanace_v_list->TotalRecs == 0) {
 		if (!$Security->CanList())
-			$gen_maintenance_list->setWarningMessage(ew_DeniedMsg());
-		if ($gen_maintenance_list->SearchWhere == "0=101")
-			$gen_maintenance_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
+			$gen_maintenanace_v_list->setWarningMessage(ew_DeniedMsg());
+		if ($gen_maintenanace_v_list->SearchWhere == "0=101")
+			$gen_maintenanace_v_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
 		else
-			$gen_maintenance_list->setWarningMessage($Language->Phrase("NoRecord"));
+			$gen_maintenanace_v_list->setWarningMessage($Language->Phrase("NoRecord"));
 	}
 
 	// Audit trail on search
-	if ($gen_maintenance_list->AuditTrailOnSearch && $gen_maintenance_list->Command == "search" && !$gen_maintenance_list->RestoreSearch) {
+	if ($gen_maintenanace_v_list->AuditTrailOnSearch && $gen_maintenanace_v_list->Command == "search" && !$gen_maintenanace_v_list->RestoreSearch) {
 		$searchparm = ew_ServerVar("QUERY_STRING");
-		$searchsql = $gen_maintenance_list->getSessionWhere();
-		$gen_maintenance_list->WriteAuditTrailOnSearch($searchparm, $searchsql);
+		$searchsql = $gen_maintenanace_v_list->getSessionWhere();
+		$gen_maintenanace_v_list->WriteAuditTrailOnSearch($searchparm, $searchsql);
 	}
-$gen_maintenance_list->RenderOtherOptions();
+$gen_maintenanace_v_list->RenderOtherOptions();
 ?>
 <?php if ($Security->CanSearch()) { ?>
-<?php if ($gen_maintenance->Export == "" && $gen_maintenance->CurrentAction == "") { ?>
-<form name="fgen_maintenancelistsrch" id="fgen_maintenancelistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
-<?php $SearchPanelClass = ($gen_maintenance_list->SearchWhere <> "") ? " in" : " in"; ?>
-<div id="fgen_maintenancelistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
+<?php if ($gen_maintenanace_v->Export == "" && $gen_maintenanace_v->CurrentAction == "") { ?>
+<form name="fgen_maintenanace_vlistsrch" id="fgen_maintenanace_vlistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
+<?php $SearchPanelClass = ($gen_maintenanace_v_list->SearchWhere <> "") ? " in" : " in"; ?>
+<div id="fgen_maintenanace_vlistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
 <input type="hidden" name="cmd" value="search">
-<input type="hidden" name="t" value="gen_maintenance">
+<input type="hidden" name="t" value="gen_maintenanace_v">
 	<div class="ewBasicSearch">
 <div id="xsr_1" class="ewRow">
 	<div class="ewQuickSearch input-group">
-	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($gen_maintenance_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
-	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($gen_maintenance_list->BasicSearch->getType()) ?>">
+	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($gen_maintenanace_v_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
+	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($gen_maintenanace_v_list->BasicSearch->getType()) ?>">
 	<div class="input-group-btn">
-		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $gen_maintenance_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
+		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $gen_maintenanace_v_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
 		<ul class="dropdown-menu pull-right" role="menu">
-			<li<?php if ($gen_maintenance_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
-			<li<?php if ($gen_maintenance_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
-			<li<?php if ($gen_maintenance_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
-			<li<?php if ($gen_maintenance_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
+			<li<?php if ($gen_maintenanace_v_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
+			<li<?php if ($gen_maintenanace_v_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
+			<li<?php if ($gen_maintenanace_v_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
+			<li<?php if ($gen_maintenanace_v_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
 		</ul>
 	<button class="btn btn-primary ewButton" name="btnsubmit" id="btnsubmit" type="submit"><?php echo $Language->Phrase("SearchBtn") ?></button>
 	</div>
@@ -2852,71 +2486,71 @@ $gen_maintenance_list->RenderOtherOptions();
 </form>
 <?php } ?>
 <?php } ?>
-<?php $gen_maintenance_list->ShowPageHeader(); ?>
+<?php $gen_maintenanace_v_list->ShowPageHeader(); ?>
 <?php
-$gen_maintenance_list->ShowMessage();
+$gen_maintenanace_v_list->ShowMessage();
 ?>
-<?php if ($gen_maintenance_list->TotalRecs > 0 || $gen_maintenance->CurrentAction <> "") { ?>
-<div class="box ewBox ewGrid<?php if ($gen_maintenance_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> gen_maintenance">
-<?php if ($gen_maintenance->Export == "") { ?>
+<?php if ($gen_maintenanace_v_list->TotalRecs > 0 || $gen_maintenanace_v->CurrentAction <> "") { ?>
+<div class="box ewBox ewGrid<?php if ($gen_maintenanace_v_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> gen_maintenanace_v">
+<?php if ($gen_maintenanace_v->Export == "") { ?>
 <div class="box-header ewGridUpperPanel">
-<?php if ($gen_maintenance->CurrentAction <> "gridadd" && $gen_maintenance->CurrentAction <> "gridedit") { ?>
+<?php if ($gen_maintenanace_v->CurrentAction <> "gridadd" && $gen_maintenanace_v->CurrentAction <> "gridedit") { ?>
 <form name="ewPagerForm" class="form-inline ewForm ewPagerForm" action="<?php echo ew_CurrentPage() ?>">
-<?php if (!isset($gen_maintenance_list->Pager)) $gen_maintenance_list->Pager = new cPrevNextPager($gen_maintenance_list->StartRec, $gen_maintenance_list->DisplayRecs, $gen_maintenance_list->TotalRecs, $gen_maintenance_list->AutoHidePager) ?>
-<?php if ($gen_maintenance_list->Pager->RecordCount > 0 && $gen_maintenance_list->Pager->Visible) { ?>
+<?php if (!isset($gen_maintenanace_v_list->Pager)) $gen_maintenanace_v_list->Pager = new cPrevNextPager($gen_maintenanace_v_list->StartRec, $gen_maintenanace_v_list->DisplayRecs, $gen_maintenanace_v_list->TotalRecs, $gen_maintenanace_v_list->AutoHidePager) ?>
+<?php if ($gen_maintenanace_v_list->Pager->RecordCount > 0 && $gen_maintenanace_v_list->Pager->Visible) { ?>
 <div class="ewPager">
 <span><?php echo $Language->Phrase("Page") ?>&nbsp;</span>
 <div class="ewPrevNext"><div class="input-group">
 <div class="input-group-btn">
 <!--first page button-->
-	<?php if ($gen_maintenance_list->Pager->FirstButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $gen_maintenance_list->PageUrl() ?>start=<?php echo $gen_maintenance_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
+	<?php if ($gen_maintenanace_v_list->Pager->FirstButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $gen_maintenanace_v_list->PageUrl() ?>start=<?php echo $gen_maintenanace_v_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerFirst") ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } ?>
 <!--previous page button-->
-	<?php if ($gen_maintenance_list->Pager->PrevButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $gen_maintenance_list->PageUrl() ?>start=<?php echo $gen_maintenance_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php if ($gen_maintenanace_v_list->Pager->PrevButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $gen_maintenanace_v_list->PageUrl() ?>start=<?php echo $gen_maintenanace_v_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerPrevious") ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } ?>
 </div>
 <!--current page number-->
-	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $gen_maintenance_list->Pager->CurrentPage ?>">
+	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $gen_maintenanace_v_list->Pager->CurrentPage ?>">
 <div class="input-group-btn">
 <!--next page button-->
-	<?php if ($gen_maintenance_list->Pager->NextButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $gen_maintenance_list->PageUrl() ?>start=<?php echo $gen_maintenance_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
+	<?php if ($gen_maintenanace_v_list->Pager->NextButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $gen_maintenanace_v_list->PageUrl() ?>start=<?php echo $gen_maintenanace_v_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerNext") ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } ?>
 <!--last page button-->
-	<?php if ($gen_maintenance_list->Pager->LastButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $gen_maintenance_list->PageUrl() ?>start=<?php echo $gen_maintenance_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
+	<?php if ($gen_maintenanace_v_list->Pager->LastButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $gen_maintenanace_v_list->PageUrl() ?>start=<?php echo $gen_maintenanace_v_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerLast") ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } ?>
 </div>
 </div>
 </div>
-<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $gen_maintenance_list->Pager->PageCount ?></span>
+<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $gen_maintenanace_v_list->Pager->PageCount ?></span>
 </div>
 <?php } ?>
-<?php if ($gen_maintenance_list->Pager->RecordCount > 0) { ?>
+<?php if ($gen_maintenanace_v_list->Pager->RecordCount > 0) { ?>
 <div class="ewPager ewRec">
-	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $gen_maintenance_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $gen_maintenance_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $gen_maintenance_list->Pager->RecordCount ?></span>
+	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $gen_maintenanace_v_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $gen_maintenanace_v_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $gen_maintenanace_v_list->Pager->RecordCount ?></span>
 </div>
 <?php } ?>
-<?php if ($gen_maintenance_list->TotalRecs > 0 && (!$gen_maintenance_list->AutoHidePageSizeSelector || $gen_maintenance_list->Pager->Visible)) { ?>
+<?php if ($gen_maintenanace_v_list->TotalRecs > 0 && (!$gen_maintenanace_v_list->AutoHidePageSizeSelector || $gen_maintenanace_v_list->Pager->Visible)) { ?>
 <div class="ewPager">
-<input type="hidden" name="t" value="gen_maintenance">
+<input type="hidden" name="t" value="gen_maintenanace_v">
 <select name="<?php echo EW_TABLE_REC_PER_PAGE ?>" class="form-control input-sm ewTooltip" title="<?php echo $Language->Phrase("RecordsPerPage") ?>" onchange="this.form.submit();">
-<option value="5"<?php if ($gen_maintenance_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
-<option value="10"<?php if ($gen_maintenance_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
-<option value="15"<?php if ($gen_maintenance_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
-<option value="20"<?php if ($gen_maintenance_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
-<option value="50"<?php if ($gen_maintenance_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
-<option value="ALL"<?php if ($gen_maintenance->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
+<option value="5"<?php if ($gen_maintenanace_v_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
+<option value="10"<?php if ($gen_maintenanace_v_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
+<option value="15"<?php if ($gen_maintenanace_v_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
+<option value="20"<?php if ($gen_maintenanace_v_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
+<option value="50"<?php if ($gen_maintenanace_v_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
+<option value="ALL"<?php if ($gen_maintenanace_v->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
 </select>
 </div>
 <?php } ?>
@@ -2924,302 +2558,302 @@ $gen_maintenance_list->ShowMessage();
 <?php } ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($gen_maintenance_list->OtherOptions as &$option)
+	foreach ($gen_maintenanace_v_list->OtherOptions as &$option)
 		$option->Render("body");
 ?>
 </div>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
-<form name="fgen_maintenancelist" id="fgen_maintenancelist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($gen_maintenance_list->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $gen_maintenance_list->Token ?>">
+<form name="fgen_maintenanace_vlist" id="fgen_maintenanace_vlist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($gen_maintenanace_v_list->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $gen_maintenanace_v_list->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="gen_maintenance">
-<div id="gmp_gen_maintenance" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
-<?php if ($gen_maintenance_list->TotalRecs > 0 || $gen_maintenance->CurrentAction == "gridedit") { ?>
-<table id="tbl_gen_maintenancelist" class="table ewTable">
+<input type="hidden" name="t" value="gen_maintenanace_v">
+<div id="gmp_gen_maintenanace_v" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
+<?php if ($gen_maintenanace_v_list->TotalRecs > 0 || $gen_maintenanace_v->CurrentAction == "gridedit") { ?>
+<table id="tbl_gen_maintenanace_vlist" class="table ewTable">
 <thead>
 	<tr class="ewTableHeader">
 <?php
 
 // Header row
-$gen_maintenance_list->RowType = EW_ROWTYPE_HEADER;
+$gen_maintenanace_v_list->RowType = EW_ROWTYPE_HEADER;
 
 // Render list options
-$gen_maintenance_list->RenderListOptions();
+$gen_maintenanace_v_list->RenderListOptions();
 
 // Render list options (header, left)
-$gen_maintenance_list->ListOptions->Render("header", "left");
+$gen_maintenanace_v_list->ListOptions->Render("header", "left");
 ?>
-<?php if ($gen_maintenance->datetime->Visible) { // datetime ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->datetime) == "") { ?>
-		<th data-name="datetime" class="<?php echo $gen_maintenance->datetime->HeaderCellClass() ?>"><div id="elh_gen_maintenance_datetime" class="gen_maintenance_datetime"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->datetime->FldCaption() ?></div></div></th>
+<?php if ($gen_maintenanace_v->datetime->Visible) { // datetime ?>
+	<?php if ($gen_maintenanace_v->SortUrl($gen_maintenanace_v->datetime) == "") { ?>
+		<th data-name="datetime" class="<?php echo $gen_maintenanace_v->datetime->HeaderCellClass() ?>"><div id="elh_gen_maintenanace_v_datetime" class="gen_maintenanace_v_datetime"><div class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->datetime->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="datetime" class="<?php echo $gen_maintenance->datetime->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->datetime) ?>',1);"><div id="elh_gen_maintenance_datetime" class="gen_maintenance_datetime">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->datetime->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->datetime->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->datetime->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="datetime" class="<?php echo $gen_maintenanace_v->datetime->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenanace_v->SortUrl($gen_maintenanace_v->datetime) ?>',1);"><div id="elh_gen_maintenanace_v_datetime" class="gen_maintenanace_v_datetime">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->datetime->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenanace_v->datetime->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenanace_v->datetime->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->reference_id->Visible) { // reference_id ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->reference_id) == "") { ?>
-		<th data-name="reference_id" class="<?php echo $gen_maintenance->reference_id->HeaderCellClass() ?>"><div id="elh_gen_maintenance_reference_id" class="gen_maintenance_reference_id"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->reference_id->FldCaption() ?></div></div></th>
+<?php if ($gen_maintenanace_v->reference_id->Visible) { // reference_id ?>
+	<?php if ($gen_maintenanace_v->SortUrl($gen_maintenanace_v->reference_id) == "") { ?>
+		<th data-name="reference_id" class="<?php echo $gen_maintenanace_v->reference_id->HeaderCellClass() ?>"><div id="elh_gen_maintenanace_v_reference_id" class="gen_maintenanace_v_reference_id"><div class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->reference_id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="reference_id" class="<?php echo $gen_maintenance->reference_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->reference_id) ?>',1);"><div id="elh_gen_maintenance_reference_id" class="gen_maintenance_reference_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->reference_id->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->reference_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->reference_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="reference_id" class="<?php echo $gen_maintenanace_v->reference_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenanace_v->SortUrl($gen_maintenanace_v->reference_id) ?>',1);"><div id="elh_gen_maintenanace_v_reference_id" class="gen_maintenanace_v_reference_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->reference_id->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenanace_v->reference_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenanace_v->reference_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->gen_name->Visible) { // gen_name ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->gen_name) == "") { ?>
-		<th data-name="gen_name" class="<?php echo $gen_maintenance->gen_name->HeaderCellClass() ?>"><div id="elh_gen_maintenance_gen_name" class="gen_maintenance_gen_name"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->gen_name->FldCaption() ?></div></div></th>
+<?php if ($gen_maintenanace_v->gen_name->Visible) { // gen_name ?>
+	<?php if ($gen_maintenanace_v->SortUrl($gen_maintenanace_v->gen_name) == "") { ?>
+		<th data-name="gen_name" class="<?php echo $gen_maintenanace_v->gen_name->HeaderCellClass() ?>"><div id="elh_gen_maintenanace_v_gen_name" class="gen_maintenanace_v_gen_name"><div class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->gen_name->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="gen_name" class="<?php echo $gen_maintenance->gen_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->gen_name) ?>',1);"><div id="elh_gen_maintenance_gen_name" class="gen_maintenance_gen_name">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->gen_name->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->gen_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->gen_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="gen_name" class="<?php echo $gen_maintenanace_v->gen_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenanace_v->SortUrl($gen_maintenanace_v->gen_name) ?>',1);"><div id="elh_gen_maintenanace_v_gen_name" class="gen_maintenanace_v_gen_name">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->gen_name->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenanace_v->gen_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenanace_v->gen_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->maintenance_type->Visible) { // maintenance_type ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->maintenance_type) == "") { ?>
-		<th data-name="maintenance_type" class="<?php echo $gen_maintenance->maintenance_type->HeaderCellClass() ?>"><div id="elh_gen_maintenance_maintenance_type" class="gen_maintenance_maintenance_type"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->maintenance_type->FldCaption() ?></div></div></th>
+<?php if ($gen_maintenanace_v->maintenance_type->Visible) { // maintenance_type ?>
+	<?php if ($gen_maintenanace_v->SortUrl($gen_maintenanace_v->maintenance_type) == "") { ?>
+		<th data-name="maintenance_type" class="<?php echo $gen_maintenanace_v->maintenance_type->HeaderCellClass() ?>"><div id="elh_gen_maintenanace_v_maintenance_type" class="gen_maintenanace_v_maintenance_type"><div class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->maintenance_type->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="maintenance_type" class="<?php echo $gen_maintenance->maintenance_type->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->maintenance_type) ?>',1);"><div id="elh_gen_maintenance_maintenance_type" class="gen_maintenance_maintenance_type">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->maintenance_type->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->maintenance_type->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->maintenance_type->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="maintenance_type" class="<?php echo $gen_maintenanace_v->maintenance_type->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenanace_v->SortUrl($gen_maintenanace_v->maintenance_type) ?>',1);"><div id="elh_gen_maintenanace_v_maintenance_type" class="gen_maintenanace_v_maintenance_type">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->maintenance_type->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenanace_v->maintenance_type->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenanace_v->maintenance_type->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->running_hours->Visible) { // running_hours ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->running_hours) == "") { ?>
-		<th data-name="running_hours" class="<?php echo $gen_maintenance->running_hours->HeaderCellClass() ?>"><div id="elh_gen_maintenance_running_hours" class="gen_maintenance_running_hours"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->running_hours->FldCaption() ?></div></div></th>
+<?php if ($gen_maintenanace_v->running_hours->Visible) { // running_hours ?>
+	<?php if ($gen_maintenanace_v->SortUrl($gen_maintenanace_v->running_hours) == "") { ?>
+		<th data-name="running_hours" class="<?php echo $gen_maintenanace_v->running_hours->HeaderCellClass() ?>"><div id="elh_gen_maintenanace_v_running_hours" class="gen_maintenanace_v_running_hours"><div class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->running_hours->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="running_hours" class="<?php echo $gen_maintenance->running_hours->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->running_hours) ?>',1);"><div id="elh_gen_maintenance_running_hours" class="gen_maintenance_running_hours">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->running_hours->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->running_hours->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->running_hours->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="running_hours" class="<?php echo $gen_maintenanace_v->running_hours->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenanace_v->SortUrl($gen_maintenanace_v->running_hours) ?>',1);"><div id="elh_gen_maintenanace_v_running_hours" class="gen_maintenanace_v_running_hours">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->running_hours->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenanace_v->running_hours->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenanace_v->running_hours->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->cost->Visible) { // cost ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->cost) == "") { ?>
-		<th data-name="cost" class="<?php echo $gen_maintenance->cost->HeaderCellClass() ?>"><div id="elh_gen_maintenance_cost" class="gen_maintenance_cost"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->cost->FldCaption() ?></div></div></th>
+<?php if ($gen_maintenanace_v->cost->Visible) { // cost ?>
+	<?php if ($gen_maintenanace_v->SortUrl($gen_maintenanace_v->cost) == "") { ?>
+		<th data-name="cost" class="<?php echo $gen_maintenanace_v->cost->HeaderCellClass() ?>"><div id="elh_gen_maintenanace_v_cost" class="gen_maintenanace_v_cost"><div class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->cost->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="cost" class="<?php echo $gen_maintenance->cost->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->cost) ?>',1);"><div id="elh_gen_maintenance_cost" class="gen_maintenance_cost">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->cost->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->cost->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->cost->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="cost" class="<?php echo $gen_maintenanace_v->cost->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenanace_v->SortUrl($gen_maintenanace_v->cost) ?>',1);"><div id="elh_gen_maintenanace_v_cost" class="gen_maintenanace_v_cost">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->cost->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenanace_v->cost->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenanace_v->cost->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->labour_fee->Visible) { // labour_fee ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->labour_fee) == "") { ?>
-		<th data-name="labour_fee" class="<?php echo $gen_maintenance->labour_fee->HeaderCellClass() ?>"><div id="elh_gen_maintenance_labour_fee" class="gen_maintenance_labour_fee"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->labour_fee->FldCaption() ?></div></div></th>
+<?php if ($gen_maintenanace_v->labour_fee->Visible) { // labour_fee ?>
+	<?php if ($gen_maintenanace_v->SortUrl($gen_maintenanace_v->labour_fee) == "") { ?>
+		<th data-name="labour_fee" class="<?php echo $gen_maintenanace_v->labour_fee->HeaderCellClass() ?>"><div id="elh_gen_maintenanace_v_labour_fee" class="gen_maintenanace_v_labour_fee"><div class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->labour_fee->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="labour_fee" class="<?php echo $gen_maintenance->labour_fee->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->labour_fee) ?>',1);"><div id="elh_gen_maintenance_labour_fee" class="gen_maintenance_labour_fee">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->labour_fee->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->labour_fee->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->labour_fee->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="labour_fee" class="<?php echo $gen_maintenanace_v->labour_fee->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenanace_v->SortUrl($gen_maintenanace_v->labour_fee) ?>',1);"><div id="elh_gen_maintenanace_v_labour_fee" class="gen_maintenanace_v_labour_fee">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->labour_fee->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenanace_v->labour_fee->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenanace_v->labour_fee->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->total->Visible) { // total ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->total) == "") { ?>
-		<th data-name="total" class="<?php echo $gen_maintenance->total->HeaderCellClass() ?>"><div id="elh_gen_maintenance_total" class="gen_maintenance_total"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->total->FldCaption() ?></div></div></th>
+<?php if ($gen_maintenanace_v->total->Visible) { // total ?>
+	<?php if ($gen_maintenanace_v->SortUrl($gen_maintenanace_v->total) == "") { ?>
+		<th data-name="total" class="<?php echo $gen_maintenanace_v->total->HeaderCellClass() ?>"><div id="elh_gen_maintenanace_v_total" class="gen_maintenanace_v_total"><div class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->total->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="total" class="<?php echo $gen_maintenance->total->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->total) ?>',1);"><div id="elh_gen_maintenance_total" class="gen_maintenance_total">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->total->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->total->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->total->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="total" class="<?php echo $gen_maintenanace_v->total->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenanace_v->SortUrl($gen_maintenanace_v->total) ?>',1);"><div id="elh_gen_maintenanace_v_total" class="gen_maintenanace_v_total">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->total->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenanace_v->total->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenanace_v->total->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->staff_id->Visible) { // staff_id ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->staff_id) == "") { ?>
-		<th data-name="staff_id" class="<?php echo $gen_maintenance->staff_id->HeaderCellClass() ?>"><div id="elh_gen_maintenance_staff_id" class="gen_maintenance_staff_id"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->staff_id->FldCaption() ?></div></div></th>
+<?php if ($gen_maintenanace_v->staff_id->Visible) { // staff_id ?>
+	<?php if ($gen_maintenanace_v->SortUrl($gen_maintenanace_v->staff_id) == "") { ?>
+		<th data-name="staff_id" class="<?php echo $gen_maintenanace_v->staff_id->HeaderCellClass() ?>"><div id="elh_gen_maintenanace_v_staff_id" class="gen_maintenanace_v_staff_id"><div class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->staff_id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="staff_id" class="<?php echo $gen_maintenance->staff_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->staff_id) ?>',1);"><div id="elh_gen_maintenance_staff_id" class="gen_maintenance_staff_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->staff_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->staff_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->staff_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="staff_id" class="<?php echo $gen_maintenanace_v->staff_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenanace_v->SortUrl($gen_maintenanace_v->staff_id) ?>',1);"><div id="elh_gen_maintenanace_v_staff_id" class="gen_maintenanace_v_staff_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->staff_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenanace_v->staff_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenanace_v->staff_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->status->Visible) { // status ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->status) == "") { ?>
-		<th data-name="status" class="<?php echo $gen_maintenance->status->HeaderCellClass() ?>"><div id="elh_gen_maintenance_status" class="gen_maintenance_status"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->status->FldCaption() ?></div></div></th>
+<?php if ($gen_maintenanace_v->status->Visible) { // status ?>
+	<?php if ($gen_maintenanace_v->SortUrl($gen_maintenanace_v->status) == "") { ?>
+		<th data-name="status" class="<?php echo $gen_maintenanace_v->status->HeaderCellClass() ?>"><div id="elh_gen_maintenanace_v_status" class="gen_maintenanace_v_status"><div class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->status->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="status" class="<?php echo $gen_maintenance->status->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->status) ?>',1);"><div id="elh_gen_maintenance_status" class="gen_maintenance_status">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->status->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->status->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->status->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="status" class="<?php echo $gen_maintenanace_v->status->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenanace_v->SortUrl($gen_maintenanace_v->status) ?>',1);"><div id="elh_gen_maintenanace_v_status" class="gen_maintenanace_v_status">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->status->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenanace_v->status->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenanace_v->status->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->flag->Visible) { // flag ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->flag) == "") { ?>
-		<th data-name="flag" class="<?php echo $gen_maintenance->flag->HeaderCellClass() ?>"><div id="elh_gen_maintenance_flag" class="gen_maintenance_flag"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->flag->FldCaption() ?></div></div></th>
+<?php if ($gen_maintenanace_v->flag->Visible) { // flag ?>
+	<?php if ($gen_maintenanace_v->SortUrl($gen_maintenanace_v->flag) == "") { ?>
+		<th data-name="flag" class="<?php echo $gen_maintenanace_v->flag->HeaderCellClass() ?>"><div id="elh_gen_maintenanace_v_flag" class="gen_maintenanace_v_flag"><div class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->flag->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="flag" class="<?php echo $gen_maintenance->flag->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->flag) ?>',1);"><div id="elh_gen_maintenance_flag" class="gen_maintenance_flag">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->flag->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->flag->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->flag->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="flag" class="<?php echo $gen_maintenanace_v->flag->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenanace_v->SortUrl($gen_maintenanace_v->flag) ?>',1);"><div id="elh_gen_maintenanace_v_flag" class="gen_maintenanace_v_flag">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenanace_v->flag->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenanace_v->flag->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenanace_v->flag->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
 <?php
 
 // Render list options (header, right)
-$gen_maintenance_list->ListOptions->Render("header", "right");
+$gen_maintenanace_v_list->ListOptions->Render("header", "right");
 ?>
 	</tr>
 </thead>
 <tbody>
 <?php
-if ($gen_maintenance->ExportAll && $gen_maintenance->Export <> "") {
-	$gen_maintenance_list->StopRec = $gen_maintenance_list->TotalRecs;
+if ($gen_maintenanace_v->ExportAll && $gen_maintenanace_v->Export <> "") {
+	$gen_maintenanace_v_list->StopRec = $gen_maintenanace_v_list->TotalRecs;
 } else {
 
 	// Set the last record to display
-	if ($gen_maintenance_list->TotalRecs > $gen_maintenance_list->StartRec + $gen_maintenance_list->DisplayRecs - 1)
-		$gen_maintenance_list->StopRec = $gen_maintenance_list->StartRec + $gen_maintenance_list->DisplayRecs - 1;
+	if ($gen_maintenanace_v_list->TotalRecs > $gen_maintenanace_v_list->StartRec + $gen_maintenanace_v_list->DisplayRecs - 1)
+		$gen_maintenanace_v_list->StopRec = $gen_maintenanace_v_list->StartRec + $gen_maintenanace_v_list->DisplayRecs - 1;
 	else
-		$gen_maintenance_list->StopRec = $gen_maintenance_list->TotalRecs;
+		$gen_maintenanace_v_list->StopRec = $gen_maintenanace_v_list->TotalRecs;
 }
-$gen_maintenance_list->RecCnt = $gen_maintenance_list->StartRec - 1;
-if ($gen_maintenance_list->Recordset && !$gen_maintenance_list->Recordset->EOF) {
-	$gen_maintenance_list->Recordset->MoveFirst();
-	$bSelectLimit = $gen_maintenance_list->UseSelectLimit;
-	if (!$bSelectLimit && $gen_maintenance_list->StartRec > 1)
-		$gen_maintenance_list->Recordset->Move($gen_maintenance_list->StartRec - 1);
-} elseif (!$gen_maintenance->AllowAddDeleteRow && $gen_maintenance_list->StopRec == 0) {
-	$gen_maintenance_list->StopRec = $gen_maintenance->GridAddRowCount;
+$gen_maintenanace_v_list->RecCnt = $gen_maintenanace_v_list->StartRec - 1;
+if ($gen_maintenanace_v_list->Recordset && !$gen_maintenanace_v_list->Recordset->EOF) {
+	$gen_maintenanace_v_list->Recordset->MoveFirst();
+	$bSelectLimit = $gen_maintenanace_v_list->UseSelectLimit;
+	if (!$bSelectLimit && $gen_maintenanace_v_list->StartRec > 1)
+		$gen_maintenanace_v_list->Recordset->Move($gen_maintenanace_v_list->StartRec - 1);
+} elseif (!$gen_maintenanace_v->AllowAddDeleteRow && $gen_maintenanace_v_list->StopRec == 0) {
+	$gen_maintenanace_v_list->StopRec = $gen_maintenanace_v->GridAddRowCount;
 }
 
 // Initialize aggregate
-$gen_maintenance->RowType = EW_ROWTYPE_AGGREGATEINIT;
-$gen_maintenance->ResetAttrs();
-$gen_maintenance_list->RenderRow();
-while ($gen_maintenance_list->RecCnt < $gen_maintenance_list->StopRec) {
-	$gen_maintenance_list->RecCnt++;
-	if (intval($gen_maintenance_list->RecCnt) >= intval($gen_maintenance_list->StartRec)) {
-		$gen_maintenance_list->RowCnt++;
+$gen_maintenanace_v->RowType = EW_ROWTYPE_AGGREGATEINIT;
+$gen_maintenanace_v->ResetAttrs();
+$gen_maintenanace_v_list->RenderRow();
+while ($gen_maintenanace_v_list->RecCnt < $gen_maintenanace_v_list->StopRec) {
+	$gen_maintenanace_v_list->RecCnt++;
+	if (intval($gen_maintenanace_v_list->RecCnt) >= intval($gen_maintenanace_v_list->StartRec)) {
+		$gen_maintenanace_v_list->RowCnt++;
 
 		// Set up key count
-		$gen_maintenance_list->KeyCount = $gen_maintenance_list->RowIndex;
+		$gen_maintenanace_v_list->KeyCount = $gen_maintenanace_v_list->RowIndex;
 
 		// Init row class and style
-		$gen_maintenance->ResetAttrs();
-		$gen_maintenance->CssClass = "";
-		if ($gen_maintenance->CurrentAction == "gridadd") {
+		$gen_maintenanace_v->ResetAttrs();
+		$gen_maintenanace_v->CssClass = "";
+		if ($gen_maintenanace_v->CurrentAction == "gridadd") {
 		} else {
-			$gen_maintenance_list->LoadRowValues($gen_maintenance_list->Recordset); // Load row values
+			$gen_maintenanace_v_list->LoadRowValues($gen_maintenanace_v_list->Recordset); // Load row values
 		}
-		$gen_maintenance->RowType = EW_ROWTYPE_VIEW; // Render view
+		$gen_maintenanace_v->RowType = EW_ROWTYPE_VIEW; // Render view
 
 		// Set up row id / data-rowindex
-		$gen_maintenance->RowAttrs = array_merge($gen_maintenance->RowAttrs, array('data-rowindex'=>$gen_maintenance_list->RowCnt, 'id'=>'r' . $gen_maintenance_list->RowCnt . '_gen_maintenance', 'data-rowtype'=>$gen_maintenance->RowType));
+		$gen_maintenanace_v->RowAttrs = array_merge($gen_maintenanace_v->RowAttrs, array('data-rowindex'=>$gen_maintenanace_v_list->RowCnt, 'id'=>'r' . $gen_maintenanace_v_list->RowCnt . '_gen_maintenanace_v', 'data-rowtype'=>$gen_maintenanace_v->RowType));
 
 		// Render row
-		$gen_maintenance_list->RenderRow();
+		$gen_maintenanace_v_list->RenderRow();
 
 		// Render list options
-		$gen_maintenance_list->RenderListOptions();
+		$gen_maintenanace_v_list->RenderListOptions();
 ?>
-	<tr<?php echo $gen_maintenance->RowAttributes() ?>>
+	<tr<?php echo $gen_maintenanace_v->RowAttributes() ?>>
 <?php
 
 // Render list options (body, left)
-$gen_maintenance_list->ListOptions->Render("body", "left", $gen_maintenance_list->RowCnt);
+$gen_maintenanace_v_list->ListOptions->Render("body", "left", $gen_maintenanace_v_list->RowCnt);
 ?>
-	<?php if ($gen_maintenance->datetime->Visible) { // datetime ?>
-		<td data-name="datetime"<?php echo $gen_maintenance->datetime->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_datetime" class="gen_maintenance_datetime">
-<span<?php echo $gen_maintenance->datetime->ViewAttributes() ?>>
-<?php echo $gen_maintenance->datetime->ListViewValue() ?></span>
+	<?php if ($gen_maintenanace_v->datetime->Visible) { // datetime ?>
+		<td data-name="datetime"<?php echo $gen_maintenanace_v->datetime->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenanace_v_list->RowCnt ?>_gen_maintenanace_v_datetime" class="gen_maintenanace_v_datetime">
+<span<?php echo $gen_maintenanace_v->datetime->ViewAttributes() ?>>
+<?php echo $gen_maintenanace_v->datetime->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->reference_id->Visible) { // reference_id ?>
-		<td data-name="reference_id"<?php echo $gen_maintenance->reference_id->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_reference_id" class="gen_maintenance_reference_id">
-<span<?php echo $gen_maintenance->reference_id->ViewAttributes() ?>>
-<?php echo $gen_maintenance->reference_id->ListViewValue() ?></span>
+	<?php if ($gen_maintenanace_v->reference_id->Visible) { // reference_id ?>
+		<td data-name="reference_id"<?php echo $gen_maintenanace_v->reference_id->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenanace_v_list->RowCnt ?>_gen_maintenanace_v_reference_id" class="gen_maintenanace_v_reference_id">
+<span<?php echo $gen_maintenanace_v->reference_id->ViewAttributes() ?>>
+<?php echo $gen_maintenanace_v->reference_id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->gen_name->Visible) { // gen_name ?>
-		<td data-name="gen_name"<?php echo $gen_maintenance->gen_name->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_gen_name" class="gen_maintenance_gen_name">
-<span<?php echo $gen_maintenance->gen_name->ViewAttributes() ?>>
-<?php echo $gen_maintenance->gen_name->ListViewValue() ?></span>
+	<?php if ($gen_maintenanace_v->gen_name->Visible) { // gen_name ?>
+		<td data-name="gen_name"<?php echo $gen_maintenanace_v->gen_name->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenanace_v_list->RowCnt ?>_gen_maintenanace_v_gen_name" class="gen_maintenanace_v_gen_name">
+<span<?php echo $gen_maintenanace_v->gen_name->ViewAttributes() ?>>
+<?php echo $gen_maintenanace_v->gen_name->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->maintenance_type->Visible) { // maintenance_type ?>
-		<td data-name="maintenance_type"<?php echo $gen_maintenance->maintenance_type->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_maintenance_type" class="gen_maintenance_maintenance_type">
-<span<?php echo $gen_maintenance->maintenance_type->ViewAttributes() ?>>
-<?php echo $gen_maintenance->maintenance_type->ListViewValue() ?></span>
+	<?php if ($gen_maintenanace_v->maintenance_type->Visible) { // maintenance_type ?>
+		<td data-name="maintenance_type"<?php echo $gen_maintenanace_v->maintenance_type->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenanace_v_list->RowCnt ?>_gen_maintenanace_v_maintenance_type" class="gen_maintenanace_v_maintenance_type">
+<span<?php echo $gen_maintenanace_v->maintenance_type->ViewAttributes() ?>>
+<?php echo $gen_maintenanace_v->maintenance_type->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->running_hours->Visible) { // running_hours ?>
-		<td data-name="running_hours"<?php echo $gen_maintenance->running_hours->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_running_hours" class="gen_maintenance_running_hours">
-<span<?php echo $gen_maintenance->running_hours->ViewAttributes() ?>>
-<?php echo $gen_maintenance->running_hours->ListViewValue() ?></span>
+	<?php if ($gen_maintenanace_v->running_hours->Visible) { // running_hours ?>
+		<td data-name="running_hours"<?php echo $gen_maintenanace_v->running_hours->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenanace_v_list->RowCnt ?>_gen_maintenanace_v_running_hours" class="gen_maintenanace_v_running_hours">
+<span<?php echo $gen_maintenanace_v->running_hours->ViewAttributes() ?>>
+<?php echo $gen_maintenanace_v->running_hours->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->cost->Visible) { // cost ?>
-		<td data-name="cost"<?php echo $gen_maintenance->cost->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_cost" class="gen_maintenance_cost">
-<span<?php echo $gen_maintenance->cost->ViewAttributes() ?>>
-<?php echo $gen_maintenance->cost->ListViewValue() ?></span>
+	<?php if ($gen_maintenanace_v->cost->Visible) { // cost ?>
+		<td data-name="cost"<?php echo $gen_maintenanace_v->cost->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenanace_v_list->RowCnt ?>_gen_maintenanace_v_cost" class="gen_maintenanace_v_cost">
+<span<?php echo $gen_maintenanace_v->cost->ViewAttributes() ?>>
+<?php echo $gen_maintenanace_v->cost->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->labour_fee->Visible) { // labour_fee ?>
-		<td data-name="labour_fee"<?php echo $gen_maintenance->labour_fee->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_labour_fee" class="gen_maintenance_labour_fee">
-<span<?php echo $gen_maintenance->labour_fee->ViewAttributes() ?>>
-<?php echo $gen_maintenance->labour_fee->ListViewValue() ?></span>
+	<?php if ($gen_maintenanace_v->labour_fee->Visible) { // labour_fee ?>
+		<td data-name="labour_fee"<?php echo $gen_maintenanace_v->labour_fee->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenanace_v_list->RowCnt ?>_gen_maintenanace_v_labour_fee" class="gen_maintenanace_v_labour_fee">
+<span<?php echo $gen_maintenanace_v->labour_fee->ViewAttributes() ?>>
+<?php echo $gen_maintenanace_v->labour_fee->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->total->Visible) { // total ?>
-		<td data-name="total"<?php echo $gen_maintenance->total->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_total" class="gen_maintenance_total">
-<span<?php echo $gen_maintenance->total->ViewAttributes() ?>>
-<?php echo $gen_maintenance->total->ListViewValue() ?></span>
+	<?php if ($gen_maintenanace_v->total->Visible) { // total ?>
+		<td data-name="total"<?php echo $gen_maintenanace_v->total->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenanace_v_list->RowCnt ?>_gen_maintenanace_v_total" class="gen_maintenanace_v_total">
+<span<?php echo $gen_maintenanace_v->total->ViewAttributes() ?>>
+<?php echo $gen_maintenanace_v->total->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->staff_id->Visible) { // staff_id ?>
-		<td data-name="staff_id"<?php echo $gen_maintenance->staff_id->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_staff_id" class="gen_maintenance_staff_id">
-<span<?php echo $gen_maintenance->staff_id->ViewAttributes() ?>>
-<?php echo $gen_maintenance->staff_id->ListViewValue() ?></span>
+	<?php if ($gen_maintenanace_v->staff_id->Visible) { // staff_id ?>
+		<td data-name="staff_id"<?php echo $gen_maintenanace_v->staff_id->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenanace_v_list->RowCnt ?>_gen_maintenanace_v_staff_id" class="gen_maintenanace_v_staff_id">
+<span<?php echo $gen_maintenanace_v->staff_id->ViewAttributes() ?>>
+<?php echo $gen_maintenanace_v->staff_id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->status->Visible) { // status ?>
-		<td data-name="status"<?php echo $gen_maintenance->status->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_status" class="gen_maintenance_status">
-<span<?php echo $gen_maintenance->status->ViewAttributes() ?>>
-<?php echo $gen_maintenance->status->ListViewValue() ?></span>
+	<?php if ($gen_maintenanace_v->status->Visible) { // status ?>
+		<td data-name="status"<?php echo $gen_maintenanace_v->status->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenanace_v_list->RowCnt ?>_gen_maintenanace_v_status" class="gen_maintenanace_v_status">
+<span<?php echo $gen_maintenanace_v->status->ViewAttributes() ?>>
+<?php echo $gen_maintenanace_v->status->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->flag->Visible) { // flag ?>
-		<td data-name="flag"<?php echo $gen_maintenance->flag->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_flag" class="gen_maintenance_flag">
-<span<?php echo $gen_maintenance->flag->ViewAttributes() ?>>
-<?php echo $gen_maintenance->flag->ListViewValue() ?></span>
+	<?php if ($gen_maintenanace_v->flag->Visible) { // flag ?>
+		<td data-name="flag"<?php echo $gen_maintenanace_v->flag->CellAttributes() ?>>
+<span id="el<?php echo $gen_maintenanace_v_list->RowCnt ?>_gen_maintenanace_v_flag" class="gen_maintenanace_v_flag">
+<span<?php echo $gen_maintenanace_v->flag->ViewAttributes() ?>>
+<?php echo $gen_maintenanace_v->flag->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
 <?php
 
 // Render list options (body, right)
-$gen_maintenance_list->ListOptions->Render("body", "right", $gen_maintenance_list->RowCnt);
+$gen_maintenanace_v_list->ListOptions->Render("body", "right", $gen_maintenanace_v_list->RowCnt);
 ?>
 	</tr>
 <?php
 	}
-	if ($gen_maintenance->CurrentAction <> "gridadd")
-		$gen_maintenance_list->Recordset->MoveNext();
+	if ($gen_maintenanace_v->CurrentAction <> "gridadd")
+		$gen_maintenanace_v_list->Recordset->MoveNext();
 }
 ?>
 </tbody>
 </table>
 <?php } ?>
-<?php if ($gen_maintenance->CurrentAction == "") { ?>
+<?php if ($gen_maintenanace_v->CurrentAction == "") { ?>
 <input type="hidden" name="a_list" id="a_list" value="">
 <?php } ?>
 </div>
@@ -3227,15 +2861,15 @@ $gen_maintenance_list->ListOptions->Render("body", "right", $gen_maintenance_lis
 <?php
 
 // Close recordset
-if ($gen_maintenance_list->Recordset)
-	$gen_maintenance_list->Recordset->Close();
+if ($gen_maintenanace_v_list->Recordset)
+	$gen_maintenanace_v_list->Recordset->Close();
 ?>
 </div>
 <?php } ?>
-<?php if ($gen_maintenance_list->TotalRecs == 0 && $gen_maintenance->CurrentAction == "") { // Show other options ?>
+<?php if ($gen_maintenanace_v_list->TotalRecs == 0 && $gen_maintenanace_v->CurrentAction == "") { // Show other options ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($gen_maintenance_list->OtherOptions as &$option) {
+	foreach ($gen_maintenanace_v_list->OtherOptions as &$option) {
 		$option->ButtonClass = "";
 		$option->Render("body", "");
 	}
@@ -3243,19 +2877,19 @@ if ($gen_maintenance_list->Recordset)
 </div>
 <div class="clearfix"></div>
 <?php } ?>
-<?php if ($gen_maintenance->Export == "") { ?>
+<?php if ($gen_maintenanace_v->Export == "") { ?>
 <script type="text/javascript">
-fgen_maintenancelistsrch.FilterList = <?php echo $gen_maintenance_list->GetFilterList() ?>;
-fgen_maintenancelistsrch.Init();
-fgen_maintenancelist.Init();
+fgen_maintenanace_vlistsrch.FilterList = <?php echo $gen_maintenanace_v_list->GetFilterList() ?>;
+fgen_maintenanace_vlistsrch.Init();
+fgen_maintenanace_vlist.Init();
 </script>
 <?php } ?>
 <?php
-$gen_maintenance_list->ShowPageFooter();
+$gen_maintenanace_v_list->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
-<?php if ($gen_maintenance->Export == "") { ?>
+<?php if ($gen_maintenanace_v->Export == "") { ?>
 <script type="text/javascript">
 
 // Write your table-specific startup script here
@@ -3265,5 +2899,5 @@ if (EW_DEBUG_ENABLED)
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php
-$gen_maintenance_list->Page_Terminate();
+$gen_maintenanace_v_list->Page_Terminate();
 ?>
