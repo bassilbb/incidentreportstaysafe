@@ -9,7 +9,7 @@ require __DIR__ . '/vendor/autoload.php';
 if (!isset($EW_RELATIVE_PATH)) $EW_RELATIVE_PATH = "";
 
 // Show SQL for debug
-define("EW_DEBUG_ENABLED", TRUE); // FALSE TRUE to debug
+define("EW_DEBUG_ENABLED", FALSE); // FALSE TRUE to debug
 if (EW_DEBUG_ENABLED) {
 	@ini_set("display_errors", "1"); // Display errors
 	error_reporting(E_ALL ^ E_NOTICE); // Report all errors except E_NOTICE
