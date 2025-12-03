@@ -1710,6 +1710,9 @@ class crequisition_module extends cTable {
 		if (CurrentUserLevel() == 3) {
 				ew_AddFilter($filter, "`status` in (1) AND `organization` = 2 ");
 			}
+		if (CurrentUserLevel() == 14) {
+				ew_AddFilter($filter, "`status` in (1) AND `organization` = 2 ");
+			}
 		if (CurrentUserLevel() == 9) {
 			ew_AddFilter($filter, "`status` in (3)");
 		}
@@ -2055,6 +2058,14 @@ class crequisition_module extends cTable {
 			$this->authorizer_name->CurrentValue = $_SESSION['Staff_ID'];
 			$this->authorizer_name->EditValue = $this->authorizer_name->CurrentValue;
 		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 14 ) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_authorized->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_authorized->EditValue = $this->date_authorized->CurrentValue;
+			$this->authorizer_name->CurrentValue = $_SESSION['Staff_ID'];
+			$this->authorizer_name->EditValue = $this->authorizer_name->CurrentValue;
+		}
 		if (CurrentPageID() == "edit" && CurrentUserLevel() == 9 ) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
@@ -2250,6 +2261,31 @@ class crequisition_module extends cTable {
 			  $this->rep_comment->Visible = TRUE;
 			  $this->rep_name->ReadOnly = TRUE;
 			  $this->outward_datetime->Visible = TRUE;
+			}
+			if(CurrentUserLevel() == 14) {
+			  $this->date->ReadOnly = TRUE;
+			  $this->reference->ReadOnly = TRUE;
+			  $this->outward_location->ReadOnly = TRUE;
+			  $this->delivery_point->ReadOnly = TRUE;
+			  $this->name->ReadOnly = TRUE;
+			  $this->staff_id->ReadOnly = TRUE;
+			  $this->organization->ReadOnly = TRUE;
+			  $this->designation->ReadOnly = TRUE;
+			  $this->department->ReadOnly = TRUE;
+			  $this->item_description->ReadOnly = TRUE;
+			  $this->driver_name->ReadOnly = TRUE;
+			  $this->vehicle_no->ReadOnly = TRUE;
+			  $this->requester_action->ReadOnly = TRUE;
+			  $this->requester_comment->ReadOnly = TRUE;
+			  $this->date_authorized->ReadOnly = TRUE;
+			  $this->authorizer_action->Visible = TRUE;
+			  $this->authorizer_name->ReadOnly = TRUE;
+			  $this->authorizer_comment->Visible = TRUE;
+			  $this->rep_date->Visible = FALSE;
+			  $this->rep_action->Visible = FALSE;
+			  $this->rep_comment->Visible = FALSE;
+			  $this->rep_name->Visible = FALSE;
+			  $this->outward_datetime->Visible = FALSE;
 			}
 		}
 

@@ -1452,6 +1452,9 @@ class cgen_maintenance extends cTable {
 		if (CurrentUserLevel() == 3) {
 			ew_AddFilter($filter, "`status` in (1)");
 		}
+		if (CurrentUserLevel() == 14) {
+			ew_AddFilter($filter, "`status` in (1)");
+		}
 	}
 
 	// Recordset Selected event
@@ -1702,6 +1705,14 @@ class cgen_maintenance extends cTable {
 			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
 			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
 		}
+		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 14 )) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->approver_date->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->approver_date->EditValue = $this->approver_date->CurrentValue;
+			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
+			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
+		}
 		if (CurrentPageID() == "add")  {
 			$this->reference_id->CurrentValue = $_SESSION['GMT_ID'];
 			$this->reference_id->EditValue = $this->reference_id->CurrentValue;
@@ -1756,6 +1767,23 @@ class cgen_maintenance extends cTable {
 					$this->approved_by->Visible = FALSE;
 				}
 				if (CurrentUserLevel() == 3) {
+					$this->datetime->ReadOnly = TRUE;
+					$this->gen_name->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->maintenance_type->ReadOnly = TRUE;
+					$this->running_hours->ReadOnly = TRUE;
+					$this->cost->ReadOnly = TRUE;
+					$this->labour_fee->ReadOnly = TRUE;
+					$this->total->ReadOnly = TRUE;
+					$this->initiator_action->ReadOnly = FALSE;
+					$this->initiator_comment->ReadOnly = TRUE;
+					$this->approver_date->ReadOnly = TRUE;
+					$this->approver_action->Visible = TRUE;
+					$this->approver_comment->Visible = TRUE;
+
+					//$this->approved_by->Visible = FALSE;
+				}
+				if (CurrentUserLevel() == 14) {
 					$this->datetime->ReadOnly = TRUE;
 					$this->gen_name->ReadOnly = TRUE;
 					$this->reference_id->ReadOnly = TRUE;

@@ -1374,6 +1374,9 @@ class cinventory_staysafe extends cTable {
 		if (CurrentUserLevel() == 3) {
 			ew_AddFilter($filter, "`statuss` in (3)");
 		}
+		if (CurrentUserLevel() == 14) {
+			ew_AddFilter($filter, "`statuss` in (1)");
+		}
 	}
 
 	// Recordset Selected event
@@ -1626,7 +1629,7 @@ class cinventory_staysafe extends cTable {
 				if ($this->approver_action->CurrentValue == 1 && $this->statuss->CurrentValue == 1 ) {
 
 					// New
-					if ($this->statuss->CurrentValue == 1 && CurrentUserLevel() == 10) {
+					if ($this->statuss->CurrentValue == 1 && CurrentUserLevel() == 10 || CurrentUserLevel() == 14) {
 						$rsnew["statuss"] = 3;					
 						$rsnew["approver_action"] = 1;
 					}
@@ -1793,6 +1796,16 @@ class cinventory_staysafe extends cTable {
 			$this->reference_id->EditValue = $this->reference_id->CurrentValue;
 		}
 		if (CurrentPageID() == "edit" && CurrentUserLevel() == 10 ) {
+			date_default_timezone_set('Africa/Lagos');
+			$now = new DateTime();
+			$this->date_approved->CurrentValue = $now->Format('Y-m-d H:i:s');
+			$this->date_approved->EditValue = $this->date_approved->CurrentValue;
+			$this->staff_id->CurrentValue = $_SESSION['Staff_ID'];
+			$this->staff_id->EditValue = $this->staff_id->CurrentValue;
+			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
+			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
+		}
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 14 ) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$this->date_approved->CurrentValue = $now->Format('Y-m-d H:i:s');

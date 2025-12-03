@@ -5,7 +5,7 @@ ob_start(); // Turn on output buffering
 <?php include_once "ewcfg14.php" ?>
 <?php include_once ((EW_USE_ADODB) ? "adodb5/adodb.inc.php" : "ewmysql14.php") ?>
 <?php include_once "phpfn14.php" ?>
-<?php include_once "gen_maintenanceinfo.php" ?>
+<?php include_once "issuance_store_vinfo.php" ?>
 <?php include_once "usersinfo.php" ?>
 <?php include_once "userfn14.php" ?>
 <?php
@@ -14,9 +14,9 @@ ob_start(); // Turn on output buffering
 // Page class
 //
 
-$gen_maintenance_list = NULL; // Initialize page object first
+$issuance_store_v_list = NULL; // Initialize page object first
 
-class cgen_maintenance_list extends cgen_maintenance {
+class cissuance_store_v_list extends cissuance_store_v {
 
 	// Page ID
 	var $PageID = 'list';
@@ -25,13 +25,13 @@ class cgen_maintenance_list extends cgen_maintenance {
 	var $ProjectID = '{DD9080C0-D1CA-431F-831F-CAC8FA61260C}';
 
 	// Table name
-	var $TableName = 'gen_maintenance';
+	var $TableName = 'issuance_store_v';
 
 	// Page object name
-	var $PageObjName = 'gen_maintenance_list';
+	var $PageObjName = 'issuance_store_v_list';
 
 	// Grid form hidden field names
-	var $FormName = 'fgen_maintenancelist';
+	var $FormName = 'fissuance_store_vlist';
 	var $FormActionName = 'k_action';
 	var $FormKeyName = 'k_key';
 	var $FormOldKeyName = 'k_oldkey';
@@ -296,10 +296,10 @@ class cgen_maintenance_list extends cgen_maintenance {
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (gen_maintenance)
-		if (!isset($GLOBALS["gen_maintenance"]) || get_class($GLOBALS["gen_maintenance"]) == "cgen_maintenance") {
-			$GLOBALS["gen_maintenance"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["gen_maintenance"];
+		// Table object (issuance_store_v)
+		if (!isset($GLOBALS["issuance_store_v"]) || get_class($GLOBALS["issuance_store_v"]) == "cissuance_store_v") {
+			$GLOBALS["issuance_store_v"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["issuance_store_v"];
 		}
 
 		// Initialize URLs
@@ -310,12 +310,12 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$this->ExportXmlUrl = $this->PageUrl() . "export=xml";
 		$this->ExportCsvUrl = $this->PageUrl() . "export=csv";
 		$this->ExportPdfUrl = $this->PageUrl() . "export=pdf";
-		$this->AddUrl = "gen_maintenanceadd.php";
+		$this->AddUrl = "issuance_store_vadd.php";
 		$this->InlineAddUrl = $this->PageUrl() . "a=add";
 		$this->GridAddUrl = $this->PageUrl() . "a=gridadd";
 		$this->GridEditUrl = $this->PageUrl() . "a=gridedit";
-		$this->MultiDeleteUrl = "gen_maintenancedelete.php";
-		$this->MultiUpdateUrl = "gen_maintenanceupdate.php";
+		$this->MultiDeleteUrl = "issuance_store_vdelete.php";
+		$this->MultiUpdateUrl = "issuance_store_vupdate.php";
 
 		// Table object (users)
 		if (!isset($GLOBALS['users'])) $GLOBALS['users'] = new cusers();
@@ -326,7 +326,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 
 		// Table name (for backward compatibility)
 		if (!defined("EW_TABLE_NAME"))
-			define("EW_TABLE_NAME", 'gen_maintenance');
+			define("EW_TABLE_NAME", 'issuance_store_v');
 
 		// Start timer
 		if (!isset($GLOBALS["gTimer"]))
@@ -368,7 +368,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 		// Filter options
 		$this->FilterOptions = new cListOptions();
 		$this->FilterOptions->Tag = "div";
-		$this->FilterOptions->TagClassName = "ewFilterOption fgen_maintenancelistsrch";
+		$this->FilterOptions->TagClassName = "ewFilterOption fissuance_store_vlistsrch";
 
 		// List actions
 		$this->ListActions = new cListActions();
@@ -452,16 +452,17 @@ class cgen_maintenance_list extends cgen_maintenance {
 
 		// Setup export options
 		$this->SetupExportOptions();
-		$this->datetime->SetVisibility();
+		$this->date->SetVisibility();
 		$this->reference_id->SetVisibility();
-		$this->gen_name->SetVisibility();
-		$this->maintenance_type->SetVisibility();
-		$this->running_hours->SetVisibility();
-		$this->cost->SetVisibility();
-		$this->labour_fee->SetVisibility();
-		$this->total->SetVisibility();
-		$this->staff_id->SetVisibility();
-		$this->status->SetVisibility();
+		$this->material_name->SetVisibility();
+		$this->quantity_in->SetVisibility();
+		$this->quantity_out->SetVisibility();
+		$this->total_quantity->SetVisibility();
+		$this->quantity_type->SetVisibility();
+		$this->statuss->SetVisibility();
+		$this->issued_by->SetVisibility();
+		$this->approved_by->SetVisibility();
+		$this->verified_by->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -522,13 +523,13 @@ class cgen_maintenance_list extends cgen_maintenance {
 		Page_Unloaded();
 
 		// Export
-		global $EW_EXPORT, $gen_maintenance;
+		global $EW_EXPORT, $issuance_store_v;
 		if ($this->CustomExport <> "" && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EW_EXPORT)) {
 				$sContent = ob_get_contents();
 			if ($gsExportFile == "") $gsExportFile = $this->TableVar;
 			$class = $EW_EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($gen_maintenance);
+				$doc = new $class($issuance_store_v);
 				$doc->Text = $sContent;
 				if ($this->Export == "email")
 					echo $this->ExportEmail($doc->Text);
@@ -832,25 +833,29 @@ class cgen_maintenance_list extends cgen_maintenance {
 
 		// Load server side filters
 		if (EW_SEARCH_FILTER_OPTION == "Server" && isset($UserProfile))
-			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "fgen_maintenancelistsrch");
+			$sSavedFilterList = $UserProfile->GetSearchFilters(CurrentUserName(), "fissuance_store_vlistsrch");
 		$sFilterList = ew_Concat($sFilterList, $this->id->AdvancedSearch->ToJson(), ","); // Field id
-		$sFilterList = ew_Concat($sFilterList, $this->datetime->AdvancedSearch->ToJson(), ","); // Field datetime
+		$sFilterList = ew_Concat($sFilterList, $this->date->AdvancedSearch->ToJson(), ","); // Field date
 		$sFilterList = ew_Concat($sFilterList, $this->reference_id->AdvancedSearch->ToJson(), ","); // Field reference_id
-		$sFilterList = ew_Concat($sFilterList, $this->gen_name->AdvancedSearch->ToJson(), ","); // Field gen_name
-		$sFilterList = ew_Concat($sFilterList, $this->maintenance_type->AdvancedSearch->ToJson(), ","); // Field maintenance_type
-		$sFilterList = ew_Concat($sFilterList, $this->running_hours->AdvancedSearch->ToJson(), ","); // Field running_hours
-		$sFilterList = ew_Concat($sFilterList, $this->cost->AdvancedSearch->ToJson(), ","); // Field cost
-		$sFilterList = ew_Concat($sFilterList, $this->labour_fee->AdvancedSearch->ToJson(), ","); // Field labour_fee
-		$sFilterList = ew_Concat($sFilterList, $this->total->AdvancedSearch->ToJson(), ","); // Field total
+		$sFilterList = ew_Concat($sFilterList, $this->material_name->AdvancedSearch->ToJson(), ","); // Field material_name
+		$sFilterList = ew_Concat($sFilterList, $this->quantity_in->AdvancedSearch->ToJson(), ","); // Field quantity_in
+		$sFilterList = ew_Concat($sFilterList, $this->quantity_out->AdvancedSearch->ToJson(), ","); // Field quantity_out
+		$sFilterList = ew_Concat($sFilterList, $this->total_quantity->AdvancedSearch->ToJson(), ","); // Field total_quantity
+		$sFilterList = ew_Concat($sFilterList, $this->quantity_type->AdvancedSearch->ToJson(), ","); // Field quantity_type
+		$sFilterList = ew_Concat($sFilterList, $this->treated_by->AdvancedSearch->ToJson(), ","); // Field treated_by
 		$sFilterList = ew_Concat($sFilterList, $this->staff_id->AdvancedSearch->ToJson(), ","); // Field staff_id
-		$sFilterList = ew_Concat($sFilterList, $this->status->AdvancedSearch->ToJson(), ","); // Field status
-		$sFilterList = ew_Concat($sFilterList, $this->initiator_action->AdvancedSearch->ToJson(), ","); // Field initiator_action
-		$sFilterList = ew_Concat($sFilterList, $this->initiator_comment->AdvancedSearch->ToJson(), ","); // Field initiator_comment
+		$sFilterList = ew_Concat($sFilterList, $this->statuss->AdvancedSearch->ToJson(), ","); // Field statuss
+		$sFilterList = ew_Concat($sFilterList, $this->issued_action->AdvancedSearch->ToJson(), ","); // Field issued_action
+		$sFilterList = ew_Concat($sFilterList, $this->issued_comment->AdvancedSearch->ToJson(), ","); // Field issued_comment
+		$sFilterList = ew_Concat($sFilterList, $this->issued_by->AdvancedSearch->ToJson(), ","); // Field issued_by
 		$sFilterList = ew_Concat($sFilterList, $this->approver_date->AdvancedSearch->ToJson(), ","); // Field approver_date
 		$sFilterList = ew_Concat($sFilterList, $this->approver_action->AdvancedSearch->ToJson(), ","); // Field approver_action
 		$sFilterList = ew_Concat($sFilterList, $this->approver_comment->AdvancedSearch->ToJson(), ","); // Field approver_comment
 		$sFilterList = ew_Concat($sFilterList, $this->approved_by->AdvancedSearch->ToJson(), ","); // Field approved_by
-		$sFilterList = ew_Concat($sFilterList, $this->flag->AdvancedSearch->ToJson(), ","); // Field flag
+		$sFilterList = ew_Concat($sFilterList, $this->verified_date->AdvancedSearch->ToJson(), ","); // Field verified_date
+		$sFilterList = ew_Concat($sFilterList, $this->verified_action->AdvancedSearch->ToJson(), ","); // Field verified_action
+		$sFilterList = ew_Concat($sFilterList, $this->verified_comment->AdvancedSearch->ToJson(), ","); // Field verified_comment
+		$sFilterList = ew_Concat($sFilterList, $this->verified_by->AdvancedSearch->ToJson(), ","); // Field verified_by
 		if ($this->BasicSearch->Keyword <> "") {
 			$sWrk = "\"" . EW_TABLE_BASIC_SEARCH . "\":\"" . ew_JsEncode2($this->BasicSearch->Keyword) . "\",\"" . EW_TABLE_BASIC_SEARCH_TYPE . "\":\"" . ew_JsEncode2($this->BasicSearch->Type) . "\"";
 			$sFilterList = ew_Concat($sFilterList, $sWrk, ",");
@@ -873,7 +878,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 		global $UserProfile;
 		if (@$_POST["ajax"] == "savefilters") { // Save filter request (Ajax)
 			$filters = @$_POST["filters"];
-			$UserProfile->SetSearchFilters(CurrentUserName(), "fgen_maintenancelistsrch", $filters);
+			$UserProfile->SetSearchFilters(CurrentUserName(), "fissuance_store_vlistsrch", $filters);
 
 			// Clean output buffer
 			if (!EW_DEBUG_ENABLED && ob_get_length())
@@ -903,13 +908,13 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$this->id->AdvancedSearch->SearchOperator2 = @$filter["w_id"];
 		$this->id->AdvancedSearch->Save();
 
-		// Field datetime
-		$this->datetime->AdvancedSearch->SearchValue = @$filter["x_datetime"];
-		$this->datetime->AdvancedSearch->SearchOperator = @$filter["z_datetime"];
-		$this->datetime->AdvancedSearch->SearchCondition = @$filter["v_datetime"];
-		$this->datetime->AdvancedSearch->SearchValue2 = @$filter["y_datetime"];
-		$this->datetime->AdvancedSearch->SearchOperator2 = @$filter["w_datetime"];
-		$this->datetime->AdvancedSearch->Save();
+		// Field date
+		$this->date->AdvancedSearch->SearchValue = @$filter["x_date"];
+		$this->date->AdvancedSearch->SearchOperator = @$filter["z_date"];
+		$this->date->AdvancedSearch->SearchCondition = @$filter["v_date"];
+		$this->date->AdvancedSearch->SearchValue2 = @$filter["y_date"];
+		$this->date->AdvancedSearch->SearchOperator2 = @$filter["w_date"];
+		$this->date->AdvancedSearch->Save();
 
 		// Field reference_id
 		$this->reference_id->AdvancedSearch->SearchValue = @$filter["x_reference_id"];
@@ -919,53 +924,53 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$this->reference_id->AdvancedSearch->SearchOperator2 = @$filter["w_reference_id"];
 		$this->reference_id->AdvancedSearch->Save();
 
-		// Field gen_name
-		$this->gen_name->AdvancedSearch->SearchValue = @$filter["x_gen_name"];
-		$this->gen_name->AdvancedSearch->SearchOperator = @$filter["z_gen_name"];
-		$this->gen_name->AdvancedSearch->SearchCondition = @$filter["v_gen_name"];
-		$this->gen_name->AdvancedSearch->SearchValue2 = @$filter["y_gen_name"];
-		$this->gen_name->AdvancedSearch->SearchOperator2 = @$filter["w_gen_name"];
-		$this->gen_name->AdvancedSearch->Save();
+		// Field material_name
+		$this->material_name->AdvancedSearch->SearchValue = @$filter["x_material_name"];
+		$this->material_name->AdvancedSearch->SearchOperator = @$filter["z_material_name"];
+		$this->material_name->AdvancedSearch->SearchCondition = @$filter["v_material_name"];
+		$this->material_name->AdvancedSearch->SearchValue2 = @$filter["y_material_name"];
+		$this->material_name->AdvancedSearch->SearchOperator2 = @$filter["w_material_name"];
+		$this->material_name->AdvancedSearch->Save();
 
-		// Field maintenance_type
-		$this->maintenance_type->AdvancedSearch->SearchValue = @$filter["x_maintenance_type"];
-		$this->maintenance_type->AdvancedSearch->SearchOperator = @$filter["z_maintenance_type"];
-		$this->maintenance_type->AdvancedSearch->SearchCondition = @$filter["v_maintenance_type"];
-		$this->maintenance_type->AdvancedSearch->SearchValue2 = @$filter["y_maintenance_type"];
-		$this->maintenance_type->AdvancedSearch->SearchOperator2 = @$filter["w_maintenance_type"];
-		$this->maintenance_type->AdvancedSearch->Save();
+		// Field quantity_in
+		$this->quantity_in->AdvancedSearch->SearchValue = @$filter["x_quantity_in"];
+		$this->quantity_in->AdvancedSearch->SearchOperator = @$filter["z_quantity_in"];
+		$this->quantity_in->AdvancedSearch->SearchCondition = @$filter["v_quantity_in"];
+		$this->quantity_in->AdvancedSearch->SearchValue2 = @$filter["y_quantity_in"];
+		$this->quantity_in->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_in"];
+		$this->quantity_in->AdvancedSearch->Save();
 
-		// Field running_hours
-		$this->running_hours->AdvancedSearch->SearchValue = @$filter["x_running_hours"];
-		$this->running_hours->AdvancedSearch->SearchOperator = @$filter["z_running_hours"];
-		$this->running_hours->AdvancedSearch->SearchCondition = @$filter["v_running_hours"];
-		$this->running_hours->AdvancedSearch->SearchValue2 = @$filter["y_running_hours"];
-		$this->running_hours->AdvancedSearch->SearchOperator2 = @$filter["w_running_hours"];
-		$this->running_hours->AdvancedSearch->Save();
+		// Field quantity_out
+		$this->quantity_out->AdvancedSearch->SearchValue = @$filter["x_quantity_out"];
+		$this->quantity_out->AdvancedSearch->SearchOperator = @$filter["z_quantity_out"];
+		$this->quantity_out->AdvancedSearch->SearchCondition = @$filter["v_quantity_out"];
+		$this->quantity_out->AdvancedSearch->SearchValue2 = @$filter["y_quantity_out"];
+		$this->quantity_out->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_out"];
+		$this->quantity_out->AdvancedSearch->Save();
 
-		// Field cost
-		$this->cost->AdvancedSearch->SearchValue = @$filter["x_cost"];
-		$this->cost->AdvancedSearch->SearchOperator = @$filter["z_cost"];
-		$this->cost->AdvancedSearch->SearchCondition = @$filter["v_cost"];
-		$this->cost->AdvancedSearch->SearchValue2 = @$filter["y_cost"];
-		$this->cost->AdvancedSearch->SearchOperator2 = @$filter["w_cost"];
-		$this->cost->AdvancedSearch->Save();
+		// Field total_quantity
+		$this->total_quantity->AdvancedSearch->SearchValue = @$filter["x_total_quantity"];
+		$this->total_quantity->AdvancedSearch->SearchOperator = @$filter["z_total_quantity"];
+		$this->total_quantity->AdvancedSearch->SearchCondition = @$filter["v_total_quantity"];
+		$this->total_quantity->AdvancedSearch->SearchValue2 = @$filter["y_total_quantity"];
+		$this->total_quantity->AdvancedSearch->SearchOperator2 = @$filter["w_total_quantity"];
+		$this->total_quantity->AdvancedSearch->Save();
 
-		// Field labour_fee
-		$this->labour_fee->AdvancedSearch->SearchValue = @$filter["x_labour_fee"];
-		$this->labour_fee->AdvancedSearch->SearchOperator = @$filter["z_labour_fee"];
-		$this->labour_fee->AdvancedSearch->SearchCondition = @$filter["v_labour_fee"];
-		$this->labour_fee->AdvancedSearch->SearchValue2 = @$filter["y_labour_fee"];
-		$this->labour_fee->AdvancedSearch->SearchOperator2 = @$filter["w_labour_fee"];
-		$this->labour_fee->AdvancedSearch->Save();
+		// Field quantity_type
+		$this->quantity_type->AdvancedSearch->SearchValue = @$filter["x_quantity_type"];
+		$this->quantity_type->AdvancedSearch->SearchOperator = @$filter["z_quantity_type"];
+		$this->quantity_type->AdvancedSearch->SearchCondition = @$filter["v_quantity_type"];
+		$this->quantity_type->AdvancedSearch->SearchValue2 = @$filter["y_quantity_type"];
+		$this->quantity_type->AdvancedSearch->SearchOperator2 = @$filter["w_quantity_type"];
+		$this->quantity_type->AdvancedSearch->Save();
 
-		// Field total
-		$this->total->AdvancedSearch->SearchValue = @$filter["x_total"];
-		$this->total->AdvancedSearch->SearchOperator = @$filter["z_total"];
-		$this->total->AdvancedSearch->SearchCondition = @$filter["v_total"];
-		$this->total->AdvancedSearch->SearchValue2 = @$filter["y_total"];
-		$this->total->AdvancedSearch->SearchOperator2 = @$filter["w_total"];
-		$this->total->AdvancedSearch->Save();
+		// Field treated_by
+		$this->treated_by->AdvancedSearch->SearchValue = @$filter["x_treated_by"];
+		$this->treated_by->AdvancedSearch->SearchOperator = @$filter["z_treated_by"];
+		$this->treated_by->AdvancedSearch->SearchCondition = @$filter["v_treated_by"];
+		$this->treated_by->AdvancedSearch->SearchValue2 = @$filter["y_treated_by"];
+		$this->treated_by->AdvancedSearch->SearchOperator2 = @$filter["w_treated_by"];
+		$this->treated_by->AdvancedSearch->Save();
 
 		// Field staff_id
 		$this->staff_id->AdvancedSearch->SearchValue = @$filter["x_staff_id"];
@@ -975,29 +980,37 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$this->staff_id->AdvancedSearch->SearchOperator2 = @$filter["w_staff_id"];
 		$this->staff_id->AdvancedSearch->Save();
 
-		// Field status
-		$this->status->AdvancedSearch->SearchValue = @$filter["x_status"];
-		$this->status->AdvancedSearch->SearchOperator = @$filter["z_status"];
-		$this->status->AdvancedSearch->SearchCondition = @$filter["v_status"];
-		$this->status->AdvancedSearch->SearchValue2 = @$filter["y_status"];
-		$this->status->AdvancedSearch->SearchOperator2 = @$filter["w_status"];
-		$this->status->AdvancedSearch->Save();
+		// Field statuss
+		$this->statuss->AdvancedSearch->SearchValue = @$filter["x_statuss"];
+		$this->statuss->AdvancedSearch->SearchOperator = @$filter["z_statuss"];
+		$this->statuss->AdvancedSearch->SearchCondition = @$filter["v_statuss"];
+		$this->statuss->AdvancedSearch->SearchValue2 = @$filter["y_statuss"];
+		$this->statuss->AdvancedSearch->SearchOperator2 = @$filter["w_statuss"];
+		$this->statuss->AdvancedSearch->Save();
 
-		// Field initiator_action
-		$this->initiator_action->AdvancedSearch->SearchValue = @$filter["x_initiator_action"];
-		$this->initiator_action->AdvancedSearch->SearchOperator = @$filter["z_initiator_action"];
-		$this->initiator_action->AdvancedSearch->SearchCondition = @$filter["v_initiator_action"];
-		$this->initiator_action->AdvancedSearch->SearchValue2 = @$filter["y_initiator_action"];
-		$this->initiator_action->AdvancedSearch->SearchOperator2 = @$filter["w_initiator_action"];
-		$this->initiator_action->AdvancedSearch->Save();
+		// Field issued_action
+		$this->issued_action->AdvancedSearch->SearchValue = @$filter["x_issued_action"];
+		$this->issued_action->AdvancedSearch->SearchOperator = @$filter["z_issued_action"];
+		$this->issued_action->AdvancedSearch->SearchCondition = @$filter["v_issued_action"];
+		$this->issued_action->AdvancedSearch->SearchValue2 = @$filter["y_issued_action"];
+		$this->issued_action->AdvancedSearch->SearchOperator2 = @$filter["w_issued_action"];
+		$this->issued_action->AdvancedSearch->Save();
 
-		// Field initiator_comment
-		$this->initiator_comment->AdvancedSearch->SearchValue = @$filter["x_initiator_comment"];
-		$this->initiator_comment->AdvancedSearch->SearchOperator = @$filter["z_initiator_comment"];
-		$this->initiator_comment->AdvancedSearch->SearchCondition = @$filter["v_initiator_comment"];
-		$this->initiator_comment->AdvancedSearch->SearchValue2 = @$filter["y_initiator_comment"];
-		$this->initiator_comment->AdvancedSearch->SearchOperator2 = @$filter["w_initiator_comment"];
-		$this->initiator_comment->AdvancedSearch->Save();
+		// Field issued_comment
+		$this->issued_comment->AdvancedSearch->SearchValue = @$filter["x_issued_comment"];
+		$this->issued_comment->AdvancedSearch->SearchOperator = @$filter["z_issued_comment"];
+		$this->issued_comment->AdvancedSearch->SearchCondition = @$filter["v_issued_comment"];
+		$this->issued_comment->AdvancedSearch->SearchValue2 = @$filter["y_issued_comment"];
+		$this->issued_comment->AdvancedSearch->SearchOperator2 = @$filter["w_issued_comment"];
+		$this->issued_comment->AdvancedSearch->Save();
+
+		// Field issued_by
+		$this->issued_by->AdvancedSearch->SearchValue = @$filter["x_issued_by"];
+		$this->issued_by->AdvancedSearch->SearchOperator = @$filter["z_issued_by"];
+		$this->issued_by->AdvancedSearch->SearchCondition = @$filter["v_issued_by"];
+		$this->issued_by->AdvancedSearch->SearchValue2 = @$filter["y_issued_by"];
+		$this->issued_by->AdvancedSearch->SearchOperator2 = @$filter["w_issued_by"];
+		$this->issued_by->AdvancedSearch->Save();
 
 		// Field approver_date
 		$this->approver_date->AdvancedSearch->SearchValue = @$filter["x_approver_date"];
@@ -1031,13 +1044,37 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$this->approved_by->AdvancedSearch->SearchOperator2 = @$filter["w_approved_by"];
 		$this->approved_by->AdvancedSearch->Save();
 
-		// Field flag
-		$this->flag->AdvancedSearch->SearchValue = @$filter["x_flag"];
-		$this->flag->AdvancedSearch->SearchOperator = @$filter["z_flag"];
-		$this->flag->AdvancedSearch->SearchCondition = @$filter["v_flag"];
-		$this->flag->AdvancedSearch->SearchValue2 = @$filter["y_flag"];
-		$this->flag->AdvancedSearch->SearchOperator2 = @$filter["w_flag"];
-		$this->flag->AdvancedSearch->Save();
+		// Field verified_date
+		$this->verified_date->AdvancedSearch->SearchValue = @$filter["x_verified_date"];
+		$this->verified_date->AdvancedSearch->SearchOperator = @$filter["z_verified_date"];
+		$this->verified_date->AdvancedSearch->SearchCondition = @$filter["v_verified_date"];
+		$this->verified_date->AdvancedSearch->SearchValue2 = @$filter["y_verified_date"];
+		$this->verified_date->AdvancedSearch->SearchOperator2 = @$filter["w_verified_date"];
+		$this->verified_date->AdvancedSearch->Save();
+
+		// Field verified_action
+		$this->verified_action->AdvancedSearch->SearchValue = @$filter["x_verified_action"];
+		$this->verified_action->AdvancedSearch->SearchOperator = @$filter["z_verified_action"];
+		$this->verified_action->AdvancedSearch->SearchCondition = @$filter["v_verified_action"];
+		$this->verified_action->AdvancedSearch->SearchValue2 = @$filter["y_verified_action"];
+		$this->verified_action->AdvancedSearch->SearchOperator2 = @$filter["w_verified_action"];
+		$this->verified_action->AdvancedSearch->Save();
+
+		// Field verified_comment
+		$this->verified_comment->AdvancedSearch->SearchValue = @$filter["x_verified_comment"];
+		$this->verified_comment->AdvancedSearch->SearchOperator = @$filter["z_verified_comment"];
+		$this->verified_comment->AdvancedSearch->SearchCondition = @$filter["v_verified_comment"];
+		$this->verified_comment->AdvancedSearch->SearchValue2 = @$filter["y_verified_comment"];
+		$this->verified_comment->AdvancedSearch->SearchOperator2 = @$filter["w_verified_comment"];
+		$this->verified_comment->AdvancedSearch->Save();
+
+		// Field verified_by
+		$this->verified_by->AdvancedSearch->SearchValue = @$filter["x_verified_by"];
+		$this->verified_by->AdvancedSearch->SearchOperator = @$filter["z_verified_by"];
+		$this->verified_by->AdvancedSearch->SearchCondition = @$filter["v_verified_by"];
+		$this->verified_by->AdvancedSearch->SearchValue2 = @$filter["y_verified_by"];
+		$this->verified_by->AdvancedSearch->SearchOperator2 = @$filter["w_verified_by"];
+		$this->verified_by->AdvancedSearch->Save();
 		$this->BasicSearch->setKeyword(@$filter[EW_TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[EW_TABLE_BASIC_SEARCH_TYPE]);
 	}
@@ -1048,23 +1085,27 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$sWhere = "";
 		if (!$Security->CanSearch()) return "";
 		$this->BuildSearchSql($sWhere, $this->id, $Default, FALSE); // id
-		$this->BuildSearchSql($sWhere, $this->datetime, $Default, FALSE); // datetime
+		$this->BuildSearchSql($sWhere, $this->date, $Default, FALSE); // date
 		$this->BuildSearchSql($sWhere, $this->reference_id, $Default, FALSE); // reference_id
-		$this->BuildSearchSql($sWhere, $this->gen_name, $Default, FALSE); // gen_name
-		$this->BuildSearchSql($sWhere, $this->maintenance_type, $Default, FALSE); // maintenance_type
-		$this->BuildSearchSql($sWhere, $this->running_hours, $Default, FALSE); // running_hours
-		$this->BuildSearchSql($sWhere, $this->cost, $Default, FALSE); // cost
-		$this->BuildSearchSql($sWhere, $this->labour_fee, $Default, FALSE); // labour_fee
-		$this->BuildSearchSql($sWhere, $this->total, $Default, FALSE); // total
+		$this->BuildSearchSql($sWhere, $this->material_name, $Default, FALSE); // material_name
+		$this->BuildSearchSql($sWhere, $this->quantity_in, $Default, FALSE); // quantity_in
+		$this->BuildSearchSql($sWhere, $this->quantity_out, $Default, FALSE); // quantity_out
+		$this->BuildSearchSql($sWhere, $this->total_quantity, $Default, FALSE); // total_quantity
+		$this->BuildSearchSql($sWhere, $this->quantity_type, $Default, FALSE); // quantity_type
+		$this->BuildSearchSql($sWhere, $this->treated_by, $Default, FALSE); // treated_by
 		$this->BuildSearchSql($sWhere, $this->staff_id, $Default, FALSE); // staff_id
-		$this->BuildSearchSql($sWhere, $this->status, $Default, FALSE); // status
-		$this->BuildSearchSql($sWhere, $this->initiator_action, $Default, FALSE); // initiator_action
-		$this->BuildSearchSql($sWhere, $this->initiator_comment, $Default, FALSE); // initiator_comment
+		$this->BuildSearchSql($sWhere, $this->statuss, $Default, FALSE); // statuss
+		$this->BuildSearchSql($sWhere, $this->issued_action, $Default, FALSE); // issued_action
+		$this->BuildSearchSql($sWhere, $this->issued_comment, $Default, FALSE); // issued_comment
+		$this->BuildSearchSql($sWhere, $this->issued_by, $Default, FALSE); // issued_by
 		$this->BuildSearchSql($sWhere, $this->approver_date, $Default, FALSE); // approver_date
 		$this->BuildSearchSql($sWhere, $this->approver_action, $Default, FALSE); // approver_action
 		$this->BuildSearchSql($sWhere, $this->approver_comment, $Default, FALSE); // approver_comment
 		$this->BuildSearchSql($sWhere, $this->approved_by, $Default, FALSE); // approved_by
-		$this->BuildSearchSql($sWhere, $this->flag, $Default, FALSE); // flag
+		$this->BuildSearchSql($sWhere, $this->verified_date, $Default, FALSE); // verified_date
+		$this->BuildSearchSql($sWhere, $this->verified_action, $Default, FALSE); // verified_action
+		$this->BuildSearchSql($sWhere, $this->verified_comment, $Default, FALSE); // verified_comment
+		$this->BuildSearchSql($sWhere, $this->verified_by, $Default, FALSE); // verified_by
 
 		// Set up search parm
 		if (!$Default && $sWhere <> "" && in_array($this->Command, array("", "reset", "resetall"))) {
@@ -1072,23 +1113,27 @@ class cgen_maintenance_list extends cgen_maintenance {
 		}
 		if (!$Default && $this->Command == "search") {
 			$this->id->AdvancedSearch->Save(); // id
-			$this->datetime->AdvancedSearch->Save(); // datetime
+			$this->date->AdvancedSearch->Save(); // date
 			$this->reference_id->AdvancedSearch->Save(); // reference_id
-			$this->gen_name->AdvancedSearch->Save(); // gen_name
-			$this->maintenance_type->AdvancedSearch->Save(); // maintenance_type
-			$this->running_hours->AdvancedSearch->Save(); // running_hours
-			$this->cost->AdvancedSearch->Save(); // cost
-			$this->labour_fee->AdvancedSearch->Save(); // labour_fee
-			$this->total->AdvancedSearch->Save(); // total
+			$this->material_name->AdvancedSearch->Save(); // material_name
+			$this->quantity_in->AdvancedSearch->Save(); // quantity_in
+			$this->quantity_out->AdvancedSearch->Save(); // quantity_out
+			$this->total_quantity->AdvancedSearch->Save(); // total_quantity
+			$this->quantity_type->AdvancedSearch->Save(); // quantity_type
+			$this->treated_by->AdvancedSearch->Save(); // treated_by
 			$this->staff_id->AdvancedSearch->Save(); // staff_id
-			$this->status->AdvancedSearch->Save(); // status
-			$this->initiator_action->AdvancedSearch->Save(); // initiator_action
-			$this->initiator_comment->AdvancedSearch->Save(); // initiator_comment
+			$this->statuss->AdvancedSearch->Save(); // statuss
+			$this->issued_action->AdvancedSearch->Save(); // issued_action
+			$this->issued_comment->AdvancedSearch->Save(); // issued_comment
+			$this->issued_by->AdvancedSearch->Save(); // issued_by
 			$this->approver_date->AdvancedSearch->Save(); // approver_date
 			$this->approver_action->AdvancedSearch->Save(); // approver_action
 			$this->approver_comment->AdvancedSearch->Save(); // approver_comment
 			$this->approved_by->AdvancedSearch->Save(); // approved_by
-			$this->flag->AdvancedSearch->Save(); // flag
+			$this->verified_date->AdvancedSearch->Save(); // verified_date
+			$this->verified_action->AdvancedSearch->Save(); // verified_action
+			$this->verified_comment->AdvancedSearch->Save(); // verified_comment
+			$this->verified_by->AdvancedSearch->Save(); // verified_by
 		}
 		return $sWhere;
 	}
@@ -1141,10 +1186,14 @@ class cgen_maintenance_list extends cgen_maintenance {
 	function BasicSearchSQL($arKeywords, $type) {
 		$sWhere = "";
 		$this->BuildBasicSearchSQL($sWhere, $this->reference_id, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->gen_name, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->running_hours, $arKeywords, $type);
-		$this->BuildBasicSearchSQL($sWhere, $this->initiator_comment, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->material_name, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->quantity_in, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->quantity_out, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->total_quantity, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->quantity_type, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->issued_comment, $arKeywords, $type);
 		$this->BuildBasicSearchSQL($sWhere, $this->approver_comment, $arKeywords, $type);
+		$this->BuildBasicSearchSQL($sWhere, $this->verified_comment, $arKeywords, $type);
 		return $sWhere;
 	}
 
@@ -1254,29 +1303,31 @@ class cgen_maintenance_list extends cgen_maintenance {
 			return TRUE;
 		if ($this->id->AdvancedSearch->IssetSession())
 			return TRUE;
-		if ($this->datetime->AdvancedSearch->IssetSession())
+		if ($this->date->AdvancedSearch->IssetSession())
 			return TRUE;
 		if ($this->reference_id->AdvancedSearch->IssetSession())
 			return TRUE;
-		if ($this->gen_name->AdvancedSearch->IssetSession())
+		if ($this->material_name->AdvancedSearch->IssetSession())
 			return TRUE;
-		if ($this->maintenance_type->AdvancedSearch->IssetSession())
+		if ($this->quantity_in->AdvancedSearch->IssetSession())
 			return TRUE;
-		if ($this->running_hours->AdvancedSearch->IssetSession())
+		if ($this->quantity_out->AdvancedSearch->IssetSession())
 			return TRUE;
-		if ($this->cost->AdvancedSearch->IssetSession())
+		if ($this->total_quantity->AdvancedSearch->IssetSession())
 			return TRUE;
-		if ($this->labour_fee->AdvancedSearch->IssetSession())
+		if ($this->quantity_type->AdvancedSearch->IssetSession())
 			return TRUE;
-		if ($this->total->AdvancedSearch->IssetSession())
+		if ($this->treated_by->AdvancedSearch->IssetSession())
 			return TRUE;
 		if ($this->staff_id->AdvancedSearch->IssetSession())
 			return TRUE;
-		if ($this->status->AdvancedSearch->IssetSession())
+		if ($this->statuss->AdvancedSearch->IssetSession())
 			return TRUE;
-		if ($this->initiator_action->AdvancedSearch->IssetSession())
+		if ($this->issued_action->AdvancedSearch->IssetSession())
 			return TRUE;
-		if ($this->initiator_comment->AdvancedSearch->IssetSession())
+		if ($this->issued_comment->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->issued_by->AdvancedSearch->IssetSession())
 			return TRUE;
 		if ($this->approver_date->AdvancedSearch->IssetSession())
 			return TRUE;
@@ -1286,7 +1337,13 @@ class cgen_maintenance_list extends cgen_maintenance {
 			return TRUE;
 		if ($this->approved_by->AdvancedSearch->IssetSession())
 			return TRUE;
-		if ($this->flag->AdvancedSearch->IssetSession())
+		if ($this->verified_date->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->verified_action->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->verified_comment->AdvancedSearch->IssetSession())
+			return TRUE;
+		if ($this->verified_by->AdvancedSearch->IssetSession())
 			return TRUE;
 		return FALSE;
 	}
@@ -1318,23 +1375,27 @@ class cgen_maintenance_list extends cgen_maintenance {
 	// Clear all advanced search parameters
 	function ResetAdvancedSearchParms() {
 		$this->id->AdvancedSearch->UnsetSession();
-		$this->datetime->AdvancedSearch->UnsetSession();
+		$this->date->AdvancedSearch->UnsetSession();
 		$this->reference_id->AdvancedSearch->UnsetSession();
-		$this->gen_name->AdvancedSearch->UnsetSession();
-		$this->maintenance_type->AdvancedSearch->UnsetSession();
-		$this->running_hours->AdvancedSearch->UnsetSession();
-		$this->cost->AdvancedSearch->UnsetSession();
-		$this->labour_fee->AdvancedSearch->UnsetSession();
-		$this->total->AdvancedSearch->UnsetSession();
+		$this->material_name->AdvancedSearch->UnsetSession();
+		$this->quantity_in->AdvancedSearch->UnsetSession();
+		$this->quantity_out->AdvancedSearch->UnsetSession();
+		$this->total_quantity->AdvancedSearch->UnsetSession();
+		$this->quantity_type->AdvancedSearch->UnsetSession();
+		$this->treated_by->AdvancedSearch->UnsetSession();
 		$this->staff_id->AdvancedSearch->UnsetSession();
-		$this->status->AdvancedSearch->UnsetSession();
-		$this->initiator_action->AdvancedSearch->UnsetSession();
-		$this->initiator_comment->AdvancedSearch->UnsetSession();
+		$this->statuss->AdvancedSearch->UnsetSession();
+		$this->issued_action->AdvancedSearch->UnsetSession();
+		$this->issued_comment->AdvancedSearch->UnsetSession();
+		$this->issued_by->AdvancedSearch->UnsetSession();
 		$this->approver_date->AdvancedSearch->UnsetSession();
 		$this->approver_action->AdvancedSearch->UnsetSession();
 		$this->approver_comment->AdvancedSearch->UnsetSession();
 		$this->approved_by->AdvancedSearch->UnsetSession();
-		$this->flag->AdvancedSearch->UnsetSession();
+		$this->verified_date->AdvancedSearch->UnsetSession();
+		$this->verified_action->AdvancedSearch->UnsetSession();
+		$this->verified_comment->AdvancedSearch->UnsetSession();
+		$this->verified_by->AdvancedSearch->UnsetSession();
 	}
 
 	// Restore all search parameters
@@ -1346,23 +1407,27 @@ class cgen_maintenance_list extends cgen_maintenance {
 
 		// Restore advanced search values
 		$this->id->AdvancedSearch->Load();
-		$this->datetime->AdvancedSearch->Load();
+		$this->date->AdvancedSearch->Load();
 		$this->reference_id->AdvancedSearch->Load();
-		$this->gen_name->AdvancedSearch->Load();
-		$this->maintenance_type->AdvancedSearch->Load();
-		$this->running_hours->AdvancedSearch->Load();
-		$this->cost->AdvancedSearch->Load();
-		$this->labour_fee->AdvancedSearch->Load();
-		$this->total->AdvancedSearch->Load();
+		$this->material_name->AdvancedSearch->Load();
+		$this->quantity_in->AdvancedSearch->Load();
+		$this->quantity_out->AdvancedSearch->Load();
+		$this->total_quantity->AdvancedSearch->Load();
+		$this->quantity_type->AdvancedSearch->Load();
+		$this->treated_by->AdvancedSearch->Load();
 		$this->staff_id->AdvancedSearch->Load();
-		$this->status->AdvancedSearch->Load();
-		$this->initiator_action->AdvancedSearch->Load();
-		$this->initiator_comment->AdvancedSearch->Load();
+		$this->statuss->AdvancedSearch->Load();
+		$this->issued_action->AdvancedSearch->Load();
+		$this->issued_comment->AdvancedSearch->Load();
+		$this->issued_by->AdvancedSearch->Load();
 		$this->approver_date->AdvancedSearch->Load();
 		$this->approver_action->AdvancedSearch->Load();
 		$this->approver_comment->AdvancedSearch->Load();
 		$this->approved_by->AdvancedSearch->Load();
-		$this->flag->AdvancedSearch->Load();
+		$this->verified_date->AdvancedSearch->Load();
+		$this->verified_action->AdvancedSearch->Load();
+		$this->verified_comment->AdvancedSearch->Load();
+		$this->verified_by->AdvancedSearch->Load();
 	}
 
 	// Set up sort parameters
@@ -1372,16 +1437,17 @@ class cgen_maintenance_list extends cgen_maintenance {
 		if (@$_GET["order"] <> "") {
 			$this->CurrentOrder = @$_GET["order"];
 			$this->CurrentOrderType = @$_GET["ordertype"];
-			$this->UpdateSort($this->datetime); // datetime
+			$this->UpdateSort($this->date); // date
 			$this->UpdateSort($this->reference_id); // reference_id
-			$this->UpdateSort($this->gen_name); // gen_name
-			$this->UpdateSort($this->maintenance_type); // maintenance_type
-			$this->UpdateSort($this->running_hours); // running_hours
-			$this->UpdateSort($this->cost); // cost
-			$this->UpdateSort($this->labour_fee); // labour_fee
-			$this->UpdateSort($this->total); // total
-			$this->UpdateSort($this->staff_id); // staff_id
-			$this->UpdateSort($this->status); // status
+			$this->UpdateSort($this->material_name); // material_name
+			$this->UpdateSort($this->quantity_in); // quantity_in
+			$this->UpdateSort($this->quantity_out); // quantity_out
+			$this->UpdateSort($this->total_quantity); // total_quantity
+			$this->UpdateSort($this->quantity_type); // quantity_type
+			$this->UpdateSort($this->statuss); // statuss
+			$this->UpdateSort($this->issued_by); // issued_by
+			$this->UpdateSort($this->approved_by); // approved_by
+			$this->UpdateSort($this->verified_by); // verified_by
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1414,16 +1480,17 @@ class cgen_maintenance_list extends cgen_maintenance {
 			if ($this->Command == "resetsort") {
 				$sOrderBy = "";
 				$this->setSessionOrderBy($sOrderBy);
-				$this->datetime->setSort("");
+				$this->date->setSort("");
 				$this->reference_id->setSort("");
-				$this->gen_name->setSort("");
-				$this->maintenance_type->setSort("");
-				$this->running_hours->setSort("");
-				$this->cost->setSort("");
-				$this->labour_fee->setSort("");
-				$this->total->setSort("");
-				$this->staff_id->setSort("");
-				$this->status->setSort("");
+				$this->material_name->setSort("");
+				$this->quantity_in->setSort("");
+				$this->quantity_out->setSort("");
+				$this->total_quantity->setSort("");
+				$this->quantity_type->setSort("");
+				$this->statuss->setSort("");
+				$this->issued_by->setSort("");
+				$this->approved_by->setSort("");
+				$this->verified_by->setSort("");
 			}
 
 			// Reset start position
@@ -1448,18 +1515,6 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$item->Visible = $Security->CanView();
 		$item->OnLeft = TRUE;
 
-		// "edit"
-		$item = &$this->ListOptions->Add("edit");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanEdit();
-		$item->OnLeft = TRUE;
-
-		// "delete"
-		$item = &$this->ListOptions->Add("delete");
-		$item->CssClass = "text-nowrap";
-		$item->Visible = $Security->CanDelete();
-		$item->OnLeft = TRUE;
-
 		// List actions
 		$item = &$this->ListOptions->Add("listactions");
 		$item->CssClass = "text-nowrap";
@@ -1470,7 +1525,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 
 		// "checkbox"
 		$item = &$this->ListOptions->Add("checkbox");
-		$item->Visible = FALSE;
+		$item->Visible = $Security->CanEdit();
 		$item->OnLeft = TRUE;
 		$item->Header = "<input type=\"checkbox\" name=\"key\" id=\"key\" onclick=\"ew_SelectAllKey(this);\">";
 		$item->MoveTo(0);
@@ -1509,22 +1564,6 @@ class cgen_maintenance_list extends cgen_maintenance {
 		} else {
 			$oListOpt->Body = "";
 		}
-
-		// "edit"
-		$oListOpt = &$this->ListOptions->Items["edit"];
-		$editcaption = ew_HtmlTitle($Language->Phrase("EditLink"));
-		if ($Security->CanEdit()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewEdit\" title=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("EditLink")) . "\" href=\"" . ew_HtmlEncode($this->EditUrl) . "\">" . $Language->Phrase("EditLink") . "</a>";
-		} else {
-			$oListOpt->Body = "";
-		}
-
-		// "delete"
-		$oListOpt = &$this->ListOptions->Items["delete"];
-		if ($Security->CanDelete())
-			$oListOpt->Body = "<a class=\"ewRowLink ewDelete\"" . "" . " title=\"" . ew_HtmlTitle($Language->Phrase("DeleteLink")) . "\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("DeleteLink")) . "\" href=\"" . ew_HtmlEncode($this->DeleteUrl) . "\">" . $Language->Phrase("DeleteLink") . "</a>";
-		else
-			$oListOpt->Body = "";
 
 		// Set up list action buttons
 		$oListOpt = &$this->ListOptions->GetItem("listactions");
@@ -1568,14 +1607,12 @@ class cgen_maintenance_list extends cgen_maintenance {
 	function SetupOtherOptions() {
 		global $Language, $Security;
 		$options = &$this->OtherOptions;
-		$option = $options["addedit"];
-
-		// Add
-		$item = &$option->Add("add");
-		$addcaption = ew_HtmlTitle($Language->Phrase("AddLink"));
-		$item->Body = "<a class=\"ewAddEdit ewAdd\" title=\"" . $addcaption . "\" data-caption=\"" . $addcaption . "\" href=\"" . ew_HtmlEncode($this->AddUrl) . "\">" . $Language->Phrase("AddLink") . "</a>";
-		$item->Visible = ($this->AddUrl <> "" && $Security->CanAdd());
 		$option = $options["action"];
+
+		// Add multi update
+		$item = &$option->Add("multiupdate");
+		$item->Body = "<a class=\"ewAction ewMultiUpdate\" title=\"" . ew_HtmlTitle($Language->Phrase("UpdateSelectedLink")) . "\" data-table=\"issuance_store_v\" data-caption=\"" . ew_HtmlTitle($Language->Phrase("UpdateSelectedLink")) . "\" href=\"\" onclick=\"ew_ModalDialogShow({lnk:this,btn:'UpdateBtn',f:document.fissuance_store_vlist,url:'" . $this->MultiUpdateUrl . "'});return false;\">" . $Language->Phrase("UpdateSelectedLink") . "</a>";
+		$item->Visible = ($Security->CanEdit());
 
 		// Set up options default
 		foreach ($options as &$option) {
@@ -1593,10 +1630,10 @@ class cgen_maintenance_list extends cgen_maintenance {
 
 		// Filter button
 		$item = &$this->FilterOptions->Add("savecurrentfilter");
-		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"fgen_maintenancelistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
+		$item->Body = "<a class=\"ewSaveFilter\" data-form=\"fissuance_store_vlistsrch\" href=\"#\">" . $Language->Phrase("SaveCurrentFilter") . "</a>";
 		$item->Visible = TRUE;
 		$item = &$this->FilterOptions->Add("deletefilter");
-		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"fgen_maintenancelistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
+		$item->Body = "<a class=\"ewDeleteFilter\" data-form=\"fissuance_store_vlistsrch\" href=\"#\">" . $Language->Phrase("DeleteFilter") . "</a>";
 		$item->Visible = TRUE;
 		$this->FilterOptions->UseDropDownButton = TRUE;
 		$this->FilterOptions->UseButtonGroup = !$this->FilterOptions->UseDropDownButton;
@@ -1620,7 +1657,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 					$item = &$option->Add("custom_" . $listaction->Action);
 					$caption = $listaction->Caption;
 					$icon = ($listaction->Icon <> "") ? "<span class=\"" . ew_HtmlEncode($listaction->Icon) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\"></span> " : $caption;
-					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.fgen_maintenancelist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
+					$item->Body = "<a class=\"ewAction ewListAction\" title=\"" . ew_HtmlEncode($caption) . "\" data-caption=\"" . ew_HtmlEncode($caption) . "\" href=\"\" onclick=\"ew_SubmitAction(event,jQuery.extend({f:document.fissuance_store_vlist}," . $listaction->ToJson(TRUE) . "));return false;\">" . $icon . "</a>";
 					$item->Visible = $listaction->Allow;
 				}
 			}
@@ -1724,7 +1761,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 		// Search button
 		$item = &$this->SearchOptions->Add("searchtoggle");
 		$SearchToggleClass = ($this->SearchWhere <> "") ? " active" : " active";
-		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"fgen_maintenancelistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ewSearchToggle" . $SearchToggleClass . "\" title=\"" . $Language->Phrase("SearchPanel") . "\" data-caption=\"" . $Language->Phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"fissuance_store_vlistsrch\">" . $Language->Phrase("SearchLink") . "</button>";
 		$item->Visible = TRUE;
 
 		// Show all button
@@ -1734,12 +1771,12 @@ class cgen_maintenance_list extends cgen_maintenance {
 
 		// Advanced search button
 		$item = &$this->SearchOptions->Add("advancedsearch");
-		$item->Body = "<a class=\"btn btn-default ewAdvancedSearch\" title=\"" . $Language->Phrase("AdvancedSearch") . "\" data-caption=\"" . $Language->Phrase("AdvancedSearch") . "\" href=\"gen_maintenancesrch.php\">" . $Language->Phrase("AdvancedSearchBtn") . "</a>";
+		$item->Body = "<a class=\"btn btn-default ewAdvancedSearch\" title=\"" . $Language->Phrase("AdvancedSearch") . "\" data-caption=\"" . $Language->Phrase("AdvancedSearch") . "\" href=\"issuance_store_vsrch.php\">" . $Language->Phrase("AdvancedSearchBtn") . "</a>";
 		$item->Visible = TRUE;
 
 		// Search highlight button
 		$item = &$this->SearchOptions->Add("searchhighlight");
-		$item->Body = "<button type=\"button\" class=\"btn btn-default ewHighlight active\" title=\"" . $Language->Phrase("Highlight") . "\" data-caption=\"" . $Language->Phrase("Highlight") . "\" data-toggle=\"button\" data-form=\"fgen_maintenancelistsrch\" data-name=\"" . $this->HighlightName() . "\">" . $Language->Phrase("HighlightBtn") . "</button>";
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ewHighlight active\" title=\"" . $Language->Phrase("Highlight") . "\" data-caption=\"" . $Language->Phrase("Highlight") . "\" data-toggle=\"button\" data-form=\"fissuance_store_vlistsrch\" data-name=\"" . $this->HighlightName() . "\">" . $Language->Phrase("HighlightBtn") . "</button>";
 		$item->Visible = ($this->SearchWhere <> "" && $this->TotalRecs > 0);
 
 		// Button group for search
@@ -1825,65 +1862,70 @@ class cgen_maintenance_list extends cgen_maintenance {
 		if ($this->id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
 		$this->id->AdvancedSearch->SearchOperator = @$_GET["z_id"];
 
-		// datetime
-		$this->datetime->AdvancedSearch->SearchValue = @$_GET["x_datetime"];
-		if ($this->datetime->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->datetime->AdvancedSearch->SearchOperator = @$_GET["z_datetime"];
+		// date
+		$this->date->AdvancedSearch->SearchValue = @$_GET["x_date"];
+		if ($this->date->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->date->AdvancedSearch->SearchOperator = @$_GET["z_date"];
 
 		// reference_id
 		$this->reference_id->AdvancedSearch->SearchValue = @$_GET["x_reference_id"];
 		if ($this->reference_id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
 		$this->reference_id->AdvancedSearch->SearchOperator = @$_GET["z_reference_id"];
 
-		// gen_name
-		$this->gen_name->AdvancedSearch->SearchValue = @$_GET["x_gen_name"];
-		if ($this->gen_name->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->gen_name->AdvancedSearch->SearchOperator = @$_GET["z_gen_name"];
+		// material_name
+		$this->material_name->AdvancedSearch->SearchValue = @$_GET["x_material_name"];
+		if ($this->material_name->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->material_name->AdvancedSearch->SearchOperator = @$_GET["z_material_name"];
 
-		// maintenance_type
-		$this->maintenance_type->AdvancedSearch->SearchValue = @$_GET["x_maintenance_type"];
-		if ($this->maintenance_type->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->maintenance_type->AdvancedSearch->SearchOperator = @$_GET["z_maintenance_type"];
+		// quantity_in
+		$this->quantity_in->AdvancedSearch->SearchValue = @$_GET["x_quantity_in"];
+		if ($this->quantity_in->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->quantity_in->AdvancedSearch->SearchOperator = @$_GET["z_quantity_in"];
 
-		// running_hours
-		$this->running_hours->AdvancedSearch->SearchValue = @$_GET["x_running_hours"];
-		if ($this->running_hours->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->running_hours->AdvancedSearch->SearchOperator = @$_GET["z_running_hours"];
+		// quantity_out
+		$this->quantity_out->AdvancedSearch->SearchValue = @$_GET["x_quantity_out"];
+		if ($this->quantity_out->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->quantity_out->AdvancedSearch->SearchOperator = @$_GET["z_quantity_out"];
 
-		// cost
-		$this->cost->AdvancedSearch->SearchValue = @$_GET["x_cost"];
-		if ($this->cost->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->cost->AdvancedSearch->SearchOperator = @$_GET["z_cost"];
+		// total_quantity
+		$this->total_quantity->AdvancedSearch->SearchValue = @$_GET["x_total_quantity"];
+		if ($this->total_quantity->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->total_quantity->AdvancedSearch->SearchOperator = @$_GET["z_total_quantity"];
 
-		// labour_fee
-		$this->labour_fee->AdvancedSearch->SearchValue = @$_GET["x_labour_fee"];
-		if ($this->labour_fee->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->labour_fee->AdvancedSearch->SearchOperator = @$_GET["z_labour_fee"];
+		// quantity_type
+		$this->quantity_type->AdvancedSearch->SearchValue = @$_GET["x_quantity_type"];
+		if ($this->quantity_type->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->quantity_type->AdvancedSearch->SearchOperator = @$_GET["z_quantity_type"];
 
-		// total
-		$this->total->AdvancedSearch->SearchValue = @$_GET["x_total"];
-		if ($this->total->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->total->AdvancedSearch->SearchOperator = @$_GET["z_total"];
+		// treated_by
+		$this->treated_by->AdvancedSearch->SearchValue = @$_GET["x_treated_by"];
+		if ($this->treated_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->treated_by->AdvancedSearch->SearchOperator = @$_GET["z_treated_by"];
 
 		// staff_id
 		$this->staff_id->AdvancedSearch->SearchValue = @$_GET["x_staff_id"];
 		if ($this->staff_id->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
 		$this->staff_id->AdvancedSearch->SearchOperator = @$_GET["z_staff_id"];
 
-		// status
-		$this->status->AdvancedSearch->SearchValue = @$_GET["x_status"];
-		if ($this->status->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->status->AdvancedSearch->SearchOperator = @$_GET["z_status"];
+		// statuss
+		$this->statuss->AdvancedSearch->SearchValue = @$_GET["x_statuss"];
+		if ($this->statuss->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->statuss->AdvancedSearch->SearchOperator = @$_GET["z_statuss"];
 
-		// initiator_action
-		$this->initiator_action->AdvancedSearch->SearchValue = @$_GET["x_initiator_action"];
-		if ($this->initiator_action->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->initiator_action->AdvancedSearch->SearchOperator = @$_GET["z_initiator_action"];
+		// issued_action
+		$this->issued_action->AdvancedSearch->SearchValue = @$_GET["x_issued_action"];
+		if ($this->issued_action->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->issued_action->AdvancedSearch->SearchOperator = @$_GET["z_issued_action"];
 
-		// initiator_comment
-		$this->initiator_comment->AdvancedSearch->SearchValue = @$_GET["x_initiator_comment"];
-		if ($this->initiator_comment->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->initiator_comment->AdvancedSearch->SearchOperator = @$_GET["z_initiator_comment"];
+		// issued_comment
+		$this->issued_comment->AdvancedSearch->SearchValue = @$_GET["x_issued_comment"];
+		if ($this->issued_comment->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->issued_comment->AdvancedSearch->SearchOperator = @$_GET["z_issued_comment"];
+
+		// issued_by
+		$this->issued_by->AdvancedSearch->SearchValue = @$_GET["x_issued_by"];
+		if ($this->issued_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->issued_by->AdvancedSearch->SearchOperator = @$_GET["z_issued_by"];
 
 		// approver_date
 		$this->approver_date->AdvancedSearch->SearchValue = @$_GET["x_approver_date"];
@@ -1905,10 +1947,25 @@ class cgen_maintenance_list extends cgen_maintenance {
 		if ($this->approved_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
 		$this->approved_by->AdvancedSearch->SearchOperator = @$_GET["z_approved_by"];
 
-		// flag
-		$this->flag->AdvancedSearch->SearchValue = @$_GET["x_flag"];
-		if ($this->flag->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
-		$this->flag->AdvancedSearch->SearchOperator = @$_GET["z_flag"];
+		// verified_date
+		$this->verified_date->AdvancedSearch->SearchValue = @$_GET["x_verified_date"];
+		if ($this->verified_date->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->verified_date->AdvancedSearch->SearchOperator = @$_GET["z_verified_date"];
+
+		// verified_action
+		$this->verified_action->AdvancedSearch->SearchValue = @$_GET["x_verified_action"];
+		if ($this->verified_action->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->verified_action->AdvancedSearch->SearchOperator = @$_GET["z_verified_action"];
+
+		// verified_comment
+		$this->verified_comment->AdvancedSearch->SearchValue = @$_GET["x_verified_comment"];
+		if ($this->verified_comment->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->verified_comment->AdvancedSearch->SearchOperator = @$_GET["z_verified_comment"];
+
+		// verified_by
+		$this->verified_by->AdvancedSearch->SearchValue = @$_GET["x_verified_by"];
+		if ($this->verified_by->AdvancedSearch->SearchValue <> "" && $this->Command == "") $this->Command = "search";
+		$this->verified_by->AdvancedSearch->SearchOperator = @$_GET["z_verified_by"];
 	}
 
 	// Load recordset
@@ -1971,46 +2028,54 @@ class cgen_maintenance_list extends cgen_maintenance {
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
-		$this->datetime->setDbValue($row['datetime']);
+		$this->date->setDbValue($row['date']);
 		$this->reference_id->setDbValue($row['reference_id']);
-		$this->gen_name->setDbValue($row['gen_name']);
-		$this->maintenance_type->setDbValue($row['maintenance_type']);
-		$this->running_hours->setDbValue($row['running_hours']);
-		$this->cost->setDbValue($row['cost']);
-		$this->labour_fee->setDbValue($row['labour_fee']);
-		$this->total->setDbValue($row['total']);
+		$this->material_name->setDbValue($row['material_name']);
+		$this->quantity_in->setDbValue($row['quantity_in']);
+		$this->quantity_out->setDbValue($row['quantity_out']);
+		$this->total_quantity->setDbValue($row['total_quantity']);
+		$this->quantity_type->setDbValue($row['quantity_type']);
+		$this->treated_by->setDbValue($row['treated_by']);
 		$this->staff_id->setDbValue($row['staff_id']);
-		$this->status->setDbValue($row['status']);
-		$this->initiator_action->setDbValue($row['initiator_action']);
-		$this->initiator_comment->setDbValue($row['initiator_comment']);
+		$this->statuss->setDbValue($row['statuss']);
+		$this->issued_action->setDbValue($row['issued_action']);
+		$this->issued_comment->setDbValue($row['issued_comment']);
+		$this->issued_by->setDbValue($row['issued_by']);
 		$this->approver_date->setDbValue($row['approver_date']);
 		$this->approver_action->setDbValue($row['approver_action']);
 		$this->approver_comment->setDbValue($row['approver_comment']);
 		$this->approved_by->setDbValue($row['approved_by']);
-		$this->flag->setDbValue($row['flag']);
+		$this->verified_date->setDbValue($row['verified_date']);
+		$this->verified_action->setDbValue($row['verified_action']);
+		$this->verified_comment->setDbValue($row['verified_comment']);
+		$this->verified_by->setDbValue($row['verified_by']);
 	}
 
 	// Return a row with default values
 	function NewRow() {
 		$row = array();
 		$row['id'] = NULL;
-		$row['datetime'] = NULL;
+		$row['date'] = NULL;
 		$row['reference_id'] = NULL;
-		$row['gen_name'] = NULL;
-		$row['maintenance_type'] = NULL;
-		$row['running_hours'] = NULL;
-		$row['cost'] = NULL;
-		$row['labour_fee'] = NULL;
-		$row['total'] = NULL;
+		$row['material_name'] = NULL;
+		$row['quantity_in'] = NULL;
+		$row['quantity_out'] = NULL;
+		$row['total_quantity'] = NULL;
+		$row['quantity_type'] = NULL;
+		$row['treated_by'] = NULL;
 		$row['staff_id'] = NULL;
-		$row['status'] = NULL;
-		$row['initiator_action'] = NULL;
-		$row['initiator_comment'] = NULL;
+		$row['statuss'] = NULL;
+		$row['issued_action'] = NULL;
+		$row['issued_comment'] = NULL;
+		$row['issued_by'] = NULL;
 		$row['approver_date'] = NULL;
 		$row['approver_action'] = NULL;
 		$row['approver_comment'] = NULL;
 		$row['approved_by'] = NULL;
-		$row['flag'] = NULL;
+		$row['verified_date'] = NULL;
+		$row['verified_action'] = NULL;
+		$row['verified_comment'] = NULL;
+		$row['verified_by'] = NULL;
 		return $row;
 	}
 
@@ -2020,23 +2085,27 @@ class cgen_maintenance_list extends cgen_maintenance {
 			return;
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
-		$this->datetime->DbValue = $row['datetime'];
+		$this->date->DbValue = $row['date'];
 		$this->reference_id->DbValue = $row['reference_id'];
-		$this->gen_name->DbValue = $row['gen_name'];
-		$this->maintenance_type->DbValue = $row['maintenance_type'];
-		$this->running_hours->DbValue = $row['running_hours'];
-		$this->cost->DbValue = $row['cost'];
-		$this->labour_fee->DbValue = $row['labour_fee'];
-		$this->total->DbValue = $row['total'];
+		$this->material_name->DbValue = $row['material_name'];
+		$this->quantity_in->DbValue = $row['quantity_in'];
+		$this->quantity_out->DbValue = $row['quantity_out'];
+		$this->total_quantity->DbValue = $row['total_quantity'];
+		$this->quantity_type->DbValue = $row['quantity_type'];
+		$this->treated_by->DbValue = $row['treated_by'];
 		$this->staff_id->DbValue = $row['staff_id'];
-		$this->status->DbValue = $row['status'];
-		$this->initiator_action->DbValue = $row['initiator_action'];
-		$this->initiator_comment->DbValue = $row['initiator_comment'];
+		$this->statuss->DbValue = $row['statuss'];
+		$this->issued_action->DbValue = $row['issued_action'];
+		$this->issued_comment->DbValue = $row['issued_comment'];
+		$this->issued_by->DbValue = $row['issued_by'];
 		$this->approver_date->DbValue = $row['approver_date'];
 		$this->approver_action->DbValue = $row['approver_action'];
 		$this->approver_comment->DbValue = $row['approver_comment'];
 		$this->approved_by->DbValue = $row['approved_by'];
-		$this->flag->DbValue = $row['flag'];
+		$this->verified_date->DbValue = $row['verified_date'];
+		$this->verified_action->DbValue = $row['verified_action'];
+		$this->verified_comment->DbValue = $row['verified_comment'];
+		$this->verified_by->DbValue = $row['verified_by'];
 	}
 
 	// Load old record
@@ -2073,40 +2142,32 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$this->InlineCopyUrl = $this->GetInlineCopyUrl();
 		$this->DeleteUrl = $this->GetDeleteUrl();
 
-		// Convert decimal values if posted back
-		if ($this->cost->FormValue == $this->cost->CurrentValue && is_numeric(ew_StrToFloat($this->cost->CurrentValue)))
-			$this->cost->CurrentValue = ew_StrToFloat($this->cost->CurrentValue);
-
-		// Convert decimal values if posted back
-		if ($this->labour_fee->FormValue == $this->labour_fee->CurrentValue && is_numeric(ew_StrToFloat($this->labour_fee->CurrentValue)))
-			$this->labour_fee->CurrentValue = ew_StrToFloat($this->labour_fee->CurrentValue);
-
-		// Convert decimal values if posted back
-		if ($this->total->FormValue == $this->total->CurrentValue && is_numeric(ew_StrToFloat($this->total->CurrentValue)))
-			$this->total->CurrentValue = ew_StrToFloat($this->total->CurrentValue);
-
 		// Call Row_Rendering event
 		$this->Row_Rendering();
 
 		// Common render codes for all row types
 		// id
-		// datetime
+		// date
 		// reference_id
-		// gen_name
-		// maintenance_type
-		// running_hours
-		// cost
-		// labour_fee
-		// total
+		// material_name
+		// quantity_in
+		// quantity_out
+		// total_quantity
+		// quantity_type
+		// treated_by
 		// staff_id
-		// status
-		// initiator_action
-		// initiator_comment
+		// statuss
+		// issued_action
+		// issued_comment
+		// issued_by
 		// approver_date
 		// approver_action
 		// approver_comment
 		// approved_by
-		// flag
+		// verified_date
+		// verified_action
+		// verified_comment
+		// verified_by
 
 		if ($this->RowType == EW_ROWTYPE_VIEW) { // View row
 
@@ -2114,80 +2175,82 @@ class cgen_maintenance_list extends cgen_maintenance {
 		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// datetime
-		$this->datetime->ViewValue = $this->datetime->CurrentValue;
-		$this->datetime->ViewValue = ew_FormatDateTime($this->datetime->ViewValue, 0);
-		$this->datetime->ViewCustomAttributes = "";
+		// date
+		$this->date->ViewValue = $this->date->CurrentValue;
+		$this->date->ViewValue = ew_FormatDateTime($this->date->ViewValue, 17);
+		$this->date->ViewCustomAttributes = "";
 
 		// reference_id
 		$this->reference_id->ViewValue = $this->reference_id->CurrentValue;
 		$this->reference_id->ViewCustomAttributes = "";
 
-		// gen_name
-		if (strval($this->gen_name->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->gen_name->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `gen_name` AS `DispFld`, `location` AS `Disp2Fld`, `kva` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `generator_registration`";
+		// material_name
+		if (strval($this->material_name->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->material_name->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `material_name` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `inventory_staysafe`";
 		$sWhereWrk = "";
-		$this->gen_name->LookupFilters = array();
+		$this->material_name->LookupFilters = array("dx1" => '`material_name`');
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->gen_name, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->material_name, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+		$sSqlWrk .= " ORDER BY `id` ASC";
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$this->material_name->ViewValue = $this->material_name->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->material_name->ViewValue = $this->material_name->CurrentValue;
+			}
+		} else {
+			$this->material_name->ViewValue = NULL;
+		}
+		$this->material_name->ViewCustomAttributes = "";
+
+		// quantity_in
+		$this->quantity_in->ViewValue = $this->quantity_in->CurrentValue;
+		$this->quantity_in->ViewCustomAttributes = "";
+
+		// quantity_out
+		$this->quantity_out->ViewValue = $this->quantity_out->CurrentValue;
+		$this->quantity_out->ViewCustomAttributes = "";
+
+		// total_quantity
+		$this->total_quantity->ViewValue = $this->total_quantity->CurrentValue;
+		$this->total_quantity->ViewCustomAttributes = "";
+
+		// quantity_type
+		$this->quantity_type->ViewValue = $this->quantity_type->CurrentValue;
+		$this->quantity_type->ViewCustomAttributes = "";
+
+		// treated_by
+		$this->treated_by->ViewValue = $this->treated_by->CurrentValue;
+		if (strval($this->treated_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->treated_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->treated_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->treated_by, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
 				$arwrk[2] = $rswrk->fields('Disp2Fld');
-				$arwrk[3] = $rswrk->fields('Disp3Fld');
-				$this->gen_name->ViewValue = $this->gen_name->DisplayValue($arwrk);
+				$this->treated_by->ViewValue = $this->treated_by->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->gen_name->ViewValue = $this->gen_name->CurrentValue;
+				$this->treated_by->ViewValue = $this->treated_by->CurrentValue;
 			}
 		} else {
-			$this->gen_name->ViewValue = NULL;
+			$this->treated_by->ViewValue = NULL;
 		}
-		$this->gen_name->ViewCustomAttributes = "";
-
-		// maintenance_type
-		if (strval($this->maintenance_type->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->maintenance_type->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `maintenance_type`";
-		$sWhereWrk = "";
-		$this->maintenance_type->LookupFilters = array();
-		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->maintenance_type, $sWhereWrk); // Call Lookup Selecting
-		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
-			$rswrk = Conn()->Execute($sSqlWrk);
-			if ($rswrk && !$rswrk->EOF) { // Lookup values found
-				$arwrk = array();
-				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->maintenance_type->ViewValue = $this->maintenance_type->DisplayValue($arwrk);
-				$rswrk->Close();
-			} else {
-				$this->maintenance_type->ViewValue = $this->maintenance_type->CurrentValue;
-			}
-		} else {
-			$this->maintenance_type->ViewValue = NULL;
-		}
-		$this->maintenance_type->ViewCustomAttributes = "";
-
-		// running_hours
-		$this->running_hours->ViewValue = $this->running_hours->CurrentValue;
-		$this->running_hours->ViewCustomAttributes = "";
-
-		// cost
-		$this->cost->ViewValue = $this->cost->CurrentValue;
-		$this->cost->ViewCustomAttributes = "";
-
-		// labour_fee
-		$this->labour_fee->ViewValue = $this->labour_fee->CurrentValue;
-		$this->labour_fee->ViewCustomAttributes = "";
-
-		// total
-		$this->total->ViewValue = $this->total->CurrentValue;
-		$this->total->ViewCustomAttributes = "";
+		$this->treated_by->ViewCustomAttributes = "";
 
 		// staff_id
+		$this->staff_id->ViewValue = $this->staff_id->CurrentValue;
 		if (strval($this->staff_id->CurrentValue) <> "") {
 			$sFilterWrk = "`id`" . ew_SearchString("=", $this->staff_id->CurrentValue, EW_DATATYPE_NUMBER, "");
 		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
@@ -2211,40 +2274,66 @@ class cgen_maintenance_list extends cgen_maintenance {
 		}
 		$this->staff_id->ViewCustomAttributes = "";
 
-		// status
-		if (strval($this->status->CurrentValue) <> "") {
-			$sFilterWrk = "`id`" . ew_SearchString("=", $this->status->CurrentValue, EW_DATATYPE_NUMBER, "");
-		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `gen_status`";
+		// statuss
+		if (strval($this->statuss->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->statuss->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `description` AS `DispFld`, '' AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `statuss`";
 		$sWhereWrk = "";
-		$this->status->LookupFilters = array();
+		$this->statuss->LookupFilters = array();
 		ew_AddFilter($sWhereWrk, $sFilterWrk);
-		$this->Lookup_Selecting($this->status, $sWhereWrk); // Call Lookup Selecting
+		$this->Lookup_Selecting($this->statuss, $sWhereWrk); // Call Lookup Selecting
 		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
 			$rswrk = Conn()->Execute($sSqlWrk);
 			if ($rswrk && !$rswrk->EOF) { // Lookup values found
 				$arwrk = array();
 				$arwrk[1] = $rswrk->fields('DispFld');
-				$this->status->ViewValue = $this->status->DisplayValue($arwrk);
+				$this->statuss->ViewValue = $this->statuss->DisplayValue($arwrk);
 				$rswrk->Close();
 			} else {
-				$this->status->ViewValue = $this->status->CurrentValue;
+				$this->statuss->ViewValue = $this->statuss->CurrentValue;
 			}
 		} else {
-			$this->status->ViewValue = NULL;
+			$this->statuss->ViewValue = NULL;
 		}
-		$this->status->ViewCustomAttributes = "";
+		$this->statuss->ViewCustomAttributes = "";
 
-		// initiator_action
-		if (strval($this->initiator_action->CurrentValue) <> "") {
-			$this->initiator_action->ViewValue = $this->initiator_action->OptionCaption($this->initiator_action->CurrentValue);
+		// issued_action
+		if (strval($this->issued_action->CurrentValue) <> "") {
+			$this->issued_action->ViewValue = $this->issued_action->OptionCaption($this->issued_action->CurrentValue);
 		} else {
-			$this->initiator_action->ViewValue = NULL;
+			$this->issued_action->ViewValue = NULL;
 		}
-		$this->initiator_action->ViewCustomAttributes = "";
+		$this->issued_action->ViewCustomAttributes = "";
 
-		// initiator_comment
-		$this->initiator_comment->ViewValue = $this->initiator_comment->CurrentValue;
-		$this->initiator_comment->ViewCustomAttributes = "";
+		// issued_comment
+		$this->issued_comment->ViewValue = $this->issued_comment->CurrentValue;
+		$this->issued_comment->ViewCustomAttributes = "";
+
+		// issued_by
+		$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
+		if (strval($this->issued_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->issued_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, `staffno` AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->issued_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->issued_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$arwrk[3] = $rswrk->fields('Disp3Fld');
+				$this->issued_by->ViewValue = $this->issued_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->issued_by->ViewValue = $this->issued_by->CurrentValue;
+			}
+		} else {
+			$this->issued_by->ViewValue = NULL;
+		}
+		$this->issued_by->ViewCustomAttributes = "";
 
 		// approver_date
 		$this->approver_date->ViewValue = $this->approver_date->CurrentValue;
@@ -2288,14 +2377,52 @@ class cgen_maintenance_list extends cgen_maintenance {
 		}
 		$this->approved_by->ViewCustomAttributes = "";
 
-		// flag
-		$this->flag->ViewValue = $this->flag->CurrentValue;
-		$this->flag->ViewCustomAttributes = "";
+		// verified_date
+		$this->verified_date->ViewValue = $this->verified_date->CurrentValue;
+		$this->verified_date->ViewValue = ew_FormatDateTime($this->verified_date->ViewValue, 0);
+		$this->verified_date->ViewCustomAttributes = "";
 
-			// datetime
-			$this->datetime->LinkCustomAttributes = "";
-			$this->datetime->HrefValue = "";
-			$this->datetime->TooltipValue = "";
+		// verified_action
+		if (strval($this->verified_action->CurrentValue) <> "") {
+			$this->verified_action->ViewValue = $this->verified_action->OptionCaption($this->verified_action->CurrentValue);
+		} else {
+			$this->verified_action->ViewValue = NULL;
+		}
+		$this->verified_action->ViewCustomAttributes = "";
+
+		// verified_comment
+		$this->verified_comment->ViewValue = $this->verified_comment->CurrentValue;
+		$this->verified_comment->ViewCustomAttributes = "";
+
+		// verified_by
+		$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
+		if (strval($this->verified_by->CurrentValue) <> "") {
+			$sFilterWrk = "`id`" . ew_SearchString("=", $this->verified_by->CurrentValue, EW_DATATYPE_NUMBER, "");
+		$sSqlWrk = "SELECT `id`, `firstname` AS `DispFld`, `lastname` AS `Disp2Fld`, '' AS `Disp3Fld`, '' AS `Disp4Fld` FROM `users`";
+		$sWhereWrk = "";
+		$this->verified_by->LookupFilters = array();
+		ew_AddFilter($sWhereWrk, $sFilterWrk);
+		$this->Lookup_Selecting($this->verified_by, $sWhereWrk); // Call Lookup Selecting
+		if ($sWhereWrk <> "") $sSqlWrk .= " WHERE " . $sWhereWrk;
+			$rswrk = Conn()->Execute($sSqlWrk);
+			if ($rswrk && !$rswrk->EOF) { // Lookup values found
+				$arwrk = array();
+				$arwrk[1] = $rswrk->fields('DispFld');
+				$arwrk[2] = $rswrk->fields('Disp2Fld');
+				$this->verified_by->ViewValue = $this->verified_by->DisplayValue($arwrk);
+				$rswrk->Close();
+			} else {
+				$this->verified_by->ViewValue = $this->verified_by->CurrentValue;
+			}
+		} else {
+			$this->verified_by->ViewValue = NULL;
+		}
+		$this->verified_by->ViewCustomAttributes = "";
+
+			// date
+			$this->date->LinkCustomAttributes = "";
+			$this->date->HrefValue = "";
+			$this->date->TooltipValue = "";
 
 			// reference_id
 			$this->reference_id->LinkCustomAttributes = "";
@@ -2304,53 +2431,64 @@ class cgen_maintenance_list extends cgen_maintenance {
 			if ($this->Export == "")
 				$this->reference_id->ViewValue = $this->HighlightValue($this->reference_id);
 
-			// gen_name
-			$this->gen_name->LinkCustomAttributes = "";
-			$this->gen_name->HrefValue = "";
-			$this->gen_name->TooltipValue = "";
+			// material_name
+			$this->material_name->LinkCustomAttributes = "";
+			$this->material_name->HrefValue = "";
+			$this->material_name->TooltipValue = "";
 
-			// maintenance_type
-			$this->maintenance_type->LinkCustomAttributes = "";
-			$this->maintenance_type->HrefValue = "";
-			$this->maintenance_type->TooltipValue = "";
-
-			// running_hours
-			$this->running_hours->LinkCustomAttributes = "";
-			$this->running_hours->HrefValue = "";
-			$this->running_hours->TooltipValue = "";
+			// quantity_in
+			$this->quantity_in->LinkCustomAttributes = "";
+			$this->quantity_in->HrefValue = "";
+			$this->quantity_in->TooltipValue = "";
 			if ($this->Export == "")
-				$this->running_hours->ViewValue = $this->HighlightValue($this->running_hours);
+				$this->quantity_in->ViewValue = $this->HighlightValue($this->quantity_in);
 
-			// cost
-			$this->cost->LinkCustomAttributes = "";
-			$this->cost->HrefValue = "";
-			$this->cost->TooltipValue = "";
+			// quantity_out
+			$this->quantity_out->LinkCustomAttributes = "";
+			$this->quantity_out->HrefValue = "";
+			$this->quantity_out->TooltipValue = "";
 			if ($this->Export == "")
-				$this->cost->ViewValue = $this->HighlightValue($this->cost);
+				$this->quantity_out->ViewValue = $this->HighlightValue($this->quantity_out);
 
-			// labour_fee
-			$this->labour_fee->LinkCustomAttributes = "";
-			$this->labour_fee->HrefValue = "";
-			$this->labour_fee->TooltipValue = "";
+			// total_quantity
+			$this->total_quantity->LinkCustomAttributes = "";
+			$this->total_quantity->HrefValue = "";
+			$this->total_quantity->TooltipValue = "";
 			if ($this->Export == "")
-				$this->labour_fee->ViewValue = $this->HighlightValue($this->labour_fee);
+				$this->total_quantity->ViewValue = $this->HighlightValue($this->total_quantity);
 
-			// total
-			$this->total->LinkCustomAttributes = "";
-			$this->total->HrefValue = "";
-			$this->total->TooltipValue = "";
+			// quantity_type
+			$this->quantity_type->LinkCustomAttributes = "";
+			$this->quantity_type->HrefValue = "";
+			$this->quantity_type->TooltipValue = "";
 			if ($this->Export == "")
-				$this->total->ViewValue = $this->HighlightValue($this->total);
+				$this->quantity_type->ViewValue = $this->HighlightValue($this->quantity_type);
 
-			// staff_id
-			$this->staff_id->LinkCustomAttributes = "";
-			$this->staff_id->HrefValue = "";
-			$this->staff_id->TooltipValue = "";
+			// statuss
+			$this->statuss->LinkCustomAttributes = "";
+			$this->statuss->HrefValue = "";
+			$this->statuss->TooltipValue = "";
 
-			// status
-			$this->status->LinkCustomAttributes = "";
-			$this->status->HrefValue = "";
-			$this->status->TooltipValue = "";
+			// issued_by
+			$this->issued_by->LinkCustomAttributes = "";
+			$this->issued_by->HrefValue = "";
+			$this->issued_by->TooltipValue = "";
+			if ($this->Export == "")
+				$this->issued_by->ViewValue = $this->HighlightValue($this->issued_by);
+
+			// approved_by
+			$this->approved_by->LinkCustomAttributes = "";
+			$this->approved_by->HrefValue = "";
+			$this->approved_by->TooltipValue = "";
+			if ($this->Export == "")
+				$this->approved_by->ViewValue = $this->HighlightValue($this->approved_by);
+
+			// verified_by
+			$this->verified_by->LinkCustomAttributes = "";
+			$this->verified_by->HrefValue = "";
+			$this->verified_by->TooltipValue = "";
+			if ($this->Export == "")
+				$this->verified_by->ViewValue = $this->HighlightValue($this->verified_by);
 		}
 
 		// Call Row Rendered event
@@ -2384,23 +2522,27 @@ class cgen_maintenance_list extends cgen_maintenance {
 	// Load advanced search
 	function LoadAdvancedSearch() {
 		$this->id->AdvancedSearch->Load();
-		$this->datetime->AdvancedSearch->Load();
+		$this->date->AdvancedSearch->Load();
 		$this->reference_id->AdvancedSearch->Load();
-		$this->gen_name->AdvancedSearch->Load();
-		$this->maintenance_type->AdvancedSearch->Load();
-		$this->running_hours->AdvancedSearch->Load();
-		$this->cost->AdvancedSearch->Load();
-		$this->labour_fee->AdvancedSearch->Load();
-		$this->total->AdvancedSearch->Load();
+		$this->material_name->AdvancedSearch->Load();
+		$this->quantity_in->AdvancedSearch->Load();
+		$this->quantity_out->AdvancedSearch->Load();
+		$this->total_quantity->AdvancedSearch->Load();
+		$this->quantity_type->AdvancedSearch->Load();
+		$this->treated_by->AdvancedSearch->Load();
 		$this->staff_id->AdvancedSearch->Load();
-		$this->status->AdvancedSearch->Load();
-		$this->initiator_action->AdvancedSearch->Load();
-		$this->initiator_comment->AdvancedSearch->Load();
+		$this->statuss->AdvancedSearch->Load();
+		$this->issued_action->AdvancedSearch->Load();
+		$this->issued_comment->AdvancedSearch->Load();
+		$this->issued_by->AdvancedSearch->Load();
 		$this->approver_date->AdvancedSearch->Load();
 		$this->approver_action->AdvancedSearch->Load();
 		$this->approver_comment->AdvancedSearch->Load();
 		$this->approved_by->AdvancedSearch->Load();
-		$this->flag->AdvancedSearch->Load();
+		$this->verified_date->AdvancedSearch->Load();
+		$this->verified_action->AdvancedSearch->Load();
+		$this->verified_comment->AdvancedSearch->Load();
+		$this->verified_by->AdvancedSearch->Load();
 	}
 
 	// Set up export options
@@ -2445,7 +2587,7 @@ class cgen_maintenance_list extends cgen_maintenance {
 		// Export to Email
 		$item = &$this->ExportOptions->Add("email");
 		$url = "";
-		$item->Body = "<button id=\"emf_gen_maintenance\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_gen_maintenance',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fgen_maintenancelist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
+		$item->Body = "<button id=\"emf_issuance_store_v\" class=\"ewExportLink ewEmail\" title=\"" . $Language->Phrase("ExportToEmailText") . "\" data-caption=\"" . $Language->Phrase("ExportToEmailText") . "\" onclick=\"ew_EmailDialogShow({lnk:'emf_issuance_store_v',hdr:ewLanguage.Phrase('ExportToEmailText'),f:document.fissuance_store_vlist,sel:false" . $url . "});\">" . $Language->Phrase("ExportToEmail") . "</button>";
 		$item->Visible = FALSE;
 
 		// Drop down button for export
@@ -2575,9 +2717,6 @@ class cgen_maintenance_list extends cgen_maintenance {
 	function Page_Load() {
 
 		//echo "Page Load";
-		if (CurrentPageID() == "list"){
-			 $_SESSION['GMT_ID'] = generateGMTKey();
-		 }
 	}
 
 	// Page Unload event
@@ -2707,31 +2846,31 @@ class cgen_maintenance_list extends cgen_maintenance {
 <?php
 
 // Create page object
-if (!isset($gen_maintenance_list)) $gen_maintenance_list = new cgen_maintenance_list();
+if (!isset($issuance_store_v_list)) $issuance_store_v_list = new cissuance_store_v_list();
 
 // Page init
-$gen_maintenance_list->Page_Init();
+$issuance_store_v_list->Page_Init();
 
 // Page main
-$gen_maintenance_list->Page_Main();
+$issuance_store_v_list->Page_Main();
 
 // Global Page Rendering event (in userfn*.php)
 Page_Rendering();
 
 // Page Rendering event
-$gen_maintenance_list->Page_Render();
+$issuance_store_v_list->Page_Render();
 ?>
 <?php include_once "header.php" ?>
-<?php if ($gen_maintenance->Export == "") { ?>
+<?php if ($issuance_store_v->Export == "") { ?>
 <script type="text/javascript">
 
 // Form object
 var CurrentPageID = EW_PAGE_ID = "list";
-var CurrentForm = fgen_maintenancelist = new ew_Form("fgen_maintenancelist", "list");
-fgen_maintenancelist.FormKeyCountName = '<?php echo $gen_maintenance_list->FormKeyCountName ?>';
+var CurrentForm = fissuance_store_vlist = new ew_Form("fissuance_store_vlist", "list");
+fissuance_store_vlist.FormKeyCountName = '<?php echo $issuance_store_v_list->FormKeyCountName ?>';
 
 // Form_CustomValidate event
-fgen_maintenancelist.Form_CustomValidate = 
+fissuance_store_vlist.Form_CustomValidate = 
  function(fobj) { // DO NOT CHANGE THIS LINE!
 
  	// Your custom validation code here, return false if invalid.
@@ -2739,94 +2878,99 @@ fgen_maintenancelist.Form_CustomValidate =
  }
 
 // Use JavaScript validation or not
-fgen_maintenancelist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
+fissuance_store_vlist.ValidateRequired = <?php echo json_encode(EW_CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-fgen_maintenancelist.Lists["x_gen_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_gen_name","x_location","x_kva",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"generator_registration"};
-fgen_maintenancelist.Lists["x_gen_name"].Data = "<?php echo $gen_maintenance_list->gen_name->LookupFilterQuery(FALSE, "list") ?>";
-fgen_maintenancelist.Lists["x_maintenance_type"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"maintenance_type"};
-fgen_maintenancelist.Lists["x_maintenance_type"].Data = "<?php echo $gen_maintenance_list->maintenance_type->LookupFilterQuery(FALSE, "list") ?>";
-fgen_maintenancelist.Lists["x_staff_id"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
-fgen_maintenancelist.Lists["x_staff_id"].Data = "<?php echo $gen_maintenance_list->staff_id->LookupFilterQuery(FALSE, "list") ?>";
-fgen_maintenancelist.Lists["x_status"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"gen_status"};
-fgen_maintenancelist.Lists["x_status"].Data = "<?php echo $gen_maintenance_list->status->LookupFilterQuery(FALSE, "list") ?>";
+fissuance_store_vlist.Lists["x_material_name"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_material_name","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"inventory_staysafe"};
+fissuance_store_vlist.Lists["x_material_name"].Data = "<?php echo $issuance_store_v_list->material_name->LookupFilterQuery(FALSE, "list") ?>";
+fissuance_store_vlist.Lists["x_statuss"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_description","","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"statuss"};
+fissuance_store_vlist.Lists["x_statuss"].Data = "<?php echo $issuance_store_v_list->statuss->LookupFilterQuery(FALSE, "list") ?>";
+fissuance_store_vlist.Lists["x_issued_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","x_staffno",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fissuance_store_vlist.Lists["x_issued_by"].Data = "<?php echo $issuance_store_v_list->issued_by->LookupFilterQuery(FALSE, "list") ?>";
+fissuance_store_vlist.AutoSuggests["x_issued_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_v_list->issued_by->LookupFilterQuery(TRUE, "list"))) ?>;
+fissuance_store_vlist.Lists["x_approved_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fissuance_store_vlist.Lists["x_approved_by"].Data = "<?php echo $issuance_store_v_list->approved_by->LookupFilterQuery(FALSE, "list") ?>";
+fissuance_store_vlist.AutoSuggests["x_approved_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_v_list->approved_by->LookupFilterQuery(TRUE, "list"))) ?>;
+fissuance_store_vlist.Lists["x_verified_by"] = {"LinkField":"x_id","Ajax":true,"AutoFill":false,"DisplayFields":["x_firstname","x_lastname","",""],"ParentFields":[],"ChildFields":[],"FilterFields":[],"Options":[],"Template":"","LinkTable":"users"};
+fissuance_store_vlist.Lists["x_verified_by"].Data = "<?php echo $issuance_store_v_list->verified_by->LookupFilterQuery(FALSE, "list") ?>";
+fissuance_store_vlist.AutoSuggests["x_verified_by"] = <?php echo json_encode(array("data" => "ajax=autosuggest&" . $issuance_store_v_list->verified_by->LookupFilterQuery(TRUE, "list"))) ?>;
 
 // Form object for search
-var CurrentSearchForm = fgen_maintenancelistsrch = new ew_Form("fgen_maintenancelistsrch");
+var CurrentSearchForm = fissuance_store_vlistsrch = new ew_Form("fissuance_store_vlistsrch");
 </script>
 <script type="text/javascript">
 
 // Write your client script here, no need to add script tags.
 </script>
 <?php } ?>
-<?php if ($gen_maintenance->Export == "") { ?>
+<?php if ($issuance_store_v->Export == "") { ?>
 <div class="ewToolbar">
-<?php if ($gen_maintenance_list->TotalRecs > 0 && $gen_maintenance_list->ExportOptions->Visible()) { ?>
-<?php $gen_maintenance_list->ExportOptions->Render("body") ?>
+<?php if ($issuance_store_v_list->TotalRecs > 0 && $issuance_store_v_list->ExportOptions->Visible()) { ?>
+<?php $issuance_store_v_list->ExportOptions->Render("body") ?>
 <?php } ?>
-<?php if ($gen_maintenance_list->SearchOptions->Visible()) { ?>
-<?php $gen_maintenance_list->SearchOptions->Render("body") ?>
+<?php if ($issuance_store_v_list->SearchOptions->Visible()) { ?>
+<?php $issuance_store_v_list->SearchOptions->Render("body") ?>
 <?php } ?>
-<?php if ($gen_maintenance_list->FilterOptions->Visible()) { ?>
-<?php $gen_maintenance_list->FilterOptions->Render("body") ?>
+<?php if ($issuance_store_v_list->FilterOptions->Visible()) { ?>
+<?php $issuance_store_v_list->FilterOptions->Render("body") ?>
 <?php } ?>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
 <?php
-	$bSelectLimit = $gen_maintenance_list->UseSelectLimit;
+	$bSelectLimit = $issuance_store_v_list->UseSelectLimit;
 	if ($bSelectLimit) {
-		if ($gen_maintenance_list->TotalRecs <= 0)
-			$gen_maintenance_list->TotalRecs = $gen_maintenance->ListRecordCount();
+		if ($issuance_store_v_list->TotalRecs <= 0)
+			$issuance_store_v_list->TotalRecs = $issuance_store_v->ListRecordCount();
 	} else {
-		if (!$gen_maintenance_list->Recordset && ($gen_maintenance_list->Recordset = $gen_maintenance_list->LoadRecordset()))
-			$gen_maintenance_list->TotalRecs = $gen_maintenance_list->Recordset->RecordCount();
+		if (!$issuance_store_v_list->Recordset && ($issuance_store_v_list->Recordset = $issuance_store_v_list->LoadRecordset()))
+			$issuance_store_v_list->TotalRecs = $issuance_store_v_list->Recordset->RecordCount();
 	}
-	$gen_maintenance_list->StartRec = 1;
-	if ($gen_maintenance_list->DisplayRecs <= 0 || ($gen_maintenance->Export <> "" && $gen_maintenance->ExportAll)) // Display all records
-		$gen_maintenance_list->DisplayRecs = $gen_maintenance_list->TotalRecs;
-	if (!($gen_maintenance->Export <> "" && $gen_maintenance->ExportAll))
-		$gen_maintenance_list->SetupStartRec(); // Set up start record position
+	$issuance_store_v_list->StartRec = 1;
+	if ($issuance_store_v_list->DisplayRecs <= 0 || ($issuance_store_v->Export <> "" && $issuance_store_v->ExportAll)) // Display all records
+		$issuance_store_v_list->DisplayRecs = $issuance_store_v_list->TotalRecs;
+	if (!($issuance_store_v->Export <> "" && $issuance_store_v->ExportAll))
+		$issuance_store_v_list->SetupStartRec(); // Set up start record position
 	if ($bSelectLimit)
-		$gen_maintenance_list->Recordset = $gen_maintenance_list->LoadRecordset($gen_maintenance_list->StartRec-1, $gen_maintenance_list->DisplayRecs);
+		$issuance_store_v_list->Recordset = $issuance_store_v_list->LoadRecordset($issuance_store_v_list->StartRec-1, $issuance_store_v_list->DisplayRecs);
 
 	// Set no record found message
-	if ($gen_maintenance->CurrentAction == "" && $gen_maintenance_list->TotalRecs == 0) {
+	if ($issuance_store_v->CurrentAction == "" && $issuance_store_v_list->TotalRecs == 0) {
 		if (!$Security->CanList())
-			$gen_maintenance_list->setWarningMessage(ew_DeniedMsg());
-		if ($gen_maintenance_list->SearchWhere == "0=101")
-			$gen_maintenance_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
+			$issuance_store_v_list->setWarningMessage(ew_DeniedMsg());
+		if ($issuance_store_v_list->SearchWhere == "0=101")
+			$issuance_store_v_list->setWarningMessage($Language->Phrase("EnterSearchCriteria"));
 		else
-			$gen_maintenance_list->setWarningMessage($Language->Phrase("NoRecord"));
+			$issuance_store_v_list->setWarningMessage($Language->Phrase("NoRecord"));
 	}
 
 	// Audit trail on search
-	if ($gen_maintenance_list->AuditTrailOnSearch && $gen_maintenance_list->Command == "search" && !$gen_maintenance_list->RestoreSearch) {
+	if ($issuance_store_v_list->AuditTrailOnSearch && $issuance_store_v_list->Command == "search" && !$issuance_store_v_list->RestoreSearch) {
 		$searchparm = ew_ServerVar("QUERY_STRING");
-		$searchsql = $gen_maintenance_list->getSessionWhere();
-		$gen_maintenance_list->WriteAuditTrailOnSearch($searchparm, $searchsql);
+		$searchsql = $issuance_store_v_list->getSessionWhere();
+		$issuance_store_v_list->WriteAuditTrailOnSearch($searchparm, $searchsql);
 	}
-$gen_maintenance_list->RenderOtherOptions();
+$issuance_store_v_list->RenderOtherOptions();
 ?>
 <?php if ($Security->CanSearch()) { ?>
-<?php if ($gen_maintenance->Export == "" && $gen_maintenance->CurrentAction == "") { ?>
-<form name="fgen_maintenancelistsrch" id="fgen_maintenancelistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
-<?php $SearchPanelClass = ($gen_maintenance_list->SearchWhere <> "") ? " in" : " in"; ?>
-<div id="fgen_maintenancelistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
+<?php if ($issuance_store_v->Export == "" && $issuance_store_v->CurrentAction == "") { ?>
+<form name="fissuance_store_vlistsrch" id="fissuance_store_vlistsrch" class="form-inline ewForm ewExtSearchForm" action="<?php echo ew_CurrentPage() ?>">
+<?php $SearchPanelClass = ($issuance_store_v_list->SearchWhere <> "") ? " in" : " in"; ?>
+<div id="fissuance_store_vlistsrch_SearchPanel" class="ewSearchPanel collapse<?php echo $SearchPanelClass ?>">
 <input type="hidden" name="cmd" value="search">
-<input type="hidden" name="t" value="gen_maintenance">
+<input type="hidden" name="t" value="issuance_store_v">
 	<div class="ewBasicSearch">
 <div id="xsr_1" class="ewRow">
 	<div class="ewQuickSearch input-group">
-	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($gen_maintenance_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
-	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($gen_maintenance_list->BasicSearch->getType()) ?>">
+	<input type="text" name="<?php echo EW_TABLE_BASIC_SEARCH ?>" id="<?php echo EW_TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo ew_HtmlEncode($issuance_store_v_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo ew_HtmlEncode($Language->Phrase("Search")) ?>">
+	<input type="hidden" name="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo EW_TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo ew_HtmlEncode($issuance_store_v_list->BasicSearch->getType()) ?>">
 	<div class="input-group-btn">
-		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $gen_maintenance_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
+		<button type="button" data-toggle="dropdown" class="btn btn-default"><span id="searchtype"><?php echo $issuance_store_v_list->BasicSearch->getTypeNameShort() ?></span><span class="caret"></span></button>
 		<ul class="dropdown-menu pull-right" role="menu">
-			<li<?php if ($gen_maintenance_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
-			<li<?php if ($gen_maintenance_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
-			<li<?php if ($gen_maintenance_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
-			<li<?php if ($gen_maintenance_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
+			<li<?php if ($issuance_store_v_list->BasicSearch->getType() == "") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this)"><?php echo $Language->Phrase("QuickSearchAuto") ?></a></li>
+			<li<?php if ($issuance_store_v_list->BasicSearch->getType() == "=") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'=')"><?php echo $Language->Phrase("QuickSearchExact") ?></a></li>
+			<li<?php if ($issuance_store_v_list->BasicSearch->getType() == "AND") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'AND')"><?php echo $Language->Phrase("QuickSearchAll") ?></a></li>
+			<li<?php if ($issuance_store_v_list->BasicSearch->getType() == "OR") echo " class=\"active\""; ?>><a href="javascript:void(0);" onclick="ew_SetSearchType(this,'OR')"><?php echo $Language->Phrase("QuickSearchAny") ?></a></li>
 		</ul>
 	<button class="btn btn-primary ewButton" name="btnsubmit" id="btnsubmit" type="submit"><?php echo $Language->Phrase("SearchBtn") ?></button>
 	</div>
@@ -2837,71 +2981,71 @@ $gen_maintenance_list->RenderOtherOptions();
 </form>
 <?php } ?>
 <?php } ?>
-<?php $gen_maintenance_list->ShowPageHeader(); ?>
+<?php $issuance_store_v_list->ShowPageHeader(); ?>
 <?php
-$gen_maintenance_list->ShowMessage();
+$issuance_store_v_list->ShowMessage();
 ?>
-<?php if ($gen_maintenance_list->TotalRecs > 0 || $gen_maintenance->CurrentAction <> "") { ?>
-<div class="box ewBox ewGrid<?php if ($gen_maintenance_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> gen_maintenance">
-<?php if ($gen_maintenance->Export == "") { ?>
+<?php if ($issuance_store_v_list->TotalRecs > 0 || $issuance_store_v->CurrentAction <> "") { ?>
+<div class="box ewBox ewGrid<?php if ($issuance_store_v_list->IsAddOrEdit()) { ?> ewGridAddEdit<?php } ?> issuance_store_v">
+<?php if ($issuance_store_v->Export == "") { ?>
 <div class="box-header ewGridUpperPanel">
-<?php if ($gen_maintenance->CurrentAction <> "gridadd" && $gen_maintenance->CurrentAction <> "gridedit") { ?>
+<?php if ($issuance_store_v->CurrentAction <> "gridadd" && $issuance_store_v->CurrentAction <> "gridedit") { ?>
 <form name="ewPagerForm" class="form-inline ewForm ewPagerForm" action="<?php echo ew_CurrentPage() ?>">
-<?php if (!isset($gen_maintenance_list->Pager)) $gen_maintenance_list->Pager = new cPrevNextPager($gen_maintenance_list->StartRec, $gen_maintenance_list->DisplayRecs, $gen_maintenance_list->TotalRecs, $gen_maintenance_list->AutoHidePager) ?>
-<?php if ($gen_maintenance_list->Pager->RecordCount > 0 && $gen_maintenance_list->Pager->Visible) { ?>
+<?php if (!isset($issuance_store_v_list->Pager)) $issuance_store_v_list->Pager = new cPrevNextPager($issuance_store_v_list->StartRec, $issuance_store_v_list->DisplayRecs, $issuance_store_v_list->TotalRecs, $issuance_store_v_list->AutoHidePager) ?>
+<?php if ($issuance_store_v_list->Pager->RecordCount > 0 && $issuance_store_v_list->Pager->Visible) { ?>
 <div class="ewPager">
 <span><?php echo $Language->Phrase("Page") ?>&nbsp;</span>
 <div class="ewPrevNext"><div class="input-group">
 <div class="input-group-btn">
 <!--first page button-->
-	<?php if ($gen_maintenance_list->Pager->FirstButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $gen_maintenance_list->PageUrl() ?>start=<?php echo $gen_maintenance_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
+	<?php if ($issuance_store_v_list->Pager->FirstButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerFirst") ?>" href="<?php echo $issuance_store_v_list->PageUrl() ?>start=<?php echo $issuance_store_v_list->Pager->FirstButton->Start ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerFirst") ?>"><span class="icon-first ewIcon"></span></a>
 	<?php } ?>
 <!--previous page button-->
-	<?php if ($gen_maintenance_list->Pager->PrevButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $gen_maintenance_list->PageUrl() ?>start=<?php echo $gen_maintenance_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
+	<?php if ($issuance_store_v_list->Pager->PrevButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerPrevious") ?>" href="<?php echo $issuance_store_v_list->PageUrl() ?>start=<?php echo $issuance_store_v_list->Pager->PrevButton->Start ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerPrevious") ?>"><span class="icon-prev ewIcon"></span></a>
 	<?php } ?>
 </div>
 <!--current page number-->
-	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $gen_maintenance_list->Pager->CurrentPage ?>">
+	<input class="form-control input-sm" type="text" name="<?php echo EW_TABLE_PAGE_NO ?>" value="<?php echo $issuance_store_v_list->Pager->CurrentPage ?>">
 <div class="input-group-btn">
 <!--next page button-->
-	<?php if ($gen_maintenance_list->Pager->NextButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $gen_maintenance_list->PageUrl() ?>start=<?php echo $gen_maintenance_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
+	<?php if ($issuance_store_v_list->Pager->NextButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerNext") ?>" href="<?php echo $issuance_store_v_list->PageUrl() ?>start=<?php echo $issuance_store_v_list->Pager->NextButton->Start ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerNext") ?>"><span class="icon-next ewIcon"></span></a>
 	<?php } ?>
 <!--last page button-->
-	<?php if ($gen_maintenance_list->Pager->LastButton->Enabled) { ?>
-	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $gen_maintenance_list->PageUrl() ?>start=<?php echo $gen_maintenance_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
+	<?php if ($issuance_store_v_list->Pager->LastButton->Enabled) { ?>
+	<a class="btn btn-default btn-sm" title="<?php echo $Language->Phrase("PagerLast") ?>" href="<?php echo $issuance_store_v_list->PageUrl() ?>start=<?php echo $issuance_store_v_list->Pager->LastButton->Start ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } else { ?>
 	<a class="btn btn-default btn-sm disabled" title="<?php echo $Language->Phrase("PagerLast") ?>"><span class="icon-last ewIcon"></span></a>
 	<?php } ?>
 </div>
 </div>
 </div>
-<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $gen_maintenance_list->Pager->PageCount ?></span>
+<span>&nbsp;<?php echo $Language->Phrase("of") ?>&nbsp;<?php echo $issuance_store_v_list->Pager->PageCount ?></span>
 </div>
 <?php } ?>
-<?php if ($gen_maintenance_list->Pager->RecordCount > 0) { ?>
+<?php if ($issuance_store_v_list->Pager->RecordCount > 0) { ?>
 <div class="ewPager ewRec">
-	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $gen_maintenance_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $gen_maintenance_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $gen_maintenance_list->Pager->RecordCount ?></span>
+	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $issuance_store_v_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $issuance_store_v_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $issuance_store_v_list->Pager->RecordCount ?></span>
 </div>
 <?php } ?>
-<?php if ($gen_maintenance_list->TotalRecs > 0 && (!$gen_maintenance_list->AutoHidePageSizeSelector || $gen_maintenance_list->Pager->Visible)) { ?>
+<?php if ($issuance_store_v_list->TotalRecs > 0 && (!$issuance_store_v_list->AutoHidePageSizeSelector || $issuance_store_v_list->Pager->Visible)) { ?>
 <div class="ewPager">
-<input type="hidden" name="t" value="gen_maintenance">
+<input type="hidden" name="t" value="issuance_store_v">
 <select name="<?php echo EW_TABLE_REC_PER_PAGE ?>" class="form-control input-sm ewTooltip" title="<?php echo $Language->Phrase("RecordsPerPage") ?>" onchange="this.form.submit();">
-<option value="5"<?php if ($gen_maintenance_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
-<option value="10"<?php if ($gen_maintenance_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
-<option value="15"<?php if ($gen_maintenance_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
-<option value="20"<?php if ($gen_maintenance_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
-<option value="50"<?php if ($gen_maintenance_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
-<option value="ALL"<?php if ($gen_maintenance->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
+<option value="5"<?php if ($issuance_store_v_list->DisplayRecs == 5) { ?> selected<?php } ?>>5</option>
+<option value="10"<?php if ($issuance_store_v_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
+<option value="15"<?php if ($issuance_store_v_list->DisplayRecs == 15) { ?> selected<?php } ?>>15</option>
+<option value="20"<?php if ($issuance_store_v_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
+<option value="50"<?php if ($issuance_store_v_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
+<option value="ALL"<?php if ($issuance_store_v->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
 </select>
 </div>
 <?php } ?>
@@ -2909,285 +3053,302 @@ $gen_maintenance_list->ShowMessage();
 <?php } ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($gen_maintenance_list->OtherOptions as &$option)
+	foreach ($issuance_store_v_list->OtherOptions as &$option)
 		$option->Render("body");
 ?>
 </div>
 <div class="clearfix"></div>
 </div>
 <?php } ?>
-<form name="fgen_maintenancelist" id="fgen_maintenancelist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
-<?php if ($gen_maintenance_list->CheckToken) { ?>
-<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $gen_maintenance_list->Token ?>">
+<form name="fissuance_store_vlist" id="fissuance_store_vlist" class="form-inline ewForm ewListForm" action="<?php echo ew_CurrentPage() ?>" method="post">
+<?php if ($issuance_store_v_list->CheckToken) { ?>
+<input type="hidden" name="<?php echo EW_TOKEN_NAME ?>" value="<?php echo $issuance_store_v_list->Token ?>">
 <?php } ?>
-<input type="hidden" name="t" value="gen_maintenance">
-<div id="gmp_gen_maintenance" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
-<?php if ($gen_maintenance_list->TotalRecs > 0 || $gen_maintenance->CurrentAction == "gridedit") { ?>
-<table id="tbl_gen_maintenancelist" class="table ewTable">
+<input type="hidden" name="t" value="issuance_store_v">
+<div id="gmp_issuance_store_v" class="<?php if (ew_IsResponsiveLayout()) { ?>table-responsive <?php } ?>ewGridMiddlePanel">
+<?php if ($issuance_store_v_list->TotalRecs > 0 || $issuance_store_v->CurrentAction == "gridedit") { ?>
+<table id="tbl_issuance_store_vlist" class="table ewTable">
 <thead>
 	<tr class="ewTableHeader">
 <?php
 
 // Header row
-$gen_maintenance_list->RowType = EW_ROWTYPE_HEADER;
+$issuance_store_v_list->RowType = EW_ROWTYPE_HEADER;
 
 // Render list options
-$gen_maintenance_list->RenderListOptions();
+$issuance_store_v_list->RenderListOptions();
 
 // Render list options (header, left)
-$gen_maintenance_list->ListOptions->Render("header", "left");
+$issuance_store_v_list->ListOptions->Render("header", "left");
 ?>
-<?php if ($gen_maintenance->datetime->Visible) { // datetime ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->datetime) == "") { ?>
-		<th data-name="datetime" class="<?php echo $gen_maintenance->datetime->HeaderCellClass() ?>"><div id="elh_gen_maintenance_datetime" class="gen_maintenance_datetime"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->datetime->FldCaption() ?></div></div></th>
+<?php if ($issuance_store_v->date->Visible) { // date ?>
+	<?php if ($issuance_store_v->SortUrl($issuance_store_v->date) == "") { ?>
+		<th data-name="date" class="<?php echo $issuance_store_v->date->HeaderCellClass() ?>"><div id="elh_issuance_store_v_date" class="issuance_store_v_date"><div class="ewTableHeaderCaption"><?php echo $issuance_store_v->date->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="datetime" class="<?php echo $gen_maintenance->datetime->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->datetime) ?>',1);"><div id="elh_gen_maintenance_datetime" class="gen_maintenance_datetime">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->datetime->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->datetime->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->datetime->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="date" class="<?php echo $issuance_store_v->date->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_store_v->SortUrl($issuance_store_v->date) ?>',1);"><div id="elh_issuance_store_v_date" class="issuance_store_v_date">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_store_v->date->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_store_v->date->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_store_v->date->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->reference_id->Visible) { // reference_id ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->reference_id) == "") { ?>
-		<th data-name="reference_id" class="<?php echo $gen_maintenance->reference_id->HeaderCellClass() ?>"><div id="elh_gen_maintenance_reference_id" class="gen_maintenance_reference_id"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->reference_id->FldCaption() ?></div></div></th>
+<?php if ($issuance_store_v->reference_id->Visible) { // reference_id ?>
+	<?php if ($issuance_store_v->SortUrl($issuance_store_v->reference_id) == "") { ?>
+		<th data-name="reference_id" class="<?php echo $issuance_store_v->reference_id->HeaderCellClass() ?>"><div id="elh_issuance_store_v_reference_id" class="issuance_store_v_reference_id"><div class="ewTableHeaderCaption"><?php echo $issuance_store_v->reference_id->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="reference_id" class="<?php echo $gen_maintenance->reference_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->reference_id) ?>',1);"><div id="elh_gen_maintenance_reference_id" class="gen_maintenance_reference_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->reference_id->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->reference_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->reference_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="reference_id" class="<?php echo $issuance_store_v->reference_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_store_v->SortUrl($issuance_store_v->reference_id) ?>',1);"><div id="elh_issuance_store_v_reference_id" class="issuance_store_v_reference_id">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_store_v->reference_id->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_store_v->reference_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_store_v->reference_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->gen_name->Visible) { // gen_name ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->gen_name) == "") { ?>
-		<th data-name="gen_name" class="<?php echo $gen_maintenance->gen_name->HeaderCellClass() ?>"><div id="elh_gen_maintenance_gen_name" class="gen_maintenance_gen_name"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->gen_name->FldCaption() ?></div></div></th>
+<?php if ($issuance_store_v->material_name->Visible) { // material_name ?>
+	<?php if ($issuance_store_v->SortUrl($issuance_store_v->material_name) == "") { ?>
+		<th data-name="material_name" class="<?php echo $issuance_store_v->material_name->HeaderCellClass() ?>"><div id="elh_issuance_store_v_material_name" class="issuance_store_v_material_name"><div class="ewTableHeaderCaption"><?php echo $issuance_store_v->material_name->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="gen_name" class="<?php echo $gen_maintenance->gen_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->gen_name) ?>',1);"><div id="elh_gen_maintenance_gen_name" class="gen_maintenance_gen_name">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->gen_name->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->gen_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->gen_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="material_name" class="<?php echo $issuance_store_v->material_name->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_store_v->SortUrl($issuance_store_v->material_name) ?>',1);"><div id="elh_issuance_store_v_material_name" class="issuance_store_v_material_name">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_store_v->material_name->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_store_v->material_name->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_store_v->material_name->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->maintenance_type->Visible) { // maintenance_type ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->maintenance_type) == "") { ?>
-		<th data-name="maintenance_type" class="<?php echo $gen_maintenance->maintenance_type->HeaderCellClass() ?>"><div id="elh_gen_maintenance_maintenance_type" class="gen_maintenance_maintenance_type"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->maintenance_type->FldCaption() ?></div></div></th>
+<?php if ($issuance_store_v->quantity_in->Visible) { // quantity_in ?>
+	<?php if ($issuance_store_v->SortUrl($issuance_store_v->quantity_in) == "") { ?>
+		<th data-name="quantity_in" class="<?php echo $issuance_store_v->quantity_in->HeaderCellClass() ?>"><div id="elh_issuance_store_v_quantity_in" class="issuance_store_v_quantity_in"><div class="ewTableHeaderCaption"><?php echo $issuance_store_v->quantity_in->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="maintenance_type" class="<?php echo $gen_maintenance->maintenance_type->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->maintenance_type) ?>',1);"><div id="elh_gen_maintenance_maintenance_type" class="gen_maintenance_maintenance_type">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->maintenance_type->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->maintenance_type->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->maintenance_type->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="quantity_in" class="<?php echo $issuance_store_v->quantity_in->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_store_v->SortUrl($issuance_store_v->quantity_in) ?>',1);"><div id="elh_issuance_store_v_quantity_in" class="issuance_store_v_quantity_in">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_store_v->quantity_in->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_store_v->quantity_in->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_store_v->quantity_in->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->running_hours->Visible) { // running_hours ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->running_hours) == "") { ?>
-		<th data-name="running_hours" class="<?php echo $gen_maintenance->running_hours->HeaderCellClass() ?>"><div id="elh_gen_maintenance_running_hours" class="gen_maintenance_running_hours"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->running_hours->FldCaption() ?></div></div></th>
+<?php if ($issuance_store_v->quantity_out->Visible) { // quantity_out ?>
+	<?php if ($issuance_store_v->SortUrl($issuance_store_v->quantity_out) == "") { ?>
+		<th data-name="quantity_out" class="<?php echo $issuance_store_v->quantity_out->HeaderCellClass() ?>"><div id="elh_issuance_store_v_quantity_out" class="issuance_store_v_quantity_out"><div class="ewTableHeaderCaption"><?php echo $issuance_store_v->quantity_out->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="running_hours" class="<?php echo $gen_maintenance->running_hours->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->running_hours) ?>',1);"><div id="elh_gen_maintenance_running_hours" class="gen_maintenance_running_hours">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->running_hours->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->running_hours->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->running_hours->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="quantity_out" class="<?php echo $issuance_store_v->quantity_out->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_store_v->SortUrl($issuance_store_v->quantity_out) ?>',1);"><div id="elh_issuance_store_v_quantity_out" class="issuance_store_v_quantity_out">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_store_v->quantity_out->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_store_v->quantity_out->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_store_v->quantity_out->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->cost->Visible) { // cost ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->cost) == "") { ?>
-		<th data-name="cost" class="<?php echo $gen_maintenance->cost->HeaderCellClass() ?>"><div id="elh_gen_maintenance_cost" class="gen_maintenance_cost"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->cost->FldCaption() ?></div></div></th>
+<?php if ($issuance_store_v->total_quantity->Visible) { // total_quantity ?>
+	<?php if ($issuance_store_v->SortUrl($issuance_store_v->total_quantity) == "") { ?>
+		<th data-name="total_quantity" class="<?php echo $issuance_store_v->total_quantity->HeaderCellClass() ?>"><div id="elh_issuance_store_v_total_quantity" class="issuance_store_v_total_quantity"><div class="ewTableHeaderCaption"><?php echo $issuance_store_v->total_quantity->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="cost" class="<?php echo $gen_maintenance->cost->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->cost) ?>',1);"><div id="elh_gen_maintenance_cost" class="gen_maintenance_cost">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->cost->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->cost->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->cost->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="total_quantity" class="<?php echo $issuance_store_v->total_quantity->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_store_v->SortUrl($issuance_store_v->total_quantity) ?>',1);"><div id="elh_issuance_store_v_total_quantity" class="issuance_store_v_total_quantity">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_store_v->total_quantity->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_store_v->total_quantity->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_store_v->total_quantity->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->labour_fee->Visible) { // labour_fee ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->labour_fee) == "") { ?>
-		<th data-name="labour_fee" class="<?php echo $gen_maintenance->labour_fee->HeaderCellClass() ?>"><div id="elh_gen_maintenance_labour_fee" class="gen_maintenance_labour_fee"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->labour_fee->FldCaption() ?></div></div></th>
+<?php if ($issuance_store_v->quantity_type->Visible) { // quantity_type ?>
+	<?php if ($issuance_store_v->SortUrl($issuance_store_v->quantity_type) == "") { ?>
+		<th data-name="quantity_type" class="<?php echo $issuance_store_v->quantity_type->HeaderCellClass() ?>"><div id="elh_issuance_store_v_quantity_type" class="issuance_store_v_quantity_type"><div class="ewTableHeaderCaption"><?php echo $issuance_store_v->quantity_type->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="labour_fee" class="<?php echo $gen_maintenance->labour_fee->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->labour_fee) ?>',1);"><div id="elh_gen_maintenance_labour_fee" class="gen_maintenance_labour_fee">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->labour_fee->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->labour_fee->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->labour_fee->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="quantity_type" class="<?php echo $issuance_store_v->quantity_type->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_store_v->SortUrl($issuance_store_v->quantity_type) ?>',1);"><div id="elh_issuance_store_v_quantity_type" class="issuance_store_v_quantity_type">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_store_v->quantity_type->FldCaption() ?><?php echo $Language->Phrase("SrchLegend") ?></span><span class="ewTableHeaderSort"><?php if ($issuance_store_v->quantity_type->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_store_v->quantity_type->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->total->Visible) { // total ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->total) == "") { ?>
-		<th data-name="total" class="<?php echo $gen_maintenance->total->HeaderCellClass() ?>"><div id="elh_gen_maintenance_total" class="gen_maintenance_total"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->total->FldCaption() ?></div></div></th>
+<?php if ($issuance_store_v->statuss->Visible) { // statuss ?>
+	<?php if ($issuance_store_v->SortUrl($issuance_store_v->statuss) == "") { ?>
+		<th data-name="statuss" class="<?php echo $issuance_store_v->statuss->HeaderCellClass() ?>"><div id="elh_issuance_store_v_statuss" class="issuance_store_v_statuss"><div class="ewTableHeaderCaption"><?php echo $issuance_store_v->statuss->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="total" class="<?php echo $gen_maintenance->total->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->total) ?>',1);"><div id="elh_gen_maintenance_total" class="gen_maintenance_total">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->total->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->total->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->total->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="statuss" class="<?php echo $issuance_store_v->statuss->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_store_v->SortUrl($issuance_store_v->statuss) ?>',1);"><div id="elh_issuance_store_v_statuss" class="issuance_store_v_statuss">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_store_v->statuss->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_store_v->statuss->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_store_v->statuss->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->staff_id->Visible) { // staff_id ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->staff_id) == "") { ?>
-		<th data-name="staff_id" class="<?php echo $gen_maintenance->staff_id->HeaderCellClass() ?>"><div id="elh_gen_maintenance_staff_id" class="gen_maintenance_staff_id"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->staff_id->FldCaption() ?></div></div></th>
+<?php if ($issuance_store_v->issued_by->Visible) { // issued_by ?>
+	<?php if ($issuance_store_v->SortUrl($issuance_store_v->issued_by) == "") { ?>
+		<th data-name="issued_by" class="<?php echo $issuance_store_v->issued_by->HeaderCellClass() ?>"><div id="elh_issuance_store_v_issued_by" class="issuance_store_v_issued_by"><div class="ewTableHeaderCaption"><?php echo $issuance_store_v->issued_by->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="staff_id" class="<?php echo $gen_maintenance->staff_id->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->staff_id) ?>',1);"><div id="elh_gen_maintenance_staff_id" class="gen_maintenance_staff_id">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->staff_id->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->staff_id->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->staff_id->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="issued_by" class="<?php echo $issuance_store_v->issued_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_store_v->SortUrl($issuance_store_v->issued_by) ?>',1);"><div id="elh_issuance_store_v_issued_by" class="issuance_store_v_issued_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_store_v->issued_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_store_v->issued_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_store_v->issued_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
-<?php if ($gen_maintenance->status->Visible) { // status ?>
-	<?php if ($gen_maintenance->SortUrl($gen_maintenance->status) == "") { ?>
-		<th data-name="status" class="<?php echo $gen_maintenance->status->HeaderCellClass() ?>"><div id="elh_gen_maintenance_status" class="gen_maintenance_status"><div class="ewTableHeaderCaption"><?php echo $gen_maintenance->status->FldCaption() ?></div></div></th>
+<?php if ($issuance_store_v->approved_by->Visible) { // approved_by ?>
+	<?php if ($issuance_store_v->SortUrl($issuance_store_v->approved_by) == "") { ?>
+		<th data-name="approved_by" class="<?php echo $issuance_store_v->approved_by->HeaderCellClass() ?>"><div id="elh_issuance_store_v_approved_by" class="issuance_store_v_approved_by"><div class="ewTableHeaderCaption"><?php echo $issuance_store_v->approved_by->FldCaption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="status" class="<?php echo $gen_maintenance->status->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $gen_maintenance->SortUrl($gen_maintenance->status) ?>',1);"><div id="elh_gen_maintenance_status" class="gen_maintenance_status">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $gen_maintenance->status->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($gen_maintenance->status->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($gen_maintenance->status->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		<th data-name="approved_by" class="<?php echo $issuance_store_v->approved_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_store_v->SortUrl($issuance_store_v->approved_by) ?>',1);"><div id="elh_issuance_store_v_approved_by" class="issuance_store_v_approved_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_store_v->approved_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_store_v->approved_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_store_v->approved_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($issuance_store_v->verified_by->Visible) { // verified_by ?>
+	<?php if ($issuance_store_v->SortUrl($issuance_store_v->verified_by) == "") { ?>
+		<th data-name="verified_by" class="<?php echo $issuance_store_v->verified_by->HeaderCellClass() ?>"><div id="elh_issuance_store_v_verified_by" class="issuance_store_v_verified_by"><div class="ewTableHeaderCaption"><?php echo $issuance_store_v->verified_by->FldCaption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="verified_by" class="<?php echo $issuance_store_v->verified_by->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $issuance_store_v->SortUrl($issuance_store_v->verified_by) ?>',1);"><div id="elh_issuance_store_v_verified_by" class="issuance_store_v_verified_by">
+			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $issuance_store_v->verified_by->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($issuance_store_v->verified_by->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($issuance_store_v->verified_by->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
 <?php
 
 // Render list options (header, right)
-$gen_maintenance_list->ListOptions->Render("header", "right");
+$issuance_store_v_list->ListOptions->Render("header", "right");
 ?>
 	</tr>
 </thead>
 <tbody>
 <?php
-if ($gen_maintenance->ExportAll && $gen_maintenance->Export <> "") {
-	$gen_maintenance_list->StopRec = $gen_maintenance_list->TotalRecs;
+if ($issuance_store_v->ExportAll && $issuance_store_v->Export <> "") {
+	$issuance_store_v_list->StopRec = $issuance_store_v_list->TotalRecs;
 } else {
 
 	// Set the last record to display
-	if ($gen_maintenance_list->TotalRecs > $gen_maintenance_list->StartRec + $gen_maintenance_list->DisplayRecs - 1)
-		$gen_maintenance_list->StopRec = $gen_maintenance_list->StartRec + $gen_maintenance_list->DisplayRecs - 1;
+	if ($issuance_store_v_list->TotalRecs > $issuance_store_v_list->StartRec + $issuance_store_v_list->DisplayRecs - 1)
+		$issuance_store_v_list->StopRec = $issuance_store_v_list->StartRec + $issuance_store_v_list->DisplayRecs - 1;
 	else
-		$gen_maintenance_list->StopRec = $gen_maintenance_list->TotalRecs;
+		$issuance_store_v_list->StopRec = $issuance_store_v_list->TotalRecs;
 }
-$gen_maintenance_list->RecCnt = $gen_maintenance_list->StartRec - 1;
-if ($gen_maintenance_list->Recordset && !$gen_maintenance_list->Recordset->EOF) {
-	$gen_maintenance_list->Recordset->MoveFirst();
-	$bSelectLimit = $gen_maintenance_list->UseSelectLimit;
-	if (!$bSelectLimit && $gen_maintenance_list->StartRec > 1)
-		$gen_maintenance_list->Recordset->Move($gen_maintenance_list->StartRec - 1);
-} elseif (!$gen_maintenance->AllowAddDeleteRow && $gen_maintenance_list->StopRec == 0) {
-	$gen_maintenance_list->StopRec = $gen_maintenance->GridAddRowCount;
+$issuance_store_v_list->RecCnt = $issuance_store_v_list->StartRec - 1;
+if ($issuance_store_v_list->Recordset && !$issuance_store_v_list->Recordset->EOF) {
+	$issuance_store_v_list->Recordset->MoveFirst();
+	$bSelectLimit = $issuance_store_v_list->UseSelectLimit;
+	if (!$bSelectLimit && $issuance_store_v_list->StartRec > 1)
+		$issuance_store_v_list->Recordset->Move($issuance_store_v_list->StartRec - 1);
+} elseif (!$issuance_store_v->AllowAddDeleteRow && $issuance_store_v_list->StopRec == 0) {
+	$issuance_store_v_list->StopRec = $issuance_store_v->GridAddRowCount;
 }
 
 // Initialize aggregate
-$gen_maintenance->RowType = EW_ROWTYPE_AGGREGATEINIT;
-$gen_maintenance->ResetAttrs();
-$gen_maintenance_list->RenderRow();
-while ($gen_maintenance_list->RecCnt < $gen_maintenance_list->StopRec) {
-	$gen_maintenance_list->RecCnt++;
-	if (intval($gen_maintenance_list->RecCnt) >= intval($gen_maintenance_list->StartRec)) {
-		$gen_maintenance_list->RowCnt++;
+$issuance_store_v->RowType = EW_ROWTYPE_AGGREGATEINIT;
+$issuance_store_v->ResetAttrs();
+$issuance_store_v_list->RenderRow();
+while ($issuance_store_v_list->RecCnt < $issuance_store_v_list->StopRec) {
+	$issuance_store_v_list->RecCnt++;
+	if (intval($issuance_store_v_list->RecCnt) >= intval($issuance_store_v_list->StartRec)) {
+		$issuance_store_v_list->RowCnt++;
 
 		// Set up key count
-		$gen_maintenance_list->KeyCount = $gen_maintenance_list->RowIndex;
+		$issuance_store_v_list->KeyCount = $issuance_store_v_list->RowIndex;
 
 		// Init row class and style
-		$gen_maintenance->ResetAttrs();
-		$gen_maintenance->CssClass = "";
-		if ($gen_maintenance->CurrentAction == "gridadd") {
+		$issuance_store_v->ResetAttrs();
+		$issuance_store_v->CssClass = "";
+		if ($issuance_store_v->CurrentAction == "gridadd") {
 		} else {
-			$gen_maintenance_list->LoadRowValues($gen_maintenance_list->Recordset); // Load row values
+			$issuance_store_v_list->LoadRowValues($issuance_store_v_list->Recordset); // Load row values
 		}
-		$gen_maintenance->RowType = EW_ROWTYPE_VIEW; // Render view
+		$issuance_store_v->RowType = EW_ROWTYPE_VIEW; // Render view
 
 		// Set up row id / data-rowindex
-		$gen_maintenance->RowAttrs = array_merge($gen_maintenance->RowAttrs, array('data-rowindex'=>$gen_maintenance_list->RowCnt, 'id'=>'r' . $gen_maintenance_list->RowCnt . '_gen_maintenance', 'data-rowtype'=>$gen_maintenance->RowType));
+		$issuance_store_v->RowAttrs = array_merge($issuance_store_v->RowAttrs, array('data-rowindex'=>$issuance_store_v_list->RowCnt, 'id'=>'r' . $issuance_store_v_list->RowCnt . '_issuance_store_v', 'data-rowtype'=>$issuance_store_v->RowType));
 
 		// Render row
-		$gen_maintenance_list->RenderRow();
+		$issuance_store_v_list->RenderRow();
 
 		// Render list options
-		$gen_maintenance_list->RenderListOptions();
+		$issuance_store_v_list->RenderListOptions();
 ?>
-	<tr<?php echo $gen_maintenance->RowAttributes() ?>>
+	<tr<?php echo $issuance_store_v->RowAttributes() ?>>
 <?php
 
 // Render list options (body, left)
-$gen_maintenance_list->ListOptions->Render("body", "left", $gen_maintenance_list->RowCnt);
+$issuance_store_v_list->ListOptions->Render("body", "left", $issuance_store_v_list->RowCnt);
 ?>
-	<?php if ($gen_maintenance->datetime->Visible) { // datetime ?>
-		<td data-name="datetime"<?php echo $gen_maintenance->datetime->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_datetime" class="gen_maintenance_datetime">
-<span<?php echo $gen_maintenance->datetime->ViewAttributes() ?>>
-<?php echo $gen_maintenance->datetime->ListViewValue() ?></span>
+	<?php if ($issuance_store_v->date->Visible) { // date ?>
+		<td data-name="date"<?php echo $issuance_store_v->date->CellAttributes() ?>>
+<span id="el<?php echo $issuance_store_v_list->RowCnt ?>_issuance_store_v_date" class="issuance_store_v_date">
+<span<?php echo $issuance_store_v->date->ViewAttributes() ?>>
+<?php echo $issuance_store_v->date->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->reference_id->Visible) { // reference_id ?>
-		<td data-name="reference_id"<?php echo $gen_maintenance->reference_id->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_reference_id" class="gen_maintenance_reference_id">
-<span<?php echo $gen_maintenance->reference_id->ViewAttributes() ?>>
-<?php echo $gen_maintenance->reference_id->ListViewValue() ?></span>
+	<?php if ($issuance_store_v->reference_id->Visible) { // reference_id ?>
+		<td data-name="reference_id"<?php echo $issuance_store_v->reference_id->CellAttributes() ?>>
+<span id="el<?php echo $issuance_store_v_list->RowCnt ?>_issuance_store_v_reference_id" class="issuance_store_v_reference_id">
+<span<?php echo $issuance_store_v->reference_id->ViewAttributes() ?>>
+<?php echo $issuance_store_v->reference_id->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->gen_name->Visible) { // gen_name ?>
-		<td data-name="gen_name"<?php echo $gen_maintenance->gen_name->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_gen_name" class="gen_maintenance_gen_name">
-<span<?php echo $gen_maintenance->gen_name->ViewAttributes() ?>>
-<?php echo $gen_maintenance->gen_name->ListViewValue() ?></span>
+	<?php if ($issuance_store_v->material_name->Visible) { // material_name ?>
+		<td data-name="material_name"<?php echo $issuance_store_v->material_name->CellAttributes() ?>>
+<span id="el<?php echo $issuance_store_v_list->RowCnt ?>_issuance_store_v_material_name" class="issuance_store_v_material_name">
+<span<?php echo $issuance_store_v->material_name->ViewAttributes() ?>>
+<?php echo $issuance_store_v->material_name->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->maintenance_type->Visible) { // maintenance_type ?>
-		<td data-name="maintenance_type"<?php echo $gen_maintenance->maintenance_type->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_maintenance_type" class="gen_maintenance_maintenance_type">
-<span<?php echo $gen_maintenance->maintenance_type->ViewAttributes() ?>>
-<?php echo $gen_maintenance->maintenance_type->ListViewValue() ?></span>
+	<?php if ($issuance_store_v->quantity_in->Visible) { // quantity_in ?>
+		<td data-name="quantity_in"<?php echo $issuance_store_v->quantity_in->CellAttributes() ?>>
+<span id="el<?php echo $issuance_store_v_list->RowCnt ?>_issuance_store_v_quantity_in" class="issuance_store_v_quantity_in">
+<span<?php echo $issuance_store_v->quantity_in->ViewAttributes() ?>>
+<?php echo $issuance_store_v->quantity_in->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->running_hours->Visible) { // running_hours ?>
-		<td data-name="running_hours"<?php echo $gen_maintenance->running_hours->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_running_hours" class="gen_maintenance_running_hours">
-<span<?php echo $gen_maintenance->running_hours->ViewAttributes() ?>>
-<?php echo $gen_maintenance->running_hours->ListViewValue() ?></span>
+	<?php if ($issuance_store_v->quantity_out->Visible) { // quantity_out ?>
+		<td data-name="quantity_out"<?php echo $issuance_store_v->quantity_out->CellAttributes() ?>>
+<span id="el<?php echo $issuance_store_v_list->RowCnt ?>_issuance_store_v_quantity_out" class="issuance_store_v_quantity_out">
+<span<?php echo $issuance_store_v->quantity_out->ViewAttributes() ?>>
+<?php echo $issuance_store_v->quantity_out->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->cost->Visible) { // cost ?>
-		<td data-name="cost"<?php echo $gen_maintenance->cost->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_cost" class="gen_maintenance_cost">
-<span<?php echo $gen_maintenance->cost->ViewAttributes() ?>>
-<?php echo $gen_maintenance->cost->ListViewValue() ?></span>
+	<?php if ($issuance_store_v->total_quantity->Visible) { // total_quantity ?>
+		<td data-name="total_quantity"<?php echo $issuance_store_v->total_quantity->CellAttributes() ?>>
+<span id="el<?php echo $issuance_store_v_list->RowCnt ?>_issuance_store_v_total_quantity" class="issuance_store_v_total_quantity">
+<span<?php echo $issuance_store_v->total_quantity->ViewAttributes() ?>>
+<?php echo $issuance_store_v->total_quantity->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->labour_fee->Visible) { // labour_fee ?>
-		<td data-name="labour_fee"<?php echo $gen_maintenance->labour_fee->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_labour_fee" class="gen_maintenance_labour_fee">
-<span<?php echo $gen_maintenance->labour_fee->ViewAttributes() ?>>
-<?php echo $gen_maintenance->labour_fee->ListViewValue() ?></span>
+	<?php if ($issuance_store_v->quantity_type->Visible) { // quantity_type ?>
+		<td data-name="quantity_type"<?php echo $issuance_store_v->quantity_type->CellAttributes() ?>>
+<span id="el<?php echo $issuance_store_v_list->RowCnt ?>_issuance_store_v_quantity_type" class="issuance_store_v_quantity_type">
+<span<?php echo $issuance_store_v->quantity_type->ViewAttributes() ?>>
+<?php echo $issuance_store_v->quantity_type->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->total->Visible) { // total ?>
-		<td data-name="total"<?php echo $gen_maintenance->total->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_total" class="gen_maintenance_total">
-<span<?php echo $gen_maintenance->total->ViewAttributes() ?>>
-<?php echo $gen_maintenance->total->ListViewValue() ?></span>
+	<?php if ($issuance_store_v->statuss->Visible) { // statuss ?>
+		<td data-name="statuss"<?php echo $issuance_store_v->statuss->CellAttributes() ?>>
+<span id="el<?php echo $issuance_store_v_list->RowCnt ?>_issuance_store_v_statuss" class="issuance_store_v_statuss">
+<span<?php echo $issuance_store_v->statuss->ViewAttributes() ?>>
+<?php echo $issuance_store_v->statuss->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->staff_id->Visible) { // staff_id ?>
-		<td data-name="staff_id"<?php echo $gen_maintenance->staff_id->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_staff_id" class="gen_maintenance_staff_id">
-<span<?php echo $gen_maintenance->staff_id->ViewAttributes() ?>>
-<?php echo $gen_maintenance->staff_id->ListViewValue() ?></span>
+	<?php if ($issuance_store_v->issued_by->Visible) { // issued_by ?>
+		<td data-name="issued_by"<?php echo $issuance_store_v->issued_by->CellAttributes() ?>>
+<span id="el<?php echo $issuance_store_v_list->RowCnt ?>_issuance_store_v_issued_by" class="issuance_store_v_issued_by">
+<span<?php echo $issuance_store_v->issued_by->ViewAttributes() ?>>
+<?php echo $issuance_store_v->issued_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
-	<?php if ($gen_maintenance->status->Visible) { // status ?>
-		<td data-name="status"<?php echo $gen_maintenance->status->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_list->RowCnt ?>_gen_maintenance_status" class="gen_maintenance_status">
-<span<?php echo $gen_maintenance->status->ViewAttributes() ?>>
-<?php echo $gen_maintenance->status->ListViewValue() ?></span>
+	<?php if ($issuance_store_v->approved_by->Visible) { // approved_by ?>
+		<td data-name="approved_by"<?php echo $issuance_store_v->approved_by->CellAttributes() ?>>
+<span id="el<?php echo $issuance_store_v_list->RowCnt ?>_issuance_store_v_approved_by" class="issuance_store_v_approved_by">
+<span<?php echo $issuance_store_v->approved_by->ViewAttributes() ?>>
+<?php echo $issuance_store_v->approved_by->ListViewValue() ?></span>
+</span>
+</td>
+	<?php } ?>
+	<?php if ($issuance_store_v->verified_by->Visible) { // verified_by ?>
+		<td data-name="verified_by"<?php echo $issuance_store_v->verified_by->CellAttributes() ?>>
+<span id="el<?php echo $issuance_store_v_list->RowCnt ?>_issuance_store_v_verified_by" class="issuance_store_v_verified_by">
+<span<?php echo $issuance_store_v->verified_by->ViewAttributes() ?>>
+<?php echo $issuance_store_v->verified_by->ListViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>
 <?php
 
 // Render list options (body, right)
-$gen_maintenance_list->ListOptions->Render("body", "right", $gen_maintenance_list->RowCnt);
+$issuance_store_v_list->ListOptions->Render("body", "right", $issuance_store_v_list->RowCnt);
 ?>
 	</tr>
 <?php
 	}
-	if ($gen_maintenance->CurrentAction <> "gridadd")
-		$gen_maintenance_list->Recordset->MoveNext();
+	if ($issuance_store_v->CurrentAction <> "gridadd")
+		$issuance_store_v_list->Recordset->MoveNext();
 }
 ?>
 </tbody>
 </table>
 <?php } ?>
-<?php if ($gen_maintenance->CurrentAction == "") { ?>
+<?php if ($issuance_store_v->CurrentAction == "") { ?>
 <input type="hidden" name="a_list" id="a_list" value="">
 <?php } ?>
 </div>
@@ -3195,15 +3356,15 @@ $gen_maintenance_list->ListOptions->Render("body", "right", $gen_maintenance_lis
 <?php
 
 // Close recordset
-if ($gen_maintenance_list->Recordset)
-	$gen_maintenance_list->Recordset->Close();
+if ($issuance_store_v_list->Recordset)
+	$issuance_store_v_list->Recordset->Close();
 ?>
 </div>
 <?php } ?>
-<?php if ($gen_maintenance_list->TotalRecs == 0 && $gen_maintenance->CurrentAction == "") { // Show other options ?>
+<?php if ($issuance_store_v_list->TotalRecs == 0 && $issuance_store_v->CurrentAction == "") { // Show other options ?>
 <div class="ewListOtherOptions">
 <?php
-	foreach ($gen_maintenance_list->OtherOptions as &$option) {
+	foreach ($issuance_store_v_list->OtherOptions as &$option) {
 		$option->ButtonClass = "";
 		$option->Render("body", "");
 	}
@@ -3211,19 +3372,19 @@ if ($gen_maintenance_list->Recordset)
 </div>
 <div class="clearfix"></div>
 <?php } ?>
-<?php if ($gen_maintenance->Export == "") { ?>
+<?php if ($issuance_store_v->Export == "") { ?>
 <script type="text/javascript">
-fgen_maintenancelistsrch.FilterList = <?php echo $gen_maintenance_list->GetFilterList() ?>;
-fgen_maintenancelistsrch.Init();
-fgen_maintenancelist.Init();
+fissuance_store_vlistsrch.FilterList = <?php echo $issuance_store_v_list->GetFilterList() ?>;
+fissuance_store_vlistsrch.Init();
+fissuance_store_vlist.Init();
 </script>
 <?php } ?>
 <?php
-$gen_maintenance_list->ShowPageFooter();
+$issuance_store_v_list->ShowPageFooter();
 if (EW_DEBUG_ENABLED)
 	echo ew_DebugMsg();
 ?>
-<?php if ($gen_maintenance->Export == "") { ?>
+<?php if ($issuance_store_v->Export == "") { ?>
 <script type="text/javascript">
 
 // Write your table-specific startup script here
@@ -3233,5 +3394,5 @@ if (EW_DEBUG_ENABLED)
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php
-$gen_maintenance_list->Page_Terminate();
+$issuance_store_v_list->Page_Terminate();
 ?>

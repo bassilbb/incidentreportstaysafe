@@ -2801,6 +2801,9 @@ class creport_form extends cTable {
 		if (CurrentUserLevel() == 3) {
 		   ew_AddFilter($filter, "`status` in (3,6,7) OR (`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."') OR (`status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."')");
 		}
+		if (CurrentUserLevel() == 14) {
+		   ew_AddFilter($filter, "`status` in (3,6,7) OR (`status` in (0,1) AND `staff_id` = '".$_SESSION['Staff_ID']."') OR (`status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."')");
+		}
 		if (CurrentUserLevel() == 4) {
 				ew_AddFilter($filter, "`status` in (3,6,7) AND `branch` = '".$_SESSION['Branch']."' OR `status` in (0,1,3,6,7) AND `staff_id` = '".$_SESSION['Staff_ID']."' OR `status` in (4) AND `assign` = '".$_SESSION['Staff_ID']."'");
 			 }
@@ -3174,7 +3177,7 @@ class creport_form extends cTable {
 		}
 
 		// Manager - Don't change field values captured by Officer
-		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 3) {
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 14 && $this->status->CurrentValue == 3) {
 			$rsnew["id"] = $rsold["id"];
 			$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
 			$rsnew["staff_id"] = $rsold["staff_id"];
@@ -3214,7 +3217,7 @@ class creport_form extends cTable {
 		}
 
 		// Manager - Don't change field values captured by Officer
-		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 6) {
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 14 && $this->status->CurrentValue == 6) {
 			$rsnew["id"] = $rsold["id"];
 			$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
 			$rsnew["staff_id"] = $rsold["staff_id"];
@@ -3249,7 +3252,7 @@ class creport_form extends cTable {
 		}
 
 		// Manager & HOD - Don't change field values captured by Officer
-		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4  && $this->status->CurrentValue == 4) {
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 14  && $this->status->CurrentValue == 4) {
 			$rsnew["id"] = $rsold["id"];
 			$rsnew["datetime_initiated"] = $rsold["datetime_initiated"];
 			$rsnew["staff_id"] = $rsold["staff_id"];
@@ -3364,7 +3367,7 @@ class creport_form extends cTable {
 		}
 
 		// Manager===========================================================================
-		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4) {
+		if (CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 14) {
 			$rsnew["datetime_approved"] = $now->format('Y-m-d H:i:s');
 			$rsnew["approved_by"] = $_SESSION['Staff_ID'];
 		}
@@ -3618,6 +3621,10 @@ class creport_form extends cTable {
 			$this->resolved_by->EditValue = $this->resolved_by->CurrentValue;
 		}
 		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 3)) {
+			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
+			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
+		}
+		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 14)) {
 			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
 			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
 		}
@@ -3951,7 +3958,7 @@ class creport_form extends cTable {
 					$this->remainder-> Visible= FALSE;
 					$this->organization->Visible = FALSE;
 				}
-				if ((CurrentUserLevel() == 2 || CurrentUserLevel() == 3 || CurrentUserLevel() == 4) && $this->status->CurrentValue == 4 && $this->assign->CurrentValue == $_SESSION['Staff_ID']) {
+				if ((CurrentUserLevel() == 2 || CurrentUserLevel() == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 14) && $this->status->CurrentValue == 4 && $this->assign->CurrentValue == $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
 					$this->staffid->ReadOnly = TRUE;
@@ -4077,7 +4084,7 @@ class creport_form extends cTable {
 						$this->organization->Visible = FALSE;
 					}
 				}
-				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 14 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
 					$this->staffid->ReadOnly = TRUE;
@@ -4131,7 +4138,7 @@ class creport_form extends cTable {
 							$this->organization->Visible = FALSE;
 						}
 				}
-				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 4 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 14 && $this->status->CurrentValue == 4 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
 					$this->staffid->ReadOnly = TRUE;
@@ -4194,7 +4201,7 @@ class creport_form extends cTable {
 							$this->organization->Visible = FALSE;
 						}
 				  }
-				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 6) {
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 14 && $this->status->CurrentValue == 6) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
 					$this->staffid->ReadOnly = TRUE;
@@ -4265,7 +4272,7 @@ class creport_form extends cTable {
 							$this->organization->Visible = FALSE;
 						}
 				}
-				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 3 && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 14 && $this->status->CurrentValue == 3 && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
 						$this->datetime_initiated->ReadOnly = TRUE;
 						$this->staff_id->ReadOnly = TRUE;
 						$this->staffid->ReadOnly = TRUE;
@@ -4313,7 +4320,7 @@ class creport_form extends cTable {
 						$this->remainder-> Visible= FALSE;
 						$this->organization->Visible = FALSE;
 					}
-				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && $this->status->CurrentValue == 7 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 14 && $this->status->CurrentValue == 7 && $this->staff_id->CurrentValue == $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
 					$this->staffid->ReadOnly = TRUE;
@@ -4375,7 +4382,7 @@ class creport_form extends cTable {
 							$this->organization->Visible = FALSE;
 							}
 				}
-				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 && ($this->status->CurrentValue == 3 || $this->status->CurrentValue == 6 || $this->status->CurrentValue == 7) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
+				if (CurrentUserLevel() == 3 || CurrentUserLevel() == 4 || CurrentUserLevel() == 14 && ($this->status->CurrentValue == 3 || $this->status->CurrentValue == 6 || $this->status->CurrentValue == 7) && $this->staff_id->CurrentValue != $_SESSION['Staff_ID']) {
 					$this->datetime_initiated->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
 					$this->staffid->ReadOnly = TRUE;

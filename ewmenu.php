@@ -2,7 +2,6 @@
 
 // Menu
 $RootMenu = new cMenu("RootMenu", TRUE);
-$RootMenu->AddMenuItem(640, "mi_gen_maintenanace_v", $Language->MenuPhrase("640", "MenuText"), "gen_maintenanace_vlist.php", -1, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}gen_maintenanace_v'), FALSE, FALSE, "");
 $RootMenu->AddMenuItem(17, "mi_home_php", $Language->MenuPhrase("17", "MenuText"), "home.php", -1, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}home.php'), FALSE, TRUE, "far fa-home");
 $RootMenu->AddMenuItem(43, "mi_news", $Language->MenuPhrase("43", "MenuText"), "newslist.php", 17, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}news'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(47, "mi_testing_php", $Language->MenuPhrase("47", "MenuText"), "testing.php", 17, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}testing.php'), FALSE, TRUE, "fas fa-indent");
@@ -106,6 +105,9 @@ $RootMenu->AddMenuItem(533, "mi_genmaintenance_report", $Language->MenuPhrase("5
 $RootMenu->AddMenuItem(534, "mi_sparepart_report", $Language->MenuPhrase("534", "MenuText"), "sparepart_reportlist.php", 636, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}sparepart_report'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(639, "mi_genreading_report", $Language->MenuPhrase("639", "MenuText"), "genreading_reportlist.php", 636, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}genreading_report'), FALSE, FALSE, "fas fa-indent");
 $RootMenu->AddMenuItem(638, "mi_diesel_supply", $Language->MenuPhrase("638", "MenuText"), "diesel_supplylist.php", 636, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}diesel_supply'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(747, "mci_Multiple_Approver", $Language->MenuPhrase("747", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "fa fa-futbol-o");
+$RootMenu->AddMenuItem(640, "mi_gen_maintenanace_v", $Language->MenuPhrase("640", "MenuText"), "gen_maintenanace_vlist.php", 747, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}gen_maintenanace_v'), FALSE, FALSE, "fas fa-indent");
+$RootMenu->AddMenuItem(748, "mi_issuance_store_v", $Language->MenuPhrase("748", "MenuText"), "issuance_store_vlist.php", 747, "", AllowListMenu('{DD9080C0-D1CA-431F-831F-CAC8FA61260C}issuance_store_v'), FALSE, FALSE, "fas fa-indent");
 echo $RootMenu->ToScript();
 ?>
 <div class="ewVertical" id="ewMenu"></div>

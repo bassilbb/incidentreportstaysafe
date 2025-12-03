@@ -333,7 +333,6 @@ class cgen_maintenance_delete extends cgen_maintenance {
 		$this->total->SetVisibility();
 		$this->staff_id->SetVisibility();
 		$this->status->SetVisibility();
-		$this->flag->SetVisibility();
 
 		// Global Page Loading event (in userfn*.php)
 		Page_Loading();
@@ -856,11 +855,6 @@ class cgen_maintenance_delete extends cgen_maintenance {
 			$this->status->LinkCustomAttributes = "";
 			$this->status->HrefValue = "";
 			$this->status->TooltipValue = "";
-
-			// flag
-			$this->flag->LinkCustomAttributes = "";
-			$this->flag->HrefValue = "";
-			$this->flag->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -1142,9 +1136,6 @@ $gen_maintenance_delete->ShowMessage();
 <?php if ($gen_maintenance->status->Visible) { // status ?>
 		<th class="<?php echo $gen_maintenance->status->HeaderCellClass() ?>"><span id="elh_gen_maintenance_status" class="gen_maintenance_status"><?php echo $gen_maintenance->status->FldCaption() ?></span></th>
 <?php } ?>
-<?php if ($gen_maintenance->flag->Visible) { // flag ?>
-		<th class="<?php echo $gen_maintenance->flag->HeaderCellClass() ?>"><span id="elh_gen_maintenance_flag" class="gen_maintenance_flag"><?php echo $gen_maintenance->flag->FldCaption() ?></span></th>
-<?php } ?>
 	</tr>
 	</thead>
 	<tbody>
@@ -1243,14 +1234,6 @@ while (!$gen_maintenance_delete->Recordset->EOF) {
 <span id="el<?php echo $gen_maintenance_delete->RowCnt ?>_gen_maintenance_status" class="gen_maintenance_status">
 <span<?php echo $gen_maintenance->status->ViewAttributes() ?>>
 <?php echo $gen_maintenance->status->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($gen_maintenance->flag->Visible) { // flag ?>
-		<td<?php echo $gen_maintenance->flag->CellAttributes() ?>>
-<span id="el<?php echo $gen_maintenance_delete->RowCnt ?>_gen_maintenance_flag" class="gen_maintenance_flag">
-<span<?php echo $gen_maintenance->flag->ViewAttributes() ?>>
-<?php echo $gen_maintenance->flag->ListViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

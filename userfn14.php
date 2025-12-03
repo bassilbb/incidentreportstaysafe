@@ -199,6 +199,19 @@ if (CurrentUserLevel() == 13) {
 	$_SESSION['MyLoanpenCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (1) ");
 	$_SESSION['MyLoanappCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (2) ");
 }
+if (CurrentUserLevel() == 14) {
+	$_SESSION['MyApprovedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (5) ");
+	$_SESSION['MyReworkCount']  = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (1) ");
+	$_SESSION['MyPendingCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (3) ");
+	$_SESSION['MyNewCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (0) ");
+	$_SESSION['MyAssignCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (4) ");
+	$_SESSION['MyIssueresolvedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `report_form` WHERE `status` in (6) ");
+	$_SESSION['MyMaintenancetickketCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (2) ");
+	$_SESSION['MyTicketreviewedCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `maintenance` WHERE `status` in (3) ");
+	$_SESSION['MyDispenserCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `dispenser` WHERE `status` in (1) ");	
+	$_SESSION['MyLoanpenCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (1) ");
+	$_SESSION['MyLoanappCount'] = ew_ExecuteScalar("SELECT COUNT(id) FROM `loan_application` WHERE `status` in (2) ");
+}
 
 function generateSIDKey(){
 $randStrs =	mt_rand(001,999);

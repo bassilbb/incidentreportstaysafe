@@ -1466,6 +1466,9 @@ class cissuance_store_staysafe extends cTable {
 		if (CurrentUserLevel() == 3) {
 			ew_AddFilter($filter, "`statuss` in (3)");
 		}
+		if (CurrentUserLevel() == 14) {
+			ew_AddFilter($filter, "`statuss` in (1)");
+		}
 	}
 
 	// Recordset Selected event
@@ -1612,7 +1615,7 @@ class cissuance_store_staysafe extends cTable {
 		}
 
 		 // Supervisor
-		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 10 || CurrentUserLevel() == 4) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
+		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 10 || CurrentUserLevel() == 14) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
 			$rsnew["date"] = $now->format('Y-m-d H:i:s');
@@ -1676,8 +1679,10 @@ class cissuance_store_staysafe extends cTable {
 		   if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 || CurrentUserLevel() == 17) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
 			date_default_timezone_set('Africa/Lagos');
 			$now = new DateTime();
-			$rsnew["date"] = $now->format('Y-m-d H:i:s');
-			$rsnew["approved_by"] = $_SESSION['Staff_ID'];
+
+			//$rsnew["date"] = $now->format('Y-m-d H:i:s');
+			//$rsnew["approved_by"] = $_SESSION['Staff_ID'];
+
 		}
 		if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3) && ($this->staff_id->CurrentValue != $_SESSION['Staff_ID'])) {
 			$rsnew["id"] = $rsold["id"];
@@ -1733,7 +1738,6 @@ class cissuance_store_staysafe extends cTable {
 			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 11 && $this->statuss->CurrentValue == 3)) {
 				$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
 				$rsnew["verified_by"] = $_SESSION['Staff_ID'];
-			  }
 
 			   	// Verified by Guard
 				if ($this->verified_action->CurrentValue == 0 && $this->statuss->CurrentValue == 3 ) {
@@ -1758,12 +1762,12 @@ class cissuance_store_staysafe extends cTable {
 					}
 					$this->setSuccessMessage("&#x25C9; Recieved Items successfully  Verified &#x2714;");
 				}
+			}
 
-				// Verified by Guard=========================================================================================
+			// Verified by Guard=========================================================================================
 			if ((CurrentPageID() == "edit" && CurrentUserLevel() == 3 && $this->statuss->CurrentValue == 3)) {
 				$rsnew["verified_date"] = $now->format('Y-m-d H:i:s');
 				$rsnew["verified_by"] = $_SESSION['Staff_ID'];
-			  }
 
 			   	// Verified by Guard
 				if ($this->verified_action->CurrentValue == 0 && $this->statuss->CurrentValue == 3 ) {
@@ -1790,6 +1794,7 @@ class cissuance_store_staysafe extends cTable {
 
 					//$this->setSuccessMessage("&#x25C9; Recieved Items successfully  Verified &#x2714;");
 				}
+			}
 		return TRUE;
 	}
 
@@ -1894,13 +1899,17 @@ class cissuance_store_staysafe extends cTable {
 			$this->reference_id->CurrentValue = $_SESSION['INSS_ID'];
 			$this->reference_id->EditValue = $this->reference_id->CurrentValue;
 		}
-			if (CurrentPageID() == "edit" && (CurrentUserLevel() == 10 )) {
+		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 10 )) {
 			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
 			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
 		}
 			if (CurrentPageID() == "edit" && (CurrentUserLevel() == 11 )) {
 			$this->verified_by->CurrentValue = $_SESSION['Staff_ID'];
 			$this->verified_by->EditValue = $this->verified_by->CurrentValue;
+		}
+		if (CurrentPageID() == "edit" && (CurrentUserLevel() == 14 )) {
+			$this->approved_by->CurrentValue = $_SESSION['Staff_ID'];
+			$this->approved_by->EditValue = $this->approved_by->CurrentValue;
 		}
 	}
 
@@ -1994,6 +2003,26 @@ class cissuance_store_staysafe extends cTable {
 					$this->verified_comment->Visible = FALSE;
 					$this->verified_by->Visible = FALSE;
 				}
+				if (CurrentUserLevel() == 14) {
+					$this->date->ReadOnly = TRUE;
+					$this->staff_id->ReadOnly = TRUE;
+					$this->reference_id->ReadOnly = TRUE;
+					$this->quantity_in->ReadOnly = TRUE;
+					$this->quantity_type->ReadOnly = TRUE;
+					$this->quantity_out->ReadOnly = TRUE;
+					$this->total_quantity->ReadOnly = TRUE;
+					$this->issued_action->ReadOnly = TRUE;
+					$this->issued_comment->ReadOnly = TRUE;
+					$this->issued_by->ReadOnly = TRUE;
+					$this->approver_date->Visible = FALSE;
+					$this->approver_action->Visible = TRUE;
+					$this->approver_comment->Visible = TRUE;
+					$this->approved_by->Visible = FALSE;
+					$this->verified_date->Visible = FALSE;
+					$this->verified_action->Visible = FALSE;
+					$this->verified_comment->Visible = FALSE;
+					$this->verified_by->Visible = FALSE;
+				}
 				if (CurrentUserLevel() == 11) {
 					$this->date->ReadOnly = TRUE;
 					$this->staff_id->ReadOnly = TRUE;
@@ -2033,7 +2062,7 @@ class cissuance_store_staysafe extends cTable {
 					$this->verified_action->Visible = TRUE;
 					$this->verified_comment->Visible = TRUE;
 					$this->verified_by->Visible = FALSE;
-				}
+				}	
 			}
 
 			// Highligh rows in color based on the status

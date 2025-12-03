@@ -65,6 +65,12 @@ class crestock_module_staysafe_delete extends crestock_module_staysafe {
 		if ($this->UseTokenInUrl) $PageUrl .= "t=" . $this->TableVar . "&"; // Add page token
 		return $PageUrl;
 	}
+	var $AuditTrailOnAdd = TRUE;
+	var $AuditTrailOnEdit = TRUE;
+	var $AuditTrailOnDelete = TRUE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -317,9 +323,6 @@ class crestock_module_staysafe_delete extends crestock_module_staysafe {
 		// 
 
 		$this->CurrentAction = (@$_GET["a"] <> "") ? $_GET["a"] : @$_POST["a_list"]; // Set up current action
-		$this->code->SetVisibility();
-		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
-			$this->code->Visible = FALSE;
 		$this->date_restocked->SetVisibility();
 		$this->reference_id->SetVisibility();
 		$this->material_name->SetVisibility();
@@ -813,11 +816,6 @@ class crestock_module_staysafe_delete extends crestock_module_staysafe {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
-			// code
-			$this->code->LinkCustomAttributes = "";
-			$this->code->HrefValue = "";
-			$this->code->TooltipValue = "";
-
 			// date_restocked
 			$this->date_restocked->LinkCustomAttributes = "";
 			$this->date_restocked->HrefValue = "";
@@ -903,6 +901,7 @@ class crestock_module_staysafe_delete extends crestock_module_staysafe {
 		}
 		$rows = ($rs) ? $rs->GetRows() : array();
 		$conn->BeginTrans();
+		if ($this->AuditTrailOnDelete) $this->WriteAuditTrailDummy($Language->Phrase("BatchDeleteBegin")); // Batch delete begin
 
 		// Clone old rows
 		$rsold = $rows;
@@ -949,8 +948,10 @@ class crestock_module_staysafe_delete extends crestock_module_staysafe {
 		}
 		if ($DeleteRows) {
 			$conn->CommitTrans(); // Commit the changes
+			if ($this->AuditTrailOnDelete) $this->WriteAuditTrailDummy($Language->Phrase("BatchDeleteSuccess")); // Batch delete success
 		} else {
 			$conn->RollbackTrans(); // Rollback changes
+			if ($this->AuditTrailOnDelete) $this->WriteAuditTrailDummy($Language->Phrase("BatchDeleteRollback")); // Batch delete rollback
 		}
 
 		// Call Row Deleted event
@@ -1125,9 +1126,6 @@ $restock_module_staysafe_delete->ShowMessage();
 <table class="table ewTable">
 	<thead>
 	<tr class="ewTableHeader">
-<?php if ($restock_module_staysafe->code->Visible) { // code ?>
-		<th class="<?php echo $restock_module_staysafe->code->HeaderCellClass() ?>"><span id="elh_restock_module_staysafe_code" class="restock_module_staysafe_code"><?php echo $restock_module_staysafe->code->FldCaption() ?></span></th>
-<?php } ?>
 <?php if ($restock_module_staysafe->date_restocked->Visible) { // date_restocked ?>
 		<th class="<?php echo $restock_module_staysafe->date_restocked->HeaderCellClass() ?>"><span id="elh_restock_module_staysafe_date_restocked" class="restock_module_staysafe_date_restocked"><?php echo $restock_module_staysafe->date_restocked->FldCaption() ?></span></th>
 <?php } ?>
@@ -1182,14 +1180,6 @@ while (!$restock_module_staysafe_delete->Recordset->EOF) {
 	$restock_module_staysafe_delete->RenderRow();
 ?>
 	<tr<?php echo $restock_module_staysafe->RowAttributes() ?>>
-<?php if ($restock_module_staysafe->code->Visible) { // code ?>
-		<td<?php echo $restock_module_staysafe->code->CellAttributes() ?>>
-<span id="el<?php echo $restock_module_staysafe_delete->RowCnt ?>_restock_module_staysafe_code" class="restock_module_staysafe_code">
-<span<?php echo $restock_module_staysafe->code->ViewAttributes() ?>>
-<?php echo $restock_module_staysafe->code->ListViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
 <?php if ($restock_module_staysafe->date_restocked->Visible) { // date_restocked ?>
 		<td<?php echo $restock_module_staysafe->date_restocked->CellAttributes() ?>>
 <span id="el<?php echo $restock_module_staysafe_delete->RowCnt ?>_restock_module_staysafe_date_restocked" class="restock_module_staysafe_date_restocked">

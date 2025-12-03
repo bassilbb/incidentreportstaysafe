@@ -105,6 +105,12 @@ class crestock_module_staysafe_list extends crestock_module_staysafe {
 	var $GridEditUrl;
 	var $MultiDeleteUrl;
 	var $MultiUpdateUrl;
+	var $AuditTrailOnAdd = TRUE;
+	var $AuditTrailOnEdit = TRUE;
+	var $AuditTrailOnDelete = TRUE;
+	var $AuditTrailOnView = FALSE;
+	var $AuditTrailOnViewData = FALSE;
+	var $AuditTrailOnSearch = FALSE;
 
 	// Message
 	function getMessage() {
@@ -446,9 +452,6 @@ class crestock_module_staysafe_list extends crestock_module_staysafe {
 
 		// Setup export options
 		$this->SetupExportOptions();
-		$this->code->SetVisibility();
-		if ($this->IsAdd() || $this->IsCopy() || $this->IsGridAdd())
-			$this->code->Visible = FALSE;
 		$this->date_restocked->SetVisibility();
 		$this->reference_id->SetVisibility();
 		$this->material_name->SetVisibility();
@@ -1200,7 +1203,6 @@ class crestock_module_staysafe_list extends crestock_module_staysafe {
 		if (@$_GET["order"] <> "") {
 			$this->CurrentOrder = @$_GET["order"];
 			$this->CurrentOrderType = @$_GET["ordertype"];
-			$this->UpdateSort($this->code); // code
 			$this->UpdateSort($this->date_restocked); // date_restocked
 			$this->UpdateSort($this->reference_id); // reference_id
 			$this->UpdateSort($this->material_name); // material_name
@@ -1244,7 +1246,6 @@ class crestock_module_staysafe_list extends crestock_module_staysafe {
 			if ($this->Command == "resetsort") {
 				$sOrderBy = "";
 				$this->setSessionOrderBy($sOrderBy);
-				$this->code->setSort("");
 				$this->date_restocked->setSort("");
 				$this->reference_id->setSort("");
 				$this->material_name->setSort("");
@@ -1343,7 +1344,10 @@ class crestock_module_staysafe_list extends crestock_module_staysafe {
 		$oListOpt = &$this->ListOptions->Items["view"];
 		$viewcaption = ew_HtmlTitle($Language->Phrase("ViewLink"));
 		if ($Security->CanView()) {
-			$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-caption=\"" . $viewcaption . "\" href=\"" . ew_HtmlEncode($this->ViewUrl) . "\">" . $Language->Phrase("ViewLink") . "</a>";
+			if (ew_IsMobile())
+				$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-caption=\"" . $viewcaption . "\" href=\"" . ew_HtmlEncode($this->ViewUrl) . "\">" . $Language->Phrase("ViewLink") . "</a>";
+			else
+				$oListOpt->Body = "<a class=\"ewRowLink ewView\" title=\"" . $viewcaption . "\" data-table=\"restock_module_staysafe\" data-caption=\"" . $viewcaption . "\" href=\"javascript:void(0);\" onclick=\"ew_ModalDialogShow({lnk:this,url:'" . ew_HtmlEncode($this->ViewUrl) . "',btn:null});\">" . $Language->Phrase("ViewLink") . "</a>";
 		} else {
 			$oListOpt->Body = "";
 		}
@@ -1578,6 +1582,11 @@ class crestock_module_staysafe_list extends crestock_module_staysafe {
 		$item = &$this->SearchOptions->Add("showall");
 		$item->Body = "<a class=\"btn btn-default ewShowAll\" title=\"" . $Language->Phrase("ShowAll") . "\" data-caption=\"" . $Language->Phrase("ShowAll") . "\" href=\"" . $this->PageUrl() . "cmd=reset\">" . $Language->Phrase("ShowAllBtn") . "</a>";
 		$item->Visible = ($this->SearchWhere <> $this->DefaultSearchWhere && $this->SearchWhere <> "0=101");
+
+		// Search highlight button
+		$item = &$this->SearchOptions->Add("searchhighlight");
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ewHighlight active\" title=\"" . $Language->Phrase("Highlight") . "\" data-caption=\"" . $Language->Phrase("Highlight") . "\" data-toggle=\"button\" data-form=\"frestock_module_staysafelistsrch\" data-name=\"" . $this->HighlightName() . "\">" . $Language->Phrase("HighlightBtn") . "</button>";
+		$item->Visible = ($this->SearchWhere <> "" && $this->TotalRecs > 0);
 
 		// Button group for search
 		$this->SearchOptions->UseDropDownButton = FALSE;
@@ -2041,11 +2050,6 @@ class crestock_module_staysafe_list extends crestock_module_staysafe {
 		}
 		$this->verified_by->ViewCustomAttributes = "";
 
-			// code
-			$this->code->LinkCustomAttributes = "";
-			$this->code->HrefValue = "";
-			$this->code->TooltipValue = "";
-
 			// date_restocked
 			$this->date_restocked->LinkCustomAttributes = "";
 			$this->date_restocked->HrefValue = "";
@@ -2055,6 +2059,8 @@ class crestock_module_staysafe_list extends crestock_module_staysafe {
 			$this->reference_id->LinkCustomAttributes = "";
 			$this->reference_id->HrefValue = "";
 			$this->reference_id->TooltipValue = "";
+			if ($this->Export == "")
+				$this->reference_id->ViewValue = $this->HighlightValue($this->reference_id);
 
 			// material_name
 			$this->material_name->LinkCustomAttributes = "";
@@ -2065,21 +2071,29 @@ class crestock_module_staysafe_list extends crestock_module_staysafe {
 			$this->type->LinkCustomAttributes = "";
 			$this->type->HrefValue = "";
 			$this->type->TooltipValue = "";
+			if ($this->Export == "")
+				$this->type->ViewValue = $this->HighlightValue($this->type);
 
 			// capacity
 			$this->capacity->LinkCustomAttributes = "";
 			$this->capacity->HrefValue = "";
 			$this->capacity->TooltipValue = "";
+			if ($this->Export == "")
+				$this->capacity->ViewValue = $this->HighlightValue($this->capacity);
 
 			// stock_balance
 			$this->stock_balance->LinkCustomAttributes = "";
 			$this->stock_balance->HrefValue = "";
 			$this->stock_balance->TooltipValue = "";
+			if ($this->Export == "")
+				$this->stock_balance->ViewValue = $this->HighlightValue($this->stock_balance);
 
 			// quantity
 			$this->quantity->LinkCustomAttributes = "";
 			$this->quantity->HrefValue = "";
 			$this->quantity->TooltipValue = "";
+			if ($this->Export == "")
+				$this->quantity->ViewValue = $this->HighlightValue($this->quantity);
 
 			// statuss
 			$this->statuss->LinkCustomAttributes = "";
@@ -2508,6 +2522,13 @@ var CurrentSearchForm = frestock_module_staysafelistsrch = new ew_Form("frestock
 		else
 			$restock_module_staysafe_list->setWarningMessage($Language->Phrase("NoRecord"));
 	}
+
+	// Audit trail on search
+	if ($restock_module_staysafe_list->AuditTrailOnSearch && $restock_module_staysafe_list->Command == "search" && !$restock_module_staysafe_list->RestoreSearch) {
+		$searchparm = ew_ServerVar("QUERY_STRING");
+		$searchsql = $restock_module_staysafe_list->getSessionWhere();
+		$restock_module_staysafe_list->WriteAuditTrailOnSearch($searchparm, $searchsql);
+	}
 $restock_module_staysafe_list->RenderOtherOptions();
 ?>
 <?php if ($Security->CanSearch()) { ?>
@@ -2639,15 +2660,6 @@ $restock_module_staysafe_list->RenderListOptions();
 // Render list options (header, left)
 $restock_module_staysafe_list->ListOptions->Render("header", "left");
 ?>
-<?php if ($restock_module_staysafe->code->Visible) { // code ?>
-	<?php if ($restock_module_staysafe->SortUrl($restock_module_staysafe->code) == "") { ?>
-		<th data-name="code" class="<?php echo $restock_module_staysafe->code->HeaderCellClass() ?>"><div id="elh_restock_module_staysafe_code" class="restock_module_staysafe_code"><div class="ewTableHeaderCaption"><?php echo $restock_module_staysafe->code->FldCaption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="code" class="<?php echo $restock_module_staysafe->code->HeaderCellClass() ?>"><div class="ewPointer" onclick="ew_Sort(event,'<?php echo $restock_module_staysafe->SortUrl($restock_module_staysafe->code) ?>',1);"><div id="elh_restock_module_staysafe_code" class="restock_module_staysafe_code">
-			<div class="ewTableHeaderBtn"><span class="ewTableHeaderCaption"><?php echo $restock_module_staysafe->code->FldCaption() ?></span><span class="ewTableHeaderSort"><?php if ($restock_module_staysafe->code->getSort() == "ASC") { ?><span class="caret ewSortUp"></span><?php } elseif ($restock_module_staysafe->code->getSort() == "DESC") { ?><span class="caret"></span><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php if ($restock_module_staysafe->date_restocked->Visible) { // date_restocked ?>
 	<?php if ($restock_module_staysafe->SortUrl($restock_module_staysafe->date_restocked) == "") { ?>
 		<th data-name="date_restocked" class="<?php echo $restock_module_staysafe->date_restocked->HeaderCellClass() ?>"><div id="elh_restock_module_staysafe_date_restocked" class="restock_module_staysafe_date_restocked"><div class="ewTableHeaderCaption"><?php echo $restock_module_staysafe->date_restocked->FldCaption() ?></div></div></th>
@@ -2812,14 +2824,6 @@ while ($restock_module_staysafe_list->RecCnt < $restock_module_staysafe_list->St
 // Render list options (body, left)
 $restock_module_staysafe_list->ListOptions->Render("body", "left", $restock_module_staysafe_list->RowCnt);
 ?>
-	<?php if ($restock_module_staysafe->code->Visible) { // code ?>
-		<td data-name="code"<?php echo $restock_module_staysafe->code->CellAttributes() ?>>
-<span id="el<?php echo $restock_module_staysafe_list->RowCnt ?>_restock_module_staysafe_code" class="restock_module_staysafe_code">
-<span<?php echo $restock_module_staysafe->code->ViewAttributes() ?>>
-<?php echo $restock_module_staysafe->code->ListViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
 	<?php if ($restock_module_staysafe->date_restocked->Visible) { // date_restocked ?>
 		<td data-name="date_restocked"<?php echo $restock_module_staysafe->date_restocked->CellAttributes() ?>>
 <span id="el<?php echo $restock_module_staysafe_list->RowCnt ?>_restock_module_staysafe_date_restocked" class="restock_module_staysafe_date_restocked">
